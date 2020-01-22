@@ -1,0 +1,360 @@
+JPA vs Hibernate
+-------------------------------------
+https://thoughts-on-java.org/what-is-spring-data-jpa-and-why-should-you-use-it/ 
+https://dzone.com/articles/introduction-to-jpa-architecture
+https://howtodoinjava.com/hibernate/how-to-define-association-mappings-between-hibernate-entities/
+https://www.codejava.net/frameworks/hibernate/hibernate-basics-3-ways-to-delete-an-entity-from-the-datastore
+
+ when your application starts up, Spring Data JPA recognizes your JPA repository and automatically generates an implementation for the DAO contract that's specified in that interface.
+Hibernate is one of the most popular ORM frameworks.
+
+		JPA defines the specification. It is an API. Hibernate is the persistence provider.
+
+		Hibernate understands the mappings that we add between objects and tables. It ensures that data is stored/retrieved from the database based on the mappings.
+		Hibernate also provides additional features on top of JPA. But depending on them would mean a lock in to Hibernate. You cannot move to other JPA implementations like Toplink.
+
+-------------------------------------
+
+The JPA Spring Configuration with Java – in a non-Boot Project
+
+		1. To use JPA in a Spring project, we need to set up the EntityManager.
+
+		2. This is the main part of the configuration and we can do it via a Spring factory bean. This can be either the simpler LocalEntityManagerFactoryBean or the more flexible LocalContainerEntityManagerFactoryBean.
+		
+	Example:
+		Maven Dependencies:
+				<dependency>
+				   <groupId>org.hibernate</groupId>
+				   <artifactId>hibernate-entitymanager</artifactId>
+				   <version>5.2.17.Final</version>
+				   <scope>runtime</scope>
+				</dependency>
+ 
+				<dependency>
+				   <groupId>mysql</groupId>
+				   <artifactId>mysql-connector-java</artifactId>
+				   <version>6.0.6</version>
+				   <scope>runtime</scope>
+				</dependency>
+				
+		Java based configuration needed a 3 step process:
+			1. for EntityManager Set up: Configuration class with EnableTransactionManagement annotation. Also Jpa vendor also needs to be set up.
+			2. We also need to explicitly define the DataSource bean we’ve used above
+			3. The final part of the configuration are the additional Hibernate properties and the TransactionManager and exceptionTranslation beans:
+				
+				@Configuration
+				@EnableTransactionManagement
+				public class PersistenceJPAConfig{
+				 
+				   @Bean
+				   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+					  LocalContainerEntityManagerFactoryBean em 
+						= new LocalContainerEntityManagerFactoryBean();
+					  em.setDataSource(dataSource());
+					  em.setPackagesToScan(new String[] { "org.baeldung.persistence.model" });
+				 
+					  JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+					  em.setJpaVendorAdapter(vendorAdapter);
+					  em.setJpaProperties(additionalProperties());
+				 
+					  return em;
+				   }
+					
+				   @Bean
+					public DataSource dataSource(){
+						DriverManagerDataSource dataSource = new DriverManagerDataSource();
+						dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+						dataSource.setUrl("jdbc:mysql://localhost:3306/spring_jpa");
+						dataSource.setUsername( "tutorialuser" );
+						dataSource.setPassword( "tutorialmy5ql" );
+						return dataSource;
+					}
+					@Bean
+					public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+						JpaTransactionManager transactionManager = new JpaTransactionManager();
+						transactionManager.setEntityManagerFactory(emf);
+					 
+						return transactionManager;
+					}
+					 
+					@Bean
+					public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+						return new PersistenceExceptionTranslationPostProcessor();
+					}
+					 
+					Properties additionalProperties() {
+						Properties properties = new Properties();
+						properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+						properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+							
+						return properties;
+					}
+				}
+-------------------------------------------------------------------
+
+Tagging is a standard design pattern that allows us to categorize and filter items in our data model.
+
+Spring Boot configures Hibernate as the default JPA provider, so it’s no longer necessary to define the entityManagerFactory bean unless we want to customize it.
+
+Spring Boot can also auto-configure the dataSource bean, depending on the database used. In the case of an in-memory database of type H2, HSQLDB and Apache Derby, Boot automatically configures the DataSource if the corresponding database dependency is present on the classpath.
+
+
+For example, if we want to use an in-memory H2 database in a Spring Boot JPA application, we only need to add the h2 dependency to the pom.xml file:
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.195</version>
+		</dependency>
+This way, we don’t need to define the dataSource bean, but we can do so if we want to customize it.
+
+If we want to use JPA with MySQL database, then we need the mysql-connector-java dependency, as well as to define the DataSource configuration.
+
+This can be done in a @Configuration class, or by using standard Spring Boot properties.
+
+The Java configuration looks the same as it does in a standard Spring project:
+
+@Bean
+public DataSource dataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+ 
+    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+    dataSource.setUsername("mysqluser");
+    dataSource.setPassword("mysqlpass");
+    dataSource.setUrl(
+      "jdbc:mysql://localhost:3306/myDb?createDatabaseIfNotExist=true"); 
+     
+    return dataSource;
+}
+To configure the data source using a properties file, we have to set properties prefixed with spring.datasource:
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.username=mysqluser
+spring.datasource.password=mysqlpass
+spring.datasource.url=
+  jdbc:mysql://localhost:3306/myDb?createDatabaseIfNotExist=true
+  
+jpa:
+    showSql: false
+    hibernate.dialect: org.hibernate.dialect.Oracle10gDialect
+    properties:
+      hibernate:
+        jdbc.batch_size: 50
+        order_inserts: true
+        order_updates: true
+        jdbc.batch_versioned_data: true  
+-----------------------------------------------------------------------------
+
+
+Hibernate provides three different ways to retrieve data from database. HQL and native SQL queries. Now we will discuss our third option i.e. hibernate criteria queries. 
+Criteria query:
+1. normal just passing the entity object.
+2. Using Restriction.eq/ne/like/gt/lt/ge/le/isNull/isNotNull/
+
+		Criteria crit = session.createCriteria(Product.class);
+		crit.add(Restrictions.lt("price",10.0));
+		crit.add(Restrictions.ilike("description","mouse", MatchMode.ANYWHERE));
+		List<Product> results = crit.list();
+3. or() method
+		Criteria crit = session.createCriteria(Product.class);
+		Criterion priceLessThan = Restrictions.lt("price", 10.0);
+		Criterion mouse = Restrictions.ilike("description", "mouse", MatchMode.ANYWHERE);
+		LogicalExpression orExp = Restrictions.or(priceLessThan, mouse);
+		crit.add(orExp);
+		List results=crit.list();
+4. Paging:
+		Criteria crit = session.createCriteria(Product.class);
+		crit.setFirstResult(1);
+		crit.setMaxResults(20);
+		List<Product> results = crit.list();
+		
+5. Unique Result
+		Criteria crit = session.createCriteria(Product.class);
+		Criterion price = Restrictions.gt("price",new Double(25.0));
+		crit.setMaxResults(1);
+		Product product = (Product) crit.uniqueResult();
+	Again, please note that you need to make sure that your query returns only one or zero results if you use the uniqueResult() method. Otherwise, Hibernate will throw a NonUniqueResultException exception.
+6. Sort query : Order class is present
+	Criteria crit = session.createCriteria(Product.class);
+	crit.add(Restrictions.gt("price",10.0));
+	crit.addOrder(Order.desc("price"));
+	List<Product> results = crit.list();
+7. joins : 
+	one-to-many
+	Criteria crit = session.createCriteria(Supplier.class);
+	Criteria prdCrit = crit.createCriteria("products");
+	prdCrit.add(Restrictions.gt("price",25.0));
+	List results = crit.list();
+	
+	many-to-one associations:
+
+	Criteria crit = session.createCriteria(Product.class);
+	Criteria suppCrit = crit.createCriteria("supplier");
+	suppCrit.add(Restrictions.eq("name","Hardware Are We"));
+	List results = crit.list();
+8. Hibernate criteria – add projections and aggregates
+	Criteria crit = session.createCriteria(Product.class);
+	crit.setProjection(Projections.rowCount());
+	List<Long> results = crit.list();
+	
+	Multilple projections:
+	Criteria crit = session.createCriteria(Product.class);
+	ProjectionList projList = Projections.projectionList();
+	projList.add(Projections.max("price"));
+	projList.add(Projections.min("price"));
+	projList.add(Projections.avg("price"));
+	projList.add(Projections.countDistinct("description"));
+	crit.setProjection(projList);
+	List<object[]> results = crit.list();
+	
+	Getting Selected Columns
+	Another use of projections is to retrieve individual properties, rather than entities. For instance, we can retrieve just the name and description from our product table, instead of loading the entire object representation into memory.
+
+	Criteria crit = session.createCriteria(Product.class);
+	ProjectionList projList = Projections.projectionList();
+	projList.add(Projections.property("name"));
+	projList.add(Projections.property("description"));
+	crit.setProjection(projList);
+	crit.addOrder(Order.asc("price"));
+	List<object[]> results = crit.list();
+	
+9. Hibernate criteria – query by example (QBE)
+
+	Criteria crit = session.createCriteria(Supplier.class);
+	Supplier supplier = new Supplier();
+	supplier.setName("MegaInc");
+	crit.add(Example.create(supplier));
+	List results = crit.list();
+	
+10. Since Hibernate 5.2, the Hibernate Criteria API is deprecated and new development is focused on the JPA Criteria API. We’ll explore how to use Hibernate and JPA to build Criteria Queries.
+
+	Session session = HibernateUtil.getHibernateSession();
+	CriteriaBuilder cb = session.getCriteriaBuilder();
+	CriteriaQuery<Item> cr = cb.createQuery(Item.class);
+	Root<Item> root = cr.from(Item.class);
+	cr.select(root);
+	 
+	Query<Item> query = session.createQuery(cr);
+	List<Item> results = query.getResultList();
+	
+	The above query is a simple demonstration of how to get all the items. Let’s see what was done, step by step:
+
+	Create an instance of Session from the SessionFactory object
+	Create an instance of CriteriaBuilder by calling the getCriteriaBuilder() method
+	Create an instance of CriteriaQuery by calling the CriteriaBuilder createQuery() method
+	Create an instance of Query by calling the Session createQuery() method
+	Call the getResultList() method of the query object which gives us the results
+	
+=================================
+
+https://thoughts-on-java.org/dto-projections/
+https://howtodoinjava.com/hibernate/hibernate-jpa-cascade-types/	
+
+------------------------------------------------------
+
+
+JPA2 | EntityManager, Transactions and Everything around it.
+
+A persistence context handles a set of entities which hold data to be persisted in some persistence store (e.g. a database). In particular, the context is aware of the different states an entity can have (e.g. managed, detached) in relation to both the context and the underlying persistence store.
+
+SessionFactory and Session are hibernate-specific. The EntityManager invokes the hibernate session under the hood. And if you need some specific features that are not available in the EntityManager, you can obtain the session by calling:
+
+Session session = entityManager.unwrap(Session.class);
+
+https://www.journaldev.com/17379/jpa-entitymanager-hibernate
+
+
+EntityManager
+https://www.baeldung.com/hibernate-entitymanager
+
+@PersistenceContext: container manager EntityManager
+
+EntityManager basically manages the persistence state of Entity.
+
+Entities are managed by javax.persistence.EntityManager instance using persistence context.
+Each EntityManager instance is associated with a persistence context.
+Within the persistence context, the entity instances and their lifecycle are managed.
+Persistence context defines a scope under which particular entity instances are created, persisted, and removed.
+A persistence context is like a cache which contains a set of persistent entities , So once the transaction is finished, all persistent objects are detached from the EntityManager's persistence context and are no longer managed.
+
+The call to find will force the container to check for an existing transaction. If a transaction exists( for example in case of Stateless Session Beans in Java EE, where the container guarantees that a transaction is available whenever a method on the bean is called) or not. If the transaction doesnt exist, it will throw Exception. If it exists, it will then check whether a Persistence Context exists. Since its the first call to any method of the EntityManager, a persistence context is not available yet. The Entity Manager will then create one and use it to find the project bean instance.
+
+In the next call to find, the Entity Manager already has an associated Transaction as well as the Persistence Context associated with it. It uses the same transaction to find employee instance
+
+Container Managed Entity Managers come in two flavors :
+Transaction Scoped Entity Managers
+Extended Scope Entity Managers
+
+How does @PersistenceContext work?
+One question that comes to mind is, how can @PersistenceContext inject an entity manager only once at container startup time, given that entity managers are so short lived, and that there are usually multiple per request.
+
+The answer is that it can’t: EntityManager is an interface, and what gets injected in the spring bean is not the entity manager itself but a context aware proxy that will delegate to a concrete entity manager at runtime.
+
+How does @Transactional work then?
+The persistence context proxy that implements EntityManager is not the only component needed for making declarative transaction management work. Actually three separate components are needed:
+
+The EntityManager Proxy itself
+The Transactional Aspect
+The Transaction Manager
+
+https://dzone.com/articles/spring-transaction-management
+
+https://dzone.com/articles/under-the-boot
+https://github.com/dkublik/under-the-boot/blob/master/build.gradle
+
+compile 'org.springframework.boot:spring-boot-starter'
+    // for entities (hibernate-core, etc)
+    compile 'org.hibernate:hibernate-entitymanager'
+    // for spring annotated transactions
+    // and LocalContainerEntityManagerFactoryBean - condition for HibernateJpaAutoConfiguration
+    compile 'org.springframework:spring-orm'
+
+    // for datasource (for DataSourceAutoConfiguration to compile)
+    runtime 'org.apache.tomcat:tomcat-jdbc'
+	
+	https://netsurfingzone.com/spring/transactional-rollbackfor-example-using-spring-boot
+	https://www.javabullets.com/access-entitymanager-spring-data-jpa/
+	
+	
+------------------------------------------------------
+
+Circular Dependency:
+
+https://howtodoinjava.com/hibernate/how-to-define-association-mappings-between-hibernate-entities/	
+
+------------------------------------------------------------------------
+
+What is the difference between cascade and orphan removal from DB?
+
+@Entity
+class Employee {
+     :
+    @OneToOne(cascade=CascadeType.REMOVE)
+    private Address address;
+     :
+}
+
+@Entity
+class Employee {
+     :
+    @OneToOne(orphanRemoval=true)
+    private Address address;
+     :
+}
+
+DIFFERENCE:-
+
+The difference between the two settings is in the response to disconnecting a relationship. For example, such as when setting the address field to null or to another Address object.
+
+If orphanRemoval=true is specified the disconnected Address instance is automatically removed. This is useful for cleaning up dependent objects (e.g. Address) that should not exist without a reference from an owner object (e.g. Employee).
+If only cascade=CascadeType.REMOVE is specified no automatic action is taken since disconnecting a relationship is not a remove
+operation.
+
+-----------------------------------------------------------------------------
+when we create an entity in hibernate why implement serializable
+
+If an entity instance be passed by value as a detached object, such as through a session bean’s remote business interface, the class must implement the Serializable interface.
+
+This usually happens if you mix HQL and native SQL queries. In HQL, Hibernate maps the types you pass in to whatever the DB understands. When you run native SQL, then you must do the mapping yourself. If you don't, then the default mapping is to serialize the parameter and send it to the database (in the hope that it does understand it).
+
+Case: If we want write that object into file. (or) the database server is available in some other machine. i.e DB is not in local machine.(If the DB is in another system we need to transfer throw network so we can't transfer as object so we have to convert series of bits)

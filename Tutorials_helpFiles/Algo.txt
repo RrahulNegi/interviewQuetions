@@ -1,0 +1,44 @@
+ find two largest numbers of integer array.
+Alphabetically Sort an array of positive integers based on digit spellings.
+
+DB design to implement Account Lock mechanism with 3 invalid attempts without half hour.  
+
+Concurrency mechanism in case of same database row being updated .  
+
+Given a List of Object, which can contain Integers and also contain List which internally can again contain List to nth Level. Write a utility method which would return a flat List.  
+
+Most optimised way to find occurrent of a word in sentance  
+java-program-to-find-frequency-count-of-a-word-in-given-text (FrequencyCount.java)
+
+
+Find pair of numbers which are positive and negative in unsorted array along with other numbers, most optimized way  
+
+Exception handling, lembda expression, functional interface, multithreading, synchronization, serialization  
+Missing number in an array 
+3rd last element in linked list 
+Most frequent character in a string.
+First non repeating character in string  
+
+
+Server load balancing questions are asked 
+
+1)Explain OOPS
+2)Difference between String Buffer and String Builder
+3)Why String is immutable
+4)Write a programme to retrieve second large number in the list with out using API's
+5)Write a programme to remove duplicate characters from String
+6)Asked to write a programme for pattern
+7)Difference between runnable and callable
+8)How do you inject abstract method using spring
+9)Difference between synchronized block and explict syncronized keyword on a method
+10)what is fail fast and fail sage, give examples
+11)Difference between get and load in hibernate
+12)Write a rest api for upload and download a file
+13)difference between put and post  
+
+
+Prototype is kind factory pattern wrapped around cloning feature.
+
+Prototype allows us to hide the complexity of making new instances from the client. The concept is to copy an existing object rather than creating a new instance from scratch, something that may include costly operations
+
+

@@ -1,0 +1,29 @@
+Hibernate 4 Criteria Query
+
+How to fetch selected columns in hibernate???
+---------------------------------------------------
+
+	1.  use of projections is to retrieve individual properties
+			Criteria crit = session.createCriteria(Product.class);
+			ProjectionList projList = Projections.projectionList();
+			projList.add(Projections.property("name"));
+			projList.add(Projections.property("description"));
+			crit.setProjection(projList);
+			crit.addOrder(Order.asc("price"));
+			List<object[]> results = crit.list();
+			
+	2.	
+	
+-------------------------------------------------------------
+
+Using JPA2:
+
+		Hibernate suggest javax.persistence.criteria.CriteriaQuery (This is JPA2 class) instead of org.hibernate.Criteria
+			To use CriteriaQuery we have to follow below steps. 
+				1.	Create persistence.xml to configure database configuration. 
+				2.	Fetch javax.persistence.criteria.CriteriaBuilder and javax.persistence.EntityManager by using javax.persistence.Persistence.createEntityManagerFactory(). 
+				3.	Instantiate CriteriaQuery as CriteriaBuilder.createQuery() for typed criteria quries and CriteriaBuilder.createTupleQuery() for Tuple criteria query. 
+				4.	Use CriteriaQuery .select() and CriteriaQuery.multiselect() to select columns 
+				5.	Use CriteriaQuery.from() to assign entity name to fetch data. 
+				6.	Use CriteriaQuery.where() to apply condition for filtering the result. 
+				7.	Finally use EntityManager.createQuery() to create query and on its instance apply getResultList() or getSingleResult ()and get result.

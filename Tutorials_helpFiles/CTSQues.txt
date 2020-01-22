@@ -1,0 +1,41 @@
+
+1)consumer and producer program based on threading and collection .
+
+2)design a class ice cream parlour with flavour and cost and sorr it based on cost and if cost us same then sort on the basis of alphabet es of flavour.
+
+3) design a car manufacturing system with some conditions .....
+
+4) assume that there a blog and u have to notify the subscribed user about any new blogs on the system .
+
+5) how to take input from the command prompt and subtract those according to least value (each element) got zero.  
+
+6) Why interface is more secure than abstract class?  
+7) What is synchronization? Object level lock and class level lock?  
+
+8) want to return an integer from callable interface
+9) REST vs SOAP
+10) why MS?
+11) design a vending machine to produce products based on coins?
+12) Decorative DP
+13) GIT vs SVN
+14) WAP to find the 3rd largest in an integer array? and find the time complexity?
+15) WAP to move the highest element one level up and add -1 at the end. ex. (16,17,3,4,5,2)==> 17,5,5,5,2,-1
+16) make class immutable. why strings are immutable?
+17) interrupted exception and its super class.
+18)IllegalMonitorStateException
+19) Why NoSQL and its usage?
+20) ConcurrentHashMap internal working?
+21) what all exception is thrown during multi threading and parallel execution.
+22) execute vs submit
+23) in what all ways schedulerExecutorService methods can be implemented.
+24) WAP to implement a linked list.
+25) How can you ensure any instance is never garbage collected?
+26) String class creation example and where it is stored in Java Memory model.
+27) Java Memory Model
+28)Class Loaders. How JVM ensures multiple class is not loaded?
+29) How to MS interact?
+30) How transaction is managed in MS?
+30) Discovery of MS
+31) Design a system robust, scalable which can work properly on each system desktop, laptop, mobile, ipads.
+32) Java 8 features.
+33) Real time Comaparable/Comparator

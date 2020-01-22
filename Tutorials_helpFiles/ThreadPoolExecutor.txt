@@ -1,0 +1,167 @@
+how thread remain in alive if the queue is empty?
+In threadpool there are 2 ways to create a new thread:
+	1. prestartCoreThread method to start all the core threads with task as null meaning queue will be set as null.
+	2. whenever any new task comes either the new thread is created or task is added to the taskQueue based on the poolSize.
+	
+	
+When the queue is empty i.e. there is more task processWorkerExit method passing worked thread and completedAbruptly flag(if the worker died due to user exception)  is called. this method calls  tryTerminate() method which Transitions to TERMINATED state if either (SHUTDOWN and pool
+     * and queue empty) or (STOP and pool empty). 
+	 
+Risks of using thread pools
+------------------------------
+
+Deadlock:
+		1. The simplest case of deadlock is where thread A holds an exclusive lock on object X and is waiting for a lock on object Y, 
+				while thread B holds an exclusive lock on object Y and is waiting for the lock on object X. 
+		2. Where all pool threads are executing tasks that are blocked waiting for the results of another task on the queue,
+				but the other task cannot run because there is no unoccupied thread available.
+Resource thrashing: 
+		Context Switching, large thread pool causing more of memory usage
+Concurrency errors: 
+		Thread pools and other queuing mechanisms rely on the use of wait() and notify() methods, which can be tricky. If coded incorrectly, it is possible for notifications to be lost, resulting in threads remaining in an idle state even though there is work in the queue to be processed. Great care must be taken when using these facilities; even experts make mistakes with them. Better yet, use an existing implementation that is known to work, such as the util.concurrent package discussed below in No need to write your own.
+Thread leakage:
+		A significant risk in all kinds of thread pools is thread leakage, which occurs when a thread is removed from the pool to perform a task, but is not returned to the pool when the task completes. One way this happens is when the task throws a RuntimeException or an Error. If the pool class does not catch these, then the thread will simply exit and the size of the thread pool will be permanently reduced by one. When this happens enough times, the thread pool will eventually be empty, and the system will stall because no threads are available to process tasks.
+Request overload: 
+		It is possible for a server to simply be overwhelmed with requests. In this case, we may not want to queue every incoming request to our work queue, because the tasks queued for execution may consume too many system resources and cause resource starvation. 
+--------------------------------------------------------------------------
+Guidelines for effective use of thread pools: 
+
+1. Don't queue tasks that wait synchronously for results from other tasks. This can cause a deadlock .
+2. Be careful when using pooled threads for potentially long-lived operations. If the program must wait for a resource, such as an I/O completion, specify a maximum wait time, and then fail or requeue the task for execution at a later time. 
+3. Understand your tasks. To tune the thread pool size effectively, you need to understand the tasks that are being queued and what they are doing. 
+------------------------------------------------------------------------------------		
+
+* When a new task is submitted in method {@link #execute}, and fewer
+ * than corePoolSize threads are running, a new thread is created to
+ * handle the request, even if other worker threads are idle.  If
+ * there are more than corePoolSize but less than maximumPoolSize
+ * threads running, a new thread will be created only if the queue is
+ * full.  By setting corePoolSize and maximumPoolSize the same, you
+ * create a fixed-size thread pool. By setting maximumPoolSize to an
+ * essentially unbounded value such as {@code Integer.MAX_VALUE}, you
+ * allow the pool to accommodate an arbitrary number of concurrent
+ * tasks. Most typically, core and maximum pool sizes are set only
+ * upon construction, but they may also be changed dynamically using
+ * {@link #setCorePoolSize} and {@link #setMaximumPoolSize}. </dd>
+ 
+ * <dt>On-demand construction</dt>
+ *
+ * <dd> By default, even core threads are initially created and
+ * started only when new tasks arrive, but this can be overridden
+ * dynamically using method {@link #prestartCoreThread} or {@link
+ * #prestartAllCoreThreads}.  You probably want to prestart threads if
+ * you construct the pool with a non-empty queue. </dd>
+--------------------------------------------------- 
+execute method
+----------------------------------------
+
+
+     * Executes the given task sometime in the future.  The task
+     * may execute in a new thread or in an existing pooled thread.
+     *
+     * If the task cannot be submitted for execution, either because this
+     * executor has been shutdown or because its capacity has been reached,
+     * the task is handled by the current {@code RejectedExecutionHandler}.
+
+ public void execute(Runnable command) {
+        if (command == null)
+            throw new NullPointerException();
+
+
+<dt>Hook methods</dt>
+	#beforeExecute#afterExecute
+	<p>If hook or callback methods throw exceptions, internal worker
+ * threads may in turn fail and abruptly terminate.</dd>
+ 
+ 
+ <dt>Queue maintenance</dt>
+	Method {@link #getQueue} allows access to the work queue for
+ * purposes of monitoring and debugging.  Use of this method for any
+ * other purpose is strongly discouraged.
+
+* The main pool control state, ctl, is an atomic integer packing
+     * two conceptual fields 
+	 *	workerCount, indicating the effective number of threads. The workerCount is the number of workers that have been permitted to start and not permitted to stop.
+     *   runState,    indicating whether running, shutting down etc
+	 
+	  * The runState provides the main lifecyle control, taking on values:
+     *
+     *   RUNNING:  Accept new tasks and process queued tasks
+     *   SHUTDOWN: Don't accept new tasks, but process queued tasks
+     *   STOP:     Don't accept new tasks, don't process queued tasks,
+     *             and interrupt in-progress tasks
+     *   TIDYING:  All tasks have terminated, workerCount is zero,
+     *             the thread transitioning to state TIDYING
+     *             will run the terminated() hook method
+     *   TERMINATED: terminated() has completed
+	
+	 
+	 private final AtomicInteger ctl = new AtomicInteger(ctlOf(RUNNING, 0));
+    private static final int COUNT_BITS = Integer.SIZE - 3;
+    private static final int CAPACITY   = (1 << COUNT_BITS) - 1;
+
+    // runState is stored in the high-order bits
+    private static final int RUNNING    = -1 << COUNT_BITS;
+    private static final int SHUTDOWN   =  0 << COUNT_BITS;
+    private static final int STOP       =  1 << COUNT_BITS;
+    private static final int TIDYING    =  2 << COUNT_BITS;
+    private static final int TERMINATED =  3 << COUNT_BITS;
+	
+	
+	 private final BlockingQueue<Runnable> workQueue;
+	 private final ReentrantLock mainLock = new ReentrantLock();
+ /**
+     * Set containing all worker threads in pool. Accessed only when
+     * holding mainLock.
+     */
+    private final HashSet<Worker> workers = new HashSet<Worker>();
+	/**
+     * Wait condition to support awaitTermination
+     */
+    private final Condition termination = mainLock.newCondition();
+	/**
+     * Counter for completed tasks. Updated only on termination of
+     * worker threads. Accessed only under mainLock.
+     */
+    private long completedTaskCount;
+	
+	 /**
+     * Factory for new threads. All threads are created using this
+     * factory (via method addWorker).  All callers must be prepared
+     * for addWorker to fail, which may reflect a system or user's
+     * policy limiting the number of threads.  Even though it is not
+     * treated as an error, failure to create threads may result in
+     * new tasks being rejected or existing ones remaining stuck in
+     * the queue. On the other hand, no special precautions exist to
+     * handle OutOfMemoryErrors that might be thrown while trying to
+     * create threads, since there is generally no recourse from
+     * within this class.
+     */
+    private volatile ThreadFactory threadFactory;
+	
+	 Class Worker mainly maintains interrupt control state for
+     * threads running tasks, along with other minor bookkeeping.
+	 
+	 private final class Worker
+        extends AbstractQueuedSynchronizer
+        implements Runnable
+    {
+		/**
+         * Creates with given first task and thread from ThreadFactory.
+         * @param firstTask the first task (null if none)
+         */
+        Worker(Runnable firstTask) {
+            this.firstTask = firstTask;
+            this.thread = getThreadFactory().newThread(this);
+        }
+	 
+	 
+	 public class ThreadPoolExecutor extends AbstractExecutorService { // internally uses ReentrantLock for locking unlocking.
+	 
+	 
+	 there is one addWorker method in this Runnable tasks are added using the ReentrantLock meachanism
+	 
+	 runWorker() method: Main worker run loop.  Repeatedly gets tasks from queue and executes them, while coping with a number of issues.
+						while (task != null || (task = getTask()) != null) {
+	 
+	 

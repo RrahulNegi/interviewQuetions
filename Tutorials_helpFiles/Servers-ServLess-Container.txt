@@ -1,0 +1,55 @@
+1.	Physical Server	:-	
+			set up, coded, scaled, and maintained our servers—practically nursing our charges day and night—to provide functionality for other machines.
+ 			The process was slow, detailed, and required a lot in terms of personal time. 
+2.	Virtual + Physical Server:- 
+				combining our physical servers with a cluster format or used virtual machines to run multiple applications. 
+				Things got faster, but everything was still pretty manual.
+3.	IAAS :- Infrastructure-as-a-Service --> Cloud
+			Individuals could rent servers for a monthly fee, it was easier to scale up or down, and the process was significantly faster. 
+4.	PaaS :- Platform-as-a-Service -->	Cloud technology  
+			Provided even further improvements in security, scaling, etc.
+			Containers:	
+				also made PaaS possible and smoother too, providing even more benefits.
+				Containers are dedicated or exclusive light-weight boxes which contain all pre-installed dependencies and application code.
+				They can be run anywhere in a single package, quickly, consistently and reliably regardless of the deployment environment.
+				a CLI tool known as Docker which made managing containers easy. 
+			Many cloud providers that offer hosts for containers.
+			Cloud Foundry:
+				 Cloud Foundry offers a traditional Platform as a Service (PaaS). It uses a container solution called garden. The original container in earlier versions of PCF was called warden, which actually predates docker itself. Cloud foundry itself actually predates Kubernetes. 
+			Kubernetes: 	
+				Then Google worked on an open-source platform called Kubernetes for managing containers. 
+				Kubernetes has been adopted as the official “Cloud Foundry Container Runtime” (CFCR, formerly known as Kubo) that complements the traditional “Cloud Foundry Application Runtime”.Kubernetes is considered an essential part of Cloud Foundry (as CFCR).
+5.	FaaS :- Function-as-a-Service know better by the name Serverless.
+				Serverless is called such because the owner of the system does not have to purchase or rent servers for the back-end code to operate.
+				That’s the responsibility of the service provider and the developers.
+			Amazon Lambda
+				Amazon’s Lambda Service, launched in 2014, made the serverless technique a hot trend. When Amazon introduced API Gateway, the functionality became even better and more extensive.
+				
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes+Cloud Foundry platforms(CFCR:-Cloud Foundry Container Runtime):-	
+			Kubernetes is an open source system that automates deployment, scaling, and management of containerized applications–and it’s quickly becoming the de facto container orchestration standard. Kubernetes’ strength is managing containers. Together with Cloud Foundry platforms, it’s easier than ever to manage your entire cloud environment.
+			
+CF BOSH:-	
+			As a developer, you simply write code and push it to the platform where it will run. CF BOSH is working in the background, making sure your environment is configured correctly to accept the software, keeping it up to date when components change, and reconfiguring it to keep it tuned the way it is intended to run when the environment was defined.
+			Due to the flexibility and power of CF BOSH, Google and Pivotal made it the heart of the Kubo project, now called the Cloud Foundry Container Runtime, based on Kubernetes.
+			
+CF Runtime is a great option for taking existing applications, containerizing them, and getting them running in your cloud, reproducibly.
+CF Container Runtime is built using Kubernetes and CF BOSH	
+
+Kubo, which comes from “Kubernetes on Bosh,” was created jointly by Pivotal and Google in order to provide a simple way to deploy and operate production-ready Kubernetes clusters on-premise and in the cloud.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Kubernetes
+		One of the key components of Kubernetes is, it can run application on clusters of physical and virtual machine infrastructure. It also has the capability to run applications on cloud. It helps in moving from host-centric infrastructure to container-centric infrastructure.		
+	
+				
+				
+				
+Formerly known as Project Kubo, an incubating project within the Cloud Foundry Foundation initiated by engineers at Google and Pivotal, the Kubernetes-powered, Kubernetes-certified CF Container Runtime offers a uniform way to instantiate, deploy, and manage highly available Kubernetes clusters on a cloud platform using CF BOSH.				
+
+Some say that containers are yesterday’s news, and serverless is the way to go for creating modern-day applications. Are they right? In fact, both represent architecture that is designed for future changes, and both are intended for leveraging the latest innovations.
+
+
+https://www.cloudfoundry.org/container-runtime/
+

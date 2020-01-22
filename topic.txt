@@ -1,0 +1,44 @@
+java
+
+-Serialization
+-Exception
+-String
+-Thread
+-OOP/ Real world example
+-Collection
+-java 8/11
+-Design Patterns
+
+
+Advance
+
+-Spring/Spring-boot
+
+-jpa/Springdata/hibernate
+
+-Microservices/handel loggers/ transaction/Ways of communication between microservices
+
+-DDD approch
+
+
+
+Architecure
+
+-Project scalability
+
+-handel lots of data and request
+
+-Design Patterns should we follow while creating projects
+
+
+DevOps
+
+-CDA
+-maven/gradle
+-git
+-Docker/Kubernatic
+
+
+UI
+
+-Angular6/8

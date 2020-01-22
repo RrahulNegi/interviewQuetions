@@ -1,0 +1,46 @@
+Transaction Management
+------------------------------
+
+https://stackoverflow.com/questions/28948614/what-is-the-difference-between-a-spring-transaction-and-a-hibernate-transacti
+
+Transactions
+
+Transactions are basically units of work (ie changes to something) that are managed as a single operation that can be either committed or rolled back. There are lots of different types of transactions in the java world - database, messaging systems like JMS, inter application transactions (for those who are not faint of heart) or anything else that may need to be included in a transaction. In the Java standard transactions are managed using the Java Transaction API which sets the rules for how to participate in a transaction.
+
+Hibernate
+
+Hibernate is an ORM for abstracting database components to Java objects, so its transactions are specifically related to changes made within a database. A transaction may be made up of one or many writes to various database tables that are all committed once the operation is completed. Rolling back the transaction, eg f there are any errors during the operation, allows all the changes to be undone.
+https://examples.javacodegeeks.com/enterprise-java/hibernate/hibernate-transaction-example/
+https://java2blog.com/difference-opensession-getcurrentsession-hibernate/
+
+https://www.mkyong.com/hibernate/inverse-true-example-and-explanation/
+
+Object-Relational Mapping or ORM is the programming technique to map application domain model objects to the relational database tables
+Hibernate is a Java based ORM tool that provides a framework for mapping application domain objects to the relational database tables and vice versa. It provides reference implementation of Java Persistence API, that makes it a great choice as an ORM tool with benefits of loose coupling
+A Framework that provides option to map plain old Java objects to traditional database tables with the use of JPA annotations as well as XML based configuration
+
+Spring
+
+At its lowest level Spring is a application framework for managing configuration and dependencies between objects. In addition it also provides an interface for managing higher level services that are used in modern applications such as databases, messaging services, MVC frameworks and transactions.
+
+Spring is designed to be used as an all-encompassing master of objects and services within your application, so its concept of a transaction is at a higher level than the database specific transactions that hibernate concerns itself with. Spring Transactions are designed to give you fine grained control of all your transactional resources while abstracting away the often messy coding required to co-ordinate the transactions.
+
+@Transactional
+
+Spring provides a few different methods for using transactions - among others there xml based aspects, coding to the API and annotation based declarative transactions. The annotation based transactions are handy because you dont need to add the transaction management boilerplate code to your app (even using PlatformTransactionManager via the API has quite a bit of coding overhead).
+
+So basically what happens with @Transactional is that at runtime spring scans your code base for @Transactional classes and methods and wraps them up in the transaction specific management code, based on what you have configured via the annotation. So a method like this:
+
+@Transactional(propagation = REQUIRES_NEW, rollbackFor = {Exception.class})
+public void saveAndSendMessage(Foo foo) throws Exception {
+    dbManager.save(foo);
+    Bar bar = transform(foo);
+    jmsSystem.send(bar);
+}  
+can have spring set up a new transaction for the database and jms system, and co-ordinate them without needing to add all the specific tx management code automagically.
+
+https://www.javacodegeeks.com/2016/05/understanding-transactional-annotation-spring.html
+
+-------------------------------------------------------------------------------
+
+Spring Boot Transaction Management

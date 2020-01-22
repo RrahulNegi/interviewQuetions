@@ -1,0 +1,20 @@
+JDK-8 is the highest version compatible
+CI : merging the code in local and test the merged code wether intgration is working fine.then merge the code in master and all teh test is executed
+
+ploscm: autgo triggers the 
+
+Continuos Delivery: manual
+
+Continuos Deployment: automatic part of jenkins pipeline
+
+CA: Continuos Acceptance
+
+CS: continuous security. we can add sonar quebe.
+
+to know your machine ip we can take remote address whose status code is 204
+Best way to install jenkins as a 
+
+master-slave
+upstream/downstream
+branching
+Discard old builds

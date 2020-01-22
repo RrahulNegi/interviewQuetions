@@ -1,0 +1,59 @@
+Performance Goals
+Before we start working on improving the performance of the application, we need to define and understand our non-functional requirements around key areas such as scalability, performance, availability, etc.
+
+Here are a few frequently used performance goals for typical web applications:
+
+Average application response time
+Average concurrent users must the system support
+Expected requests per second during peak load
+Using metrics like these which can be measured via different load testing and application monitoring tools helps to identify key bottlenecks and tune performance accordingly.
+
+
+
+For Connection pooling:
+
+	1. Only the following configuration needs to be done correctly:
+			a. Datasource configuration
+			
+WildFly has its own "third party connection pooler". 
+Connection Pooling mechanism saves from the expensive operation to establish network connection at application-runtime and eventually initialize the database session at the backend.
+
+Tomcat, the leading application server, is packaged with Commons DBCP Datasource as the default JNDI Datasource, unless we explicitly specify the DataSourceFactory as –
+
+To use Apache Commons DBCP connection pool –
+
+1
+2
+3
+4
+5
+<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+	maxActive="100" maxIdle="30" maxWait="10000"
+	username="javauser" password="javadude" driverClassName="com.mysql.jdbc.Driver"
+	url="jdbc:mysql://localhost:3306/javatest" 
+        factory="org.apache.commons.dbcp.BasicDataSourceFactory"/>
+To use Tomcat JDBC Connection pool –
+
+1
+2
+3
+4
+5
+<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+	maxActive="100" maxIdle="30" maxWait="10000"
+	username="javauser" password="javadude" driverClassName="com.mysql.jdbc.Driver"
+	url="jdbc:mysql://localhost:3306/javatest" 
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"/>
+factory is required, and type should always be javax.sql.DataSource
+
+
+The beauty of DBCP is that it can be used with so many applications or frameworks and it works with almost all databases in the market.
+
+
+After Apache DBCP, the second most preferred connection pool implementation is c3p0, which easily integrates with Hibernate, and is said to deliver good performance.
+
+It is not necessary to configure your own connection pool implementation (such as c3po) in any full Java EE implementation, such as WildFly/JBoss EAP, WebSphere, GlassFish, etc.
+
+All of these servers provide you with connection pool implementations and management tools to configure them.
+
+In WildFly you can set this up with your DataSource configuration in the management console or use the CLI.

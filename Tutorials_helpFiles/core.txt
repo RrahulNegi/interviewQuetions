@@ -1,0 +1,1030 @@
+1. when abstract class and interface is having the same abstract method. instantiation of child class using abstract class reference works fine when calling overriden method.
+2.Although when assigning instance to reference of interface gives comilation error on the methods which are not present in interface and present in abstract class. Although casting the interface reference to abstract class allow calling of abstract methods.
+3. Hence calling of any method/attribute using the reference variable which is of super class, abstract class, interface which is not present in these will raise compile time exception. you need to type cast the refrence to the class whose instance is created.
+4. When 2 interface having the same default method then we need to override that method in the implementation class. Also we can access the default methods of the specific interfaces by:
+
+Vehicle.super.turnAlarmOn();//Here Vehicle is the interface name.
+
+5. Static Interface Methods: Since static methods don’t belong to a particular object, they are not part of the API of the classes implementing the interface, and they have to be called by using the interface name preceding the method name.
+	Defining a static method within an interface is identical to defining one in a class. Moreover, a static method can be invoked within other static and default methods.
+
+Now, say that we want to calculate the horsepower of a given vehicle’s engine. We just call the getHorsePower() method:
+		Vehicle.getHorsePower(2500, 480));
+		
+	Use: static methods in interfaces make possible to group related utility methods, without having to create artificial utility classes that are simply placeholders for static methods. the same can be done with abstract classes. The main difference lies in the fact that abstract classes can have constructors, state, and behavior.
+
+package javaBestPractice;
+
+
+abstract class Test{
+	
+	abstract void testshow();
+	void testDisplay() {
+		System.out.println("abstract class testDisplay");
+	}
+	
+}
+
+
+interface TestInt{
+	
+	 void testshow();
+	
+	
+}
+public class Abc extends Test implements TestInt{
+
+	public void testshow() {
+		System.out.println("Abc class testshow");
+	}
+	
+	public void Abcshow() {
+		System.out.println("Abc class Abcshow");
+	}
+	public static void main(String[] args) {
+		Test t=new Abc();
+		t.testshow();
+		t.testDisplay();
+		((Abc) t).Abcshow();
+		TestInt t1=new Abc();
+		t1.testshow();
+		((Test) t1).testDisplay();
+		((Abc) t1).Abcshow();
+	}
+
+}
+
+4. When abstract class and interface having same non abstract and default method. the concrete class will have compilation error saying //The inherited method of Abstract class (Test.testDisplay()) cannot hide the public abstract method in the interface (TestInt). to resolve this we need to create the method defintion in concreate class.
+	even we can never call these methods because because it requires instance and Abstract class/ interface are not instantiable.
+	
+	package javaBestPractice;
+
+
+abstract class Test{
+	
+	abstract void testshow();
+	void testDisplay() {
+		System.out.println("abstract class testDisplay");
+	}
+	
+}
+
+
+interface TestInt{
+	
+	 void testshow();
+	 default void testDisplay() {
+			System.out.println("Interface class TestInt");
+		}
+	
+}
+public class Abc extends Test implements TestInt{//The inherited method Test.testDisplay() cannot hide the public abstract method in TestInt
+
+	public void testshow() {
+		System.out.println("Abc class testshow");
+	}
+	
+	public void testDisplay() {
+		System.out.println("Abc class testDisplay");
+	}
+	public void Abcshow() {
+		System.out.println("Abc class Abcshow");
+	}
+	public static void main(String[] args) {
+		Test t=new Abc();
+		//t.testshow();
+		t.testDisplay();
+	
+		//((Abc) t).Abcshow();
+		TestInt t1=new Abc();
+		//t1.testshow();
+		( t1).testDisplay();
+		//((Abc) t1).Abcshow();
+		
+		
+		t.testDisplay();
+	}
+
+}
+========================================================================================================================================
+Method overloading:
+	- method signature with different types of parameters( int ,long, char, float...), object parameters
+	- return type does not matter
+	- 	removeDuplicateCharFromString('1');
+		removeDuplicateCharFromString(12.0F);
+		
+		the above call needs either the overloaded method difinition with char and float as above. Or simply float/Double as input parameter will also do. But having int will not help because float param cannot be directly casted into integer.
+		
+				/*public static int removeDuplicateCharFromString(int str){
+				
+				System.out.println("int without duplicates:  ");
+				return 0;
+			}
+			
+			public static void removeDuplicateCharFromString(long str){
+				
+				System.out.println("String without duplicates:  ");
+				//return 0;
+			}*/
+			
+			public static void removeDuplicateCharFromString(float str){
+				
+				System.out.println("Float without duplicates:  ");
+				//return 0;
+			}
+	- Method overloading is not possible in case of inheritance
+	
+	abstract class Poly2{
+	public  void show() {
+		System.out.println("inside show Poly2");
+	}
+	public void display() {
+		System.out.println("inside display Poly2");
+	}
+}
+	public class Polymorphic  extends Poly2 {
+		
+		public void show(int m) {
+			System.out.println("inside Polymorphic overloading");
+		}
+		
+		public static void main(String[] args) {
+			Poly obj=new Polymorphic();
+			obj.show();
+			Poly2 obj1=new Polymorphic();
+			obj1.show();
+		//	obj1.show(5); The method show() in the type Poly2 is not applicable for the arguments (int) i.e. method overloading is not possible in case of inheritance
+			((Polymorphic)obj1).show(5);
+			
+		}
+
+Method Overriding: When overriding a method of superclass, the method declaration in subclass cannot be more restrictive than that declared in the superclass.
+=====================================================
+
+String class
+
+implements java.io.Serializable, Comparable<String>, CharSequence
+
+equals method: when both the reference refer to the same object then true. if not it further checks whether the passed String object is instance of String if yes it then comapares character by character. As soon as there is a mismatch between characters it returns false.
+
+public boolean equals(Object anObject) {
+        if (this == anObject) {
+            return true;
+        }
+        if (anObject instanceof String) {
+            String anotherString = (String) anObject;
+            int n = value.length;
+            if (n == anotherString.value.length) {
+                char v1[] = value;
+                char v2[] = anotherString.value;
+                int i = 0;
+                while (n-- != 0) {
+                    if (v1[i] != v2[i])
+                            return false;
+                    i++;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+https://www.geeksforgeeks.org/difference-between-concat-and-operator-in-java/
+
+Number of arguments the concat() method and + operator takes:
+concat() method takes only one argument of string and concat it with other string.
++ operator takes any number of arguments and concatenates all the strings.
+
+Type of arguments :
+strong>concat() method takes only string arguments, if there is any other type is given in arguments then it will raise an error.
++ operator takes any type and converts to string type and then concatenates the strings.
+concat() method raises java.lang.NullPointer Exception
+concat() method throws NullPointer Exception when string is concatenated with null
++ operator did not raise any Exception when the string is concatenated with null.
+
+Creates a new String object.
+concat() method takes concatenates two strings and return new string object only string length is greater than 0, otherwise it returns same object.
++ operator creates a new string object every time irrespective of length of string.
+
+Performance:
+concat() method is better than + operator because it creates a new object only when the string length is greater than zero(0) but + operator always a creates a new string irrespective of length of string.
+
+
+intern() use:
+
+String s = new String("shilpi"); // "abc" will not be added to String constants pool.
+	    System.out.println(System.identityHashCode(s));
+	    s = s.intern();// add s to String constants pool
+	    System.out.println(System.identityHashCode(s));
+	    String s2="shilpi";
+	    System.out.println(System.identityHashCode(s2));
+	    String str1 = new String("hello");
+	    String str2 = "hello";
+	    String str3 = str1.intern();
+	    System.out.println(System.identityHashCode(str1));
+	    System.out.println(System.identityHashCode(str2));
+	    System.out.println(System.identityHashCode(str3));
+		
+Output:
+
+865113938
+1442407170
+1442407170
+1028566121
+1118140819
+1118140819
+
+		
+compareTo method: 
+
+public int compareTo(String anotherString) {
+        int len1 = value.length;
+        int len2 = anotherString.value.length;
+        int lim = Math.min(len1, len2);
+        char v1[] = value;
+        char v2[] = anotherString.value;
+
+        int k = 0;
+        while (k < lim) {
+            char c1 = v1[k];
+            char c2 = v2[k];
+            if (c1 != c2) {
+                return c1 - c2;
+            }
+            k++;
+        }
+        return len1 - len2;
+    }
+	
+
+Comparator:
+
+In String class to compare Strings ignoring case CASE_INSENSITIVE_ORDER instance is used. this is instance of static class CaseInsensitiveComparator.
+
+public int compareToIgnoreCase(String str) {
+        return CASE_INSENSITIVE_ORDER.compare(this, str);
+    }		
+
+CaseInsensitiveComparator class implements Comparator<String> and Serializable.
+This static class overrides compare(String, String)
+
+public int compare(String s1, String s2) {
+            int n1 = s1.length();
+            int n2 = s2.length();
+            int min = Math.min(n1, n2);
+            for (int i = 0; i < min; i++) {
+                char c1 = s1.charAt(i);
+                char c2 = s2.charAt(i);
+                if (c1 != c2) {
+                    c1 = Character.toUpperCase(c1);
+                    c2 = Character.toUpperCase(c2);
+                    if (c1 != c2) {
+                        c1 = Character.toLowerCase(c1);
+                        c2 = Character.toLowerCase(c2);
+                        if (c1 != c2) {
+                            // No overflow because of numeric promotion
+                            return c1 - c2;
+                        }
+                    }
+                }
+            }
+            return n1 - n2;
+        }
+		
+ public char charAt(int index) {
+        if ((index < 0) || (index >= value.length)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        return value[index];
+    }
+
+ public boolean equalsIgnoreCase(String anotherString) {
+        return (this == anotherString) ? true
+                : (anotherString != null)
+                && (anotherString.value.length == value.length)
+                && regionMatches(true, 0, anotherString, 0, value.length);
+    }
+
+
+  public boolean regionMatches(boolean ignoreCase, int toffset,
+            String other, int ooffset, int len) {
+        char ta[] = value;
+        int to = toffset;
+        char pa[] = other.value;
+        int po = ooffset;
+        // Note: toffset, ooffset, or len might be near -1>>>1.
+        if ((ooffset < 0) || (toffset < 0)
+                || (toffset > (long)value.length - len)
+                || (ooffset > (long)other.value.length - len)) {
+            return false;
+        }
+        while (len-- > 0) {
+            char c1 = ta[to++];
+            char c2 = pa[po++];
+            if (c1 == c2) {
+                continue;
+            }
+            if (ignoreCase) {
+                // If characters don't match but case may be ignored,
+                // try converting both characters to uppercase.
+                // If the results match, then the comparison scan should
+                // continue.
+                char u1 = Character.toUpperCase(c1);
+                char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+                // Unfortunately, conversion to uppercase does not work properly
+                // for the Georgian alphabet, which has strange rules about case
+                // conversion.  So we need to make one last check before
+                // exiting.
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+	
+
+
+ Break statement can only be used with loop or switch. So, using break with if statement causes “break outside switch or loop” error.
+ 
+ public class A { 
+    public static void main(String[] args) 
+    { 
+        if (true) 
+            break; 
+    } 
+} 
+ b) Error
+ 
+--------------------
+ identifier can start with any alphabet or underscore (“_”) or dollar (“$”)
+int $_ = 5; //valid statement
+---------------------
+
+Comments that execute :
+
+ // the line below this gives an output 
+         // \u000d System.out.println("comment executed"); 
+
+Output:
+
+comment executed
+
+The reason for this is that the Java compiler parses the unicode character \u000d as a new line and gets transformed into:
+
+ // the line below this gives an output 
+        // \u000d 
+        System.out.println("comment executed"); 
+
+=======================================================================
+Autoboxing and Unboxing in Java
+
+Autoboxing: Converting a primitive value into an object of the corresponding wrapper class is called autoboxing. For example, converting int to Integer class. 
+Unboxing: Converting an object of a wrapper type to its corresponding primitive value is called unboxing. For example conversion of Integer to int.
+Advantages of Autoboxing / Unboxing:
+
+Autoboxing and unboxing lets developers write cleaner code, making it easier to read.
+The technique let us use primitive types and Wrapper class objects interchangeably and we do not need to perform any typecasting explicitly.
+
+Method Overloading with Autoboxing:
+The compiler first searches a method with parameter(s) of the same data type(s). If you are using wrapper class Object as an actual argument and compiler does not find the method with parameter(s) of the same reference type (i.e. class or interface type), then it starts searching a method with parameter(s) having the corresponding primitive data type.
+
+e.g. : if Integer is not find it search for int type.
+
+Method Overloading with Widening:
+If compiler fails to find any method corresponding to autoboxing, then it starts searching a method parameter(s) of the widened primitive data type.
+
+e.g. Compiler starts searching for the method having the same reference type (Long wrapper class). Since there is no method having with parameter of Long wrapper class. So, It searches for method which can accept the parameter bigger than long primitive data type as an argument. In this case, it finds a method with float primitive data type and invokes it.
+
+Method Overloading with Widening and Boxing Together:
+But widening and boxing of primitive type can not work together.
+
+// overloaded method with refernce type formal argument 
+    public void method(Integer a) 
+    { 
+          
+        System.out.println("Primitive type byte formal argument :" + a); 
+    } 
+	
+	 // invoking the method  
+        byte val = 5; 
+        c.method(val);//byte cannot be converted to Integer
+		
+boxing followed by widening is acceptable:
+
+// overloaded method with refernce type 
+    // formal argument 
+    public void method(Object b) 
+    { 
+          
+        // Object b is typecasted to Byte and then printed  
+        Byte bt = (Byte) b; 
+        System.out.println("refernce type formal argument :" + bt); 
+    } 
+
+		byte val = 5; 
+          
+        // b is first widened to Byte  
+        // and then Byte is passed to Object.  
+        c.method(val); 	
+		
+Method Overloading with Var-args argument:
+Widening of primitive type gets more priority over var-args.
+
+ // overloaded method primitive(byte) var-args formal argument 
+    public void method(byte... a) 
+    { 
+        System.out.println("Primitive type byte formal argument :" + a); 
+    } 
+      
+    // overloaded method primitive(int) formal arguments 
+    public void method(long a, long b) 
+    { 
+        System.out.println("Widening type long formal argument :" + a); 
+    } 
+
+// invokes the method having widening  
+        // primitive type parameters. 
+        byte val = 5; 
+        c.method(val,val); 
+
+Output:
+
+Widening type long formal argument :5
+
+Method overloading and null error in Java:
+ public class Test 
+{ 
+    // Overloaded methods 
+    public void fun(Integer i) //instead of Integer use Object as type No comilation error will come. fun(Object o)
+    { 
+        System.out.println("fun(Integer ) "); 
+    } 
+    public void fun(String name) 
+    { 
+        System.out.println("fun(String ) "); 
+    } 
+  
+    // Driver code  
+    public static void main(String [] args) 
+    { 
+        Test mv = new Test(); 
+  
+        // This line causes error 
+        mv.fun(null); 
+		
+		Integer arg = null; 
+  
+        // No compiler error 
+        mv.fun(arg); 
+    } 
+} 
+
+Compile time error:
+22: error: reference to fun is ambiguous
+        mv.fun(null);
+          ^
+  both method fun(Integer) in Test and method fun(String) in Test match
+  
+  The reason why we get compile time error in the above scenario is, here the method arguments Integer and String both are not primitive data types in Java. That means they accept null values. When we pass a null value to the method1 the compiler gets confused which method it has to select, as both are accepting the null. This compile time error wouldn’t happen unless we intentionally pass null value. 
+
+MCQ:
+
+1.
+ Boolean b1 = true; 
+     Boolean b2 = true; 
+     System.out.print((b1 == b2) + " "); 
+     System.out.print(b1.equals(b2));    
+
+Output:	 
+true true
+--------------------------------------------------
+
+static local variables are not allowed in Java
+
+// filename Test.java 
+class Test { 
+   public static void main(String args[]) { 
+       System.out.println(fun()); 
+   } 
+   static int fun() { 
+       static int x= 0; 
+       return ++x; 
+   } 
+} 
+Output: Compiler Error		
+-------------------------------------------------------------
+Some Core concepts:
+
+- char primitives must be initilized before use. otherwise it gives compile time error. e.g. char a=0;
+- All arrays needs to be intialized. before using. otherwise it gives nullPoniterException.
+	int a[]=new int[5];//declaration and instantiation  
+	a[0]=10;//initialization  
+	a[1]=20;  
+	a[2]=70;  
+	a[3]=40;  
+	a[4]=50;  
+-	If we write our own parametrized constructor then Java compiler doesn’t create the default constructor.
+- how-do-i-call-one-constructor-from-another-in-java
+		Yes, it is possible:
+
+		public class Foo {
+			private int x;
+
+			public Foo() {
+				this(1);
+			}
+
+			public Foo(int x) {
+				this.x = x;
+			}
+		}
+		To chain to a particular superclass constructor instead of one in the same class, use super instead of this. Note that you can only chain to one constructor, and it has to be the first statement in your constructor body.
+-	Default access is more restrictive than protective.
+-	In the source code of Integer object we will find a method ‘valueOf’ in which we can see that the range of the Integer object lies from IntegerCache.low(-128) to IntegerCache.high(127).
+
+-	In Integer class there is one static inner class IntegerCache class:
+
+			Values between -128 and 127 are cached for reuse. This is an example of the flyweight pattern, which minimizes memory usage by reusing immutable objects. So when you use the == operator to check the equality for two Integers on the range of [-127,128], you'll get it as if you where comparing two ints. But if you compare two Integers out of this range using ==, you'll get false, even if they have the same value.
+
+
+			You can set upper bound greater than 128 or less using -XX:AutoBoxCacheMax=NEWVALUE or -Djava.lang.Integer.IntegerCache.high=NEWVALUE
+			private static class IntegerCache {
+				private IntegerCache(){}
+				static final Integer cache[] = new Integer[-(-128) + 127 + 1];
+				static {
+					for(int i = 0; i < cache.length; i++)
+						cache[i] = new Integer(i - 128);
+				}
+			}
+			public static Integer valueOf(int i) {
+				final int offset = 128;
+				if (i >= -128 && i <= 127) { // must cache 
+					return IntegerCache.cache[i + offset];
+				}
+				return new Integer(i);
+			}
+
+			Integer a = 1;
+			Integer b = 1;
+			Integer c = 999;
+			Integer d = 999;
+			System.out.println(a == b); // true
+			System.out.println(c == d); // false
+
+-	 All wrapper classes provide this caching facility			
+			1. java.lang.Boolean store two inbuilt instances TRUE and FALSE, and return their reference if new keyword is not used.
+			2. java.lang.Character has a cache for chars between unicodes 0 and 127 (ascii-7 / us-ascii).
+			3. java.lang.Long has a cache for long between -128 to +127.
+			4. java.lang.String has a whole new concept of string pool.
+			
+-	When Garbage Collector calls finalize() method on an object, it ignores all the exceptions raised in the method and program will terminate normally.
+				public class Test 
+						{ 
+							public static void main(String[] args) throws InterruptedException 
+							{ 
+								Test t = new Test(); 
+									  
+								// making t eligible for garbage collection 
+								t = null;  
+									  
+								// calling garbage collector 
+								System.gc();  
+									  
+								// waiting for gc to complete 
+								Thread.sleep(1000);  
+							  
+								System.out.println("end main"); 
+							} 
+						  
+							@Override
+							protected void finalize()  
+							{ 
+								System.out.println("finalize method called"); 
+								System.out.println(10/0); 
+							} 
+							  
+						} 
+			
+			Output:
+					finalize method called
+					end main
+					
+-	public class Test 
+			{ 
+				public static void main(String [] args)  
+				{ 
+					Test t1 = new Test(); 
+					Test t2 = m1(t1); // line 6 
+					Test t3 = new Test(); 
+					t2 = t3; // line 8 
+					  
+				} 
+				  
+				static Test m1(Test temp)  
+				{ 
+					temp = new Test(); 
+					return temp; 
+				} 
+			} 
+			Question :
+			How many objects are eligible for garbage collection after execution of line 8?
+			Answer :	1					
+			
+------------------------------------------------
+-	A non-static variable can not be accessed in static nested inner class. 
+-	If the superclass method declares an exception, subclass overridden method can declare same, subclass exception or no exception but cannot declare parent exception.
+-	Constructors:
+			-	Constructors cannot be enclosed in try/catch block.
+			-	Constructors cannot be declared final.
+			-	Constructors cannot be surrounded by try/catch blocks.
+			-	Constructor can throw exception.
+			-	Constructors can hold synchronized code(so that each thread can access constructor sequentially).
+-	Access modifier of inner interface should always be same as the outer interface:
+					public interface Test 
+						{ 
+							public int calculate(); 
+							protected interface NestedInterface 
+							{ 
+								public void nested(); 
+							} 
+						} //Access modifier of NestedInterface can only be public. Therefore the error:
+
+							4: error: illegal combination of modifiers: public and protected
+								protected interface NestedInterface
+										  ^
+							1 error
+-	An object is said to be comparable if and only if the corresponding class implements Comparable interface.
+-----------------------------------------------------------------------
+Collections:
+
+PriorityQueue-----
+
+	- A PriorityQueue is used when the objects are supposed to be processed based on the priority. It is known that a queue follows First-In-First-Out algorithm, but sometimes the elements of the queue are needed to be processed according to the priority, that’s when the PriorityQueue comes into play.
+	- Priority queue always outputs the minimum priority element from the queue when remove() method is called, no matter what the sequence of input is.
+	- The PriorityQueue is based on the priority heap.
+	- The elements of the priority queue are ordered according to the natural ordering, or by a Comparator provided at queue construction time, depending on which constructor is used.
+	- Few important points on Priority Queue are as follows:
+			PriorityQueue doesn’t permit NULL pointers.
+			We can’t create PriorityQueue of Objects that are non-comparable
+			PriorityQueue are unbound queues.
+			The head of this queue is the least element with respect to the specified ordering. If multiple elements are tied for least value, the head is one of those elements — ties are broken arbitrarily.
+			The queue retrieval operations poll, remove, peek, and element access the element at the head of the queue.
+			It inherits methods from AbstractQueue, AbstractCollection, Collection and Object class.
+		
+		PriorityQueue<Integer> queue = 
+                            new PriorityQueue<>(); 
+        queue.add(11); 
+        queue.add(10); 
+        queue.add(22); 
+        queue.add(5); 
+        queue.add(12); 
+        queue.add(2); 
+  
+        while (queue.isEmpty() == false) 
+            System.out.printf("%d ", queue.remove()); //2 5 10 11 12 22
+			
+TreeSet----------------------
+				
+		- TreeSet is one of the most important implementations of the SortedSet interface in Java that uses a Tree for storage. 
+		- The ordering of the elements is maintained by a set using their natural ordering whether or not an explicit comparator is provided.
+		- A TreeSet sorts the data in ascending order that is inserted in it.
+		- The TreeSet implements a NavigableSet interface by inheriting AbstractSet class.
+		- TreeSet does not preserve the insertion order of elements but elements are sorted by keys.
+		- TreeSet does not allow to insert Heterogeneous objects. It will throw classCastException at Runtime if trying to add hetrogeneous objects.
+		- TreeSet serves as an excellent choice for storing large amounts of sorted information which are supposed to be accessed quickly because of its faster access and retrieval time.
+		- TreeSet is basically implementation of a self-balancing binary search tree like Red-Black Tree. Therefore operations like add, remove and search take O(Log n) time. And operations like printing n elements in sorted order takes O(n) time.
+		-  insertion of null into a TreeSet throws NullPointerException because while insertion of null, it gets compared to the existing elements and null cannot be compared to any value.
+		- if we are depending on default natural sorting order, compulsory the object should be homogeneous and comparable otherwise we will get RuntimeException:ClassCastException.
+		- An object is said to be comparable if and only if the corresponding class implements Comparable interface.
+		- For an empty tree-set, when trying to insert null as first value, one will get NPE from JDK 7.From 1.7 onwards null is not at all accepted by TreeSet. However upto JDK 6, null will be accepted as first value, but any if insertion of any more values in the TreeSet, will also throw NullPointerException.
+Hence it was considered as bug and thus removed in JDK 7.
+
+========================================================================================
+
+Threads
+
+====================================================================================
+
+Threads states.
+
+
+=============================================
+Thread---------------------------
+
+A thread in Java at any point of time exists in any one of the following states. A thread lies only in one of the shown states at any instant:
+
+New
+Runnable
+Blocked
+Waiting
+Timed Waiting
+Terminated
+
+
+ Thread.getState() method to get the current state of the thread
+ Java provides java.lang.Thread.State class that defines the ENUM constants for the state of a thread
+		 
+		 Constant type: New
+		Declaration: public static final Thread.State NEW
+		Description: Thread state for a thread which has not yet started.
+
+		Constant type: Runnable
+		Declaration: public static final Thread.State RUNNABLE
+		Description: Thread state for a runnable thread. A thread in the runnable state is executing in the Java virtual machine but it may be waiting for other resources from the operating system such as processor.
+
+		Constant type: Blocked
+		Declaration: public static final Thread.State BLOCKED
+		Description: Thread state for a thread blocked waiting for a monitor lock. A thread in the blocked state is waiting for a monitor lock to enter a synchronized block/method or reenter a synchronized block/method after calling Object.wait().
+
+		Constant type: Waiting
+		Declaration: public static final Thread.State WAITING
+		Description: Thread state for a waiting thread. Thread state for a waiting thread. A thread is in the waiting state due to calling one of the following methods:         
+		Object.wait with no timeout
+		Thread.join with no timeout
+		LockSupport.park
+		A thread in the waiting state is waiting for another thread to perform a particular action.
+
+		Constant type: Timed Waiting
+		Declaration: public static final Thread.State TIMED_WAITING
+		Description: Thread state for a waiting thread with a specified waiting time. A thread is in the timed waiting state due to calling one of the following methods with a specified positive waiting time:
+		Thread.sleep
+		Object.wait with timeout
+		Thread.join with timeout
+		LockSupport.parkNanos
+		LockSupport.parkUntil
+
+		Constant type: Terminated
+		Declaration: public static final Thread.State TERMINATED
+		Description: Thread state for a terminated thread. The thread has completed execution.
+		
+-----------------------------------------------------------------------
+
+concept-behind-putting-wait-notify-methods-in-object-class
+
+	In the Java language, you wait() on a particular instance of an Object – a monitor assigned to that object to be precise. 
+	If you want to send a signal to one thread that is waiting on that specific object instance then you call notify() on that object. 
+	If you want to send a signal to all threads that are waiting on that object instance, you use notifyAll() on that object.		
+	
+	I am just having hard time to understand concept behind putting wait() in object class 
+	For this questions sake consider as if wait() and notifyAll() are in thread class
+
+	If wait() and notify() were on the Thread instead then each thread would have to know the status of every other thread. 
+	How would thread1 know that thread2 was waiting for access to a particular resource? 
+		If thread1 needed to call thread2.notify() it would have to somehow find out that thread2 was waiting. 
+		There would need to be some mechanism for threads to register the resources or actions that they need so others could signal them 
+		when stuff was ready or available.
+		
+	There are some thoughts on why they should not be in Thread class which make sense to me :
+
+		1) Wait and notify is not just normal methods or synchronization utility, more than that they are communication mechanism between two threads in Java. And Object class is correct place to make them available for every object if this mechanism is not available via any java keyword like synchronized. Remember synchronized and wait notify are two different area and don’t confuse that they are same or related. Synchronized is to provide mutual exclusion and ensuring thread safety of Java class like race condition while wait and notify are communication mechanism between two thread.
+
+
+		2 )Locks are made available on per Object basis, which is another reason wait and notify is declared in Object class rather then Thread class.
+
+		3) In Java in order to enter critical section of code, Threads needs lock and they wait for lock, they don't know which threads holds lock instead they just know the lock is hold by some thread and they should wait for lock instead of knowing which thread is inside the synchronized block and asking them to release lock. this analogy fits with wait and notify being on object class rather than thread in Java.
+----------------------------------------------------------------------------
+There are two types of locking in java.
+
+		Object level locking
+		Class level locking
+
+Object level locking:
+	Object level locking means you want to synchronize non static method or block so that it can be accessed by only one thread at a time for that instance. It is used if you want to protect non static data.
+
+Class level locking:
+	Class level locking means you want to synchronize static method or block so that it can be accessed by only one thread for whole class. If you have 10 instances of class, only one thread will be able to access only one method or block of any one instance at a time. It is used if you want to protect static data.
+	
+	Make static method synchronized:
+
+		public static synchronized int incrementCount()
+		{
+		}
+	
+	Using synchronized block and lock on .class:
+	
+		public int incrementCount() {
+		  synchronized (RequestCounter.class) {
+		   count++;
+		   return count;
+		  }
+	Using synchronized block and lock on some other static object:
+	
+		private final static Object lock=new Object();
+			public int incrementCount() {
+			  synchronized (lock) {
+			   count++;
+			   return count;
+			  }
+
+
+Can two threads execute static and non static methods concurrently?
+Yes, Since two threads will acquire lock on different objects, they can be executed concurrently without any issues.the thread executing the static synchronized method holds a lock on the class and the thread executing the non-satic synchronized method holds the lock on the object on which the method has been called, these two locks are different and these threads do not block each other.
+
+never mix static and non static synchronized method for protecting same resource.
+
+If one method of class is synchronized and other method of same class is not synchronized? Can they be executed concurrently by two threads?
+Yes, because one thread will require lock to get into synchronized block but second thread which will execute non synchronized method that won’t require any lock, so it can be executed concurrently.
+
+Is it safe to call a synchronized method from another synchronized method?
+Yes, it is safe to call a synchronized method from another synchronized method because when you call synchronized method, you will get lock on this object and when you call another synchronized method of same class, it is safe to execute as it already has lock on this object.
+
+Can two threads call two different static synchronized methods of the same class?
+
+Ans) No. The static synchronized methods of the same class always block each other as only one lock per class exists.So no two static synchronized methods can execute at the same time.	
+
+Can the start() method of the Thread class be overloaded? If yes should it be overridden?
+
+Ans) Yes the start() method can be overloaded. But it should not be overridden as it’s implementation in thread class has the code to create a new executable thread and is specialised.
+
+What is thread starvation?
+
+Ans)In a multi-threaded environment thread starvation occurs if a low priority thread is not able to run or get a lock on the resoruce because of presence of many high priority threads. This is mainly possible by setting thread priorities inappropriately.
+
+What is threadLocal variable?
+
+Ans) ThreadLocal is a class. If a variable is declared as threadLocal then each thread will have a its own copy of variable and would not interfere with the other's thread copy. Typical scenario to use this would be giving JDBC connection to each thread so that there is no conflict.		  
+		
+===================================================================		
+Reflection: java.lang.reflect.*
+
+It can be used basically if we want to modify the feature at runtime.
+
+ java reflection API. java class objects, as we mentioned earlier, give us access to the internal details of any object.
+
+We are going to examine internal details such as an object’s class name, their modifiers, fields, methods, implemented interfaces etc.
+
+to Discover All the fields: getDeclaredConstructors
+		Field[] fields = person.getClass().getDeclaredFields();
+to get all constructors: getDeclaredConstructors
+
+-----------------------------------
+Marker Interface:
+------------------------
+
+
+Use of Marker Interface:
+Marker Interfaces are used to indicate something to compiler/JVM. If JVM see that a class is a object of Marker Interface then it will perform some special operation. Take an example with Serializable, Clonnable marker interface, if JVM see a Class is Serialized/Clonnable then It will do some special operation on it, similar way if JVM sees one Class is implemented custom marker interface which is created by ourself then the JVM do some special operation. How it’d do the special operation,
+
+Create Own Marker Interface in Java
+interface Marker{    }
+
+class A implements Marker{
+      //do some task
+}
+
+class Main{
+         public static void main(String[] args){
+            A ob = new A()[
+             if (ob instanceOf Marker){
+                // do some task
+           }
+       }
+}
+
+Serialization--------------
+
+ JVM handles the creation and invocation of enum constructors internally. As enums don’t give their constructor definition to the program, it is not possible for us to access them by Reflection also
+ 
+ Enums cannot be deserialize. it throws InvalidObjectException
+ 
+ /**
+     * prevent default deserialization
+     */
+    private void readObject(ObjectInputStream in) throws IOException,
+        ClassNotFoundException {
+        throw new InvalidObjectException("can't deserialize enum");
+    }
+
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("can't deserialize enum");
+    }
+
+The java.lang.reflect.Modifier class offers static methods that analyze the returned Integer for the presence or absence of a specific modifier.:
+	getModifiers 
+	
+Usage: One very common use case in Java is the usage with annotations. JUnit 4, for example, will use reflection to look through your classes for methods tagged with the @Test annotation, and will then call them when running the unit test.	
+
+=-------------------------------------=============================
+What does final keyword actually does to an object - internal working
+You are always allowed to initialize a final variable. The compiler makes sure that you can do it only once.
+
+Note that calling methods on an object stored in a final variable has nothing to do with the semantics of final. In other words: final is only about the reference itself, and not about the contents of the referenced object.
+
+try to do t.foo = new ArrayList(); in the main method and you will get compilation error...the reference foo is binded to just one final object of ArrayList...it cannot point to any other ArrayList ..Its all about reference not value.
+
+Final Reference Variables
+If we have a final reference variable, we can’t reassign it either. But this doesn’t mean that the object it refers to is immutable. We can change the properties of this object freely.
+
+To demonstrate this, let’s declare the final reference variable cat and initialize it:
+
+1
+final Cat cat = new Cat();
+If we try to reassign it we’ll see a compiler error:
+
+1
+The final local variable cat cannot be assigned. It must be blank and not using a compound assignment
+=====================================================================================
+Serialization:
+--------------------
+
+1. when a class has not implemented serialization and that class is used as a member in serialized class then it fails with exception
+		java.io.NotSerializableException: javaBestPractice.TestPaper
+		
+2. when a class is having it's own serialVersionUID and serialized it. After that did the some structural changes in the class. It will not fail during deserialization because it intializes the new fields with default values.
+
+3. when a class is not  having it's own serialVersionUID and serialized it. After that did the some structural changes in the class. It will fail during deserialization because it uses JVM generated serialVersionUID .
+
+		Exception in thread "main" java.io.InvalidClassException: javaBestPractice.TestPaper; local class incompatible: stream classdesc serialVersionUID = -4399899192154500306, local class serialVersionUID = -6481538364634724925
+4. What does the serialized version of the object look like? it stores in hexadecimal format in files.
+5. Java's serialization algorithm:
+		- It writes out the metadata of the class associated with an instance.
+		- It recursively writes out the description of the superclass until it finds java.lang.object.
+		- Once it finishes writing the metadata information, it then starts with the actual data associated with the instance. But this time, it starts from the topmost superclass.
+		- It recursively writes the data associated with the instance, starting from the least superclass to the most-derived class.
+https://www.javaworld.com/article/2072752/the-java-serialization-algorithm-revealed.html		
+6. when a class is having it's own serialVersionUID and serialized it. After that added the some static member in the class. It will not fail during deserialization because it intializes the new fields with default values.
+
+7. when a class is not  having it's own serialVersionUID and serialized it. After that added the some static member in the class. It will fail during deserialization because it uses JVM generated serialVersionUID .
+
+------------------------------------------
+what-is-static-and-dynamic-binding-in.html
+
+1) Static binding in Java occurs during Compile time while Dynamic binding occurs during Runtime.
+
+2) private, final and static methods and variables uses static binding and bonded by compiler while virtual methods are bonded during runtime based upon runtime object.
+
+3) Static binding uses Type(Class in Java)  information for binding while Dynamic binding uses Object to resolve binding.
+
+3) Overloaded methods are bonded using static binding while overridden methods are bonded using dynamic binding at runtime. Here is an example which will help you to understand both static and dynamic binding in Java.
+
+--------------------------------------------------------
+
+Immutable vs final
+
+https://stackoverflow.com/questions/12306651/why-would-one-declare-an-immutable-class-final-in-java
+
+https://www.geeksforgeeks.org/final-vs-immutability-java/
+
+Differences between final and immutability
+
+- final means that you can’t change the object’s reference to point to another reference or another object, but you can still mutate its state (using setter methods e.g). Whereas immutable means that the object’s actual value can’t be changed, but you can change its reference to another one.
+- final modifier is applicable for variable but not for objects, Whereas immutability applicable for an object but not for variables.
+- By declaring a reference variable as final, we won’t get any immutability nature, Even though reference variable is final. We can perform any type of change in the corresponding Object. But we cant perform reassignment for that variable.
+- final ensures that the address of the object remains the same whereas the Immutable suggests that we can’t change the state of the object once created.
+
+Why should immutable class to be declared as final
+
+If you don't mark the class final, it might be possible for me to suddenly make your seemingly immutable class actually mutable. For example, consider this code:
+
+public class Immutable {
+     private final int value;
+
+     public Immutable(int value) {
+         this.value = value;
+     }
+
+     public int getValue() {
+         return value;
+     }
+}
+Now, suppose I do the following:
+
+public class Mutable extends Immutable {
+     private int realValue;
+
+     public Mutable(int value) {
+         super(value);
+
+         realValue = value;
+     }
+
+     public int getValue() {
+         return realValue;
+     }
+     public void setValue(int newValue) {
+         realValue = newValue;
+     }
+
+    public static void main(String[] arg){
+        Mutable obj = new Mutable(4);
+        Immutable immObj = (Immutable)obj;              
+        System.out.println(immObj.getValue());
+        obj.setValue(8);
+        System.out.println(immObj.getValue());
+    }
+}
+Notice that in my Mutable subclass, I've overridden the behavior of getValue to read a new, mutable field declared in my subclass. As a result, your class, which initially looks immutable, really isn't immutable. I can pass this Mutable object wherever an Immutable object is expected, which could do Very Bad Things to code assuming the object is truly immutable. Marking the base class final prevents this from happening.
+
+The method that you pass the Mutable object into won't change the object. The concern is that that method might assume that the object is immutable when it really isn't. For example, the method might assume that, since it thinks the object is immutable, it can be used as the key in a HashMap. I could then break that function by passing in a Mutable, waiting for it to store the object as a key, then changing the Mutable object. Now, lookups in that HashMap will fail, because I changed the key associated with the object. Does that make sense? –
+
+
+
+immutable-class-object-private-constructor-factory-method: not needed if we make the class as final
+
+That said, making a constructor private is just one way to prevent class from being overriden. Why? Because in sub-class, every constructor (implicitly) calls super(), a default constructor of base class. But if you make this constructor private, sub-class cannot call it and thus cannot override the base class. This approach is very suitable when you want to control the total number of instances of particular class, for example in case of singletons.

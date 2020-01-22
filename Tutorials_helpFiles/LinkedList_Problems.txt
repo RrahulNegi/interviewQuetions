@@ -1,0 +1,127 @@
+1. Find nth node from the end of a Linked List
+	Time Complexity: O(n). Space Complexity: O(1).
+	Approaches:
+					1. traverse to the nth node from the head of the list. Everytime compare whether the list is having values next values or not.
+					2. Find the element using hash table. finding M-n+1 node values
+					3. using 1 loop. this can be achieved using 2 pointers
+					4. Using recursion
+2. Check whether the given linked list is either NULL-terminated or ends in a cycle
+(cyclic). And If there is a cycle then find the start node of the loop. And  If there is a cycle, find the length of the loop.
+3. Insert a node in a sorted linked list
+4. Reverse a singly linked list
+		Efficient Approach:
+			- public void reverse() {
+					Node current=head;
+					Node prev=null, next=null;
+					while(current!=null) {
+						next=current.next;
+						current.next=prev;
+						prev=current;
+						current=next;
+					}
+					head=prev;
+				}
+5. Suppose there are two singly linked lists both of which intersect at some point
+and become a single linked list. The head or start pointers of both the lists are known, but
+the intersecting node is not known. Also, the number of nodes in each of the lists before
+they intersect is unknown and may be different in each list. List1 may have n nodes before
+it reaches the intersection point, and List2 might have m nodes before it reaches the
+intersection point where m and n may be m = n,m < n or m > n. Give an algorithm for
+finding the merging point.
+		Efficient Approach:
+			• Find lengths (L1 and L2) of both lists -- O(n) + O(m) = O(max(m, n)).
+			• Take the difference d of the lengths -- O(1).
+			• Make d steps in longer list -- O(d).
+			• Step in both lists in parallel until links to next node match -- O(min(m, n)).
+			• Total time complexity = O(max(m, n)).
+			• Space Complexity = O(1).
+6. How will you find the middle of the linked list?
+			- take 2 pointers slow, fast.
+			- Move slow one step and fast 2 step forward until fast.next.next!=null
+7. How will you display a linked list from the end?
+			- Traverse recursively till the end of the linked list. While coming back, start printing the
+			elements.
+			- if(head==null)
+				return
+				traverse(head.next);
+				print head;
+				
+
+8. Check whether the given Linked List length is even or odd?
+			- traverse the pointer P 2 step forward until P and P.next!=null.
+			- At the end if P!=null i.e. pointing to the last node`then odd else P==null then even.
+9. Given two sorted Linked Lists, we need to merge them into the third list in
+sorted order.
+	Given two sorted linked lists, given an algorithm for the printing common
+elements of them.
+
+			- traverse the list until list1!=null and list2!=null
+				- if list1.data==list2.data then add the node in new list and move both to next
+				- if list1.data<list2.data then add the node in new list and move list1 to next
+				- else then add the node in new list and move list2 to next
+			- while list1!=null then add the node in new list and move list1 to next
+			- while list2!=null then add the node in new list and move list2 to next
+			- return new list.
+10. Reverse the linked list in pairs. If you have a linked list that holds 1→2→3→4→X, then after the function has been called the linked list would hold 2→ 1→4→3→X.
+11. How will you check if the linked list is palindrome or not?
+12. How do we sort the linkedlist.
+13. Given a binary tree convert it to doubly linked list.
+14. If we want to concatenate two linked lists, which of the following gives O(1)
+complexity?
+			1) Singly linked lists
+			2) Doubly linked lists
+			3) Circular doubly linked lists
+			Solution: Circular Doubly Linked Lists. This is because for singly and doubly linked lists, we
+			need to traverse the first list till the end and append the second list. But in the case of circular
+			doubly linked lists we don’t have to traverse the lists.
+
+15. Split a Circular Linked List into two equal parts. If the number of nodes in the list are odd then make first list one node extra than second list.
+16. Exchange the adjacent elements in a link list.
+17. For a given K value (K > 0) reverse blocks of if nodes in a list.
+		Example: Input: 1 2 3 4 5 6 7 8 9 10, Output for different K values:
+		For K = 2: 2 1 4 3 6 5 8 7 10 9,
+		For K = 3: 3 2 1 6 5 4 9 8 7 10,
+		For K = 4: 4 3 2 1 8 7 6 5 9 10
+18. Is it possible to get O(1) access time for Linked Lists?
+		Solution: Yes. Create a linked list and at the same time keep it in a hash table. For n elements we
+		have to keep all the elements in a hash table which gives a preprocessing time of O(n).To read
+		any element we require only constant time O(1) and to read n elements we require n * 1 unit of
+		time = n units. Hence by using amortized analysis we can say that element access can be
+		performed within O(1) time.
+		Time Complexity – O(1) [Amortized]. Space Complexity - O(n) for Hash.
+19. Which sorting algorithm is easily adaptable to singly linked lists?
+		Solution: Simple Insertion sort is easily adabtable to singly linked lists. To insert an element, the
+		linked list is traversed until the proper position is found, or until the end of the list is reached. It
+		is inserted into the list by merely adjusting the pointers without shifting any elements, unlike in the
+		array. This reduces the time required for insertion but not the time required for searching for the
+		proper position.
+20. Given a unordered linked list, how do you remove duplicates in it?
+		- Can be removed using HashSet.
+		- traverse the list until next element !=null
+		- try to add the element in HashSet if already present in Set
+			- If Yes then remove from the list
+			- Else successfully added in Set.
+
+22. Given a linked list with even and odd numbers, create an algorithm for making changes to the list in such a way that all even numbers appear at the beginning
+		To solve this problem, we can use the splitting logic. While traversing the list, split the
+		linked list into two: one contains all even nodes and the other contains all odd nodes. Now, to get
+		the final list, we can simply append the odd node linked list after the even node linked list.
+		To split the linked list, traverse the original linked list and move all odd nodes to a separate
+		linked list of all odd nodes. At the end of the loop, the original list will have all the even nodes
+		and the odd node list will have all the odd nodes. To keep the ordering of all nodes the same, we
+		must insert all the odd nodes at the end of the odd node list.
+		Time Complexity: O(n). Space Complexity: O(1).
+		
+		Algorithm:
+			…1) Get pointer to the last node.
+			…2) Move all the odd nodes to the end.
+			……..a) Consider all odd nodes before the first even node and move them to end.
+			……..b) Change the head pointer to point to the first even node.
+			……..b) Consider all odd nodes after the first even node and move them to the end.
+23. Merge k sorted linked lists and return it as one sorted list.
+
+-------------------
+
+Sorting
+-------------
+

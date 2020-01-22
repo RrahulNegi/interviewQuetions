@@ -1,0 +1,27 @@
+There are no structural differences between the files; they are all archived using zip/jar compression. However, they are intended for different purposes.
+
+	Jar files (files with a .jar extension) are intended to hold generic libraries of Java classes, resources, auxiliary files, etc.
+	War files (files with a .war extension) are intended to contain complete Web applications. In this context, a Web application is defined as a single group of files, classes, resources, .jar files that can be packaged and accessed as one servlet context.
+	Ear files (files with a .ear extension) are intended to contain complete enterprise applications. In this context, an enterprise application is defined as a collection of .jar files, resources, classes, and multiple Web applications.
+	Each type of file (.jar, .war, .ear) is processed uniquely by application servers, servlet containers, EJB containers, etc.
+	
+----------------------------------------------------------------------------------------------------------------
+
+5 Difference between Application Server and Web Server in Java
+Application server and web server in Java both are used to host Java web application. Though both application server and web server are generic terms, difference between application server and web server is a famous J2EE interview question. On  Java J2EE perspective main difference between web server and application server is support of EJB. In order to run EJB or host enterprise Java application (.ear) file you need an application server like JBoss, WebLogic, WebSphere or Glassfish, while you can still run your servlet and JSP or java web application (.war) file inside any web server like Tomcat or Jetty.
+
+This Java interview question are in continuation of my previous post on interviews like Top 10 Spring interview questions and  Top 10 Struts interview question.  Here we will see some difference between application server and web server in point format which will help you to answer this question in any java interview.
+
+Application Server vs Web Server
+1. Application Server supports distributed transaction and EJB. While Web Server only supports Servlets and JSP.
+2. Application Server can contain web server in them. most of App server e.g. JBoss or WAS has Servlet and JSP container.
+
+3. Though its not limited to Application Server but they used to provide services like Connection pooling, Transaction management, messaging, clustering, load balancing and persistence. Now Apache tomcat also provides connection pooling.
+
+
+
+4. In terms of logical difference between web server and application server. web server is supposed to provide http protocol level service while application server provides support to web service and expose business level service e.g. EJB.
+
+5. Application server are more heavy than web server in terms of resource utilization.
+
+Personally I don't like to ask questions like Difference between Application Server and Web Server. But since its been asked in many companies, you got to be familiar with some differences. Some times different interviewer expect different answer but I guess on Java's perspective until you are sure when do you need an application server and when you need a web server, you are good to go.	

@@ -1,0 +1,399 @@
+JMS
+
+Java Messaging Service (JMS) is a standard messaging API used to send and receive messages.
+
+In Java, if a person wants to send a message from one application to another in such a way that both application do not know anything about each other, even they may be deployed in separate continents with no dependency at all. For example, one application A is running in India and another application is running in USA, and B is interested in getting some updates/messages from A – whenever something unique happen on A. There may be N number of such applications who are interested in such updates from A.
+
+In this scenario, java provides it’s best solution in form of JMS – and solve the exactly same problem discussed above.The JMS is also useful when we are writing any event based application like chat server where it needs a publish event mechanism to send messages between the server to the clients who are connected with the server. 
+
+Server publish the message and forget it, whenever client comes online, it will fetch the message. It’s very powerful solution for very common problems in today’s world.
+
+
+JMS Tutorial – Benefits of JMS:
+------------------------------------
+		1. Asynchronous
+				JMS is asynchronous by default. So to receive a message, the client is not required to send the request. The message will arrive automatically to the client as they become available.
+
+		2. Reliable
+				JMS provides the facility of assurance that the message will delivered once and only once. You know that duplicate messages create problems. JMS helps you avoiding such problems.
+				
+JMS Messaging Domains
+-------------------------------------
+
+		Point-to-Point Messaging Domain
+		-------------------------------
+				In the point-to-point messaging domain the application is built on the basis of message queues, senders and receivers. Each and every message is addressed to a particular queue. Queues retain all messages sent to them until the messages are consumed or expired. There are some characteristics of PTP messaging:
+
+							There is only one client for each message.
+							There is no timing dependency for sender and receiver of a message.
+							The receiver can fetch message whether it is running or not when the sender sends the message.
+							The receiver sends the acknowledgement after receiving the message.
+							
+		Publish/Subscribe Messaging Domain
+		----------------------------------
+				In publish/subscribe messaging domain, only one message is published which is delivered to all clients through Topic which acts as a bulletin board. 
+				Publishers and subscribers are generally anonymous and can dynamically publish or subscribe to the topic. 
+				The Topic is responsible to hold and deliver messages. The topic retains messages as long as it takes to distribute to the present clients.							
+				Some of the characteristics are:
+
+						There can be multiple subscribers for a message.
+						The publisher and subscribe have a timing dependency. A client that subscribes to a topic can consume only messages published after the client has created a subscription, and the subscriber must continue to be active in order for it to consume messages.
+						
+						
+Message Consumption
+------------------------
+		In JMS, the message consumption can be done in two ways:	
+		
+				4.1. Synchronous
+							In synchronous message consumption, the subscriber/receiver request the message from the destination by calling the receive() method. In the receive() method will block till the message arrives or time out if the message does not arrive within a given time. Just like normal java method calls with some return value.
+
+				4.2. Asynchronous
+							In asynchronous message consumption, a subscriber can register (or subscribe) as message listener with the consumer. The message listener is same as event listener, whenever the message arrives at the destination the JMS provider will deliver the message by calling the listener’s onMessage() method which will act on the content of the message.
+
+JMS participating objects
+--------------------------
+
+		JMS application has some basic building blocks, which are:
+
+				Administered objects – Connection Factories and Destination(These both objects are stored in Application server JNDI Directory or JNDI Registry.)
+										Connection Factories: It creates connection between JMS Provider and JMS Client.
+										Destination
+											Client uses an object known as destination which is used to specify the target of messages it produces and the source of message who consumes it. The JMS application uses two types of destination Queue or Topic. The code specifies queue and a topic.
+				Connections: The connection encapsulates the virtual connection with a JMS Provider.
+								Connection connection = connectionFactory.createConnection();
+								connection.close();
+				Sessions:
+						The session is a single threaded context which is used for producing and consuming messages. The sessions are used to create the following:
+
+								Message Producers
+								Message Consumers
+								The session implemwww
+				Message Producers
+						The message producer is an object which is created by a session and is used for sending messages to the destination. This implements the MessageProducer interface. We use Session to create a MessageProducer for the destination, queue or topic object.
+
+								MessageProducer producer = session.createProducer(dest);
+								MessageProducer producer = session.createProducer(queue);
+								MessageProducer producer = session.createProducer(topic);
+								After creating the message producer is used to send the messages by using the send method.
+
+								producer.send(message);
+				Message Consumers
+						The message consumer is an object which is created by a session and is used to receive messages sent at a destination. It will implement the MessageConsumer interface. We use a session to create a MessageConsumer for a destination, queue or topic object.
+
+								MessageConsumer consumer = session.createConsumer(dest);
+								MessageConsumer consumer = session.createConsumer(queue);
+								MessageConsumer consumer = session.createConsumer(topic);
+				Message Listeners	
+						The message listener is an object which acts as asynchronous event handler for messages. The message listener implements the MessageListener interface which contains the one method onMessage(). In this method we define the actions to be performed when message arrives. By using setMessageListener() we define the message listener with a specific MessageConsumer.
+
+								Listener myListener = new Listener();
+								consumer.setMessageListener(myListener);
+								
+JMS Message Components
+-------------------------
+		The JMS Messages are used by the JMS Clients to have communication between systems. The JMS messages have simple format but highly flexible, which allows to create messages
+		which match the formats. The JMS message is divided into three parts. They are:								
+				Message Header:
+					The predefined headers are:
+
+							– JMSDestination
+							– JMSDeliveryMode
+							– JMSMessageID
+							– JMSTimestamp
+							– JMSCorrelationID
+							– JMSReplyTo
+							– JMSRedelivered
+							– JMSType
+							– JMSExpiration
+							– JMSPriority
+				Message Properties(Optional)
+				Message Body
+
+				
+Spring simplifies the use of JMS API by providing another layer around the JMS layer.
+This layer provides convenience methods for sending and receiving messages, as well as manages the creation and release of resources like the connection object.
+
+The JmsTemplate class is the main class which we will be using often to work with the JMS API.
+
+
+
+
+
+1. Dependencies
+			In order to send and receive JMS messages to and from a JMS message broker, we need to include the message service library. In this example we are using activeMq so our pom.xml will have dependencies related to spring as well as activeMq.
+					- spring-core
+					- spring-context
+					- spring-jms (This is must in order to use Spring JMS)
+					- activemq-all
+		
+2. Spring JmsTemplate : JmsTemplate class handles the creation and releasing of resources when sending or synchronously receiving messages.
+			- Spring provides JMS integration using JmsTemplate class. 
+			- It helps eliminating the verbose and repetitive JMS code. 
+			- JmsTemplate also takes care of creating a connection, obtaining a session, and the actual sending and receiving of messages. 
+			- This helps the developer to just focus on the construction of message. 
+			- If any JMS exception is thrown, it will be rethrown as unchecked exception as a subclass of JmsException.
+			
+------------------------------------				
+	Example:
+
+				1. SpringJmsProducer --> sendMessage --> jmsTemplate.send(destination, new MessageCreator(){public Message createMessage(Session session) throws JMSException {
+																															return session.createTextMessage(msg);}});
+				2. SpringJmsConsumer --> receiveMessage --> TextMessage textMessage = (TextMessage) jmsTemplate.receive(destination);		
+															return textMessage.getText();
+				3. Configuring Jms Template --> (These all below should be defined in applicationContext.xml as bean or as @Bean annotation) 
+							i. Configuration of connectionFactory which will be used to create connection. Connection factory help us to connect to message broker.
+							ii. Message broker : ActiveMQ
+							iii. ActiveMQConnectionFactory is the JMS connection factory that comes with ActiveMQ. This connection factory will help us connecting with message broker ActiveMQ.
+							iv. Broker Url : this is needed to tell where the message broker exist. The brokerURL property tells the connection factory where the message broker is located. The URL we are using is tcp://localhost:61616.
+							v. Destination: this is also needed to be defined. It can be either Queue or topic based on our needs.
+							vi. JmsTemplate Bean: we need to inject this bean as both producer and consumer are depended on this bean.
+							
+						e.g. <?xml version="1.0" encoding="UTF-8"?>
+										<beans xmlns="http://www.springframework.org/schema/beans"
+											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+											xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+										 
+											<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+												<property name="brokerURL" value="tcp://localhost:61616" />
+											</bean>
+											<bean id="messageDestination" class="org.apache.activemq.command.ActiveMQQueue">
+												<constructor-arg value="messageQueue1" />
+											</bean>
+											<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+												<property name="connectionFactory" ref="connectionFactory" />
+												<property name="receiveTimeout" value="10000" />
+											</bean>
+										 
+											<bean id="springJmsProducer" class="com.javacodegeeks.spring.jms.SpringJmsProducer">
+												<property name="destination" ref="messageDestination" />
+												<property name="jmsTemplate" ref="jmsTemplate" />
+											</bean>
+											 
+											<bean id="springJmsConsumer" class="com.javacodegeeks.spring.jms.SpringJmsConsumer">
+												<property name="destination" ref="messageDestination" />
+												<property name="jmsTemplate" ref="jmsTemplate" />
+											</bean>
+										</beans>
+				4. Testing og the above Example:
+							1. Start Broker: In order to Producer and Consumer to connect to broker it must be started.
+												BrokerService broker = BrokerFactory.createBroker(new URI("broker:(tcp://localhost:61616)"));
+												broker.start();
+							2. Next load the spring application context:
+												ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+							3. Get the Producer Beans and send the message: 
+												SpringJmsProducer springJmsProducer = (SpringJmsProducer) context.getBean("springJmsProducer");
+													springJmsProducer.sendMessage("Hi");
+							4. Get the Consumer Bean and receive message:
+												SpringJmsConsumer springJmsConsumer = (SpringJmsConsumer) context.getBean("springJmsConsumer");
+												System.out.println("Consumer receives " + springJmsConsumer.receiveMessage());
+----------------------------------------------------
+
+3. Spring JmsGatewaySupport :
+							This bean is used by Producer/Consumer bean to extend and it allows us to get rid of defining JmsTemplate bean locally and its getters/setters inside both Produce/Consumer.
+							
+							Example:
+								public class SpringJmsGatewayProducer extends JmsGatewaySupport {
+									public void sendMessage(final String msg) {
+										System.out.println("Producer sends " + msg);
+										getJmsTemplate().send(new MessageCreator() {
+											public Message createMessage(Session session) throws JMSException {
+												return session.createTextMessage(msg);
+											}});        
+									}
+								}
+								
+								public class SpringJmsGatewayConsumer extends JmsGatewaySupport {
+									public String receiveMessage() throws JMSException {
+										TextMessage textMessage = (TextMessage) getJmsTemplate().receive();     
+										return textMessage.getText();       
+									}
+								}
+---------------------------------------------------
+
+4. Message Converter:
+			-	Send/Receive message a custom message. It can be a bean as well. 
+			-	Spring provides an implementation of SimpleMessageConvertor to handle the translation of a JMS message received to a business object and the translation of a business object to a JMS message.
+			-	a Bean needs to be created. After that create a class MessageConverter  that implements MessageConverter and override 2 methods: toMessage() & fromMessage(). MapMessage is there to create message base on key-value pair.
+			-	Producer will use the above bean object and convert it into a map object and then call getJmsTemplate().convertAndSend(map).
+			-	The consumer will call getJmsTemplate().receiveAndConvert() to retrieve the map object and then use it to reconstruct the person object.
+			
+			Example:
+				1. Create a person class
+				2. own MessageConverter class:
+						public class PersonMessageConverter implements MessageConverter{
+								 
+									public Message toMessage(Object object, Session session)
+											throws JMSException, MessageConversionException {       
+										Person person = (Person) object;
+										MapMessage message = session.createMapMessage();
+										message.setString("name", person.getName());
+										message.setInt("age", person.getAge());
+										return message;
+									}
+								 
+									public Object fromMessage(Message message) throws JMSException,
+											MessageConversionException {
+										MapMessage mapMessage = (MapMessage) message;
+										Person person = new Person(mapMessage.getString("name"), mapMessage.getInt("age"));
+										return person;
+									}
+								 
+								}
+				3. ProduceClass:
+							public class SpringJmsPersonProducer extends JmsGatewaySupport {
+								public void sendMessage(final Person person) {
+									System.out.println("Producer sends " + person);
+									Map map = new HashMap();
+									map.put("name", person.getName());
+									map.put("age", person.getAge());
+									getJmsTemplate().convertAndSend(map);   
+								}
+							}
+				4. Consumer Class: 
+							public class SpringJmsPersonConsumer extends JmsGatewaySupport {
+								public Person receiveMessage() throws JMSException {
+									Map map = (Map) getJmsTemplate().receiveAndConvert();
+									Person person = new Person((String) map.get("name"), (Integer) map.get("age"));
+									return person;  
+								}
+							}
+				5. bean configuration:
+						<bean id="jmsTemplateWithMsgConverter" class="org.springframework.jms.core.JmsTemplate">
+							<property name="connectionFactory" ref="connectionFactory" />
+							<property name="receiveTimeout" value="10000" />
+							<property name="defaultDestinationName" value="messageQueue2" />
+							<property name="messageConverter" ref="personMessageConverter" />
+						</bean>
+						 
+						<bean id="personMessageConverter" class="com.javacodegeeks.spring.jms.PersonMessageConverter" />
+						
+				6. Testing the above:
+						public class SpringJmsMessageConverterExample {
+										public static void main(String[] args) throws URISyntaxException, Exception {
+											BrokerService broker = BrokerFactory.createBroker(new URI(
+													"broker:(tcp://localhost:61616)"));
+											broker.start();
+											ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+													"applicationContext.xml");
+									 
+											try {
+												SpringJmsPersonProducer springJmsProducer = (SpringJmsPersonProducer) context
+														.getBean("springJmsPersonProducer");
+												springJmsProducer.sendMessage(new Person("Joe", 32));
+									 
+												SpringJmsPersonConsumer springJmsConsumer = (SpringJmsPersonConsumer) context
+														.getBean("springJmsPersonConsumer");
+												System.out.println("Consumer receives " + springJmsConsumer.receiveMessage());
+											} finally {
+												broker.stop();
+												context.close();
+											}
+										}
+									}
+									
+
+-------------------------------------------------------------------------------------------------------------
+
+Changes related to Spring4.1 and above related to JMS:
+
+-------------------------------------------------------
+
+JmsMessagingTemplate :
+			JmsMessagingTemplate is built on top of JmsTemplate which provides an integration with the messaging abstraction, i.e., org.springframework.messaging.Message. This, in turn, allows us to create a message to send in a generic manner.
+			
+Connection Management:
+			In order to connect and be able to send/receive messages, we need to configure a ConnectionFactory.
+
+				A ConnectionFactory is one of the JMS administered objects which are preconfigured by an administrator. A client with the help of the configuration will make the connection with a JMS provider.
+
+				Spring provides 2 types of ConnectionFactory:
+
+				SingleConnectionFactory – is an implementation of ConnectionFactory interface, that will return the same connection on all createConnection() calls and ignore calls to close()
+				CachingConnectionFactory – extends the functionality of the SingleConnectionFactory and adds enhances it with a caching of Sessions, MessageProducers, and MessageConsumers
+				
+Destination Management
+			As discussed above, along with the ConnectionFactory, destinations are also JMS administered objects and can be stored and retrieved from a JNDI.
+
+					Spring provides generic resolvers like DynamicDestinationResolver and specific resolvers such as JndiDestinationResolver.
+
+					The JmsTemplate will delegate the resolution of the destination name to one of the implementations basing on our selection.
+
+					It will also provide a property called defaultDestination – which will be used with send and receive operations that do not refer to a specific destination.	
+Message Conversion
+			Spring JMS would be incomplete without the support of Message Converters.
+
+			The default conversion strategy used by JmsTemplate for both ConvertAndSend() and ReceiveAndConvert() operations is the SimpleMessageConverter class	
+					The SimpleMessageConverter is able to handle TextMessages, BytesMessages, MapMessages, and ObjectMessages. This class implements the MessageConverter interface.
+
+					Apart from SimpleMessageConverter, Spring JMS provides some other MessageConverter classes out of the box like MappingJackson2MessageConverter, MarshallingMessageConverter, MessagingMessageConverter.
+
+					Moreover, we can create custom message conversion functionality simply by implementing the MessageConverter interface’s toMessage() and FromMessage() methods.
+					
+----------------------------------------------------------------------------------------------
+
+ Basic Configuration with Java Annotations
+------------------------------------------
+
+	@JmsListener : only annotation required to convert a method of a normal bean into a JMS listener endpoint. In order to add multiple listeners to a single method we just need to add multiple @JmsListener annotations.
+	
+	@EnableJms :  annotation to one of our configuration classes to support the @JmsListener annotated methods:
+
+						@Configuration
+						@EnableJms
+						public class AppConfig {
+						 
+							@Bean
+							public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
+								DefaultJmsListenerContainerFactory factory 
+								  = new DefaultJmsListenerContainerFactory();
+								factory.setConnectionFactory(connectionFactory());
+								return factory;
+							}
+						}
+----------------------------------------------------------------------------------------------
+
+Error Handler
+-------------
+
+			We can also configure a custom error handler for our message listener container.
+
+							Let’s first implement the org.springframework.util.ErrorHandler interface:
+
+							@Service
+							public class SampleJmsErrorHandler implements ErrorHandler {
+							 
+								// ... logger
+							 
+								@Override
+								public void handleError(Throwable t) {
+									LOG.warn("In default jms error handler...");
+									LOG.error("Error Message : {}", t.getMessage());
+								}
+							 
+							}
+							Note that we have overridden the handleError() method, which simply logs the error message.
+
+							And then, we need to reference our error handler service in the DefaultJmsListenerConnectionFactory using the setErrorHandler() method:
+
+							@Bean
+							public DefaultJmsListenerContainerFactorybjmsListenerContainerFactory() {
+								DefaultJmsListenerContainerFactory factory 
+								  = new DefaultJmsListenerContainerFactory();
+								factory.setConnectionFactory(connectionFactory());
+								factory.setErrorHandler(sampleJmsErrorHandler);
+								return factory;
+							}
+							With this, our configured error handler will now catch any unhandled exceptions and log the message. 
+=========================================================================================================
+
+
+Q. Can we send e-mail messages using JMS?
+
+JMS has no inherent support for email operations.
+
+19) Explain how Application server handles the JMS Connection?
+
+		 With the help of Application server, the server session is created and it stores them in a pool
+		To put messages in JMS session, connection consumer, uses the Server session
+		Server session is the one that creates the JMS session
+		Application written by Application programmers creates the message listener.							

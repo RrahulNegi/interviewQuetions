@@ -1,0 +1,323 @@
+- Why Cloud and its need
+- Cloud Platforms
+- IAAS, PAAS, SAAS
+- Spring Cloud: Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems
+	- Spring Netflix (large open sourced projects : Eureka, Consul, Zuul)
+				- Spring Cloud Config (This project provides a framework for centralized configuration management, making use of a Git or a SVN repository.)
+				- Spring Cloud Bus
+						This enables the microservices and infrastructure components to communicate with each other, in a distributed setup.
+
+- Service Registration + Service Discovery						
+						
+- Client Side Load Balancing:
+							Ribbon-> Naming Server
+							
+- Visibility and Monitoring: 
+								In microservices architectures, you will need to have complete visibility into what's happening in your microservices.
+
+In order to trace a request, you need to assign it a unique identifier. Spring Cloud Sleuth helps in assigning an identifier to every request. You can use a distributed tracing solution like Zipkin to trace the request across multiple components.
+
+- API Gateway: 
+		All micorservices have a few common features — security, logging, analytics, and so on. What is best place to implement these common features?
+		An API Gateway provides a great solution to this kind of a challenge.
+		The Netflix Zuul API gateway is a great solution to implement an API Gateway.
+- Fault Tolerance
+		What if a microservice is down? How do other microservices respond to it?
+		Hystrix helps in improving fault tolerance of your microservices.		
+		
+------------------------------------------------------		
+Microservice architecture offers a lot of great benefits like the ability to use different technology stacks, deploy independently, solve small problems one at a time
+
+But using microservices comes with a high cost in that they are complex...not only in how they communicate but also in how to manage them. And they get even more complicated when one or more services fail. Which service failed? Why, and under what circumstances? All these questions are hard to answer if you don't have good, meaningful logs.
+SOA : Service oriented architecture
+
+Microservices
+ microservices is an architectural style in which applications are decomposed into loosely coupled services. With fine-grained services and lightweight protocols, microservices offers increased modularity, making applications easier to develop, test, deploy, and, more importantly, change and maintain.
+ 
+ https://www.cio.com/article/3201193/7-reasons-to-switch-to-microservices-and-5-reasons-you-might-not-succeed.html
+ 
+ 
+7-reasons-to-switch-to-microservices- 
+ Increased resilience
+	With microservices, your entire application is decentralized and decoupled into services that act as separate entities. Unlike the monolithic architecture wherein a failure in the code affects more than one service or function, there is minimal impact of a failure using microservices. Even when several systems are brought down for maintenance, your users won’t notice it.
+ Improved scalability
+ The ability to use the right tool for the right task
+ Faster time to market
+ Easier debugging and maintenance
+ Improved ROI with reduced TCO
+ Continuous delivery
+ 
+5-reasons-you-might-not-succeed
+
+	You’ll need to be equipped for rapid provisioning and app deployment
+	Robust monitoring is a must
+	You must embrace devops culture
+	Testing can be complex
+	You need to design with failure in mind
+	
+	
+----------------------------------------------------
+
+Did you use Zuul (which know microservices address through Eureka) to forward request between your micro-services ? if it's the case, you are using Server-Side Load Balancing pattern.
+
+If you use a discovery service (Eureka in your case), i think the best approach it's to use Client-Side load balancing pattern for all inter-services requests (inside your system). (you can use Ribbon or RestTemplate for that).
+
+You can use Zuul as a unified front door to your system, which allows a browser, mobile app or other user interface to consume services from multiple hosts without managing cross-origin resource sharing (CORS) and authentication for each one.
+
+For example : a client (mobile app) request for all picture comments. The client dont need to know the Comments-service address. Only proxy address needed and Zuul will forward the request to the right service. You can do this in application.yml/.properties by
+
+zuul.routes.comments.path=/comments/**
+zuul.routes.comments.service-id=comments
+The request will be GET www.myproxy.mycompany.com/comments. Dont forget the service name in your application.yml/.properties is very important (spring.application.name). It's the service-id in Zuul routes (which the same identifier in Eureka).
+
+For some reason, your system need to request external services (as you mentionned in the 3th note). In this case, your external services are not a discovery client, Zuul can't look for the service-id from Eureka. you use routes as
+
+zuul.routes.currencyprovider.path=/currencies/**
+zuul.routes.currencyprovider.url=https://currencies.net/
+with this route, all /currencies/** requests from your services THROUGH Zuul will be done. with this approach you have one door for all your system. This is API Gateway pattern.
+
+Sometimes your system need to aggregate multiple results from different services to response to client request. You can do this in Proxy (Zuul in your case).	
+
+----------------------------------------------------------------------
+
+@EnableDiscoveryClient  annotation can work with any Discovery Client implementations which implements in your project ( Eureka, Consul, Zookeeper ) . You can also use @EnableEurekaClient annotation but it works only with Eureka Discovery Client implementation.
+
+@EnableDiscoveryClient lives in spring-cloud-commons and picks the implementation on the classpath. @EnableEurekaClient lives in spring-cloud-netflix and only works for Eureka.
+
+
+The problem is that your service doesn't know the host of requested service. If you are using Eureka, put this line on your .properties or .yml file:
+
+eureka.client.fetchRegistry=true
+
+OR
+
+eureka: client: fetchRegistry: true
+
+It'll make your service talk with Eureka and discovers host of requested service.
+
+----------------------------------------------------------------
+
+Eureka is a REST (Representational State Transfer) based service that is primarily used in the AWS cloud for locating services for the purpose of load balancing and failover of middle-tier servers. We call this service, the Eureka Server. Eureka also comes with a Java-based client component,the Eureka Client, which makes interactions with the service much easier. The client also has a built-in load balancer that does basic round-robin load balancing. At Netflix, a much more sophisticated load balancer wraps Eureka to provide weighted load balancing based on several factors like traffic, resource usage, error conditions etc to provide superior resiliency
+
+-----------------------------------------------------------------------
+
+What is the difference between putting a property on application.yml or bootstrap.yml in spring boot?
+
+I have just asked the Spring Cloud guys and thought I should share the info I have here.
+
+bootstrap.yml is loaded before application.yml.
+
+It is typically used for the following:
+
+when using Spring Cloud Config Server, you should specify spring.application.name and spring.cloud.config.server.git.uri inside bootstrap.yml
+some encryption/decryption information
+Technically, bootstrap.yml is loaded by a parent Spring ApplicationContext. That parent ApplicationContext is loaded before the one that uses application.yml.
+
+bootstrap.properties is for getting the config server ready, and application.properties is for properties specific to our application. Technically, though, it’s possible to place application properties in bootstrap.properties.
+
+-----------------------------------------------------------------------------------------------
+
+HoverFly testing tool for integration testing.
+------------------------------------------------------------------------------------
+
+SpringBoot:
+=================
+
+@SpringBootApplication : @Configuration+@EnableAutoConfiguration+@ComponentScan
+
+Testing in Spring Boot
+----------------------
+Integration Testing with @DataJpaTest
+----------------------------------------
+@RunWith(SpringRunner.class)
+@DataJpaTest
+public class EmployeeRepositoryIntegrationTest {
+ 
+    @Autowired
+    private TestEntityManager entityManager;//This is used in place of standard JPA EntityManager which provides methods commonly used in writing test.
+ 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+ 
+    // write test cases here
+	@Test
+	public void whenFindByName_thenReturnEmployee() {
+		// given
+		Employee alex = new Employee("alex");
+		entityManager.persist(alex);
+		entityManager.flush();
+	 
+		// when
+		Employee found = employeeRepository.findByName(alex.getName());
+	 
+		// then
+		assertThat(found.getName())
+		  .isEqualTo(alex.getName());
+	}
+ }
+
+Mocking with @MockBean
+--------------------------
+@MockBean is used in to bypass the call of Repository at service layer or bypass the call of service at controller level.
+	
+IntegrationTest
+----------------------
+@RunWith(SpringRunner.class)
+@SpringBootTest(SpringBootTest.WebEnvironment.MOCK, classes=Application.class)
+@AutoConfigurationMockMvc
+@TestPropertySource(
+  locations = "classpath:application-integrationtest.properties")
+  
+The @SpringBootTest annotation can be used when we need to bootstrap the entire container. The annotation works by creating the ApplicationContext that will be utilized in our tests.
+
+We can use the webEnvironment attribute of @SpringBootTest to configure our runtime environment; we’re using WebEnvironment.MOCK here – so that the container will operate in a mock servlet environment.
+
+We can use the @TestPropertySource annotation to configure locations of properties files specific to our tests. Please note that the property file loaded with @TestPropertySource will override the existing application.properties file.
+
+The application-integrationtest.properties contains the details to configure the persistence storage:
+
+		spring.datasource.url = jdbc:h2:mem:test
+		spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect
+If we want to run our integration tests against MySQL, we can change the above values in the properties file.  
+
+
+------------------------------------------------------
+
+Exception Handling in Rest with Spring-----
+
+1. HandlerExceptionResolver Class(Before Spring 3.2): Uniform Exception handling mechanism.(DefaultHandlerExceptionResolver+ResponseStatusExceptionResolver).The downside is – as mentioned before – no control over the body of the response.
+		extends AbstractHandlerExceptionResolver {
+ 
+			@Override
+			protected ModelAndView doResolveException
+			
+			
+2. @ExceptionHandler(Before Spring 3.2): Controller level
+3. @ControllerAdvice(From Spring 3.2)
+		Spring 3.2 brings support for a global @ExceptionHandler with the @ControllerAdvice annotation. This enables a mechanism that breaks away from the older MVC model and makes use of ResponseEntity along with the type safety and flexibility of @ExceptionHandler:
+
+		The@ControllerAdvice annotation allows us to consolidate our multiple, scattered @ExceptionHandlers from before into a single, global error handling component.
+4. ResponseStatusException Class(From Spring 5):  A fast way for basic error handling in our REST APIs.
+
+==============================================================================================
+spring-cloud-starter-eureka-server
+
+@EnableEurekaServer
+
+eureka:
+	client:
+		registerWithEureka: false
+		fetchRegistry: false
+		
+server:
+	port: 5945
+	
+spring-cloud-starter-eureka-server
+@EnableEurekaClient
+
+eureka:
+	client:
+		serviceUrl: 
+			defaultZone: ""
+		instance:
+			preferIpAddress: true
+			
+spring:
+	application:
+		name: lasc
+		
+		
+spring-cloud-starter-zuul
+
+@EnableZuulProxy
+
+spring:
+	application:
+		name: skdj
+
+server:
+	port: 5767
+	
+
+eureka:
+	client:
+		registerWithEureka: false
+		fetchRegistry: true
+		serviceUrl:
+			defaultZone: 
+zuul:
+	routes:
+		path: /abc/nmn/*
+		serviceId: student-service / url: 
+		
+spring-cloud-config-server
+
+@EnableConfigServer
+
+spring:
+	application:	
+		name:	jsdnfjsd
+	cloud:
+		config:
+			git:
+				uri: 
+				
+spring-cloud-starter-config`
+
+@RefreshScope
+
+spring:
+	application:
+		name:
+	cloud:
+		config:
+			uri: 
+			
+@Value("${bc.d}")			
+
+spring-boot-starter-actuator
+
+management:
+	security:
+		enabled: false
+	port: 6666
+	
+spring-boot-admin-server
+spring-boot-admin-ui
+
+@EnableAdminServer
+
+spring-boot-admin-starter-client
+spring-boot-starter-actuator
+
+spring:
+	boot:
+		admin:
+			url: 
+			
+------------------------------------
+
+swagger:
+
+spring-fox-swagger2
+spring-fox-swagger-ui			
+
+@EnableSwagger2
+
+-----------------------------------
+
+How to change packaging of SpringBoot Application from jar to war-file:
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file
+
+https://dzone.com/articles/distributed-logging-architecture-for-microservices
+https://dzone.com/articles/microservices-logging-best-practices
+
+https://howtodoinjava.com/spring-cloud/spring-cloud-zipkin-sleuth-tutorial/
+
+https://dzone.com/articles/microservices-part-6-distributed-tracing-with-spri
+https://dzone.com/articles/microservices-with-spring-boot-part-1-getting-star
+https://dzone.com/articles/asynchronous-communication-with-queues-and-microse
+
+https://dzone.com/articles/microservices-with-kubernetes-and-docker
+
+https://www.programmergate.com/deploy-spring-boot-application-external-tomcat/

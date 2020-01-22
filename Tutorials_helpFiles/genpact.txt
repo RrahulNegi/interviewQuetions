@@ -1,0 +1,121 @@
+Make a class immutable which is having Date as an attribute.
+	- Make class Final
+	- Make member var private, final
+	- No setter methods.
+	- private constructors.
+	- static factory method to create new instance.
+		//Factory method to store object creation logic in single place
+		public static ImmutableClass createNewInstance(Integer fld1, String fld2, Date date)
+		{
+			return new ImmutableClass(fld1, fld2, date);
+		}
+	- special care for mutable members. Like in getter method of mutable attribute do not retuen the refrence instead return the new instance after setting the value/content. 
+	e.g. 
+			/**
+		* Date class is mutable so we need a little care here.
+		* We should not return the reference of original instance variable.
+		* Instead a new Date object, with content copied to it, should be returned.
+		* */
+		public Date getMutableField() {
+			return new Date(mutableField.getTime());
+		}
+	- special care should also be taken in constructor for mutable fields:
+		//Default private constructor will ensure no unplanned construction of class
+		private ImmutableClass(Integer fld1, String fld2, Date date)
+		{
+			this.immutableField1 = fld1;
+			this.immutableField2 = fld2;
+			this.mutableField = new Date(date.getTime());
+		}
+Questions on Encapsulation,Inheritence,Threading,Polymorphism,Internationlisation ,IO operations,Serialisation  
+ Core java with threading and collections. 2 technical interview followed my managerial round
+ 1.
+
+Implement equals and hashcode methods  for  demo class.
+
+Class Demo {
+
+   private String key;
+
+   private int value;
+
+}
+
+2.
+
+Interface Demo{
+
+m1();
+
+m2();
+
+}
+
+Class A implements Demo{
+
+m1();
+
+m2();
+
+m3():
+
+}
+
+main(){
+
+   Demo object = new A();
+
+    object.m3();
+
+}
+
+3.
+
+What happens when Immutable class contains mutable reference as instance variable. How to avoid the issues with it.
+
+4.
+
+Hashmap working , collision.
+
+5.spring bean definitions
+
+6. Caching in hibernate.
+
+2nd round
+
+Types of class loaders.
+
+Rest and soap difference
+
+Jre and JVM
+
+How will be the out of memory will be tackled after reaching max size available
+Difference between logical and physical database
+
+Which design patterns are been used in your project
+
+What is build design pattern
+
+For implementing caching in application, which kind of collection do you use
+
+Difference between list and set
+
+Implementation of custom set in java
+
+What all required changes are done on class if it is being used as key in collection
+
+What need to be considered inside implementation of equals and hascode
+
+Contact equals and hashcode.
+
+Explain executor framework.
+
+Difference between interface and abstract class.
+
+Why we explicitly give public static final for constants if JVM internally treats this as same in interface.
+
+
+
+Java has no concept of object immutability; this is achieved by carefully designing the object, and is a far-from-trivial endeavor.
+
+How do you display duplicates with their count using collection.  

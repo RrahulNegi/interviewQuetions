@@ -1,0 +1,690 @@
+1. Introduction
+In this article, we’re going to look at some of the most common Spring-related questions that might pop up during a job interview.
+
+2. Spring Core
+Q1. What is Spring Framework?
+Spring is the most broadly used framework for the development of Java Enterprise Edition applications. The core features of Spring can be used in developing any Java application.
+
+We can use its extensions for building various web applications on top of the Java EE platform, or we may just use its dependency injection provisions in simple standalone applications.
+
+Q2. What are the benefits of using Spring?
+Spring targets to make Java EE development easier. Here are the advantages of using it:
+
+Lightweight: there is a slight overhead of using the framework in development
+Spring calls itself lightweight because you don't need all of Spring to use part of it. For example, you can use Spring JDBC without Spring MVC
+Inversion of Control (IoC): Spring container takes care of wiring dependencies of various objects, instead of creating or looking for dependent objects
+Aspect Oriented Programming (AOP): Spring supports AOP to separate business logic from system services
+IoC container: it manages Spring Bean life cycle and project specific configurations
+MVC framework: that is used to create web applications or RESTful web services, capable of returning XML/JSON responses
+Transaction management: reduces the amount of boiler-plate code in JDBC operations, file uploading, etc., either by using Java annotations or by Spring Bean XML configuration file
+Exception Handling: Spring provides a convenient API for translating technology-specific exceptions into unchecked exceptions
+
+Q3. What Spring sub-projects do you know? Describe them briefly.
+Core – a key module that provides fundamental parts of the framework, like IoC or DI
+JDBC – this module enables a JDBC-abstraction layer that removes the need to do JDBC coding for specific vendor databases
+ORM integration – provides integration layers for popular object-relational mapping APIs, such as JPA, JDO, and Hibernate
+Web – a web-oriented integration module, providing multipart file upload, Servlet listeners, and web-oriented application context functionalities
+MVC framework – a web module implementing the Model View Controller design pattern
+AOP module – aspect-oriented programming implementation allowing the definition of clean method-interceptors and pointcuts
+
+Q4. What is Dependency Injection?
+Dependency Injection, an aspect of Inversion of Control (IoC), is a general concept stating that you do not create your objects manually but instead describe how they should be created. An IoC container will instantiate required classes if needed.
+
+For more details, please refer here.
+
+Q5. How can we inject beans in Spring?
+A few different options exist:
+
+Setter Injection
+Constructor Injection
+Field Injection
+The configuration can be done using XML files or annotations.
+
+For more details, check this article.
+
+Q6. Which is the best way of injecting beans and why?
+The recommended approach is to use constructor arguments for mandatory dependencies and setters for optional ones. Constructor injection allows injecting values to immutable fields and makes testing easier.
+
+@Autowired on Properties
+@Autowired
+    private FooFormatter fooFormatter;
+	
+@Autowired on Setters
+private FooFormatter fooFormatter;
+ 
+    @Autowired
+    public void setFooFormatter(FooFormatter fooFormatter) {
+            this.fooFormatter = fooFormatter;
+    }
+
+@Autowired on Constructors
+public class FooService {
+ 
+    private FooFormatter fooFormatter;
+ 
+    @Autowired
+    public FooService(FooFormatter fooFormatter) {
+        this.fooFormatter = fooFormatter;
+    }
+}
+
+@Autowired and Optional Dependencies
+Spring expects @Autowired dependencies to be available when the dependent bean is being constructed. If the framework cannot resolve a bean for wiring, it will throw the below-quoted exception and prevent the Spring container from launching successfully:
+
+1
+2
+3
+4
+5
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: 
+No qualifying bean of type [com.autowire.sample.FooDAO] found for dependency: 
+expected at least 1 bean which qualifies as autowire candidate for this dependency. 
+Dependency annotations: 
+{@org.springframework.beans.factory.annotation.Autowired(required=true)}
+To avoid this from happening, a bean can optional be specified as below:
+
+1
+2
+3
+4
+5
+6
+public class FooService {
+ 
+    @Autowired(required = false)
+    private FooDAO dataAccessor; 
+     
+}	
+
+Q7. What is the difference between BeanFactory and ApplicationContext?
+The BeanFactory is the actual container which instantiates, configures, and manages a number of beans. These beans typically collaborate with one another, and thus have dependencies between themselves. These dependencies are reflected in the configuration data used by the BeanFactory (although some dependencies may not be visible as configuration data, but rather be a function of programmatic interactions between beans at runtime).. The default implementation instantiates beans lazily when getBean() is called.
+
+ApplicationContext is an interface representing a container holding all information, metadata, and beans in the application. It also extends the BeanFactory interface but the default implementation instantiates beans eagerly when the application starts. This behavior can be overridden for individual beans.
+
+https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationContext.html
+Features:
+
+Bean instantiation/wiring
+Usually, the implementations use lazy loading, which means that beans are only instantiating when we directly calling them through the getBean() method.
+
+The most used API that implements the BeanFactory is the XmlBeanFactory.
+
+Here is an example of how to get a bean through the BeanFactory:
+
+package com.zoltanraffai;  
+import org.springframework.core.io.ClassPathResource;  
+import org.springframework.beans.factory.InitializingBean; 
+import org.springframework.beans.factory.xml.XmlBeanFactory; 
+public class HelloWorldApp{ 
+   public static void main(String[] args) { 
+      XmlBeanFactory factory = new XmlBeanFactory (new ClassPathResource("beans.xml")); 
+      HelloWorld obj = (HelloWorld) factory.getBean("helloWorld");    
+      obj.getMessage();    
+   }
+}
+
+
+The ApplicationContext Interface
+The ApplicationContext is the central interface within a Spring application that is used for providing configuration information to the application.
+
+It implements the BeanFactory interface. Hence, the ApplicationContext includes all functionality of the BeanFactory and much more! Its main function is to support the creation of big business applications.
+
+Features:
+
+Bean instantiation/wiring
+Automatic BeanPostProcessor registration --
+The BeanPostProcessor interface defines callback methods that you can implement to provide your own (or override the container's default) instantiation logic, dependency-resolution logic, and so forth. If you want to implement some custom logic after the Spring container finishes instantiating, configuring, and initializing a bean, you can plug in one or more BeanPostProcessor implementations.
+So basically the BeanPostProcessor can be used to do custom instantiation logic for several beans wheras the others are defined on a per bean basis.
+
+Automatic BeanFactoryPostProcessor registration
+Convenient MessageSource access (for i18n)
+ApplicationEvent publication
+It uses eager loading, so every bean instantiate after the ApplicationContext is started up.
+
+Here is an example of the ApplicationContext usage:
+
+package com.zoltanraffai;  
+import org.springframework.core.io.ClassPathResource;  
+import org.springframework.beans.factory.InitializingBean; 
+import org.springframework.beans.factory.xml.XmlBeanFactory; 
+public class HelloWorldApp{ 
+   public static void main(String[] args) { 
+      ApplicationContext context=new ClassPathXmlApplicationContext("beans.xml"); 
+      HelloWorld obj = (HelloWorld) context.getBean("helloWorld");    
+      obj.getMessage();    
+   }
+}
+Conclusion
+The ApplicationContext includes all the functionality of the BeanFactory. It is generally recommended to use the former. There are some limited situations, such as in mobile applications, where memory consumption might be critical. In those scenarios, it would be justifiable to use the more lightweight BeanFactory. However, in most enterprise applications, the ApplicationContext is what you will want to use.
+
+For all differences, please refer to the reference.
+
+Q8. What is a Spring Bean?
+The Spring Beans are Java Objects that are initialized by the Spring IoC container.
+
+Q9. What is the default bean scope in Spring framework?
+By default, a Spring Bean is initialized as a singleton.
+
+Q10. How to define the scope of a bean?
+To set Spring Bean’s scope, we can use @Scope annotation or “scope” attribute in XML configuration files. There are five supported scopes:
+
+singleton
+prototype
+request
+session
+global-session
+For differences, please refer here.
+
+Q11. Are singleton beans thread-safe?
+No, singleton beans are not thread-safe, as thread safety is about execution, whereas the singleton is a design pattern focusing on creation. Thread safety depends only on the bean implementation itself.
+
+Q12. What does the Spring bean lifecycle look like?
+First, a Spring bean needs to be instantiated, based on Java or XML bean definition. It may also be required to perform some initialization to get it into a usable state. After that, when the bean is no longer required, it will be removed from the IoC container.
+
+The whole cycle with all initialization methods is shown on the image (source):
+
+Q13. What is the Spring Java-Based Configuration?
+It’s one of the ways of configuring Spring-based applications in a type-safe manner. It’s an alternative to the XML-based configuration.
+
+Also, if you want to migrate your project from XML to Java config, please refer to this article.
+
+Q14. Can we have multiple Spring configuration files in one project?
+Yes, in large projects, having multiple Spring configurations is recommended to increase maintainability and modularity.
+
+You can load multiple Java-based configuration files:
+
+1
+2
+3
+@Configuration
+@Import({MainConfig.class, SchedulerConfig.class})
+public class AppConfig {
+Or load one XML file that will contain all other configs:
+
+1
+ApplicationContext context = new ClassPathXmlApplicationContext("spring-all.xml");
+And inside this XML file you’ll have:
+
+1
+2
+<import resource="main.xml"/>
+<import resource="scheduler.xml"/>
+Q15. What is Spring Security?
+Spring Security is a separate module of the Spring framework that focuses on providing authentication and authorization methods in Java applications. It also takes care of most of the common security vulnerabilities such as CSRF attacks.
+
+To use Spring Security in web applications, you can get started with a simple annotation: @EnableWebSecurity.
+
+You can find the whole series of articles related to security on Baeldung.
+
+Q16. What is Spring Boot?
+Spring Boot is a project that provides a pre-configured set of frameworks to reduce boilerplate configuration so that you can have a Spring application up and running with the smallest amount of code.
+
+Q17. Name some of the Design Patterns used in the Spring Framework?
+Singleton Pattern: Singleton-scoped beans
+Factory Pattern: Bean Factory classes
+Prototype Pattern: Prototype-scoped beans
+Adapter Pattern: Spring Web and Spring MVC
+Proxy Pattern: Spring Aspect Oriented Programming support
+Template Method Pattern: JdbcTemplate, HibernateTemplate, etc.
+Front Controller: Spring MVC DispatcherServlet
+Data Access Object: Spring DAO support
+Model View Controller: Spring MVC
+Q18. How does the scope Prototype work?
+Scope prototype means that every time you call for an instance of the Bean, Spring will create a new instance and return it. This differs from the default singleton scope, where a single object instance is instantiated once per Spring IoC container.
+
+3. Spring Web MVC
+Q19. How to Get ServletContext and ServletConfig Objects in a Spring Bean?
+You can do either by:
+
+Implementing Spring-aware interfaces. The complete list is available here.
+Using @Autowired annotation on those beans:
+1
+2
+3
+4
+5
+@Autowired
+ServletContext servletContext;
+ 
+@Autowired
+ServletConfig servletConfig;
+Q20. What is a Controller in Spring MVC?
+Simply put, all the requests processed by the DispatcherServlet are directed to classes annotated with @Controller. Each controller class maps one or more requests to methods that process and execute the requests with provided inputs.
+
+If you need to take a step back, we recommend having a look at the concept of the Front Controller in the typical Spring MVC architecture.
+
+Q21. How does the @RequestMapping annotation work?
+The @RequestMapping annotation is used to map web requests to Spring Controller methods. In addition to simple use cases, we can use it for mapping of HTTP headers, binding parts of the URI with @PathVariable, and working with URI parameters and the @RequestParam annotation.
+
+More details on @RequestMapping are available here.
+
+For more Spring MVC questions, please check out Spring MVC Interview Questions article.
+
+4. Spring Data Access
+Q22. What is Spring JDBCTemplate class and how to use it?
+The Spring JDBC template is the primary API through which we can access database operations logic that we’re interested in:
+
+creation and closing of connections
+executing statements and stored procedure calls
+iterating over the ResultSet and returning results
+To use it, we’ll need to define the simple configuration of DataSource:
+
+@Configuration
+@ComponentScan("org.baeldung.jdbc")
+public class SpringJdbcConfig {
+    @Bean
+    public DataSource mysqlDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/springjdbc");
+        dataSource.setUsername("guest_user");
+        dataSource.setPassword("guest_password");
+  
+        return dataSource;
+    }
+}
+For further explanation, you can go through this quick article.
+
+Q23. How would you enable transactions in Spring and what are their benefits?
+There are two distinct ways to configure Transactions – with annotations or by using Aspect Oriented Programming (AOP) – each with their advantages.
+
+The benefits of using Spring Transactions, according to the official docs, are:
+
+Provide a consistent programming model across different transaction APIs such as JTA, JDBC, Hibernate, JPA, and JDO
+Support declarative transaction management
+Provide a simpler API for programmatic transaction management than some complex transaction APIs such as JTA
+Integrate very well with Spring’s various data access abstractions
+Q24. What is Spring DAO?
+Spring Data Access Object is Spring’s support provided to work with data access technologies like JDBC, Hibernate, and JPA in a consistent and easy way.
+
+
+How does Spring MVC provide validation support?
+Spring supports validations primarily into two ways.
+
+Using JSR-303 Annotations and any reference implementation e.g. Hibernate Validator
+Using custom implementation of org.springframework.validation.Validator interface
+
+
+How to handle exceptions in Spring MVC Framework?
+In a Spring MVC application, you can register one or more exception resolver beans in the web application context to resolve uncaught exceptions. These beans have to implement the HandlerExceptionResolver interface for DispatcherServlet to auto-detect them. Spring MVC comes with a simple exception resolver for you to map each category of exceptions to a view i.e. SimpleMappingExceptionResolver to map each category of exceptions to a view in a configurable way.
+
+Let’s say we have an exception class i.e. AuthException. And we want that everytime this exception is thrown from anywhere into application, we want to show a pre-determined view page /WEB-INF/views/error/authExceptionView.jsp.
+
+
+What is Spring MVC Interceptor and how to use it?
+As you know about servlet filters that they can pre-handle and post-handle every web request they serve — before and after it’s handled by that servlet. In a similar way, you can use HandlerInterceptor interface in your spring mvc application to pre-handle and post-handle web requests that are handled by Spring MVC controllers. These handlers are mostly used to manipulate the model attributes returned/submitted they are passed to the views/controllers.
+
+A handler interceptor can be registered for particular URL mappings, so it only intercepts requests mapped to certain URLs. Each handler interceptor must implement the HandlerInterceptor interface, which contains three callback methods for you to implement: preHandle(), postHandle() and afterCompletion().
+
+Problem with HandlerInterceptor interface is that your new class will have to implement all three methods irrespective of whether it is needed or not. To avoid overriding, you can use HandlerInterceptorAdapter class. This class implements HandlerInterceptor and provide default blank implementations.
+
+https://stackoverflow.com/questions/35856454/difference-between-interceptor-and-filter-in-spring-mvc
+
+==================================================================================================
+
+ MVC Configuration
+Let’s explore the configuration required to create a JSP web application using both Spring and Spring Boot.
+
+Spring requires defining the dispatcher servlet, mappings, and other supporting configurations. We can do this using either the web.xml file or an Initializer class:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+public class MyWebAppInitializer implements WebApplicationInitializer {
+  
+    @Override
+    public void onStartup(ServletContext container) {
+        AnnotationConfigWebApplicationContext context
+          = new AnnotationConfigWebApplicationContext();
+        context.setConfigLocation("com.baeldung");
+  
+        container.addListener(new ContextLoaderListener(context));
+  
+        ServletRegistration.Dynamic dispatcher = container
+          .addServlet("dispatcher", new DispatcherServlet(context));
+          
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping("/");
+    }
+}
+We also need to add the @EnableWebMvc annotation to a @Configuration class and define a view-resolver to resolve the views returned from the controllers:
+
+@EnableWebMvc
+@Configuration
+public class ClientWebConfig implements WebMvcConfigurer { 
+   @Bean
+   public ViewResolver viewResolver() {
+      InternalResourceViewResolver bean
+        = new InternalResourceViewResolver();
+      bean.setViewClass(JstlView.class);
+      bean.setPrefix("/WEB-INF/view/");
+      bean.setSuffix(".jsp");
+      return bean;
+   }
+}
+By comparison to all this, Spring Boot only needs a couple of properties to make things work, once we’ve added the web starter:
+
+1
+2
+spring.mvc.view.prefix=/WEB-INF/jsp/
+spring.mvc.view.suffix=.jsp
+All the Spring configuration above is automatically included by adding the Boot web starter, through a process called auto-configuration.
+
+What this means is that Spring Boot will look at the dependencies, properties, and beans that exist in the application and enable configuration based on these.
+
+Of course, if we want to add our own custom configuration, then the Spring Boot auto-configuration will back away.
+
+5.1. Configuring Template Engine
+Let’s now learn how to configure a Thymeleaf template engine in both Spring and Spring Boot.
+
+In Spring we need to add the thymeleaf-spring5 dependency and some configurations for the view resolver:
+
+
+@Configuration
+@EnableWebMvc
+public class MvcWebConfig implements WebMvcConfigurer {
+ 
+    @Autowired
+    private ApplicationContext applicationContext;
+ 
+    @Bean
+    public SpringResourceTemplateResolver templateResolver() {
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(applicationContext);
+        templateResolver.setPrefix("/WEB-INF/views/");
+        templateResolver.setSuffix(".html");
+        return templateResolver;
+    }
+ 
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setEnableSpringELCompiler(true);
+        return templateEngine;
+    }
+ 
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setTemplateEngine(templateEngine());
+        registry.viewResolver(resolver);
+    }
+}
+Spring Boot 1 required only the dependency of spring-boot-starter-thymeleaf to enable Thymeleaf support in a web application. But because of the new features in Thymeleaf3.0, we have to add thymeleaf-layout-dialect also as a dependency in a Spring Boot 2 web application.
+
+Once the dependencies are in place, we can add the templates to the src/main/resources/templates folder and the Spring Boot will display them automatically.
+
+https://examples.javacodegeeks.com/enterprise-java/spring/mvc/spring-mvc-hibernate-tutorial/
+
+==========================================================================================================
+
+The JPA Spring Configuration with Java – in a non-Boot Project
+To use JPA in a Spring project, we need to set up the EntityManager.
+
+This is the main part of the configuration and we can do it via a Spring factory bean. This can be either the simpler LocalEntityManagerFactoryBean or the more flexible LocalContainerEntityManagerFactoryBean.
+
+Let’s see how we can use the latter option:
+
+@Configuration
+@EnableTransactionManagement
+public class PersistenceJPAConfig{
+ 
+   @Bean
+   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+      LocalContainerEntityManagerFactoryBean em 
+        = new LocalContainerEntityManagerFactoryBean();
+      em.setDataSource(dataSource());
+      em.setPackagesToScan(new String[] { "org.baeldung.persistence.model" });
+ 
+      JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+      em.setJpaVendorAdapter(vendorAdapter);
+      em.setJpaProperties(additionalProperties());
+ 
+      return em;
+   }
+    
+   // ...
+ 
+}
+We also need to explicitly define the DataSource bean we’ve used above:
+
+@Bean
+public DataSource dataSource(){
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+    dataSource.setUrl("jdbc:mysql://localhost:3306/spring_jpa");
+    dataSource.setUsername( "tutorialuser" );
+    dataSource.setPassword( "tutorialmy5ql" );
+    return dataSource;
+}
+The final part of the configuration are the additional Hibernate properties and the TransactionManager and exceptionTranslation beans:
+
+@Bean
+public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(emf);
+ 
+    return transactionManager;
+}
+ 
+@Bean
+public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+    return new PersistenceExceptionTranslationPostProcessor();
+}
+ 
+Properties additionalProperties() {
+    Properties properties = new Properties();
+    properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+    properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        
+    return properties;
+}
+
+===============================================================================================
+put-vs-post-in-rest
+
+Both PUT and POST can be used for creating.
+
+You have to ask "what are you performing the action to?" to distinguish what you should be using. Let's assume you're designing an API for asking questions. If you want to use POST then you would do that to a list of questions. If you want to use PUT then you would do that to a particular question.
+
+Great both can be used, so which one should I use in my RESTful design:
+
+You do not need to support both PUT and POST.
+
+Which is used is left up to you. But just remember to use the right one depending on what object you are referencing in the request.
+
+Some considerations:
+
+Do you name your URL objects you create explicitly, or let the server decide? If you name them then use PUT. If you let the server decide then use POST.
+PUT is idempotent, so if you PUT an object twice, it has no effect. This is a nice property, so I would use PUT when possible.
+You can update or create a resource with PUT with the same object URL
+With POST you can have 2 requests coming in at the same time making modifications to a URL, and they may update different parts of the object.
+
+the fundamental difference between the POST and PUT requests is reflected in the different meaning of the Request-URI. The URI in a POST request identifies the resource that will handle the enclosed entity. That resource might be a data-accepting process, a gateway to some other protocol, or a separate entity that accepts annotations. In contrast, the URI in a PUT request identifies the entity enclosed with the request -- the user agent knows what URI is intended and the server MUST NOT attempt to apply the request to some other resource. If the server desires that the request be applied to a different URI, it MUST send a 301 (Moved Permanently) response; the user agent MAY then make its own decision regarding whether or not to redirect the request.
+
+========================================================================
+
+spring-vs-spring-boot
+https://www.baeldung.com/spring-vs-spring-boot
+https://dzone.com/articles/integration-testing-in-spring-boot-1
+
+Spring Boot is basically an extension of the Spring framework which eliminated the boilerplate configurations required for setting up a Spring application.
+
+It takes an opinionated view of the Spring platform which paved the way for a faster and more efficient development eco-system.
+
+Here are just a few of the features in Spring Boot:
+
+Opinionated ‘starter’ dependencies to simplify build and application configuration
+Embedded server to avoid complexity in application deployment
+Metrics, Helth check, and externalized configuration
+Automatic config for Spring functionality – whenever possible
+
+
+Application Bootstrap
+The basic difference in bootstrapping of an application in Spring and Spring Boot lies with the servlet. Spring uses either the web.xml or SpringServletContainerInitializer as its bootstrap entry point.
+
+On the other hand, Spring Boot uses only Servlet 3 features to bootstrap an application. Let’ talk about this in detail.
+How Spring Bootstraps?
+				Spring supports both the legacy web.xml way of bootstrapping as well as the latest Servlet 3+ method.
+
+				Let’s see the web.xml approach in steps:
+
+				Servlet container (the server) reads web.xml
+				The DispatcherServlet defined in the web.xml is instantiated by the container
+				DispatcherServlet creates WebApplicationContext by reading WEB-INF/{servletName}-servlet.xml
+				Finally, the DispatcherServlet registers the beans defined in the application context
+				Here’s how Spring bootstraps using Servlet 3+ approach:
+
+				The container searches for classes implementing ServletContainerInitializer  and executes
+				The SpringServletContainerInitializer finds all classes implementing WebApplicationInitializer
+				The WebApplicationInitializer creates the context with XML or @Configuration classes
+				The WebApplicationInitializer creates the DispatcherServlet with the previously created context.
+7.2. How Spring Boot Bootstraps?
+		The entry point of a Spring Boot application is the class which is annotated with @SpringBootApplication:
+
+		@SpringBootApplication
+		public class Application {
+			public static void main(String[] args) {
+				SpringApplication.run(Application.class, args);
+			}
+		}
+		By default, Spring Boot uses an embedded container to run the application. In this case, Spring Boot uses the public static void main entry-point to launch an embedded web server.
+
+		Also, it takes care of the binding of the Servlet, Filter, and ServletContextInitializer beans from the application context to the embedded servlet container.
+
+Another feature of Spring Boot is that it automatically scans all the classes in the same package or sub packages of Main-class for components.
+
+		Spring Boot provides the option of deploying it as a web archive in an external container as well. In this case, we have to extend the SpringBootServletInitializer:
+
+		@SpringBootApplication
+		public class Application extends SpringBootServletInitializer {
+			// ...
+		}
+		Here the external servlet container looks for the Main-class defined in the META-INF file of the web archive and the SpringBootServletInitializer will take care of binding the Servlet, Filter, and ServletContextInitializer.
+Some of the advantages of Spring Boot over Spring in the context of deployment include:
+
+1. Provides embedded container support. The spring boot framework supports three different types of embedded servlet containers: Tomcat (default), Jetty and Undertow.
+2. Provision to run the jars independently using the command java -jar
+3. Option to exclude dependencies to avoid potential jar conflicts when deploying in an external container
+		Instead of messing around with <excludes> and then try to figure out what you need to include again (after figuring out what you excluded). Just override the version as explained here in the Spring Boot Reference Guide.
+
+		Assuming you are using the spring-boot-starter-parent as the parent you can just add a <selenium.version> to your <properties> section to specify which version you want.
+
+		<properties>
+		  <selenium.version>2.53.0</selenium.version>
+		</properties>
+		This will make Spring Boot use the version you want.
+
+		Doing so only works if your Maven project inherits (directly or indirectly) from spring-boot-dependencies. If you have added spring-boot-dependencies in your own dependencyManagement section with <scope>import</scope>, you have to redefine the artifact yourself instead of overriding the property.
+
+4. Option to specify active profiles when deploying
+		https://www.baeldung.com/spring-profiles
+		
+		1.At the time of launching the Java application
+			-Dspring.profiles.active=qa - in the VM properties, OR
+		2. Do the following in the application.properties file
+			-spring.profiles.active=dev
+			
+		3. Maven Profile
+			Spring profiles can also be activated via Maven profiles, by specifying the spring.profiles.active configuration property.
+
+			In every Maven profile, we can set a spring.profiles.active property in spring:
+
+
+			<profiles>
+				<profile>
+					<id>dev</id>
+					<activation>
+						<activeByDefault>true</activeByDefault>
+					</activation>
+					<properties>
+						<spring.profiles.active>dev</spring.profiles.active>
+					</properties>
+				</profile>
+				<profile>
+					<id>prod</id>
+					<properties>
+						<spring.profiles.active>prod</spring.profiles.active>
+					</properties>
+				</profile>
+			</profiles>
+			Its value will be used to replace the @spring.profiles.active@ placeholder in application.properties:
+
+			spring.profiles.active=@spring.profiles.active@
+			
+			Now, we need to enable resource filtering in pom.xml:
+
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+				...
+			</build>
+			And append a -P parameter to switch which Maven profile will be applied:
+
+				mvn clean package -Pprod
+			This command will package the application for prod profile. It also applies the spring.profiles.active value ‘prod’ for this application when it is running.
+			
+			To set profiles using Maven in Spring Boot, we can specify profile names under spring-boot-maven-plugin in pom.xml:
+
+						<plugins>
+							<plugin>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-maven-plugin</artifactId>
+								<configuration>
+									<profiles>
+										<profile>dev</profile>
+									</profiles>
+								</configuration>
+							</plugin>
+							...
+						</plugins>
+						
+			And execute the Spring Boot specific Maven goal:
+					mvn spring-boot:run
+					
+			But the most important profiles-related feature that Spring Boot brings is profile-specific properties files. These have to be named in the format applications-{profile}.properties.
+
+				Spring Boot will automatically load the properties in an application.properties file for all profiles, and the ones in profile-specific .properties files only for the specified profile.
+
+				For example, we can configure different data sources for dev and production profiles by using two files named application-dev.properties and application-production.properties:
+
+				In the application-production.properties file, we can set up a MySql data source:
+
+				spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+				spring.datasource.url=jdbc:mysql://localhost:3306/db
+				spring.datasource.username=root
+				spring.datasource.password=root
+				Then, we can configure the same properties for the dev profile in the application-dev.properties file, to use an in-memory H2 database:
+
+				spring.datasource.driver-class-name=org.h2.Driver
+				spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+				spring.datasource.username=sa
+				spring.datasource.password=sa
+				In this way, we can easily provide different configurations for different environments
+5. Random port generation for integration tests:
+https://dzone.com/articles/integration-testing-in-spring-boot-1
+
+================================================================
+lazy intialization of beans
+https://www.baeldung.com/spring-lazy-annotation
+
+https://www.baeldung.com/circular-dependencies-in-spring

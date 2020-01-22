@@ -1,0 +1,582 @@
+Thread Safety:
+--------------
+When designing threadͲsafe classes, good objectͲoriented techniques - encapsulation, immutability, and clear
+specification of invariants are your best friends.
+
+Thread safety may be a term that is applied to code, but it is about state, and it can only be applied to the entire body of code that encapsulates its state, which may be an object or an entire program.
+
+A class is threadͲsafe if it behaves correctly when accessed from multiple threads, regardless of the scheduling or
+interleaving of the execution of those threads by the runtime environment, and with no additional synchronization or
+other coordination on the part of the calling code.
+
+Stateless objects are always threadͲsafe.
+
+Atomicity:
+----------
+
+++: read-modify-write operation :- may lead to Race Condition
+
+Race Condition types(Check for data races):- 
+	1. Check-then-act : ++
+	2. Lazy Initialization: The getInstance method first checks whether the ExpensiveObject has
+already been initialized, in which case it returns the existing instance; otherwise it creates a new instance and returns it
+after retaining a reference to it so that future invocations can avoid the more expensive code path.
+
+An atomic operation is one that is atomic with respect to all operations, including itself, that operate on the same state. To ensure thread safety, check-then-act operations (like lazy initialization) and read-modify-write operations (like increment) must always be atomic
+
+The java.util.concurrent.atomic(e.x. AtomicLong) package contains atomic variable classes for effecting atomic state transitions on
+numbers and object references.
+
+The atomicity doesn't work if more than 1 atomic varible is used in instance state. there is still a
+window of vulnerability when one has been modified and the other has not, and during that time other threads could
+see that the invariant does not hold. Similarly, the two values cannot be fetched simultaneously: between the time
+when thread A fetches the two values, thread B could have changed them, and again A may observe that the invariant does not hold.
+To preserve state consistency, update related state variables in a single atomic operation.
+
+Intrinsic Locks
+----------------
+Java provides a built-in locking mechanism for enforcing atomicity: the synchronized block. 
+A synchronized block has two parts: a reference to an object that will serve as the lock, and a block of code to be
+guarded by that lock. A synchronized method is shorthand for a synchronized block that spans an entire method
+body, and whose lock is the object on which the method is being invoked. (Static synchronized methods use the Class
+object for the lock.)
+synchronized (lock) {
+ // Access or modify shared state guarded by lock
+}
+Every Java object can implicitly act as a lock for purposes of synchronization; these built-in locks are called intrinsic locks 
+or monitor locks
+
+Intrinsic locks in Java act as mutexes (or mutual exclusion locks), which means that at most one thread may own the
+lock. When thread A attempts to acquire a lock held by thread B, A must wait, or block, until B releases it. If B never
+releases the lock, A waits forever.
+
+Reentrancy
+-----------
+Reentrancy means that locks are acquired on a perͲthread rather than perͲinvocation basis. [7] Reentrancy is implemented by
+associating with each lock an acquisition count and an owning thread. When the count is zero, the lock is considered
+unheld. 
+
+It is a common mistake to assume that synchronization needs to be used only when writing to shared variables; this is
+simply not true
+
+
+ Disadvantages of Unbounded Thread Creation
+---------------------------------------------
+
+1. thread per task has lots of overhead on the system. Thread lifecycle overhead.thread  creation takes time,  introducing  latency  into request processing, and  requires some processing  activity by  the 
+JVM and OS.  If requests  are frequent and  lightweight, as  in most  server  applications,  creating a new  thread  for each 
+request can consume significant computing resources. 
+2. Resource consumption. Active threads consume system resources, especially memory. When there are more runnable 
+threads  than  available  processors,  threads  sit  idle.  Having  many  idle  threads  can  tie  up  a  lot  of  memory,  putting 
+pressure on  the  garbage  collector, and  having many  threads competing  for  the CPUs  can impose  other performance 
+costs as well. If you have enough threads to keep all the CPUs busy, creating more threads won't help and may even 
+hurt.
+3. There is a limit on how many threads can be created. The limit varies by platform. When you hit this limit, the most likely result is an OutOfMemoryError.
+  
+Java.util.concurrent.locks package
+-------------------------------
+Interfaces: Lock, Condition, ReadWriteLock
+Abstract classes: AbstractOwnableSynchronizer, AbstractQueuedSynchronizer, AbstractQueuedLongSynchronizer
+Classes: ReentrantLock, ReentrantReadWriteLock implements ReadWriteLock
+
+AbstractQueuedLongSynchronizer:
+A version of AbstractQueuedSynchronizer in which synchronization state is maintained as a long. This class has exactly the same structure, properties, and methods as AbstractQueuedSynchronizer with the exception that all state-related parameters and results are defined as long rather than int. This class may be useful when creating synchronizers such as multilevel locks and barriers that require 64 bits of state. 
+--------------------------
+
+Differences between Lock and Synchronized block
+There are few differences between the use of synchronized block and using Lock API’s:
+
+A synchronized block is fully contained within a method – we can have Lock API’s lock() and unlock() operation in separate methods
+A synchronized block doesn’t support the fairness, any thread can acquire the lock once released, no preference can be specified. We can achieve fairness within the Lock APIs by specifying the fairness property. It makes sure that longest waiting thread is given access to the lock
+A thread gets blocked if it can’t get an access to the synchronized block. The Lock API provides tryLock() method. The thread acquires lock only if it’s available and not held by any other thread. This reduces blocking time of thread waiting for the lock
+A thread which is in “waiting” state to acquire the access to synchronized block, can’t be interrupted. The Lock API provides a method lockInterruptibly() which can be used to interrupt the thread when it’s waiting for the lock
+
+Let’s take a look at the methods in the Lock interface:
+
+void lock() – acquire the lock if it’s available; if the lock isn’t available a thread gets blocked until the lock is released
+void lockInterruptibly() – this is similar to the lock(), but it allows the blocked thread to be interrupted and resume the execution through a thrown java.lang.InterruptedException
+boolean tryLock() – this is a non-blocking version of lock() method; it attempts to acquire the lock immediately, return true if locking succeeds
+boolean tryLock(long timeout, TimeUnit timeUnit) – this is similar to tryLock(),
+ except it waits up the given timeout before giving up trying to acquire the Lock. The thread acquires lock only if it’s available and not held by any other thread. This reduces blocking time of thread waiting for the lock
+void unlock() – unlocks the Lock instance
+
+In addition to the Lock interface, we have a ReadWriteLock interface which maintains a pair of locks, one for read-only operations, and one for the write operation. The read lock may be simultaneously held by multiple threads as long as there is no write.
+
+ReadWriteLock declares methods to acquire read or write locks:
+
+Lock readLock() – returns the lock that’s used for reading
+Lock writeLock() – returns the lock that’s used for writing
+
+
+Let’s see how the tryLock() works:
+public void performTryLock(){
+    //...
+    boolean isLockAcquired = lock.tryLock(1, TimeUnit.SECONDS);
+     
+    if(isLockAcquired) {
+        try {
+            //Critical section here
+        } finally {
+            lock.unlock();
+        }
+    }
+    //...
+}
+In this case, the thread calling tryLock(), will wait for one second and will give up waiting if the lock isn’t available.
+========================================================
+
+Semaphore(java.util.concurrent.Semaphore)
+-------------
+
+Semaphores can be used to protect various copies of a resource when executed by different threads at the same time.
+
+ binary semaphore which can be used to control access to single copy of a resource using the counter value either 0 or 1.
+ 
+Semaphore:
+
+	You can visualize a semaphore as counter which can be incremented or decremented. You initialize the semaphore with a number i.e. 5. Now this semaphore can be decremented maximum five times in a row until counter reaches to 0. Once counter is zero, you can increment it to maximum five times to make it 5. The counter value of semaphore MUST always be inside limit 0 >= n >= 5 (in our case).
+
+	Obviously, semaphores are more than just being counters. They are able to make threads wait when counter value is zero i.e. they act as Locks with counter functionality.
+
+	Talking in terms of multi-threading, when a thread wants to access one of shared resources (guarded by semaphore), first, it must acquire the semaphore. If the internal counter of the semaphore is greater than 0, the semaphore decrements the counter and allows access to the shared resource. Otherwise, if the counter of the semaphore is 0, the semaphore puts the thread to sleep until the counter is greater than 0. A value of 0 in the counter means all the shared resources are used by other threads, so the thread that wants to use one of them must wait until one is free. 
+	
+	When a thread has finished the use of the shared resource, it must release the semaphore so that the other threads can access the shared resource. That operation increases the internal counter of the semaphore.
+	
+	check program : PrintQueue.java, SemaphorePrintingJob
+	
+Binary Semaphore:
+
+	Quite obvious, binary semaphore can have a value either 0 or 1. It means binary semaphore protect the access to a SINGLE shared resource, so the internal counter of the semaphore can only take the values 1 or 0.
+
+	So whenever you have a requirement for protecting the access to a SINGLE resource accessed by multiple threads, you can use Binary Semaphore.
+	
+===================================================================
+
+CountDownLatch/CyclicBarrier(java.util.concurrent package)
+----------------------------	
+
+CountDownLatch.java class defines one constructor inside:
+
+//Constructs a CountDownLatch initialized with the given count.
+public CountDownLatch(int count) {...}
+This count is essentially the number of threads, for which latch(e.g. main thread) should wait. This value can be set only once, and CountDownLatch provides no other mechanism to reset this count.
+
+The first interaction with CountDownLatch is with main thread which is going to wait for other threads. This main thread must call, CountDownLatch.await() method immediately after starting other threads. The execution will stop on await() method till the time, other threads complete their execution.
+
+Other N threads must have reference of latch object, because they will need to notify the CountDownLatch object that they have completed their task. This notification is done by method : CountDownLatch.countDown(); Each invocation of method decreases the initial count set in constructor, by 1. So, when all N threads have call this method, count reaches to zero, and main thread is allowed to resume its execution past await() method.
+
+
+Usage:
+	1.	Achieving Maximum Parallelism : Sometimes we want to start a number of threads at the same time to achieve maximum parallelism. For example, we want to test a class for being singleton. This can be done easily if we create a CountDownLatch with initial count 1, and make wait all threads to wait of latch. A single call to countDown() method will resume execution for all waiting threads in same time.
+	2.	Wait N threads to completes before start execution: For example an application start-up class want to ensure that all N external systems are Up and running before handling the user requests.
+	3.	Deadlock detection: A very handy use case in which you can use N threads to access a shared resource with different number of threads in each test phase, and try to create a deadlock.
+	
+CyclicBarrier
+----------------------
+
+		A CyclicBarrier is a synchronizer that allows a set of threads to wait for each other to reach a common execution point, also called a barrier.
+
+		CyclicBarriers are used in programs in which we have a fixed number of threads that must wait for each other to reach a common point before continuing execution.
+
+		The barrier is called cyclic because it can be re-used after the waiting threads are released.
+		
+	 Usage
+		The constructor for a CyclicBarrier is simple. It takes a single integer that denotes the number of threads that need to call the await() method on the barrier instance to signify reaching the common execution point:
+
+		1
+		public CyclicBarrier(int parties)
+		The threads that need to synchronize their execution are also called parties and calling the await() method is how we can register that a certain thread has reached the barrier point.
+
+		This call is synchronous and the thread calling this method suspends execution till a specified number of threads have called the same method on the barrier. This situation where the required number of threads have called await(), is called tripping the barrier.
+
+		Optionally, we can pass the second argument to the constructor, which is a Runnable instance. This has logic that would be run by the last thread that trips the barrier:
+
+		1
+		public CyclicBarrier(int parties, Runnable barrierAction)
+
+		
+===========================================================================
+
+CountDownLatch can be used to monitor the completion of the Children Threads if the size of the created children is known forehand. CountDownLatch enables a Thread or Threads to wait for completion of Children Threads. But there is no waiting amongst the Children until they finish each others tasks. Children may execute asynchronously and after their work is done will exit making a countdown. 
+
+CyclicBarrier can be used to create a set of Children Threads if the size of the Threads created is known forehand. CyclicBarrier can be used to implement waiting amongst Children Threads until all of them finish. This is useful where parallel threads needs to perform a job which requires sequential execution. For example 10 Threads doing steps 1, 2, 3, but all 10 Threads should finish step one before any can do step 2. Cyclic barrier can be reset after all Threads are finished execution. This is a distinguishing feature from a CountDownLatch. A CountDownLatch can only be used for a single count down. Additionally a CyclicBarrier can be assigned an Additional Thread which executes each time all the Children Threads finish their respective tasks. 
+
+Simple use case that you can think of is a multiple game scenario in which a game would not start until all the players have joined. Here all the players are parties whereas game start is a barrier.
+
+
+---------------------------------------------
+
+Semaphore : Manages a fixed sized pool of resources.
+CountDownLatch : One or more threads wait for a set of threads to finish operations.
+CyclicBarrier : Set of threads wait for each other until they reach a specific point.
+
+
+===============================================================================
+
+Working with Condition Interface(java.util.concurrent.locks.Condition)
+
+------------------------
+The Condition class provides the ability for a thread to wait for some condition to occur while executing the critical section.
+
+This can occur when a thread acquires the access to the critical section but doesn’t have the necessary condition to perform its operation. For example, a reader thread can get access to the lock of a shared queue, which still doesn’t have any data to consume.
+
+Traditionally Java provides wait(), notify() and notifyAll() methods for thread intercommunication. Conditions have similar mechanisms, but in addition, we can specify multiple conditions:
+
+public class ReentrantLockWithCondition {
+ 
+    Stack<String> stack = new Stack<>();
+    int CAPACITY = 5;
+ 
+    ReentrantLock lock = new ReentrantLock();
+    Condition stackEmptyCondition = lock.newCondition();
+    Condition stackFullCondition = lock.newCondition();
+ 
+    public void pushToStack(String item){
+        try {
+            lock.lock();
+            while(stack.size() == CAPACITY) {
+                stackFullCondition.await();
+            }
+            stack.push(item);
+            stackEmptyCondition.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+ 
+    public String popFromStack() {
+        try {
+            lock.lock();
+            while(stack.size() == 0) {
+                stackEmptyCondition.await();
+            }
+            return stack.pop();
+        } finally {
+            stackFullCondition.signalAll();
+            lock.unlock();
+        }
+    }
+}
+
+================================================
+what is the difference between wait and await in java?
+
+for my understanding the methods in Object and Condition basically offer the same functionality. According to the API documentation the difference is that the methods in Object are tied to the intrinsic lock of an object. 
+That means wait(), notify() are directly related to the one and only intrinsic lock of an instance whereas the methods in Condition can be used in combination with multiple locks. This allows you to use the functionality of wait and notify with multiple wait sets. 
+
+
+obtaining instrinsic lock means the thread has acquired the monitor of the object. no thread can acquire the same montior until it is released. 
+if you use wait/notify, here is the code snipet 
+
+synchronized (myObj)
+{
+  myObject.wait ();
+  methodA();
+  methodB();
+}
+
+what it does is first acquire the monitor, put itself on wait for the notification, then release the monitor. And once it is notified, the thread will aquire the monitor first before it can execute methodA and methodB. and after the whole is executed and exited, the monitor is released. 
+
+for await use case; 
+
+ReentrantLock lock; 
+Condition notEmpty = lock.newCondition(); 
+Condition otherCondition = lock.newCondition (); 
+
+... 
+lock.lock () 
+try 
+{ 
+notEmpty.await (); 
+.. 
+} 
+finally 
+{ 
+lock.unlock (); 
+} 
+
+
+similar sequence as wait, but you can have different conditions created for the same lock. 
+
+to notify a wait, you use notify. 
+to notify a condition.await, you use condition.signal. 
+also, most of the time, people use a spin lock during the wait to avoid race condition 
+
+============================================================
+StampedLock
+-------------
+StampedLock is introduced in Java 8. It also supports both read and write locks. However, lock acquisition methods returns a stamp that is used to release a lock or to check if the lock is still valid:
+public class StampedLockDemo {
+    Map<String,String> map = new HashMap<>();
+    private StampedLock lock = new StampedLock();
+ 
+    public void put(String key, String value){
+        long stamp = lock.writeLock();
+        try {
+            map.put(key, value);
+        } finally {
+            lock.unlockWrite(stamp);
+        }
+    }
+ 
+    public String get(String key) throws InterruptedException {
+        long stamp = lock.readLock();
+        try {
+            return map.get(key);
+        } finally {
+            lock.unlockRead(stamp);
+        }
+    }
+}
+Another feature provided by StampedLock is optimistic locking. Most of the time read operations doesn’t need to wait for write operation completion and as a result of this, the full-fledged read lock isn’t required.
+
+Instead, we can upgrade to read lock:
+
+public String readWithOptimisticLock(String key) {
+    long stamp = lock.tryOptimisticRead();
+    String value = map.get(key);
+ 
+    if(!lock.validate(stamp)) {
+        stamp = lock.readLock();
+        try {
+            return map.get(key);
+        } finally {
+            lock.unlock(stamp);               
+        }
+    }
+    return value;
+}
+==============================================================================
+
+The Executor Framework
+----------------------
+
+Executor is based on the producer consumer pattern, where activities that submit tasks are the producers (producing 
+units of work to be done) and the threads that execute tasks are the consumers (consuming those units of work). Using 
+an Executor is usually the easiest path to implementing a producer consumer design in your application. 
+
+Example: Web Server Using Executor 
+
+In  TaskExecutionWebServer,  submission  of  the  request handling  task  is  decoupled  from  its  execution  using  an 
+Executor. Executor 
+configuration is generally a one time event and can easily be exposed for deployment time configuration, whereas task 
+submission code tends to be strewn throughout the program and harder to expose. 
+
+class TaskExecutionWebServer {
+private static final int NTHREADS = 100;
+private static final Executor exec
+= Executors.newFixedThreadPool(NTHREADS);
+public static void main(String[] args) throws IOException {
+ServerSocket socket = new ServerSocket(80);
+while (true) {
+final Socket connection = socket.accept();
+Runnable task = new Runnable() {
+public void run() {
+handleRequest(connection);
+}
+};
+exec.execute(task);
+}
+}
+}
+
+Executor that Starts a New Thread for Each Task. 
+public class ThreadPerTaskExecutor implements Executor {
+public void execute(Runnable r) {
+new Thread(r).start();
+};
+}
+
+Executor that Executes Tasks Synchronously in the Calling Thread. 
+public class WithinThreadExecutor implements Executor {
+public void execute(Runnable r) {
+r.run();
+};
+}
+
+Execution Policies :
+
+An execution policy specifies the "what, where, when, and 
+how" of task execution, including: 
+
+In what thread will tasks be executed? 
+ In what order should tasks be executed (FIFO, LIFO, priority order)? 
+ How many tasks may execute concurrently? 
+ How many tasks may be queued pending execution? 
+ If a task has to be rejected because the system is overloaded, which task should be selected as the victim, and 
+how should the application be notified? 
+ What actions should be taken before or after executing a task? 
+
+	Execution  policies  are  a  resource  management  tool,  and  the  optimal  policy  depends  on  the  available  computing 
+resources and your quality of service requirements. By limiting the number of concurrent tasks, you can ensure that the 
+application  does  not  fail  due  to  resource  exhaustion  or  suffer  performance  problems  due  to  contention  for  scarce 
+resources.[3]  Separating  the  specification  of  execution  policy  from  task  submission  makes  it  practical  to  select  an 
+execution policy at deployment time that is matched to the available hardware. 
+Executing  tasks  in  pool  threads  has  a number  of  advantages  over  the  thread per task  approach. 
+
+		Reusing  an  existing thread instead of creating a new one amortizes thread creation and teardown costs over multiple requests. 
+		As an added bonus, since the worker thread often already exists at the time the request arrives, the latency associated with thread 
+		creation does not delay task execution, thus improving responsiveness. 
+		By properly tuning the size of the thread pool, you can have enough threads to keep the processors busy while not having so many that your application runs out of memory or thrashes due to competition among threads for resources. 
+
+		The class library provides a flexible thread pool implementation along with some useful predefined configurations. 
+		You can create a thread pool by calling one of the static factory methods in Executors: 
+		newFixedThreadPool. A  fixed size  thread pool  creates threads as  tasks are submitted, up to the maximum pool  size, 
+		and  then  attempts  to  keep  the  pool  size  constant  (adding  new  threads  if  a  thread  dies  due  to  an  unexpected 
+		Exception). 
+		newCachedThreadPool. A cached thread pool has more flexibility to reap idle threads when the current size of the pool 
+		exceeds the demand for processing, and to add new threads when demand increases, but places no bounds on the size 
+		of the pool. 
+		newSingleThreadExecutor. A single threaded executor creates a single worker thread to process tasks, replacing it if it 
+		dies unexpectedly. Tasks are guaranteed to be processed sequentially according to the order imposed by the task queue 
+		(FIFO, LIFO, priority order).[4] 
+		newScheduledThreadPool. A fixed size thread pool that supports delayed and periodic task execution, similar to Timer.
+		
+Executor Life cycle:
+-------------------------
+
+	JVM can't  exit  until  all the  (non daemon) threads have terminated, so  failing to shut down an Executor could prevent the JVM from exiting.
+
+	In shutting down an application, there is a spectrum from graceful shutdown (finish what you've started but don't  accept  any  new  work)  to  abrupt  shutdown  (turn  off  the  power  to  the  machine  room), 		
+
+	 the ExecutorService interface extends Executor, adding a number of  methods  for  lifecycle  management  (as  well  as  some  convenience  methods  for  task  submission).
+	 
+	 The  lifecycle  implied  by  ExecutorService  has  three  states  :  running,  shutting  down,  and  terminated. 
+
+		public interface ExecutorService extends Executor {
+				void shutdown();
+				List<Runnable> shutdownNow();
+				boolean isShutdown();
+				boolean isTerminated();
+				boolean awaitTermination(long timeout, TimeUnit unit)
+				throws InterruptedException;
+				// ... additional convenience methods for task submission
+				}
+				
+	Tasks submitted to an ExecutorService after it has been shut down are handled by the rejected execution handler (see Section  8.3.3),  which  might  silently  discard  the  task  or  might  cause  execute  to  throw  the  unchecked RejectedExecutionException.  Once  all  tasks  have  completed,  the  ExecutorService  transitions  to  the  terminated state. You can wait for an ExecutorService to reach the terminated state with awaitTermination, or poll for whether it has yet terminated with isTerminated. It is common to follow shutdown immediately by awaitTermination, creating the  effect  of  synchronously  shutting  down  the  ExecutorService.
+	
+	Web Server with Shutdown Support. 
+				class LifecycleWebServer {
+				private final ExecutorService exec = ...;
+				public void start() throws IOException {
+				ServerSocket socket = new ServerSocket(80);
+				while (!exec.isShutdown()) {
+				try {
+				final Socket conn = socket.accept();
+				exec.execute(new Runnable() {
+				public void run() { handleRequest(conn); }
+				});
+				} catch (RejectedExecutionException e) {
+				if (!exec.isShutdown())
+				log("task submission rejected", e);
+				}
+				}
+				}
+				public void stop() { exec.shutdown(); }
+				void handleRequest(Socket connection) {
+				Request req = readRequest(connection);
+				if (isShutdownRequest(req))
+				stop();
+				else
+				dispatchRequest(req);
+				}
+				}
+				
+Delayed and Periodic Tasks 
+=============================
+		Timer: Java java.util.Timer is a utility class that can be used to schedule a thread to be executed at certain time in future. Java Timer class can be used to schedule a task to be run one-time or to be run at regular intervals.
+				java.util.TimerTask is an abstract class that implements Runnable interface and we need to extend this class to create our own TimerTask that can be scheduled using java Timer class.
+				
+				for example if you are creating a Timer to run every 10 seconds but single thread execution takes 20 seconds, then Timer object will keep adding tasks to the queue and as soon as one thread is finished, it will notify the queue and another thread will start executing.
+				
+				Java Timer class uses Object wait and notify methods to schedule the tasks.
+
+Here is a simple program for Java Timer and TimerTask example.
+
+
+package com.journaldev.threads;
+
+				import java.util.Date;
+				import java.util.Timer;
+				import java.util.TimerTask;
+
+				public class MyTimerTask extends TimerTask {
+
+					@Override
+					public void run() {
+						System.out.println("Timer task started at:"+new Date());
+						completeTask();
+						System.out.println("Timer task finished at:"+new Date());
+					}
+
+					private void completeTask() {
+						try {
+							//assuming it takes 20 secs to complete the task
+							Thread.sleep(20000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					public static void main(String args[]){
+						TimerTask timerTask = new MyTimerTask();
+						//running timer task as daemon thread
+						Timer timer = new Timer(true);
+						timer.scheduleAtFixedRate(timerTask, 0, 10*1000);
+						System.out.println("TimerTask started");
+						//cancel after sometime
+						try {
+							Thread.sleep(120000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						timer.cancel();
+						System.out.println("TimerTask cancelled");
+						try {
+							Thread.sleep(30000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+
+				}
+
+			Timer class creates only single thread for executing Timer task. Another problem with Timer is that it behaves poorly if a TimerTask throws an unchecked exception. The Timer thread doesn't catch the exception, so an unchecked exception thrown from a TimerTask terminates the timer thread. ScheduledThreadPoolExecutor  deals properly with ill behaved tasks; there is little reason to use Timer in Java 5.0 or later. 
+			
+		ScheduledThreadPoolExecutor:
+		Construct  a  ScheduledThreadPoolExecutor  through  its  constructor  or  through  the newScheduledThreadPool factory. 
+		If  you  need  to  build  your own  scheduling  service,  you  may  still  be  able  to  take  advantage  of  the  library  by  using  a DelayQueue,  a  BlockingQueue  implementation  that  provides  the  scheduling  functionality  of ScheduledThreadPoolExecutor. A DelayQueue manages a collection of Delayed objects. A Delayed has a delay time associated  with  it:  DelayQueue  lets  you  take  an  element  only  if  its  delay  has  expired.  Objects  are  returned  from  a DelayQueue ordered by the time associated with their delay. 
+		Read chanpter 8
+		
+		To express a non value returning task with Callable, use Callable<Void>. Tasks are usually finite: they have a clear starting point 
+and  they eventually  terminate. The  lifecycle  of a  task executed by an Executor has  four  phases:  created,  submitted, started,  and  completed
+
+	Callable and Future Interfaces. 
+	--------------------------------
+				public interface Callable<V> {
+				V call() throws Exception;
+				}
+				public interface Future<V> {
+				boolean cancel(boolean mayInterruptIfRunning);
+				boolean isCancelled();
+				boolean isDone();
+				V get() throws InterruptedException, ExecutionException,
+				CancellationException;
+				V get(long timeout, TimeUnit unit)
+				throws InterruptedException, ExecutionException,
+				CancellationException, TimeoutException;
+				}
+	There  are  several ways  to  create a Future  to  describe a  task. The  submit methods  in ExecutorService  all  return a 
+Future, so that you can submit a Runnable or a Callable to an executor and get back a Future that can be used to 
+retrieve the result or cancel the task. You can also explicitly instantiate a FutureTask for a given Runnable or Callable. 
+(Because FutureTask implements Runnable, it can be submitted to an Executor for execution or executed directly by 
+calling its run method.) 
+
+		
+		As  of  Java  6,  ExecutorService  implementations  can  override  newTaskFor  in  AbstractExecutorService  to  control 
+instantiation  of  the  Future  corresponding  to  a  submitted  Callable  or  Runnable.  The  default  implementation  just 
+creates a new FutureTask, as shown in Listing 6.12. 
+Listing 6.12. Default Implementation of newTaskFor in ThreadPoolExecutor. 
+protected <T> RunnableFuture<T> newTaskFor(Callable<T> task) {
+return new FutureTask<T>(task);
+}

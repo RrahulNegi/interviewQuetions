@@ -1,0 +1,309 @@
+Hashtable:
+==================================
+extends Dictionary<K,V>
+implements Map<K,V>, Cloneable, Serializable
+
+An instance of Hashtable has two parameters that affect its performance: initial capacity and load factor. 
+The capacity is the number of buckets in the hash table, and the initial capacity is simply the capacity at the time the hash table is created. Note that the hash table is open: in the case of a "hash collision", a single bucket stores multiple entries, which must be searched sequentially. 
+The load factor
+ is a measure of how full the hash table is allowed to get before its capacity is automatically increased. The initial capacity and load factor parameters are merely hints to the implementation. The exact details as to when and whether the rehash method is invoked are implementation-dependent.
+ 
+Hashtable()
+Constructs a new, empty hashtable with a default initial capacity (11) and load factor (0.75).
+
+put() method: Neither the key nor the value can be null.
+put method returns value
+
+public synchronized V put(K key, V value) {
+        // Make sure the value is not null
+        if (value == null) {
+            throw new NullPointerException();
+        }
+
+        // Makes sure the key is not already in the hashtable.
+        Entry<?,?> tab[] = table;
+        int hash = key.hashCode();
+        int index = (hash & 0x7FFFFFFF) % tab.length;
+        @SuppressWarnings("unchecked")
+        Entry<K,V> entry = (Entry<K,V>)tab[index];
+        for(; entry != null ; entry = entry.next) {
+            if ((entry.hash == hash) && entry.key.equals(key)) {
+                V old = entry.value;
+                entry.value = value;
+                return old;
+            }
+        }
+
+        addEntry(hash, key, value, index);
+        return null;
+    }
+
+	 public Set<K> keySet() {
+        if (keySet == null)
+            keySet = Collections.synchronizedSet(new KeySet(), this);
+        return keySet;
+    }
+
+    private class KeySet extends AbstractSet<K> {
+        public Iterator<K> iterator() {
+            return getIterator(KEYS);
+        }
+        public int size() {
+            return count;
+        }
+        public boolean contains(Object o) {
+            return containsKey(o);
+        }
+        public boolean remove(Object o) {
+            return Hashtable.this.remove(o) != null;
+        }
+        public void clear() {
+            Hashtable.this.clear();
+        }
+    }
+
+internal DS: private transient Entry<?,?>[] table;
+
+public synchronized boolean contains(Object value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+
+        Entry<?,?> tab[] = table;
+        for (int i = tab.length ; i-- > 0 ;) {
+            for (Entry<?,?> e = tab[i] ; e != null ; e = e.next) {
+                if (e.value.equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+Rehashing:
+
+/**
+     * Increases the capacity of and internally reorganizes this
+     * hashtable, in order to accommodate and access its entries more
+     * efficiently.  This method is called automatically when the
+     * number of keys in the hashtable exceeds this hashtable's capacity
+     * and load factor.
+     */
+    @SuppressWarnings("unchecked")
+    protected void rehash() {
+        int oldCapacity = table.length;
+        Entry<?,?>[] oldMap = table;
+
+        // overflow-conscious code
+        int newCapacity = (oldCapacity << 1) + 1;
+        if (newCapacity - MAX_ARRAY_SIZE > 0) {
+            if (oldCapacity == MAX_ARRAY_SIZE)
+                // Keep running with MAX_ARRAY_SIZE buckets
+                return;
+            newCapacity = MAX_ARRAY_SIZE;
+        }
+        Entry<?,?>[] newMap = new Entry<?,?>[newCapacity];
+
+        modCount++;
+        threshold = (int)Math.min(newCapacity * loadFactor, MAX_ARRAY_SIZE + 1);
+        table = newMap;
+
+        for (int i = oldCapacity ; i-- > 0 ;) {
+            for (Entry<K,V> old = (Entry<K,V>)oldMap[i] ; old != null ; ) {
+                Entry<K,V> e = old;
+                old = old.next;
+
+                int index = (e.hash & 0x7FFFFFFF) % newCapacity;
+                e.next = (Entry<K,V>)newMap[index];
+                newMap[index] = e;
+            }
+        }
+    }	
+--------------------------
+ConcurrentHashMap:
+=================================================
+- Part of the map called Segment (internal data structure) is only getting locked while adding or updating the map. So ConcurrentHashMap allows concurrent threads to read the value without locking at all. This data structure was introduced to improve performance.
+- All Implemented Interfaces: Serializable, ConcurrentMap<K,V>, Map<K,V>
+- extends AbstractMap<K,V>
+- Concurrency-Level: Defines the number which is an estimated number of concurrently updating threads. The implementation performs internal sizing to try to accommodate this     many threads.   
+-  array of nodes as table buckets: (used to be table segments prior to Java 8) under the hood, and mainly uses CAS operations during updating. 
+	- CAS: compare-and-swap (CAS) is an atomic instruction used in multithreading to achieve synchronization. It compares the contents of a memory location with a given value and, only if they are the same, modifies the contents of that memory location to a new given value.
+- /**
+     * The array of bins. Lazily initialized upon first insertion.
+     * Size is always a power of two. Accessed directly by iterators.
+     */
+    transient volatile Node<K,V>[] table;
+
+    /**
+     * The next table to use; non-null only while resizing.
+     */
+    private transient volatile Node<K,V>[] nextTable;
+
+- Each bin/bucket in the table normally contains a list of Nodes (most often, the list has only zero or one Node).
+- A ConcurrentHashMap in JDK7 was having internal final class called Segment so we can say that ConcurrentHashMap is internally divided in segments of size 32 by default, so at max 32 	threads can work at a time. It means each thread can work on a each segment during high concurrency and atmost 32 threads can operate at max which simply maintains 32 locks to guard each bucket of the ConcurrentHashMap.
+	In a nutshell, the ConcurrentHashMap contains an array, segments, of "segments" (ConcurrentHashMap.Segment). Each segment is, essentially, a hash table that contains an array, table, of "entries" (ConcurrentHashMap.HashEntry). 
+	But in JDK8 it is removed and also there is no locking.
+- Also implementation of Tree structure for collisions as we have in HashMap is also not part in CHM in JDK8.
+- We do not want to waste the space required to associate a distinct lock object with each bin/bucket, so instead use the first node of a bin/bucket list itself as
+     * a lock. Locking support for these locks relies on builtin "synchronized" monitors.
+	https://stackoverflow.com/questions/36562643/concurrenthashmap-in-jdk8-code-explanation?rq=1
+- In a sense, ConcurrentHashMap still uses striped locking, but with finer lock granularity (the contended area is now minimized from multi-bin segments to individual bins) and with locks being almost entirely replaced by CAS operations.
+- Thread safe: Hashtable, Collections.synchronizedMap
+- It's important to remember that ConcurrentHashMap is actually a HashTable, not a HashMap. Therefore, your function cannot return a null value to the map.
+		That would throw a NullPointerException.
+- Doesn't except null key and value. throws NullPointerException.
+
+- ConcurrentMap is an extension of the Map interface. It aims to provides a structure and guidance to solving the problem of reconciling throughput with thread-safety and memory-consistent atomic operations.
+
+- This class obeys the same functional specification as Hashtable, and includes versions of methods corresponding to each method of Hashtable. 
+- However, even though all operations are thread-safe, retrieval operations do not entail locking, and there is not any support for locking the entire table in a way that prevents all access. 
+- This class is fully interoperable with Hashtable in programs that rely on its thread safety but not on its synchronization details.
+- The table buckets are initialized lazily, upon the first insertion. Each bucket can be independently locked by locking the very first node in the bucket. Read operations do not block, and update contentions are minimized.
+- The number of segments required is relative to the number of threads accessing the table so that the update in progress per segment would be no more than one most of time.
+	That’s why constructors, compared to HashMap, provides the extra concurrencyLevel argument to control the number of estimated threads to use:
+				
+			public ConcurrentHashMap(
+
+			public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel)
+			
+- do not throw ConcurrentModificationException:  iterators are designed to be used by only one thread at a time. 
+- Bear in mind that the results of aggregate status methods including size, isEmpty, and containsValue are typically useful only when a map is not undergoing concurrent updates in other threads. Otherwise the results of these methods reflect transient states that may be adequate for monitoring or estimation purposes, but not for program control.
+- The table is dynamically expanded when there are too many collisions (i.e., keys that have distinct hash codes but fall into the same slot modulo the table size), with the expected average effect of maintaining roughly two bins per mapping (corresponding to a 0.75 load factor threshold for resizing).
+- Several default implementations of Map interface are overridden in CHM, disabling the null key/value support now it throws NullPointerException:
+
+	getOrDefault
+	forEach
+	replaceAll
+	computeIfAbsent
+	computeIfPresent
+	compute
+	merge
+	
+	The following APIs are also overridden to support atomicity and has also disable the null key/value support now it throws NullPointerException, without a default interface implementation:
+
+	putIfAbsent
+	remove
+	replace(key, oldValue, newValue)
+	replace(key, value)
+	The rest of actions are directly inherited with basically consistent with Map.
+	
+	CHM implementation
+	public V getOrDefault(Object key, V defaultValue) {
+        V v;
+        return (v = get(key)) == null ? defaultValue : v;
+    }
+
+	//Default method in Map
+	default V getOrDefault(Object key, V defaultValue) {
+        V v;
+        return (((v = get(key)) != null) || containsKey(key))
+            ? v
+            : defaultValue;
+    }
+	
+- ConcurrentNavigableMap being key-ordering required	
+- CHM perform the action for the above method atomically. CHM update is also not always safe and may lead to Race condition. A much better approach should be using Java 8  Map's  computeIfAbsent(K key, Function mappingFunction) or other above overwritten methods, which, in  ConcurrentHashMap's implementation runs atomically:
+
+	public class Foo {
+		private Map<String, Object> theMap = new ConcurrentHashMap<>();
+		public Object getOrCreate(String key) {
+			return theMap.computeIfAbsent(key, k -> new Object());
+		}
+	}
+	The atomicity of  computeIfAbsent(..) assures that only one new  Object will be created and put into theMap, and it'll be the exact same instance of  Object that will be returned to all threads calling the  getOrCreate function.
+Here, not only the code is correct, it's also cleaner and much shorter.
+- 	How this atomicity is maintained:
+		by syncronizing the new node ReservationNode. ReservationNode do not hold normal user keys, values, or hashes, and are readily distinguishable during search etc because they have negative hash fields and null key and value fields. (These special nodes are either uncommon or transient,
+    so the impact of carrying around some unused fields is insignificant.)
+	
+		 * A place-holder node used in computeIfAbsent and compute
+		 */
+		static final class ReservationNode<K,V> extends Node<K,V> {
+			ReservationNode() {
+				super(RESERVED, null, null, null);
+			}
+
+			Node<K,V> find(int h, Object k) {
+				return null;
+			}
+		}
+	static final int RESERVED  = -3; // hash for transient reservations
+-------------------------------------------------------------------------------------------------------	
+
+
+O(n) performance
+The big-O notation is a measure of complexity for a given algorithm. “n” is the amount of data used in the algorithm. It indicates the amount of time the algorithm will take when n tends to infinitive. O(2n) or O(constant * n) do not exist, O(1) means constant time (performance is not related to the data that is processed) and O(n) means that the performance is directly related or proportional to the amount of data that is processed.
+
+2.2. O(log n) performance
+In this case, it means that the algorithm will perform better when the amount of data is larger. Performance is not directly proportional to the large of the processed data but in a log n relation. O(log n) performs better than O(n).
+
+-----------------------------------------------------
+
+HashMap
+---------
+
+- The main idea is that when the number of items in a hash is larger than a certain value, the hash will change from using a linked list of elements or entries to a balanced tree, this will improve the worst case performance from O(n) to O(log n).
+- for iteration
+	Set<Map.Entry<Character,Integer>> entrySet=map.entrySet();
+	for(Map.Entry<Character,Integer> entry:entrySet){
+	
+-	Hashmap best and average case for Search, Insert and Delete is O(1) and worst case is O(n).
+- Rehashing:
+Load Factor is used to figure out when HashMap will be rehashed and bucket size will be increased. Default value of bucket or capacity is 16 and load factor is 0.75. Threshold for rehashing is calculated by multiplying capacity and load factor. So default threshold value will be 12. So when the HashMap will have more than 12 mappings, it will be rehashed and number of bins will be increased to next of power 2 i.e 32. Note that HashMap capacity is always power of 2.
+
+Threshold = (Current Capacity) * (Load Factor)
+
+Default load factor of 0.75 provides good tradeoff between space and time complexity. But you can set it to different values based on your requirement. If you want to save space, then you can increase it’s value to 0.80 or 0.90 but then get/put operations will take more time.
+https://www.journaldev.com/11560/java-hashmap#java-hashmap-load-factor	
+
+How Initial Capacity And Load Factor Affect Performance Of HashMap?
+Whenever HashMap reaches its threshold, rehashing takes place. Rehashing is a process where new HashMap object with new capacity is created and all old elements (key-value pairs) are placed into new object after recalculating their hashcode. This process of rehashing is both space and time consuming. So, you must choose the initial capacity, by keeping the number of expected elements (key-value pairs) in mind, so that rehashing process doesn’t occur too frequently.
+
+You also have to be very careful while choosing the load factor. According to HashMap doc, the default load factor of 0.75f always gives best performance in terms of both space and time. For example,
+
+If you choose load factor as 1.0f, then rehashing takes place after filling 100% of the current capacity. This may save the space but it will increase the retrieval time of existing elements. Suppose if you choose load factor as 0.5f, then rehashing takes place after filling 50% of the current capacity. This will increase the number of rehashing operations. This will further degrade the HashMap in terms of both space and time.
+
+So, you have to be very careful while choosing the initial capacity and load factor of an HashMap object. Choose the initial capacity and load factor such that they minimize the number of rehashing operations.
+
+he linkedList associated with each bucket of source hashMap is iterated and nodes are copied to the destination bucket. However, note that these new nodes are prepended to the head of the destination linkedList. So resizing has an side effect of reversing the order of the items in the list.
+--------------------------------------------------------------------------------------------------------------
+
+Fail-Safe Iterator vs Fail-Fast Iterator
+-----------------------------------------
+
+
+Fail-Fast systems:
+		abort operation as-fast-as-possible exposing failures immediately and stopping the whole operation.
+
+Fail-Safe systems: don’t abort an operation in the case of a failure. Such systems try to avoid raising failures as much as possible.
+
+Fail-Fast Iterators:
+	Fail-fast iterators in Java don’t play along when the underlying collection gets modified.
+	Collections maintain an internal counter called modCount. Each time an item is added or removed from the Collection, this counter gets incremented.
+	When iterating, on each next() call, the current value of modCount gets compared with the initial value. If there’s a mismatch, it throws ConcurrentModificationException which aborts the entire operation.
+	Default iterators for Collections from java.util package such as ArrayList, HashMap, etc. are Fail-Fast.
+	If during iteration over a Collection, an item is removed using Iterator‘s remove() method, that’s entirely safe and doesn’t throw an exception.
+	
+Fail-Safe Iterators
+	
+	Those iterators create a clone of the actual Collection and iterate over it. If any modification happens after the iterator is created, the copy still remains untouched. Hence, these Iterators continue looping over the Collection even if it’s modified.
+	However, it’s important to remember that there’s no such thing as a truly Fail-Safe iterator. The correct term is Weakly Consistent.
+	Disadvantage:
+		- The Iterator isn’t guaranteed to return updated data from the Collection, as it’s working on the clone instead of the actual Collection.
+		- The overhead of creating a copy of the Collection, both regarding time and memory.
+	Iterators on Collections from java.util.concurrent package such as ConcurrentHashMap, CopyOnWriteArrayList, etc. are Fail-Safe in nature.
+	
+----------------------------------------------------------------------------------
+
+- Collections.frequency() 
+		The method is a java.util.Collections class method. It counts the frequency of the specified element in the given list. It override the equals() method to perform the comparison to check if the specified Object and the Object in the list are equal or not.
+		
+		public static int frequency(Collection c, Object o) 
+			parameters:
+			c: Collection in which to determine the frequency of o.
+			o: Object whose frequency is to be determined.
+			It throws Null Pointer Exception if the Collection c is null.
+		
+		// can be used to count the frequency of the word "code" 
+        System.out.println("The frequency of the word code is: "+  
+                                Collections.frequency(list, "code"));  

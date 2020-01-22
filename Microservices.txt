@@ -1,0 +1,53 @@
+SOA vs microservices?
+SOA is just a kind of utility anyone can access it.
+Microservices:-Its a whole Application
+
+public class MviCatApplication{
+@Bean
+public RestTemplate getRestTemplate(){
+	return new RestTemplate();
+}
+
+public static void main(String[] args){
+SpringApplication.run(...)
+}
+}
+
+-Then we will just Autowired RestTemplate in any class and then it will load at once 
+@Bean is producer it tells I have this object people will need so execute this method and return .
+
+-RestTemplate will be deprecated at a point and in place of it we can use WebClient.
+ WebClient - Asynchronus So in this we have api calls and we dont wait around and we will do other works. So we dont tell what to do but give lambda and instruct what needs to happen when its done
+ RestTemplate-Syncronus so in this we say RestTemplate to give me the object and then it will wait around till it gives u the object
+ 
+ webClient-
+  in pom we change web dependency to  webflux 
+  webClient.Builder builder = WebClient.builder
+  Movie movie= webClientBuilder.build().get().uri("http://localhost:8080/api").retrive().bodyToMono(Movie.class).block();
+  
+  bodyToMono :- its a reactive way to say we are getting the object sometime in future its asyncronus and its like a promise. 
+  
+  Q-)So why hardcoding url is  wrong?
+  - Changes require code update
+  - load balancing 
+  - dynamic url in clou d
+  - Multiple envoirments
+  
+  SO to make microservices talk or comunicate we use services discovery ie trhey will discover the traget
+Q) how we do service discovery?
+  -) we have Discover Server and we should register our service their.
+  -) then the client will look the discovery server i.e what service it needs and it provide the address of service api
+  -)client  send msg to service 2
+  
+  Spring cloud uses client side discovery-
+  
+  Spring cloud us eEureka.
+  -)Eureka is project that make open source by Netflix OSS 
+  -) Netlix created this lib for microservices like Eureka, Ribbon, Hysterix, Zuul and make them open source 
+  -) we use spring cli=oud and eureka for register the service and discover them.
+   -) Eureka Server is Discovery Server and all the services is like Eureka clients
+   
+   
+   Create Eureka Server
+   - pom eureka discoverys 
+  

@@ -1,0 +1,152 @@
+What are Cloud-Native Applications?
+Cloud-native is an approach to building and running applications that exploits the advantages of the cloud computing delivery model. Cloud-native is about how applications are created and deployed, not where. 
+https://pivotal.io/cloud-native
+
+https://dzone.com/articles/12-factors-and-beyond-in-java
+
+Micro services Architecture, API Standards ( 12 factor, Cloud Native principles) and Implementation: 
+	code base
+	dependency management
+	config
+	backing services
+	build, release, run
+	processes
+	port binding
+	disposability
+	concurrency
+	Dev/Prod Parity
+	logs
+	Administrative processes
+Technology Stack: JAVA / J2EE ( Java 8 ) 
+Frameworks: Spring Boot, Spring Cloud, Spring Data, Spring Rest  
+Databases: MongoDB/ MySQL/ Cassandra 
+Integration Framework : Apache Camel / ActiveMQ 
+Service Discovery : Spring Cloud Discovery ( Eureka) 
+Security Standards: ( JWT / Outh/OpenID)
+
+Scheduling
+Exception Handling
+Logging: Spring Cloud Sleuth and ZipKin server
+RabbitMQueue
+Interaction with 2 MS
+Security
+Jenkins -Pipeline -Gits Connected
+CI(Continuous Integration)
+CD(Continuous Deployment)
+Cloud
+Splunk
+MS-Use
+
+Cloud Computing
+
+In this century it's called cloud computing or commonly referred to as cloud. ... Three delivery models of cloud computing: SaaS, PaaS and IaaS. Cloud computing offers different services based on three delivery models. When arranged in a pyramid form. They follow the order of SaaS, PaaS and IaaS
+
+
+Spring Cloud:
+Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems (e.g. configuration management, service discovery, circuit breakers, intelligent routing, micro-proxy, control bus, one-time tokens, global locks, leadership election, distributed sessions, cluster state
+Spring Cloud is not a single project, but rather a cluster of them.
+
+Cloud Foundry
+Cloud Foundry is a cloud-agnostic platform-as-a-service solution. The open source cloud foundry is developed and supported by the cloud foundry foundation, which includes the likes of Pivotal, Dell EMC, IBM, VMWare, and many others. There are enterprise versions developed based on the open source project, such as IBM Bluemix and Pivotal Cloud Foundry (PCF for short).
+
+Cloud Foundry
+Cloud foundry uses a command line interface called cf. It is a cli that lets you control all aspects of the developer interaction. Following in the footsteps of simplicity that you might have already noticed, the idea is to take an opinionated view to practically everything.
+
+Kubernetes
+Kubernetes is an open source cloud platform that originated from Google’s Project Borg. It is sponsored by the Cloud Native Computing Foundation, whose members include top names of the industry such as AWS, Azure, Intel, IBM, RedHat, Pivotal and many others.
+
+Kubernetes is first and foremost a container runtime. Although not limited to it, it is mostly used to run docker containers. There are several solutions that offer a PaaS experience on top of Kubernetes, such as RedHat OpenShift.Kubernetes takes a different approach. It is inherently a generic container runtime that knows very little about the inner-workings of your application. Its main purpose is to provide a simple infrastructure solution to run your container, everything else is up to you as a developer.
+
+Kubernetes
+Kubernetes runs Docker containers. As such, it supports a very wide range of applications, from a message broker to a Redis database to your own custom java application to anything you can find on Docker Hub.
+
+Kubernetes
+In kubernetes, you interact with the kubectl cli. The commands are not complicated at all, but there is still a higher learning curve from what I’ve experienced so far.
+
+https://console.run.pivotal.io/organizations/ee967f79-f854-4f52-af88-93b9eb711ed0
+
+Waiting for app to start...
+
+name:              helloshilpi-cf-demo
+requested state:   started
+routes:            helloshilpi-cf-demo.cfapps.io
+
+@RequestMapping("/redis")
+public String redis(){
+	int counter=0;
+	ValueOperations<String,String> ops=this.redisTemplate.opsForValue();
+	String key="redis.counter";
+	
+	
+Cloud Foundry BOSH release to manage stateful Docker containers
+
+Paas:- Platform as a Service
+Saas:- Software as a Service
+
+Cloud Foundry also provisions new service instances and binds credentials on demand without the need to wait for service administrators to provide them.
+
+Service Broker: When a Cloud Foundry developer provisions and binds a service to an application, the component responsible for providing the service instance is the “Service Broker.”The broker passes these calls to the service itself. 
+Service providers determine how a service is implemented, and Cloud Foundry only requires that the service provider implements the “Service broker API”.
+
+“Containers Service Broker for Cloud Foundry,” a generic containers service broker for the Cloud Foundry v2 services API.
+
+DevOp – You build it, you run it!
+Using Cloud Foundry each developer can go to the Cloud Foundry marketplace and pick technologies he wants to use. A single command later, the developer has its own instance of the required database type, message queue etc. Once the databases and other “backing services” are in place, the apps itself can also be deployed and scaled with also a single command.
+
+DevOp and Microservice with Docker: Docker provides and easy way to setup an environment and then take this environment and start it on any Linux machine. he point is, this is done using containers and not virtual machines. Containers starts much faster than virtual machines and has a much smaller footprint. Another thing that Docker allows you is to extend and share your containers very easy.
+
+Newer version of Cloud Foundry offers a simple way to also specify a Docker container that should be used to run your application.	
+
+
+------------------------------------------------------------------
+Service Registry for Pivotal Cloud Foundry
+
+Service Registry for Pivotal Cloud Foundry (PCF) provides your applications with an implementation of the Service Discovery pattern, one of the key tenets of a microservice-based architecture.Our applications can use the Service Registry to dynamically discover and call registered services.
+
+When a client registers with the Service Registry, it provides metadata about itself, such as its host and port. The Registry expects a regular heartbeat message from each service instance. If an instance begins to consistently fail to send the heartbeat, the Service Registry will remove the instance from its registry.
+
+Service Registry for Pivotal Cloud Foundry is based on Eureka, Netflix’s Service Discovery server and client. 
+
+---------------------------------------------------------------------------------------------------
+Cluster
+
+A well-designed cloud native application is composed of microservices, but deciding
+what those microservices should be, where the boundaries are, and how the different
+services should interact is no easy problem.
+
+Cloud native is a useful shorthand for talking about cloud-based, containerized,
+distributed systems, made up of cooperating microservices, dynamically managed
+by automated infrastructure as code.
+
+
+Running a Container Image
+What exactly is a container image? The technical details don’t really matter for our
+purposes, but you can think of an image as being like a ZIP file. It’s a single binary file
+that has a unique ID and holds everything needed to run the container.
+
+Whether you’re running the container directly with Docker, or on a Kubernetes cluster,
+all you need to specify is a container image ID or URL, and the system will take
+care of finding, downloading, unpacking, and starting the container for you.
+
+To avoid setting up services manually & overcome the challenges, something big was needed. This is where Container Orchestration Engine comes into the picture.
+
+This engine, lets us organize multiple containers, in such a way that all the underlying machines are launched, containers are healthy and distributed in a clustered environment. In today’s world, there are mainly two such engines: Kubernetes & Docker Swarm.
+
+-------------------------------------------------------------------------------
+
+•	ECS Java sample and reference arch: https://github.com/aws-samples/amazon-ecs-java-microservices
+
+•	ECS Nodejs lab: https://github.com/awslabs/amazon-ecs-nodejs-microservices/tree/master/2-containerized
+
+•	ECS reference arch: https://github.com/aws-samples/ecs-refarch-cloudformation
+
+•	Fargate getting started lab: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html
+
+•	Fargate workshop: https://ecsworkshop.com/
+
+•	Autoscaling using ECS: https://aws.amazon.com/blogs/compute/automatic-scaling-with-amazon-ecs/
+
+•	Log config options: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html
+
+•	Monitoring using Prometheus: https://github.com/prometheus/prometheus
+

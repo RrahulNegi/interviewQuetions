@@ -1,0 +1,68 @@
+DesignPatterns-----------GOF - Gang of Four DP is broken into 3 categories
+	-Creational - 
+	-Behavioral
+	-Structural:
+		In short, use Adapter design pattern if you need to convert interfaces, to make two parties work together. Use Proxy design Pattern in Java, if you need to hide real object because of various reason e.g. security, performance, networking etc. Use Decorator pattern to add new behaviors on existing object at runtime, it provides flexibility to mix behaviors and apply them in different order as per clients requirement. Finally use Facade pattern to provide simplified access of a complex system to client. Facade provides higher level of abstraction, and should contain operations required by client.
+
+
+what is the difference between Builder design pattern and Decorator design pattern:-
+
+- Builder is Creational DP and Decorator is Structural DP.
+- Use the Builder Pattern to encapsulate the construction of a product and allow it to be constructed in steps.
+
+- Decorator Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
+- Patterns like builder and factory(and abstract factory) are used in creation of objects. And the patterns like decorator (also called as structural design patterns) are used for extensibility or to provide structural changes to already created objects.
+	https://www.geeksforgeeks.org/decorator-pattern-set-3-coding-the-design/
+- Both types of patterns largely favour composition over inheritance, so giving this as a differentiator for using builder instead of decorator will not make any sense. Both give behaviour upon runtime rather than inheriting it.
+- So, one should use builder if he wants to limit the object creation with certain properties/features. For example there are 4-5 attributes which are mandatory to be set before the object is created or we want to freeze object creation until certain attributes are not set yet. Basically, use it instead of constructor – as Joshua Bloch states in Effective Java, 2nd Edition. The builder exposes the attributes the generated object should have, but hides how to set them.
+- Decorator is used to add new features of an existing object to create a new object. There is no restriction of freezing the object until all its features are added.
+- Both are using composition so they might look similar but they differ largely in their use case and intention.
+
+------------------------------------------------------------
+https://javarevisited.blogspot.com/2015/01/adapter-vs-decorator-vs-facade-vs-proxy-pattern-java.html
+
+Builder 
+         Sequence of steps to construct an object
+             -During creation.
+             -Elements are must.
+             -If its fails object incomplete.
+
+Decorator pattern
+         On constructed Object adding extra/more functionality.
+             -After object created.
+             -Elements are optional.
+             -It will not affect the basic behavior.
+            -Allows new/additional behaviour to be added to an existing object dynamically. 
+
+
+
+----------------------------------------------------------------------------------
+
+FlyWeight DP: Structural DesignPatterns-----------GOF
+
+Flyweight design pattern is used when we need to create a lot of Objects of a class. Since every object consumes memory space that can be crucial for low memory devices, such as mobile devices or embedded systems, flyweight design pattern can be applied to reduce the load on memory by sharing objects.
+
+Before we apply flyweight design pattern, we need to consider following factors:
+
+The number of Objects to be created by application should be huge.
+The object creation is heavy on memory and it can be time consuming too.
+The object properties can be divided into intrinsic and extrinsic properties, extrinsic properties of an Object should be defined by the client program.
+
+To apply flyweight pattern, we need to divide Object property into intrinsic and extrinsic properties. Intrinsic properties make the Object unique whereas extrinsic properties are set by client code and used to perform different operations. For example, an Object Circle can have extrinsic properties such as color and width.
+
+For applying flyweight pattern, we need to create a Flyweight factory that returns the shared objects. For our example, lets say we need to create a drawing with lines and Ovals. So we will have an interface Shape and its concrete implementations as Line and Oval. Oval class will have intrinsic property to determine whether to fill the Oval with given color or not whereas Line will not have any intrinsic property.
+
+Flyweight Factory
+The flyweight factory will be used by client programs to instantiate the Object, so we need to keep a map of Objects in the factory that should not be accessible by client application.
+
+Whenever client program makes a call to get an instance of Object, it should be returned from the HashMap, if not found then create a new Object and put in the Map and then return it. We need to make sure that all the intrinsic properties are considered while creating the Object.
+
+Flyweight Design Pattern Example in JDK
+All the wrapper classes valueOf() method uses cached objects showing use of Flyweight design pattern. The best example is Java String class String Pool implementation.
+
+Flyweight Design Pattern Important Points
+	In our example, the client code is not forced to create object using Flyweight factory but we can force that to make sure client code uses flyweight pattern implementation but its a complete design decision for particular application.
+	Flyweight pattern introduces complexity and if number of shared objects are huge then there is a trade of between memory and time, so we need to use it judiciously based on our requirements.
+	Flyweight pattern implementation is not useful when the number of intrinsic properties of Object is huge, making implementation of Factory class complex.
+
+https://www.journaldev.com/1562/flyweight-design-pattern-java

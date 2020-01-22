@@ -1,0 +1,37 @@
+spring : bean scope
+		when it is loaded
+		bean lifecycle
+		how prototype bean get loaded.
+		What are the difference between BeanFactory and ApplicationContext in Spring?
+		Difference between the setter and constructor injection in Spring?
+		difference between interceptor and Filter
+
+Difference between Factory Pattern and Dependency Injection in Java?
+@Qualifier and @Autowired annotation
+@PathVariable , @PathParam
+@JsonIgonore @Filter
+
+Hibernate:
+get , load difference
+what is N+1 problem and strategies to avoid this
+What is lazy initialization exception
+Difference b/w sessionFactory.getCurrentSession() and sessionFactory.openSession():
+openSession() creates a new normal Session, that needs to be explicitly closed once the required operations are complete.
+
+getCurrentSession() - introduced in Hibernate 3.0 - returns a Contextual Session, which is nothing but one Session per Transaction. The Session is automatically closed once the transaction is committed. Also, it enforces the developer to make sure he uses only one session one transaction policy that hibernate recommends. Make sure that you invoke this method from within a Transactional Context, else it may throw an Exception.
+What is the difference between save, persist and saveOrUpdate methods in Hibernate?
+
+How Singleton can be breached. 
+difference b/w iterator and listIterator
+types of executor framework
+CopyonWriteArrayList
+ Create Arraylist from an Array
+Traverse a tree using Java  
+Difference between Arraylist and LinkedList. Which is better?
+Difference between Arraylist ,LinkedList, HashSet. Which is better?
+Abstract classes vs Interfaces
+Hashing
+
+
+		
+		

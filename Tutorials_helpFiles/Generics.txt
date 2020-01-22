@@ -1,0 +1,277 @@
+Generics:
+----------
+
+	Generics in jaava is "Type Safety" and all such type information is erased by Type Erasure feature by compiler. Meaning it is guarantee by the compiler that if correct types are used at correct places  then there should be not be any "Class Cast Exception" during runtime.
+	
+	Well there's no difference between the first two - they're just using different names for the type parameter (E or T).
+	
+	It's more convention than anything else.They are fully interchangeable 
+
+		T is meant to be a Type
+		E is meant to be an Element (List<E>: a list of Elements)
+		K is Key (in a Map<K,V>)
+		V is Value (as a return value or mapped value)
+	e.g. List<Integer> list = new ArrayList<Integer>();
+ 
+			list.add(1000);     //works fine
+			 
+			list.add("lokesh"); //compile time error;
+			
+		or:-
+		
+		List list = new ArrayList();
+ 
+		list.add(1000); 
+		
+		If you compare the bytecode of above example with/without generics, then there will not be any difference. Clearly compiler removed all generics information. So, above code is very much similar to below code without generics.
+		
+Types of Generics:
+-----------------		
+
+	1. Generic Type class or interface
+	
+		class DemoClass<T> {
+		   //T stands for "Type"
+		   private T t;
+		 
+		   public void set(T t) { this.t = t; }
+			
+		   public T get() { return t; }
+		}
+		
+		Now we can be assured that class will not be misused with wrong types. A sample usage of DemoClass will look like this:
+
+			DemoClass<String> instance = new DemoClass<String>();
+			instance.set("lokesh");   //Correct usage
+			instance.set(1);        //This will raise compile time error
+
+		Above analogy is true for interface as well. Let’s quickly look at an example to understand, how generics type information can be used in interfaces in java.
+
+		//Generic interface definition
+		interface DemoInterface<T1, T2>
+		{
+		   T2 doSomeOperation(T1 t);
+		   T1 doReverseOperation(T2 t);
+		}
+		 
+		//A class implementing generic interface
+		class DemoClass implements DemoInterface<String, Integer>
+		{
+		   public Integer doSomeOperation(String t)
+		   {
+			  //some code
+		   }
+		   public String doReverseOperation(Integer t)
+		   {
+			  //some code
+		   }
+		}
+		
+		
+	2. Generic Type Method or Constructor
+	
+		public static <T> int countAllOccurrences(T[] list, T item) {
+		   int count = 0;
+		   if (item == null) {
+			  for ( T listItem : list )
+				 if (listItem == null)
+					count++;
+		   }
+		   else {
+			  for ( T listItem : list )
+				 if (item.equals(listItem))
+					count++;
+		   }
+		   return count;
+		}  
+		
+		generic constructor
+		
+			class Dimension<T>
+				{
+				   private T length;
+				   private T width;
+				   private T height;
+				 
+				   //Generic constructor
+				   public Dimension(T length, T width, T height)
+				   {
+					  super();
+					  this.length = length;
+					  this.width = width;
+					  this.height = height;
+				   }
+				}
+				
+	3.	Generic Type Arrays
+	
+		instantiating a generic array in java is not permitted
+		
+			public class GenericArray<T> {
+				// this one is fine
+				public T[] notYetInstantiatedArray;
+			  
+				// causes compiler error; Cannot create a generic array of T
+				public T[] array = new T[5];
+			}
+			
+		As we know that an array is a collection of similar type of elements and pushing any incompatible type will throw ArrayStoreException in runtime; which is not the case with Collection classes.
+
+			Object[] array = new String[10];
+			array[0] = "lokesh";
+			array[1] = 10;      //This will throw ArrayStoreException
+			
+			Object[] objArr = new String[10];  // fine
+			objArr[0] = new String();
+			
+	4.	Generics with Wildcards
+	
+		In generic code, the question mark (?), called the wildcard, represents an unknown type. A wildcard parameterized type is an instantiation of a generic type where at least one type argument is a wildcard. Examples of wildcard parameterized types are Collection<?<, List<? extends Number<, Comparator<? super String> and Pair<String,?>.
+		
+		The wildcard can be used in a variety of situations: as the type of a parameter, field, or local variable; sometimes as a return type (though it is better programming practice to be more specific). 
+		
+		The wildcard is never used as a type argument for a generic method invocation, a generic class instance creation, or a supertype.
+		
+		For example, below are valid declarations involving wild cards:
+
+				Collection<?> coll = new ArrayList<String>();
+				//OR
+				List<? extends Number> list = new ArrayList<Long>();
+				//OR
+				Pair<String,?> pair = new Pair<String,Integer>();
+		And below are not valid uses of wildcards, and they will give compile time error.
+
+				List<? extends Number> list = new ArrayList<String>();  //String is not subclass of Number; so error
+				//OR
+				Comparator<? super String> cmp = new RuleBasedCollator(new Integer(100)); //Integer is not superclass of String
+				
+		unbounded wildcard "?” without any restriction on type variables. e.g.
+
+				ArrayList<?>  list = new ArrayList<Long>(); 
+				//or
+				ArrayList<?>  list = new ArrayList<String>(); 
+				//or
+				ArrayList<?>  list = new ArrayList<Employee>(); 
+				
+		use upper bound wildcard using “extends” keyword.
+
+				public class GenericsExample<T>
+				{
+				   public static void main(String[] args)
+				   {
+					  //List of Integers
+					  List<Integer> ints = Arrays.asList(1,2,3,4,5);
+					  System.out.println(sum(ints));
+					   
+					  //List of Doubles
+					  List<Double> doubles = Arrays.asList(1.5d,2d,3d);
+					  System.out.println(sum(doubles));
+					   
+					  List<String> strings = Arrays.asList("1","2");
+					  //This will give compilation error as :: The method sum(List<? extends Number>) in the
+					  //type GenericsExample<T> is not applicable for the arguments (List<String>)
+					  System.out.println(sum(strings));
+					   
+				   }
+					
+				   //Method will accept
+				   private static Number sum (List<? extends Number> numbers){
+					  double s = 0.0;
+					  for (Number n : numbers)
+						 s += n.doubleValue();
+					  return s;
+				   }
+				}
+				
+		Lower bounded wildcards using "super" keyword
+		
+				package test.core;
+ 
+				import java.util.ArrayList;
+				import java.util.List;
+				 
+				public class GenericsExample<T>
+				{
+				   public static void main(String[] args)
+				   {
+					  //List of grand children
+					  List<GrandChildClass> grandChildren = new ArrayList<GrandChildClass>();
+					  grandChildren.add(new GrandChildClass());
+					  addGrandChildren(grandChildren);
+					   
+					  //List of grand childs
+					  List<ChildClass> childs = new ArrayList<ChildClass>();
+					  childs.add(new GrandChildClass());
+					  addGrandChildren(childs);
+					   
+					  //List of grand supers
+					  List<SuperClass> supers = new ArrayList<SuperClass>();
+					  supers.add(new GrandChildClass());
+					  addGrandChildren(supers);
+				   }
+					
+				   public static void addGrandChildren(List<? super GrandChildClass> grandChildren)
+				   {
+					  grandChildren.add(new GrandChildClass());
+					  System.out.println(grandChildren);
+				   }
+				}
+				 
+				class SuperClass{
+					
+				}
+				class ChildClass extends SuperClass{
+					
+				}
+				class GrandChildClass extends ChildClass{
+					
+				}
+		
+		Multiple Bounds
+		A type can also have multiple upper bounds as follows:
+
+		<T extends Number & Comparable>
+		If one of the types that are extended by T is a class (i.e Number), it must be put first in the list of bounds. Otherwise, it will cause a compile-time error.		
+						
+	5.	Not allowed in Generics
+	
+			a) You can’t have static field of type
+			
+				public class GenericsExample<T>
+					{
+					   private static T member; //This is not allowed
+					}
+					
+			b) You can not create an instance of T
+			
+			Any attempt to create an instance of T will fail with compilation error: Cannot instantiate the type T.
+
+				public class GenericsExample<T>
+				{
+				   public GenericsExample(){
+					  new T();//Compilation Cannot instantiate the type T
+				   }
+				}
+				
+			c) Generics are not compatible with primitives in declarations. Since primitive types don’t extend Object, we can’t use them as type parameters.
+			
+				final List<int> ids = new ArrayList<>();    //Not allowed
+				
+				The signature of the add method is:
+
+				
+				boolean add(E e);
+				And will be compiled to:
+
+				
+				boolean add(Object e);
+				Therefore, type parameters must be convertible to Object. 
+ 
+				final List<Integer> ids = new ArrayList<>(); //Allowed
+				
+			d) You can’t create Generic exception class
+			
+				// causes compiler error
+				public class GenericException<T> extends Exception {}
+				
+				When you try to create such an exception, you will end up with message like this: The generic class GenericException may not subclass java.lang.Throwable.

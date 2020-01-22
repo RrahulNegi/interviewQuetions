@@ -1,0 +1,608 @@
+Spring Security---
+
+Dependencies:
+- spring-security-web
+- spring-security-config
+
+Disabling the Auto-Configuration
+To discard the security auto-configuration and add our own configuration, we need to exclude the SecurityAutoConfiguration class.
+
+This can be done via a simple exclusion:
+
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+public class SpringBootSecurityApplication {
+ 
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootSecurityApplication.class, args);
+    }
+}
+Or by adding some configuration into the application.properties file:
+
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
+
+There are also some particular cases in which this setup isn’t quite enough.
+
+For example, almost each Spring Boot application is started with Actuator in the classpath. This causes problems because another auto-configuration class needs the one we’ve just excluded, so the application will fail to start.
+
+In order to fix this issue, we need to exclude that class; and, specific to the Actuator situation, we need to exclude ManagementWebSecurityAutoConfiguration.
+
+Spring Security provides several features which are required by enterprise Java application like
+		- HTTP Basic Authentication - stateless client which pass their credential in each request. Hear Authorization Header is must to be sent.2 ways either by http-basic tag in config or annotation based. The client sends HTTP requests with the Authorization header that contains the word Basic word followed by a space and a base64-encoded string username:password.
+				@Configuration
+				@EnableWebSecurity
+				public class HttpBasicAuthenticationAdapter extends
+					WebSecurityConfigurerAdapter {
+				 
+				  @Autowired
+				  public void configureGlobal(AuthenticationManagerBuilder auth)
+					  throws Exception {
+					auth
+					.inMemoryAuthentication()
+					.withUser("userId").password("passwd")
+					.authorities("ROLE_USER");
+				 
+				  }
+				 
+				  @Override
+				  protected void configure(HttpSecurity http) throws Exception {
+					http
+					.authorizeRequests()
+					.antMatchers("/securityNone").permitAll()
+					.anyRequest().authenticated()
+					.and()
+					.httpBasic()
+					.realmName("Your App");
+				 
+				  }
+				 
+				}
+		- Custom UserDetailsService: The UserDetailsService interface is used to retrieve user-related data. It has one method named loadUserByUsername() which finds a user entity based on the username and can be overridden to customize the process of finding the user. This is done by creating the User bean which stores user details. and creating a DAO:
+				create a DAO class using Spring Data by extending the JpaRepository interface:
+
+						public interface UserRepository extends JpaRepository<User, Long> {
+						 
+							User findByUsername(String username);
+						}
+			After that implementing UserDetailsService interface that overrides the method loadUserByUsername() of the interface. the service will be autowired in Spring config file.
+		- Spring Method Security with @PreAuthorize and @Secured annotations at class and method level.
+			@Secured/@RoleAllowed(JSR-250’s): is used to specify a list of roles on a method
+			@PreAuthorize and @PostAuthorize annotations provide expression-based access control
+				The @PreAuthorize annotation checks the given expression before entering the method, whereas, the @PostAuthorize annotation verifies it after the execution of the method and could alter the result.
+
+				Now, let’s declare a getUsernameInUpperCase method as below:
+
+				@PreAuthorize("hasRole('ROLE_VIEWER')")
+				public String getUsernameInUpperCase() {
+					return getUsername().toUpperCase();
+				}
+				
+				@PostAuthorize("returnObject.username == authentication.principal.nickName")
+				public CustomUser loadUserDetail(String username) {
+					return userRoleRepository.loadUserByUserName(username);
+				}
+			Using @PreFilter and @PostFilter Annotations
+				Spring Security provides the @PreFilter annotation to filter a collection argument before executing the method. we can also filter the returned collection of a method by using @PostFilter annotation
+		- Spring View Layer Security using JSP Taglibs: add security in view layer. It is mostly needed when we want to hide certain links or buttons based on user’s role so that he will not be able to access that functionality.
+		
+		- Role-based Access Control, 
+		- SSL Security, 
+		- encryption of passwords, 
+		- session timeout facilities,
+		- Kerberos authentication,
+		- LDAP Support/Redis cache storage
+		- SSO - Single Sign on
+====================================================================
+
+This Spring security configuration for login and generating token.
+
+https://www.baeldung.com/spring-boot-security-autoconfiguration
+
+1. 	Add dependencies related to spring security and to store the token in session:
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<dependency>
+                <groupId>org.springframework.security.oauth</groupId>
+                <artifactId>spring-security-oauth2</artifactId>
+                <version>${spring.security.oauth2.version}</version>
+        </dependency>
+		
+		 <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
+		
+	 <spring.security.version>4.0.4.RELEASE</spring.security.version>
+     <spring.security.oauth2.version>2.3.3.RELEASE</spring.security.oauth2.version>	
+	 
+	 Spring Boot also requires these dependencies to make it work. But we need to define only the dependency of spring-boot-starter-security as this will automatically add all the relevant dependencies to the classpath.
+	 
+2.	Redis : caching mechanism for Spring and OAuth2 using Redis as our database for cache storage.
+	The Redis Configuration
+	To define the connection settings between the application client and the Redis server instance, we need to use a Redis client.
+
+	There is a number of Redis client implementations available for Java. In this tutorial, we’ll use Jedis – a simple and powerful Redis client implementation.
+
+	There is good support for both XML and Java configuration in the framework; for this tutorial, we’ll use Java-based configuration.
+3.  Configure Redis properties in application.properties.
+			## Redis
+			spring.session.store-type=redis
+			use.redis.session.store=true
+			spring.redis.sentinel.master=mymaster
+			spring.redis.sentinel.node.zero.host=172.30.40.33
+			spring.redis.sentinel.node.zero.port=26379
+			spring.redis.sentinel.node.one.host=172.30.40.33
+			spring.redis.sentinel.node.one.port=26379
+			spring.redis.sentinel.node.two.host=172.30.40.33
+			spring.redis.sentinel.node.two.port=26379
+
+3. Configure Redis namespace.
+
+		@EnableRedisHttpSession(redisNamespace = "iptool")
+		
+				 * <p>
+	 * Defines a unique namespace for keys. The value is used to isolate sessions by
+	 * changing the prefix from "spring:session:" to
+	 * "spring:session:&lt;redisNamespace&gt;:". The default is "" such that all Redis
+	 * keys begin with "spring:session".
+	 * </p>
+	 *
+	 * <p>
+	 * For example, if you had an application named "Application A" that needed to keep
+	 * the sessions isolated from "Application B" you could set two different values for
+	 * the applications and they could function within the same Redis instance.
+	 * </p>
+		
+				/**
+				 * Creates redis connection factory bean
+				 * @return redis connection factory
+				 */
+				@Bean
+				public RedisConnectionFactory jedisConnectionFactory() {
+
+					final String master = this.env.getProperty("spring.redis.sentinel.master");
+					final String sentinelZero0Host= this.env.getProperty("spring.redis.sentinel.node.zero.host");
+					final Integer sentinelZeroPort= Integer.valueOf(this.env.getProperty("spring.redis.sentinel.node.zero.port"));
+					final String sentinelOneHost= this.env.getProperty("spring.redis.sentinel.node.one.host");
+					final Integer sentinelOnePort= Integer.valueOf(this.env.getProperty("spring.redis.sentinel.node.one.port"));
+					final String sentinelTwoHost= this.env.getProperty("spring.redis.sentinel.node.two.host");
+					final Integer sentinelTwoOnePort= Integer.valueOf(this.env.getProperty("spring.redis.sentinel.node.two.port"));
+
+					final RedisSentinelConfiguration sentinelConfig = new RedisSentinelConfiguration()
+							.master(master)
+							.sentinel(sentinelZero0Host, sentinelZeroPort)
+							.sentinel(sentinelOneHost, sentinelOnePort)
+							.sentinel(sentinelTwoHost, sentinelTwoOnePort);
+
+					return new JedisConnectionFactory(sentinelConfig);
+				}
+	
+4. After the Redis namespace configuration the configuration class created above is intialized by a class Initializer extends 			AbstractHttpSessionApplicationInitializer . This class is intiallized during spring startup and apply all intializers.
+5.  configuration class to set security configuration
+		@Configuration
+		@EnableWebSecurity
+6.	Create a class extending "WebMvcConfigurerAdapter" / Note that WebMvcConfigurer is an interface with default methods. This Java 8 feature is fully supported only in Spring 5. 
+
+there are basically 2 ways to implement security:
+
+		1. Configure Bean In memory UserDetailsService implementation
+			@Bean
+			public UserDetailsService userDetailsService() {
+				InMemoryUserDetailsManager manager 
+				  = new InMemoryUserDetailsManager();
+				manager.createUser(User.withDefaultPasswordEncoder()
+				  .username("jack")
+				  .password("password")
+				  .authorities("USER")
+				  .build());
+				return manager;
+			}
+		2. HTTP Security Java Configuration
+7.	To Add HTTP Security Java Configuration we need to extend WebSecurityConfigurerAdapter
+	Create Inner classes inside class extending "WebMvcConfigurerAdapter" create a static security class extending WebSecurityConfigurerAdapter with @Configuration annotation.This configuration adds authorization to all HTTP requests, a login form, and a basic HTTP authentication. 
+	
+		
+		a. Autowire folowing classes:
+				- Http401EntryPoint : added in antMatcher for exceptionHandling authenticationEntryPoint. Indicate that login is required by returning an HTTP status of 401.
+				- AuthenticationProvider : Autowire the Auth token Authentication Provider. This Authentication provider implements springframework AuthenticationProvider interface.
+				- AuthenticationProviderImpl.authenticate method is overriden.This basically calls the service to generate the access token.
+				administration/oauth/token
+				- this basically sends the userName and password in the loginUSer method. which basically oauth2RestTemplate.getAccessToken() to get the authToken:
+						org.springframework.security.oauth2.client.OAuth2RestTemplate
+						
+											/**
+						 * Acquire or renew an access token for the current context if necessary. This method will be called automatically
+						 * when a request is executed (and the result is cached), but can also be called as a standalone method to
+						 * pre-populate the token.
+						 * 
+						 * @return an access token
+						 */
+						public OAuth2AccessToken getAccessToken() throws UserRedirectRequiredException {
+
+							OAuth2AccessToken accessToken = context.getAccessToken();
+
+							if (accessToken == null || accessToken.isExpired()) {
+								try {
+									accessToken = acquireAccessToken(context);
+								}
+								catch (UserRedirectRequiredException e) {
+									context.setAccessToken(null); // No point hanging onto it now
+									accessToken = null;
+									String stateKey = e.getStateKey();
+									if (stateKey != null) {
+										Object stateToPreserve = e.getStateToPreserve();
+										if (stateToPreserve == null) {
+											stateToPreserve = "NONE";
+										}
+										context.setPreservedState(stateKey, stateToPreserve);
+									}
+									throw e;
+								}
+							}
+							return accessToken;
+						}
+	
+	
+		b. @Override
+					protected void configure(HttpSecurity http) throws Exception {
+						http.authorizeRequests()
+						  .anyRequest().authenticated()
+						  .and().formLogin()
+							.loginPage("/customLogin")
+							.defaultSuccessUrl("/loginSuccess", true)
+							.permitAll();
+					}
+					
+			OR
+					
+					@Override
+					protected void configure(final AuthenticationManagerBuilder auth) {
+						auth.authenticationProvider(this.admkeyAuthenticationProvider);
+					}
+
+					@Override
+					protected void configure(final HttpSecurity http) throws Exception {
+
+						final AdmKeyPreAuthenticationFilter admKeyPreAuthenticationFilter = new AdmKeyPreAuthenticationFilter();
+						admKeyPreAuthenticationFilter.setAuthenticationManager(super.authenticationManager());
+						admKeyPreAuthenticationFilter.setCheckForPrincipalChanges(true);
+						admKeyPreAuthenticationFilter.setInvalidateSessionOnPrincipalChange(true);
+						admKeyPreAuthenticationFilter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
+
+						this.beanFactory.autowireBean(admKeyPreAuthenticationFilter);
+
+						//@formatter:off
+						http.requestMatchers()
+								.antMatchers(SECURED_ENDPOINTS)
+								.antMatchers(HttpMethod.POST, SECURED_POST_ENDPOINTS)
+								.antMatchers(HttpMethod.PUT, SECURED_PUT_ENDPOINTS)
+								.antMatchers(HttpMethod.PATCH, SECURED_PATCH_ENDPOINTS)
+							.and().exceptionHandling().authenticationEntryPoint(this.authenticationEntryPoint)
+							.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)        		        		        
+							.and().addFilterBefore(admKeyPreAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
+							.csrf().disable()
+							.headers().cacheControl();            
+						//@formatter:on
+					}
+		
+8. AuthenticationProviderImpl  authenticate method is called which will be invoked by spring security when a user login.
+9. Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker. It supports data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes with radius queries and streams. It also provides pub-sub capabilities
+10. When the user login the authToken is generated and stored in session. and then stored in JedisSentinels.
+				- created the JedisSentinelPool
+				static {
+        pool = new JedisSentinelPool(PropertyUtil.getMasterName(), PropertyUtil.getRedisSentinels());    }
+	
+				- Save session object. param record Session to be inserted
+    
+					public void insert(AdmSession record) {
+						Jedis jedis = null;
+						try {
+							jedis = pool.getResource();
+							String json = mapper.writeValueAsString(record);
+							jedis.set(KEY_PREFIX + record.getIdsession(), json);//getIdsession is the authtoken/admKey
+							jedis.expire(KEY_PREFIX + record.getIdsession(), PropertyUtil.getRedisSessionExpire());
+						} catch (Exception e) {
+							log.error("Error inserting session in Redis", e);
+						} finally {
+							if (null != jedis) {
+								jedis.close();
+							}
+						}
+					}
+11.	override 3 configure methods:
+		a. configure(final AuthenticationManagerBuilder auth) 
+				this is used to add AuthenticationProvider in AuthenticationManagerBuilder. 
+				 @Override
+					public void configure(final AuthenticationManagerBuilder auth) throws Exception {
+
+						auth.authenticationProvider(this.admkeyAuthenticationProvider)
+								.authenticationProvider(this.admUserAuthenticationProvider);
+					}
+		b. configure(final HttpSecurity http)
+				- this is used add FormAuthenticationFilter if any
+				- add antMatchers for all the urls coming from following endpoint.
+					e.g.  http.antMatcher("/j_spring_security_check").authorizeRequests().antMatchers("/j_spring_security_check").permitAll()
+						.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+						.and().exceptionHandling().authenticationEntryPoint(this.authenticationEntryPoint)
+						.and().csrf().disable()
+						.formLogin()
+						.and().addFilterBefore(formAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+						.headers().cacheControl();
+		c.	configure(final WebSecurity web)
+				- this is used to add any endpoint which we want to ignore.
+					e.g. web.ignoring().antMatchers(SECURED_ENDPOINTS_EXCLUSIONS);
+				
+12. After that validate with existing key stored in Redis.
+13. Exclude default spring OAuth security configuration
+		- This is needed if we are implementing are own authentication provider
+		e.g. @SpringBootApplication(exclude = OAuth2AutoConfiguration.class)
+
+====================================================================
+
+This Spring security configuration for token already generated.
+
+1. 	Add dependencies related to spring security:
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<dependency>
+                <groupId>org.springframework.security.oauth</groupId>
+                <artifactId>spring-security-oauth2</artifactId>
+                <version>${spring.security.oauth2.version}</version>
+        </dependency>
+		
+	 <spring.security.version>4.0.4.RELEASE</spring.security.version>
+     <spring.security.oauth2.version>2.3.3.RELEASE</spring.security.oauth2.version>	
+1.	configuration class to set security configuration
+		@Configuration
+		@EnableWebSecurity
+2.	Create a class extending "WebMvcConfigurerAdapter"
+3.	Inside class created at point 2 create a static security class extending WebSecurityConfigurerAdapter with @Configuration annotation.
+4.	override 3 configure methods:
+		a. configure(final AuthenticationManagerBuilder auth) 
+				this is used to add AuthenticationProvide in AuthenticationManagerBuilder. 
+				 @Override
+					public void configure(final AuthenticationManagerBuilder auth) throws Exception {
+
+						auth.authenticationProvider(this.admkeyAuthenticationProvider)
+								.authenticationProvider(this.admUserAuthenticationProvider);
+					}
+		b. configure(final HttpSecurity http)
+				- this is used add FormAuthenticationFilter if any
+				- add antMatchers for all the urls coming from following endpoint.
+					e.g.  http.antMatcher("/j_spring_security_check").authorizeRequests().antMatchers("/j_spring_security_check").permitAll()
+						.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+						.and().exceptionHandling().authenticationEntryPoint(this.authenticationEntryPoint)
+						.and().csrf().disable()
+						.formLogin()
+						.and().addFilterBefore(formAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+						.headers().cacheControl();
+		c.	configure(final WebSecurity web)
+				- this is used to add any endpoint which we want to ignore.
+					e.g. web.ignoring().antMatchers(SECURED_ENDPOINTS_EXCLUSIONS);
+				
+4.  Autowire the Auth token Authentication Provider. This Authentication provider implements springframework AuthenticationProvider interface.
+5. AuthenticationProviderImpl.authenticate method will fetch the PreAuthenticatedAuthenticationToken from the authentication.getPrinciple(), authentication.getCredentials.
+6. After that validate with existing key stored in Redis. by fetching from Redis.
+			- getSession
+							  /**
+				 * Retrieve session with a given key.
+				 * @param key Session identifier
+				 * @return The session stored in Redis for the given key, or null if it doesn't exist.
+				 */
+				public AdmSession getSession(String key) {
+					Jedis jedis = null;
+					try {
+						jedis = pool.getResource();
+						String json = jedis.get(KEY_PREFIX + key);
+						if (json != null) {
+							return mapper.readValue(json, AdmSession.class);
+						}
+					} catch (Exception e) {
+						log.error("Error getting session from Redis for key: " + key, e);
+					} finally {
+						if (null != jedis) {
+							jedis.close();
+						}
+					}
+					return null;
+				}
+7. Exclude default spring OAuth security configuration
+		- This is needed if we are implementing are own authentication provider
+		e.g. @SpringBootApplication(exclude = OAuth2AutoConfiguration.class)
+		
+		
+==============================================================================================================
+
+Publish/Subscribe
+We can use the Redis messaging broker functionality to send messages between the different components of our system. Make sure the subscriber and publisher threads do not share the same Jedis connection.
+
+Subscriber
+Subscribe and listen to messages sent to a channel:
+
+
+Jedis jSubscriber = new Jedis();
+jSubscriber.subscribe(new JedisPubSub() {
+    @Override
+    public void onMessage(String channel, String message) {
+        // handle message
+    }
+}, "channel");
+Subscribe is a blocking method, you will need to unsubscribe from the JedisPubSub explicitly. We have overridden the onMessage method but there are many more useful methods available to override.
+
+Publisher
+Then simply send messages to that same channel from the publisher’s thread:
+
+
+Jedis jPublisher = new Jedis();
+jPublisher.publish("channel", "test message");	
+
+
+===========================================================================================
+
+Spring Security with LDAP supports
+
+What is LDAP directory server?
+LDAP is basically a data-store which is now widely getting used over an RDBMS, NoSQL database, or some other alternative
+
+Active Directory is a database based system that provides authentication, directory, policy, and other services in a Windows environment
+
+LDAP (Lightweight Directory Access Protocol) is an application protocol for querying and modifying items in directory service providers like Active Directory, which supports a form of LDAP.
+
+Short answer: AD is a directory services database, and LDAP is one of the protocols you can use to talk to it.
+LDAP authentication is one of the most popular authentication mechanism around the world for enterprise application and Active directory (an LDAP implementation by Microsoft for Windows) is another widely used LDAP server.
+
+ LDAP is a hierarchical data store and typical databases are relational in nature.
+
+=====================================================================================
+
+	1. Dependencies:
+			- spring-boot-starter-web
+			- spring-boot-starter-security
+			- spring-ldap-core
+			- spring-security-ldap
+			- unboundid-ldapsdk
+		
+		<!-- Spring versions -->
+        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <spring-cloud-consul.version>1.0.2.RELEASE</spring-cloud-consul.version>
+        <spring-security-kerberos-web.version>1.0.1.RELEASE</spring-security-kerberos-web.version>
+        <spring-security-oauth2.version>2.2.1.RELEASE</spring-security-oauth2.version>
+		
+	2. Configure ldap server url in application.yml
+			- e.g. 
+			spring:
+			  ldap:
+
+				# Spring LDAP
+				#
+				# In this example we use an embedded ldap server. When using a real one,
+				# you can configure the settings here.
+				#
+				# urls: ldap://localhost:12345
+				# base: dc=memorynotfound,dc=com
+				# username: uid=admin
+				# password: secret
+
+				# Embedded Spring LDAP
+				embedded:
+				  base-dn: dc=memorynotfound,dc=com
+				  credential:
+					username: uid=admin
+					password: secret
+				  ldif: classpath:schema.ldif
+				  port: 12345
+				  validation:
+					enabled: false
+					
+			- e.g. 
+				security.basic.enabled=false
+				security.ldap.url=${adm.security.ldap.url}
+				security.ldap.userDN=${adm.security.ldap.userDN}
+				spring.security.ldap.mock=${adm.spring.security.ldap.mock}
+				security.oauth.client.id=${adm.security.oauth.client.id}
+				security.oauth.client.secret=${adm.security.oauth.client.secret}
+				
+	3.  Populate LDAP with LDIF
+	
+	
+			Dn - Distinguished name, a unique name which is used to find the user in LDAP server e.g. Microsoft Active Directory.
+
+			Ou - Organization Unit
+
+			Bind - LDAP Bind is an operation in which LDAP clients sends bindRequest to LDAP user including username and password and if LDAP server able to find user and password correct, it allows access to the LDAP server.
+
+			Search - LDAP search is an operation which is performed to retrieve Dn of the user by using some user credential.
+
+			Root - LDAP directory's top element, like Root of a tree.
+
+			BaseDn - a branch in LDAP tree which can be used as a base for LDAP search operation e.g. dc=Microsoft,dc=org"
+			
+		dn: cn=managers,ou=groups,dc=memorynotfound,dc=com
+		objectclass: top
+		objectclass: groupOfUniqueNames
+		cn: managers
+		ou: manager
+		uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
+	
+	4. Spring Security + Spring LDAP Java Configuration
+	
+			The @EnableWebSecurity turns on a variety of beans needed to use Spring Security.
+
+			Using the ldapAuthentication() method, we can configure where spring security can pull the user information from. In this case we set the userDnPatterns() to uid={0},ou=people which translates in an LDAP lookup uid={0},ou=people,dc=memorynotfound,dc=com in the LDAP server. The groupSearchBase() method is used to map the LDAP groups into roles. Also, the passwordCompare() method configures the encoder and the name of the password’s attribute.
+			
+			@Configuration
+			@EnableWebSecurity
+			public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+					@Override
+					protected void configure(HttpSecurity http) throws Exception {
+						http
+								.authorizeRequests()
+									.antMatchers("/managers").hasRole("MANAGERS")
+									.antMatchers("/employees").hasRole("EMPLOYEES")
+									.anyRequest().fullyAuthenticated()
+								.and()
+									.formLogin();
+					}
+
+					@Override
+					public void configure(AuthenticationManagerBuilder auth) throws Exception {
+						auth
+								.ldapAuthentication()
+									.userDnPatterns("uid={0},ou=people")
+									.userSearchBase("ou=people")
+									.userSearchFilter("uid={0}")
+									.groupSearchBase("ou=groups")
+									.groupSearchFilter("uniqueMember={0}")
+								.contextSource(contextSource())
+								.passwordCompare()
+									.passwordEncoder(new LdapShaPasswordEncoder())
+									.passwordAttribute("userPassword");
+					}
+
+					@Bean
+					public DefaultSpringSecurityContextSource contextSource() {
+						return  new DefaultSpringSecurityContextSource(
+								Collections.singletonList("ldap://localhost:12345"), "dc=memorynotfound,dc=com");
+					}
+
+				}
+	5. Secured Rest Controller
+	
+		For testing purposes, we created a simple Rest Service. This service is only available for fully authenticated users. We can obtain the logged in user information using the SecurityContextHolder.getContext().getAuthentication() method which returns a UsernamePasswordAuthenticationToken instance containing the user information.
+		
+	6. Spring Security + Spring LDAP Authentication Example
+			After the application is initialized go to the http://localhost:8080 url and you’ll see the following screen. You can login using the username john with password secret.
+			
+			The user uid=john,ou=people resides in the group cn=managers,ou=groups which results in having a role ROLE_MANAGERS so he can access the managers rest service.
+			
+	7. Spring Security + Spring LDAP Authentication Integration Tests
+	
+			Now we created a successful Spring Security LDAP authentication application, we can write some integration tests to verify everything keeps working.
+
+			The @AutoConfigureMockMvc annotation auto configures the MockMvc. Using the MockMvc class we can perform invocations on server side endpoints. In the following integration tests we first create a FormLoginRequestBuilder using SecurityMockMvcRequestBuilders.formLogin() method and pass the credentials. Next, we perform a MockMvc.perform() invocation and validate the result using the SecurityMockMvcResultMatchers.authenticated() or SecurityMockMvcResultMatchers.unauthenticated() result matchers, based on the expected outcome.
+			
+=============================================================================
+
+https://www.baeldung.com/sso-spring-security-oauth2
+https://dzone.com/articles/implementation-of-redis-in-micro-servicespring-boo
+https://stackoverflow.com/questions/1329926/how-to-prevent-an-object-from-getting-garbage-collected			

@@ -1,0 +1,842 @@
+Lambdas
+=====================================
+
+lambda expression is something like a method without a name.Lambda expressions are a key concept in so-called functional programming languages.a Lambda expression (or function) is just an anonymous function, i.e., a function with no name and without being bounded to an identifier.
+
+In other words, lambda expressions are nameless functions given as constant values, and written exactly in the place where it’s needed, typically as a parameter to some other function.
+
+(int x) -> { return x+1; }
+
+Return type and exceptions are inferred by the compiler from the lambda body; in our example the return type is int and the throws clause is empty.
+
+The basic syntax of a lambda expression is:
+
+either
+(parameters) -> expression
+or
+(parameters) -> { statements; }
+or
+() -> expression
+
+Both lambdas and anonymous inner classes are typically defined for the purpose of passing them as an argument to a method, which takes the anonymous functionality and applies it to something.
+
+https://dzone.com/articles/how-lambdas-and-anonymous-inner-classesaic-work
+
+We need to define functionality on the fly for the purpose of passing it to a method. Traditionally, we used anonymous inner classes in such situations, which means: a class is defined, an instance of the class is created and passed to the method. Since Java 8, we can use lambda expressions instead of anonymous inner classes.
+
+In both cases we pass functionality to a method like we usually pass objects to methods: This concept is known as "code-as-data", i.e. we use code like we usually use data.
+
+Using lambda expressions object creation is no longer required; we just pass the lambda to the method.
+
+Using an anonymous inner class it looks like this:
+File[] files = myDir.listFiles(
+public boolean accept(File f) { return f.isFile(); }
+new FileFilter() {
+}
+);
+Using a lambda expression it looks like this:
+File[] files = myDir.listFiles(
+(File f) -> { return f.isFile(); }
+);
+
+method references:
+
+Using a method reference it looks like this:
+File[] files = myDir.listFiles( File::isFile );
+
+More precisely, object creation is no longer explicit. Under the hood, a lambda expression is eventually translated into a synthetic class type and an instance thereof.
+
+lambda expressions in Java denote (pure or impure) functions.
+
+final LongAdder dirCount = new LongAdder();
+final LongAdder filCount = new LongAdder();
+if (myDir.isDirectory()) { myDir.listFiles( (File f) -> {
+if (f.isDirectory()) {
+dirCount.increment();
+return false;
+}
+if (f.isFile()) {
+filCount.increment();
+return false;
+}
+return false;
+}
+);
+}
+
+The actual creation of the lambda object's synthetic type and the creation of the lambda object itself are done dynamically at runtime by the virtual machine. For this dynamic creation of the synthetic lambda type and the lambda object the invokedynamic byte code is used, which was added to Java in release 7.
+
+Our lambda is convertible to both functional interface types8:
+FileFilter filter = (File f) -> { return f.isFile(); };
+Predicate<File> predicate = (File f) -> { return f.isFile(); };
+filter = predicate; // << error: incompatible types
+
+If, however, we try to assign the two resulting variables to each other the compiler would flag it as an error, although the two variables represent the same lambda expression. The reason is that the two variables to which the lambda is bound are of two different, incompatible types.
+
+Also, there might occasionally be situations in which the compiler cannot figure out a matching functional interface type, like in this example:
+Object ref = (File f) -> { return f.isFile(); };
+The assignment context does not provide enough information for a functional type conversion and the compiler reports an error. Adding a type cast easily solves the problem:
+Object ref = (FileFilter) (File f) -> { return f.isFile(); };
+
+At runtime anonymous inner classes require:
+o class loading,
+o memory allocation and object initialization, and
+o invocation of a non-static method.
+
+A lambda expression needs functional interface conversion and eventually invocation. The type inference required for the functional interface conversion is a pure compile-time activity and incurs no cost at runtime.the creation of the lambda object and its synthetic type is performed via the invokedynamic byte code.
+
+variable binding (also called variable capture): 
+variables from the enclosing context that are used inside a lambda expression are implicitly final (or effectively final).
+
+Note, since Java 8, the explicit final declaration is no longer needed for anonymous inner classes as well. Since Java 8, both lambda expressions and anonymous inner classes are treated the same regarding variable binding. Both can access all effectively final variables of their respective enclosing context. 
+
+an inner class has access to all final variables of its enclosing context.
+example:
+void method() {
+ final int cnt = 16;
+Runnable r = new Runnable() {
+public void run() {
+System.out.println("count: " + cnt);
+}
+};
+Thread t = new Thread(r);
+t.start();
+cnt++; // error: cnt is final
+}
+
+Lambda expressions, too, support variable binding. Here is the same example using a lambda expression:
+void method() {
+int cnt = 16;
+Runnable r = () -> { System.out.println("count: " + cnt); };
+Thread t = new Thread(r);
+t.start();
+cnt++; // error: cnt is implicitly final
+}
+
+Scoping:
+
+the anonymous class establishes a scope of it own it may. The lambda, in contrast, is part of the enclosing scope and the compiler considers the definition of a cnt variable in the lambda body a colliding variable definition. In a lambda expression this and super mean whatever they mean in the enclosing context; usually this will refer to the object of the enclosing type and super will refer to the enclosing class's super class.
+
+Anonymous inner class:
+void mod() {
+eth int cnt = 16;
+Runnable r = new Runnable() {
+public void run() { int cnt = 0; // fine
+System.out.println("cnt is: " + cnt); }
+};
+...
+}
+Lambda expression:
+void method() {
+int cnt = 16;
+Runnable r = () -> { int cnt = 0; // error: cnt has already been defined
+System.out.println("cnt is: " + cnt);
+};
+...
+}
+
+The difference is that the cnt variable need not be declared as final in the enclosing context. The compiler automatically treats it as final as soon as it is used inside a lambda expression.
+
+Why do we need lambdas?
+
+JDK's collection framework
+New abstractions have been added to the collection framework in package java.util, most prominently the stream abstractions in package java.util.stream. Collections can be converted to streams and streams, different from collections, access the sequence elements via internal iteration (as opposed to external iteration.)
+
+==========================================================================================================
+
+We iterate over a list of bank accounts using a for-each loop:
+private static void checkBalance(List<Account> accList) {
+for (Account a : accList)
+if (a.balance() < a.threshold) a.alert();
+}
+The for-each-loop internally uses an iterator and basically looks like this:
+Iterator iter = accList.iterator();
+while (iter.hasNext()) {
+Account a = iter.next();
+if (a.balance() < a.threshold) a.alert();
+}
+
+Internal vs. External Iteration
+
+Iteration is the process of traversing a sequence. It can be performed in two ways: as an internal or external iteration.Internal iteration means that the sequence itself controls all details of the iteration process. External iteration means that the sequence only supports iteration, usually via a so-called iterator, but many aspects of the iteration are controlled by the collection's user. Traditionally, Java collections offer external iteration. Since Java 8, internal iteration is supported via streams.
+
+
+Where external iteration mixes the “what” (uppercase) and the “how” (for loop/iterator), internal iteration lets the client to provide only the “what” but lets the library control the “how”. This offers several potential benefits: client code can be clearer because it need only focus on stating the problem, not the details of how to go about solving it, and we can move complex optimization code into libraries where it can benefit all users.
+
+public class IterationExamples {
+    public static void main(String[] args){
+        List<String> alphabets = Arrays.asList(new String[]{"a","b","b","d"});
+         
+        alphabets.forEach(l -> l.toUpperCase());
+    }
+}
+
+====================================
+forEach() --> it is part of Iterable and Stream interface
+
+default void forEach(Consumer<? super T> action)
+
+Implementation Requirements:
+The default implementation behaves as if:
+
+
+     for (T t : this)
+         action.accept(t);
+ 
+Parameters:
+action - The action to be performed for each element. The action to be performed is contained in a class that implements the Consumer interface and is passed to forEach as an argument.
+Throws:
+NullPointerException - if the specified action is null
+Since:
+1.8
+
+It uses the Consumer interface, which looks like this:
+public interface Consumer<T> { public void accept(T t); }
+
+
+For instance, a for-loop version of iterating and printing a Collection of Strings:
+for (String name : names) {
+    System.out.println(name);
+}
+We can write this using forEach as:
+
+names.forEach(name -> {
+    System.out.println(name);
+});
+
+Given this forEach method the sequence's user only has to supply the functionality that is to be applied to each element in the sequence.
+private static checkBalance(List<Account> accList) {
+static void accList.forEach(
+(Account a) -> { if (a.balance() < a.threshold)
+a.alert();
+}
+);
+}
+
+Now the concerns are separated: the collection is responsibility for figuring out how to access all elements and how to apply the specified functionality to them. The user is responsible for supply of a reasonable functionality to be applied to the sequence elements.
+
+Since Java 8, collections can be turned into so-called streams, of which there is a sequential and a parallel variety. The parallel version of the example above would look like this:
+private static void checkBList<Account> accList) {
+balance( accList.parallelStream().forEach(
+(Account a) -> { if (a.balance() < a.threshold) a.alert(); }
+);
+}
+
+
+Anonymous Consumer Implementation
+===============================
+
+Consumer<String> printConsumer= new Consumer<String>() {
+    public void accept(String name) {
+        System.out.println(name);
+    }
+};
+names.forEach(printConsumer);
+
+==================================
+Working with forEach
+
+List<String> names = Arrays.asList("Larry", "Steve", "James");
+ 
+names.forEach(System.out::println);
+
+Set<String> uniqueNames = new HashSet<>(Arrays.asList("Larry", "Steve", "James"));
+ 
+uniqueNames.forEach(System.out::println);
+
+Queue<String> namesQueue = new ArrayDeque<>(Arrays.asList("Larry", "Steve", "James"));
+ 
+namesQueue.forEach(System.out::println);
+
+Map<Integer, String> namesMap = new HashMap<>();
+namesMap.put(1, "Larry");
+namesMap.put(2, "Steve");
+namesMap.put(3, "James");
+namesMap.forEach((key, value) -> System.out.println(key + " " + value));
+namesMap.entrySet().forEach(entry -> System.out.println(entry.getKey() + " " + entry.getValue()));
+====================================================================================================
+Streams
+----------------------------
+
+In java, java.util.Stream represents a stream on which one or more operations can be performed. Stream operations are either intermediate or terminal. While terminal operations return a result of a certain type, intermediate operations return the stream itself so you can chain multiple method calls in a row. 
+
+Streams are created on a source, e.g. a java.util.Collection like lists or sets (maps are not supported). Stream operations can either be executed sequential or parallel.
+
+Streams and Bulk Operations
+
+Since Java 8 the JDK has a new abstraction named Stream<E> which is a view to a collection and has bulk operations that perform internal iteration. 
+These bulk operations include forEach, filter, map, reduce, and many more. Thanks to the internal iteration, streams support sequential as well as parallel execution in a very convenient way.
+
+Based on above points, if we list down the various characteristics of Stream, they will be as follows:
+
+Not a data structure
+Designed for lambdas
+Do not support indexed access
+Can easily be outputted as arrays or lists
+Lazy access supported
+Parallelizable
+
+The features of Java stream are –
+
+A stream is not a data structure alternatively it takes input from the Collections, Arrays or I/O channels.
+A Streams does not change the original data structure, they only provide the result as the pipelined methods.
+Each intermediate operation is lazily executed and returns a stream as a result, hence various intermediate operations can be pipe lined. Terminal operation mark the end of the stream and return the result.
+
+List<Account> accountCol = … ;
+accountCol
+.stream()
+.filter(a -> a.balance() > 1_000_000_00) // intermediate
+.map(Account::balance) // intermediate
+.forEach(b -> {System.out.format("%d\t",b);}); // terminal
+
+
+Using method stream(), we create a stream on top of a collection. 
+Different from a collection a stream does not contain any elements. Instead it is a view to a collection that gives access to all elements in the collection by means of bulk operations with internal iteration. A stream has operations such filter(), map() and forEach(), as illustrated in the code snippet above.
+
+1. The filter():
+ method takes a predicate, which is a function that takes an element from the sequence and returns a boolean value. In our example the predicate is the lambda expression a->a.balance()>1_000_000_00. This predicate is applied to all elements in the sequence and only the "good" elements, i.e. those for which the predicate returns true, appear in the resulting stream.
+ The filter method is used to select elements as per the Predicate passed as argument.
+	List names = Arrays.asList("Reflection","Collection","Stream");
+	List result = names.stream().filter(s->s.startsWith("S")).collect(Collectors.toList());
+ 
+2.  The map():
+	The map operation takes a Function, which is called for each value in the input stream and produces one result value, which is sent to the output stream.. The following example converts each string into an upper-cased string. But you can also use map to transform each object into another type.
+
+	memberNames.stream().filter((s) -> s.startsWith("A"))
+						 .map(String::toUpperCase)
+						 .forEach(System.out::println);
+								 
+	Output:
+	 
+	AMITABH
+	AMAN
+ method takes a mapper, which is a function that takes an element from the sequence and returns something else. In our example the mapper maps the accounts to their respective balance using the balance() method of class Account. The result is a stream of long values.
+ 
+ The map method is used to map the items in the collection to other objects according to the Predicate passed as argument.
+	List number = Arrays.asList(2,3,4,5);
+	List square = number.stream().map(x->x*x).collect(Collectors.toList());
+	
+3. sorted: The sorted method is used to sort the stream.
+	List names = Arrays.asList("Reflection","Collection","Stream");
+	List result = names.stream().sorted().collect(Collectors.toList());
+
+4. peek()‘s Javadoc page says: “This method exists mainly to support debugging, where you want to see the elements as they flow past a certain point in a pipeline“.
+
+5. flatMap()
+https://www.geeksforgeeks.org/stream-flatmap-java-examples/
+
+https://www.javabrahman.com/java-8/java-8-how-to-peek-into-a-running-stream-peek-method-tutorial-with-examples/
+Let’s consider this snippet from the same Javadoc page:
+
+Stream.of("one", "two", "three", "four")
+  .filter(e -> e.length() > 3)
+  .peek(e -> System.out.println("Filtered value: " + e))
+  .map(String::toUpperCase)
+  .peek(e -> System.out.println("Mapped value: " + e))
+  .collect(Collectors.toList());
+  
+	Let us start with looking at the signature of Stream.peak() method –
+
+Stream<T> peek(Consumer<? super T> action);
+Where,
+     – action is the only parameter and is an instance of a Consumer Functional Interface
+     – The method returns back a Stream<T> as output which consists of the same elements as in Stream<T> instance it had been invoked on, after applying the consuming action, passed as input, on each of them.
+
+The Stream.peek() method’s objective is literally to peek at the contents of the Stream. I.e. it has been put as a part of Streams API to provide a method for debugging the Stream elements as they flow from one pipelined operation to another. The stream.peek() method applies the Consumer<T> function’s logic, which is its only input, to each element of the Stream. The Consumer logic can be implemented as per the specific debugging requirements requirements to debug/log/print the elements as they stream through the peek() method.
+
+But then, one might ask the question, how is Stream.peek() method different from any other method of the Stream API which can consume the values in the Stream? The answer is that this is the only method which allows you to consume(print/log/whatever way you want to check the contents) the elements of a Stream as an intermediate operation. In addition, Stream.peek() also provides the guarantee of non-interference. Let us now look at what we mean by peek() method having these two advantages.
+
+Terminal Operations:
+ The forEach():
+ method takes an arbitrary function, which receives an element from the sequence as an argument and is not supposed to return anything. In our example it prints the element.
+ 
+ Parallel Stream:
+	Parallel execution:
+		List<Account> accountCol = … ;
+		accountCol
+		.parallelStream()
+		.filter( a -> a.balance() > 1_000_000_00 ) // intermediate
+		.map(Account::balance) // intermediate
+		.forEach(b -> {System.out.format("%d\t",b);}); // terminal
+		We create a parallel stream via the collection's parallelStream() method. This is all we need to say and the rest is taken care of by the implementation of the stream abstraction.
+		
+The extended collections framework with its streams and bulk operations as outlined above is just one area of Java and its JDK where lambda expressions are helpful and convenient.
+=================================================================================
+Programming with Lambdas
+
+
+retrieve all managers of all departments in a corporation that have an employee older than 65.
+Imperative Approach
+Here is the traditional imperative approach:
+/*
+* find all managers of all departments with an employee older than 65
+*/
+Manager[] find(Corporation c) {
+List<Manager> result = new ArrayList<>();
+for (Department d : c.getDepartments()) {
+for (Employee e : d.getEmployees()) {
+if (e.getAge() > 65) {
+result.add(d.getManager());
+}
+}
+}
+return result.toArray(new Manager[0]);
+
+
+Declarative Approach
+Using streams and lambdas it would look like this:
+/*
+* find all managers of all departments with an employee older than 65
+}		
+
+*/
+Manager[] find(Corporation c) {
+return
+c.getDepartments().stream() // 1
+.filter(d -> d.getEmployees().stream() // 2
+.map(Employee::getAge) // 3
+.anyMatch(a -> a>65)) // 4
+.map(Department::getManager) // 5
+.toArray(Manager[]::new) // 6
+}
+
+
+Fluent Programming
+The small code sample written in declarative style illustrates what is known as fluent programming: the chaining of operations. It is a programming technique where operations return a value that allows the invocation of another operation.
+
+String[] txt = {"State","of","the","Lambda","Libraries","Edition"};
+IntStream is = Arrays.stream(txt)
+.filter(s -> s.length() > 3)
+.map(s -> s.length())
+.forEach(l -> System.out.println(l));
+
+===========================================================
+
+Execute-Around-Method Pattern
+
+
+boilerplate code of "lock-try-finally-unlock" appears
+class SomeClass {
+private ... some data ...
+private Lock lock = new ReentrantLock();
+...
+public void someMethod() {
+lock.lock();
+try {
+... critical region ...
+} finally {
+lock.unlock();
+}
+}
+}
+
+
+Following the Execute-Around-Method pattern we would factor out the boilerplate code into a helper method:
+	class Utilities {
+		public static void withLock(Lock lock,VoidCriticalRegion cr) {
+		lock.lock();
+		try {
+		cr.apply();
+		} finally {
+		lock.unlock();
+		}
+		}
+		public static int withLock(Lock lock, IntCriticalRegion cr) {
+		lock.lock();
+		try {
+		return cr.apply();
+		} finally {
+		lock.unlock();
+		}
+		}
+	}
+
+The helper method withLock takes the variable code as a method argument of type CriticalRegion:
+@FunctionalInterface
+public interface VoidCriticalRegion {
+void apply();
+}
+@FunctionalInterface
+public interface IntCriticalRegion {
+int apply();
+}
+Note that CriticalRegion is a functional interface and hence a lambda expression can be used to provide an implementation of the CriticalRegion interface. Here is a piece of code that uses the helper method withLock:
+	private class MyIntStack {
+		...
+		public int pop() {
+		return withLock(lock, () -> {
+		if (sp < 0)
+		throw new NoSuchElementException();
+		else
+		return array[sp--];
+		});
+		}
+	}
+	
+	private class MyIntStack {
+				private Lock lock = new ReentrantLock();
+				private int[] array = new int[16];
+				private int sp = -1;
+				public void push(final int e) {
+				withLock(lock, () -> {
+				if (++sp >= array.length)
+				resize();
+				array[sp] = e;
+				});
+				}
+				...
+		}
+The boilerplate code is reduced to invocation of the withLock helper method and the critical region is provided as a lambda expression. While the suggested withLock method indeed aids elimination of code duplication it is by no means sufficient.
+
+=================================================================================================================================================
+Programming with lambda expressions has two aspects:
+	1. Using lambdas to define ad-hoc functionality that is passed to existing operations, such as calling the streams' forEach, filter, map, and reduce operations.
+	2. Designing functional APIs that take lambda expressions as arguments. At the heart of designing such APIs is the execute-around pattern. Even the streams' forEach, filter, map, and reduce operations are example of execute-around: they are loops that execute around the lambda that we pass in.
+	
+===============================================================================================================
+Default Methods:
+
+Default methods can be added to an interface without breaking the implementing classes because default methods have an implementation. If every additional method in an interface comes with an implementation then no implementing class is adversely affected.
+Hence the JDK designers wanted to add the forEach method to the Iterable interface, which is the topmost interface of all collections in the JDK.	
+
+Using a default method the Iterable interface looks like this:
+		public interface Iterable<T> {
+			public r<T> iterator();
+			Iterato public default void forEach(Consumer<? super T> consumer) {
+				for (T t : this) {
+				consumer.accept(t);
+				}
+			}
+		}
+		
+A default method in contrast can only use its arguments because interfaces do not have state.(The fields that you can define in an interface are not really state; they are static final fields, i.e. symbolic names for compile-time constant values, which the compiler eliminates during compilation.) All that the implementation of a default method can build on are its own method arguments and the other methods declared in the interface.
+
+Multiple Inheritance and Ambiguities
+
+a class C might inherit a method foo from both an interface I1 and an interface I2. It raises the question: which method does class C inherit?		
+In order to enable the programmer to resolve the ambiguity there is syntax for explicitly stating which method class C is supposed to inherit. A resolution could look like this:
+class C implements I1, I2 {
+public void foo() { I1.super.foo(); }
+}
+
+==========================================================================================================
+
+ways to create Streams:
+============================
+
+1. Using Collections
+		Approach:
+
+			Get the collection
+			Construct a Sequential Stream from the collection using Collection.stream() method
+			Print the Stream
+
+		e.g.	//Create Stream Object with the list
+				Stream<T> stream=arrList.stream();
+				
+				Iterator<T> it=stream.iterator();
+				while(it.hasNext()){
+					System.out.println(it.next());
+					}
+			
+2.	Create a stream from specified values
+		Approach:
+			Stream.of(T…t) method can be used to create a stream with the specified t values, where t are the elements. This method returns a sequential Stream containing the t elements.
+		e.g. //Stream of Integers
+			// creating a stream of Integer 
+			// and printing sequential 
+			// ordered stream 
+			Stream<Integer> stream = Stream.of(5, 7, 9, 12); 
+	  
+			stream.forEach(System.out::println); 
+			
+			//Stream of Strings
+			Stream<String> stream = Stream.of("AA","BB","GG","CC");
+			stream.forEach(System.out::println);
+			// Displaying the sequential ordered stream 
+			stream.forEach(p -> System.out.println(p)); 
+			
+3.	Create stream from an array	
+		Approach:
+			The Stream.of() and Arrays.stream() are two commonly used methods for creating a sequential stream from a specified array. Both these methods returns a Stream when called with a non-primitive type T.
+		e.g. Stream<T> streamofArray=Arrays.stream(arr);
+			// Stream<T> streamOFArray=Stream.of(arr);
+			 Iterator<T> itr=streamofArray.iterator();
+			 while(itr.hasNext()){
+				System.out.print(itr.next()+" ");
+			 }
+			 
+4.	Create an empty stream using Stream.empty()
+		Approach:
+			The empty() method is used upon creation to avoid returning null for streams with no element.
+		e.g. Stream<T> stream=Stream.empty();
+			 Iterator<T> itr=stream.iterator();
+			 while(itr.hasNext()){
+				System.out.print(itr.next()+" ");
+			 }
+			 
+5. 	Create a stream using Stream.builder
+		Approach:
+			The builder() method is used when the desired type should be additionally specified in the right part of the statement, otherwise the build() method will create an instance of the Stream.
+		e.g. // Create stream using Stream builder() 
+				Stream.Builder<String> builder 
+					= Stream.builder(); 
+		  
+				// Adding elements in the stream of Strings 
+				Stream<String> stream = builder.add("a") 
+											.add("b") 
+											.add("c") 
+											.build(); 
+
+6.	Create an infinite Stream using Stream.iterate()
+		e.g. // Create infinite stream 
+			// using Stream.iterate() method 
+			Stream.iterate(seedValue, 
+						   (Integer n) -> n * n) 
+				.limit(limitTerms) 
+				.forEach(System.out::println); 
+7.	Create an infinite Stream using Stream.generate() method
+		e.g.  // Create infinite stream 
+				// using Stream.generate() method 
+				Stream.generate(Math::random) 
+					.limit(5) 
+					.forEach(System.out::println); 
+					
+8.	Create stream from a Pattern using Predicate
+		Approach:
+			In java 8, the Predicate asPredicate() method of Pattern creates a predicate boolean-valued function that is used for pattern matching.
+		e.g.	// Create ArrayList of String 
+				// that is backed by the specified array 
+				List<String> list 
+					= Arrays 
+						  .asList("Geeks", 
+								  "For", 
+								  "Geek", 
+								  "GeeksForGeeks", 
+								  "A Computer Portal"); 
+				// Get the pattern 
+				Pattern p = Pattern.compile("^G"); 
+				list.stream() 
+					.filter(p.asPredicate()) 
+					.forEach(System.out::println); 
+					
+============================================================================================================================
+Java 8 Predicate with Examples
+
+	Functional Interface is an Interface which allows only one Abstract method within the Interface scope. There are some predefined functional interface in Java like Predicate, consumer, supplier etc.
+
+	The Functional Interface PREDICATE is defined in the java.util.Function package.It improves manageability of code, helps in unit-testing them separately, and contain some default and static methods like:
+
+		1. isEqual(Object targetRef) : This is a static method.Returns a predicate that tests if two arguments are equal according to Objects.equals(Object, Object).
+		2. and(Predicate other) : Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.
+		3. negate() : Returns a predicate that represents the logical negation of this predicate.
+		4. or(Predicate other) : Returns a composed predicate that represents a short-circuiting logical OR of this predicate and another.
+		5. test(T t) : Evaluates this predicate on the given argument.boolean test(T t). Returns true if the input param matches the predicate otherwise false.
+		
+	Final Thoughts on Predicates in Java 8
+	
+		1.	They move your conditions (sometimes business logic) to a central place. This helps in unit-testing them separately.
+		2.	Any change need not be duplicated into multiple places. Java predicate improves code maintenance.
+		3.	The code e.g. “filterEmployees(employees, isAdultFemale())” is very much readable than writing a if-else block.		
+	e.g.	
+		//Simple Predicate
+			// Creating predicate 
+			Predicate<Integer> lesserthan = i -> (i < 18);  
+	  
+			// Calling Predicate method 
+			System.out.println(lesserthan.test(10));  //true
+			
+		//Predicate Chaining
+			//Creating predicate 
+			Predicate<Integer> lowerThanTwenty = (i) -> i < 20;  
+			boolean result = greaterThanTen.and(lowerThanTwenty).test(15); 
+			System.out.println(result); //true
+	  
+			// Calling Predicate method 
+			boolean result2 = greaterThanTen.and(lowerThanTwenty).negate().test(15); 
+			System.out.println(result2); //false
+			
+		//Predicate in to Function
+		 pred(10, (i) -> i > 7); 
+		 static void pred(int number, Predicate<Integer> predicate) 
+			{ 
+				if (predicate.test(number)) { 
+					System.out.println("Number " + number);// Number 10
+				} 
+			} 
+			
+		//Predicate in Collection
+			{
+				List<User> users = new ArrayList<User>(); 
+				users.add(new User("John", "admin")); 
+				users.add(new User("Peter", "member")); 
+				List admins = process(users, (User u) -> u.getRole().equals("admin")); 
+				System.out.println(admins);
+			} 
+  
+			public static List<User> process(List<User> users,  Predicate<User> predicat) 
+			{ 
+				List<User> result = new ArrayList<User>(); 
+				for (User user: users)         
+					if (predicat.test(user))             
+						result.add(user); 
+				return result; 
+			} 
+			
+===================================================================================================================
+The Stream.collect() Method
+Stream.collect() is one of the Java 8’s Stream API‘s terminal methods. It allows to perform mutable fold operations (repackaging elements to some data structures and applying some additional logic, concatenating them, etc.) on data elements held in a Stream instance.
+
+The strategy for this operation is provided via Collector interface implementation.
+
+Collectors Interface
+All predefined implementations can be found in the Collectors class. It’s a common practice to use a following static import with them to leverage increased readability:
+
+import static java.util.stream.Collectors.*;
+or just single import collectors of your choice:
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+In the following examples we will be reusing the following list:
+
+
+List<String> givenList = Arrays.asList("a", "bb", "ccc", "dd");
+
+List<String> result = givenList.stream()
+  .collect(toList());
+  
+ Set<String> result = givenList.stream()
+  .collect(toSet());
+  
+  
+ List<String> listWithDuplicates = Arrays.asList("a", "bb", "c", "d", "bb");
+Set<String> result = listWithDuplicates.stream().collect(toSet());
+assertThat(result).hasSize(4);
+
+List<String> result = givenList.stream().collect(toCollection(LinkedList::new)) //If you want to use a custom implementation, you will need to use the 			//toCollection collector with a provided collection of your choice.Notice that this will not work with any immutable collections. In such case, you would need to either write a custom Collector implementation or use collectingAndThen.
+
+
+Collectors.toMap()
+ToMap collector can be used to collect Stream elements into a Map instance. To do this, we need to provide two functions:
+
+keyMapper
+valueMapper
+========================================================================================
+
+Java 8 Optional Class
+------------------------
+
+Every Java Programmer is familiar with NullPointerException. It can crash your code. And it is very hard to avoid it without using too many null checks.
+Java 8 has introduced a new class Optional in java.util package. It can help in writing neat code without using too many null checks. By using Optional, we can specify alternate values to return or alternate code to run. This makes the code more readable because the facts which were hidden are now visible to the developer.
+
+// Java program without Optional Class 
+public class OptionalDemo{   
+    public static void main(String[] args) {   
+        String[] words = new String[10];   
+        String word = words[5].toLowerCase();   
+        System.out.print(word);   
+    }   
+} 
+Output :
+
+Exception in thread "main" java.lang.NullPointerException
+
+To avoid the abnormal termination, we use Optional class. In the following example, we are using Optional. So, our program can execute without crashing.
+
+ String[] words = new String[10];   
+        Optional<String> checkNull =  
+                      Optional.ofNullable(words[5]);   
+        if (checkNull.isPresent()) {   
+            String word = words[5].toLowerCase();   
+            System.out.print(word);   
+        } else  
+            System.out.println("word is null");  
+
+===============================
+https://stackoverflow.com/questions/47688418/what-is-the-difference-between-intermediate-and-terminal-operations
+https://stackoverflow.com/questions/51445382/what-is-the-difference-between-a-predicate-and-a-function-interface-in-java8
+
+why 'static' methods in Funtional Interfaces ? what purpose does it serve in Java 8?
+Static methods in interfaces are similar to the default methods except that we cannot override these methods in the classes that implements these interfaces.
+https://stackoverflow.com/questions/27833168/difference-between-static-and-default-methods-in-interface
+
+-------------------------------------------------------------------------------------------------------------------
+
+Comparator
+
+https://www.baeldung.com/java-8-comparator-comparing
+
+@FunctionalInterface
+public interface Comparator<T>
+
+Abstract methods: int	compare(T o1, T o2), boolean	equals(Object obj)
+
+Static methods: static <T,U extends Comparable<? super U>>
+Comparator<T>	comparing(Function<? super T,? extends U> keyExtractor)
+Accepts a function that extracts a Comparable sort key from a type T, and returns a Comparator<T> that compares by that sort key.
+			Comparator<Employee> employeeNameComparator = Comparator.comparing(Employee::getName);
+			Arrays.sort(employees, employeeNameComparator);
+	
+			Comparator<Employee> employeeNameComparator= Comparator.comparing(Employee::getName, (s1, s2) -> {return s2.compareTo(s1);});
+			Arrays.sort(employees, employeeNameComparator);
+
+
+comparingInt(ToIntFunction<? super T> keyExtractor)
+Accepts a function that extracts an int sort key from a type T, and returns a Comparator<T> that compares by that sort key.
+
+reveresed
+ComparingLong..
+
+comparing
+Considering Null Values in Comparator: nullsFirst and nullsLast
+Comparator<Employee> employeeNameComparator
+      = Comparator.comparing(Employee::getName);
+    Comparator<Employee> employeeNameComparator_nullFirst
+      = Comparator.nullsFirst(employeeNameComparator);
+   
+    Arrays.sort(employeesArrayWithNulls, 
+      employeeNameComparator_nullFirst);
+
+Comparator.thenComparing
+
+Comparator<Employee> employeeNameComparator 
+      = Comparator.<Employee> naturalOrder();
+     
+    Arrays.sort(employees, employeeNameComparator);
+	
+Comparator<Employee> employeeNameComparator 
+      = Comparator.<Employee> reverseOrder();
+     
+    Arrays.sort(employees, employeeNameComparator);	
+--------------------------------------------------------------------------------
+Why Lambdas? Helps us to create entities which are just functions meaning we are just passing actions.i.e functions as values.
+
+1. Enables Functional Programming
+2. Readable and Concise code
+3. Easier to use APIs and libraries
+4. Enables support for parallel processing.
+
+E.g.:
+
+	() -> System.out.println("hello");
+	(int a) -> a * 2;
+	(int a, int b) -> a+b;
+	(int a, int b) -> {
+			if(b==0) return 0;
+			return a/b;}
+	(String a) -> a.length();
+	
+- In order to declare a lambda expression we need to declare a functional interface.
+- This function-interface will have 1 abstract method whose body will be provided by lambda expression.
+		interface LambdaEx {
+			void foo();
+		}
+		
+		LambdaEx lambdaEx = () -> System.out.println("hello");// from this we are basically passing function body i.e. lambda expression to the abstract method of the interface.
+		
+- Lambda Expression in a way implements the interface by just implementing a function.
+		lambdaEx.foo();//prints hello
+		
+Type Inference		
+	

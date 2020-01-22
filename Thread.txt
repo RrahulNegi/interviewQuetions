@@ -1,0 +1,115 @@
+-)Concurrency vs. Parallelism
+
+Concurrency means multiple tasks which start, run, and complete in overlapping time periods, in no specific order. 
+Parallelism is when multiple tasks OR several part of a unique task literally run at the same time, e.g. on a multi-core processor. Remember that Concurrency and parallelism are NOT the same thing.
+
+Concurrency
+Concurrency is essentially applicable when we talk about minimum two tasks or more. When an application is capable of executing two tasks virtually 
+at same time, we call it concurrent application. Though here tasks run looks like simultaneously, but essentially they MAY not. 
+They take advantage of CPU time-slicing feature of operating system where each task run part of its task and then go to waiting state. When first task is in waiting state, CPU is assigned to second task to complete it’s part of task.
+
+
+Parallelism
+Parallelism does not require two tasks to exist. It literally physically run parts of tasks OR multiple tasks, at the same time using multi-core 
+infrastructure of CPU, by assigning one core to each task or sub-task.
+
+Parallelism requires hardware with multiple processing units, essentially. In single core CPU, you may get concurrency but NOT parallelism.
+
+-)1. Object level lock in Java
+
+Object level lock is mechanism when we want to synchronize a non-static method or non-static code block such that only one 
+thread will be able to execute the code block on given instance of the class. This should always be done to make instance level data thread safe.
+
+public class DemoClass
+{
+    public synchronized void demoMethod(){}
+}
+ 
+or
+ 
+public class DemoClass
+{
+    public void demoMethod(){
+        synchronized (this)
+        {
+            //other thread safe code
+        }
+    }
+}
+ 
+or
+ 
+public class DemoClass
+{
+    private final Object lock = new Object();
+    public void demoMethod(){
+        synchronized (lock)
+        {
+            //other thread safe code
+        }
+    }
+}
+
+-)Class level lock in Java
+
+Class level lock prevents multiple threads to enter in synchronized block in any of all available instances of the class on runtime. 
+This means if in runtime there are 100 instances of DemoClass, then only one thread will be able to execute demoMethod() in any one of instance at a time, and all other instances will be locked for other threads.
+
+Class level locking should always be done to make static data thread safe. As we know that static keyword associate data of methods to class level, so use locking at static fields or methods to make it on class level.
+
+Various ways for class level locking
+public class DemoClass
+{
+    //Method is static
+    public synchronized static void demoMethod(){
+ 
+    }
+}
+ 
+or
+ 
+public class DemoClass
+{
+    public void demoMethod()
+    {
+        //Acquire lock on .class reference
+        synchronized (DemoClass.class)
+        {
+            //other thread safe code
+        }
+    }
+}
+ 
+or
+ 
+public class DemoClass
+{
+    private final static Object lock = new Object();
+ 
+    public void demoMethod()
+    {
+        //Lock object is static
+        synchronized (lock)
+        {
+            //other thread safe code
+        }
+    }
+}
+
+
+-)Difference between Runnable vs Thread
+
+There has been a good amount of debate on which is better way. Well, I also tried to find out and below is my learning.
+
+Implementing Runnable is the preferred way to do it. Here, you’re not really specializing or modifying the thread’s behavior. You’re just giving the thread something to run. That means composition is the better way to go.
+Java only supports single inheritance, so you can only extend one class.
+Instantiating an interface gives a cleaner separation between your code and the implementation of threads.
+Implementing Runnable makes your class more flexible. If you extend Thread then the action you’re doing is always going to be in a thread. However, if you implement Runnable it doesn’t have to be. You can run it in a thread, or pass it to some kind of executor service, or just pass it around as a task within a single threaded application.
+If you are working on JDK 4 or lesser, then there is bug :
+http://bugs.java.com/bugdatabase/view_bug.do;jsessionid=5869e03fee226ffffffffc40d4fa881a86e3:WuuT?bug_id=4533087
+
+It’s fixed in Java 1.5 but Sun doesn’t intend to fix it in 1.4.
+
+The issue is that at construction time, a Thread is added to a list of references in an internal thread table. It won’t get removed from that list until its start() method has completed. As long as that reference is there, it won’t get garbage collected.
+
+
