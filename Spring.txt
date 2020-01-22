@@ -1,0 +1,114 @@
+1) Difference between constructor and setter injection
+Difference between constructor and setter injection
+There are many key differences between constructor injection and setter injection.
+
+Partial dependency: can be injected using setter injection but it is not possible by constructor. Suppose there are 3 properties in a class, having 3 arg constructor and setters methods. In such case, if you want to pass information for only one property, it is possible by setter method only.
+Overriding: Setter injection overrides the constructor injection. If we use both constructor and setter injection, IOC container will use the setter injection.
+Changes: We can easily change the value by setter injection. It doesn't create a new bean instance always like constructor. So setter injection is flexible than constructor injection
+
+2) @Configuration annotation indicates that a class declares one or more @Bean methods and may be processed by the Spring container to generate bean definitions and service requests for those beans at runtime. Since spring 2, we were writing our bean configurations to xml files
+
+Spring @Component. Spring Component annotation is used to denote a class as Component. It means that Spring framework will autodetect these classes for dependency injection when annotation-based configuration and classpath scanning is used.
+
+Spring @Qualifier Annotation. Advertisements. There may be a situation when you create more than one bean of the same type and want to wire only one of them with a property. In such cases, you can use the @Qualifier annotation along with @Autowired to remove the confusion by specifying which exact bean will be wired
+
+Spring has chosen to support using @Inject synonymously with their own @Autowired annotation. So, to answer your question, @Autowired is Spring's own (legacy) annotation. @Inject is part of a new Java technology called CDI that defines a standard for dependency injection similar to Spring.
+
+Their only difference comes in their purpose i.e. @Controller is used in Spring MVC to define controller, which are first Spring bean and then controller. Similarly, @Service is used to annotated classes which hold business logic in the Service layer and @Repository is used in Data Access layer
+
+Spring @Required Annotation. Advertisements. The @Required annotation applies to bean property setter methods and it indicates that the affected bean property must be populated in XML configuration file at configuration time. Otherwise, the container throws a BeanInitializationException exception.
+
+Spring @Bean Annotation is applied on a method to specify that it returns a bean to be managed by Spring context. Spring Bean annotation is usually declared in Configuration classes methods.
+
+3)AOP
+
+Pointcut
+– An expression that selects one or more Join Points
+-: Pointcut is expressions that are matched with join points to determine whether advice needs to be executed or not. Pointcut uses different kinds of expressions that are matched with the join points and Spring framework uses the AspectJ pointcut expression language.
+Join Point
+– A point in the execution of a program such as a method call or exception thrown
+- A join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc. In Spring AOP a join point is always the execution of a method.
+Advice
+– Code to be executed at each selected Join Point
+-Advices are actions taken for a particular join point. In terms of programming, they are methods that get executed when a certain join point with matching pointcut is reached in the application
+Aspect
+– A module that encapsulates pointcuts and advice
+-An aspect is a class that implements enterprise application concerns that cut across multiple classes, such as transaction management. Aspects can be a normal class configured through Spring XML configuration or we can use Spring AspectJ integration to define a class as Aspect using @Aspect annotation.
+Weaving
+– Technique by which aspects are combined with main code
+Introduction
+-Spring AOP allows to introduce new interfaces (and a corresponding application) to any object advises.
+Target Object
+-An object is assisted by one or more respects. Also known as the object advised.
+-They are the object on which advices are applied. Spring AOP is implemented using runtime proxies so this object is always a proxied object. What is means is that a subclass is created at runtime where the target method is overridden and advice are included based on their configuration.
+AOP Proxy
+-AOP proxy is an object used to perform the contract area. This object is created by the AOP framework. In Spring AOP proxy is part of JDK dynamic proxy or proxy CGLIB.
+Spring AOP is proxy-based. AOP proxy is an object created by the AOP framework in order to implement the aspect contracts in runtime.
+
+- Weaving: linking aspects with other application types or objects to create an advised object. This can be done at compile time (using the AspectJ compiler, for example), load time, or at runtime. Spring AOP, like other pure Java AOP frameworks, performs weaving at runtime.
+Q)How does Spring solve (implement) a cross cutting concern?
+
+Implement your mainline application logic
+– Focusing on the core problem
+Write aspects to implement your cross-cutting concerns
+– Spring provides many aspects out-of-the-box
+Weave the aspects into your application
+– Adding the cross-cutting behaviors to the right places
+
+q). How many advice types does Spring support. What are they used for?
+
+Before advice: Advice that executes before a join point, but which does not have the ability to prevent execution flow proceeding to the join point (unless it throws an exception).
+After returning advice: Advice to be executed after a join point completes normally: for example, if a method returns without throwing an exception.
+After throwing advice: Advice to be executed if a method exits by throwing an exception.
+After advice: Advice to be executed regardless of the means by which a join point exits (normal or exceptional return).
+Around advice: Advice that surrounds a join point such as a method invocation. This is the most powerful kind of advice. Around advice can perform custom behavior before and after the method invocation. It is also responsible for choosing whether to proceed to the join point or to shortcut the advised method execution by returning its own return value or throwing an exception.
+
+
+2) In Spring, aspects are woven into Spring-managed beans at runtime by wrapping them with a proxy class. The proxy class poses as the target bean, intercepting advised method calls and forwarding those calls to the target bean. Between the time when the proxy intercepts the method call and the time when it invokes the target bean's method, the proxy performs the aspect logic. 
+
+Q) Example
+@Aspect
+@Component
+public class LoggingAspect {
+
+ //@Before("execution(* com.doj.aopapp.service.*.*(..))") // before advice with pointcut expression directly
+ @Before("logForAllMethods()") //before advice with named pointcut that declared as name logForAllMethods()
+ public void beforeAdviceForAllMethods(JoinPoint jp) throws Throwable {
+        System.out.println("****LoggingAspect.beforeAdviceForAllMethods() " + jp.getSignature().getName());
+    }
+}
+
+ Following pointcut expression for before advice is valid for all public methods with any arguments of any type and any return type of all classes in the com.doj.aopapp.service package.
+
+@Before("execution(* com.doj.aopapp.service.*.*(..))")
+2. Following pointcut expression for before advice is valid for all public methods whose name are transfer() with taking three arguments of any type and any return type of all classes in the com.doj.aopapp.service package.
+
+@Before("execution(* com.doj.aopapp.service.*.transfer(*,*,*))")
+
+-) Named Pointcut
+We can also define pointcut methods for named pointcut. Actually named pointcut is nothing but it is simple way to declaring common pointcut expressions above a method with @Pointcut annotation. This helps to reduce the complexity of writing common complex pointcut expression.
+
+/**
+* Declaring named pointcut
+ */
+@Pointcut("execution(* com.doj.aopapp.service.*.*(..))")
+public void logForAllMethods(){}
+
+/**
+* before advice with named pointcut that declared as name logForAllMethods()
+ */
+@Before("logForAllMethods()") //before advice with name pointcut that declared as name logForAllMethods()
+public void beforeAdviceForAllMethods(JoinPoint jp) throws Throwable {
+       System.out.println("****LoggingAspect.beforeAdviceForAllMethods() " + jp.getSignature().getName());
+}
+
+
+Q)Filters vs Spring interceptor?
+A Servlet Filter is used in the web layer only, you can’t use it outside of a web context. Interceptors can be used anywhere. That’s the main difference.
+
+for authentication of web pages you would use a servlet filter. For security stuff in your business layer or logging/bugtracing (a.k.a. independent of the web layer) you would use an Interceptor.
+
+Apart from the fact that both Interceptors and filters are based on intercepting filter,there are few differences when it comes to Struts2.
+
+Filters: (1)Based on Servlet Specification (2)Executes on the pattern matches on the request.(3) Not configurable method calls
+Interceptors: (1)Based on Struts2. (2)Executes for all the request qualifies for a front controller( A Servlet filter ).And can be configured to execute additional interceptor for a particular action execution.(3)Methods in the Interceptors can be configured whether to execute or not by means of excludemethods or includeMethods

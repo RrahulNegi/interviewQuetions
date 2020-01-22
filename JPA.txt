@@ -1,0 +1,61 @@
+JPA Interview Questions
+1) The Java Persistence API (JPA) is the specification of Java that is used to persist data between Java object and relational database. JPA acts as a bridge between object-oriented domain models and relational database systems. As JPA is just a specification, it doesn't perform any operation by itself. It requires an implementation. Therefore, ORM tools like Hibernate, TopLink, and iBatis implements JPA specifications for data persistence.
+
+
+2) Does JPA performs the actual task like access, persist and manage data?
+No, JPA is only a specification. The ORM tools like Hibernate, iBatis, and TopLink implements the JPA specification and perform these type of tasks.
+
+3)What is the JPQL?
+JPQL is the Java Persistence query language defined in JPA specification. It is used to construct the queries.
+
+4) EntityManagerFactory emf=Persistence.createEntityManagerFactory("Student_details");  
+EntityManager em=emf.createEntityManager();
+em.getTransaction().begin();  
+em.persist(s1);  
+em.getTransaction().commit();  
+
+What is an orphan removal in mappings?
+If a target entity in one-to-one or one-to-many mapping is removed from the mapping, then remove operation can be cascaded to the target entity. Such target entities are known as orphans, and the orphanRemoval attribute can be used to specify that orphaned entities should be removed.
+You are here: Home / Hibernate / Hibernate Tips / Hibernate Tips: How to delete child entities from a many-to-one association
+Hibernate Tips: How to delete child entities from a many-to-one association
+Solution:
+Yes, the JPA specification provides the orphanRemoval feature for these use cases. When you activate it on the association, Hibernate removes a child entity when you remove its association to the parent entity.
+
+Let’s take a look at an example.
+
+In most online book stores, customers can review the offered books. You can model that with a Book and a Review entity and a one-to-many association between them.
+
+It doesn’t make any sense to store a Review that’s not associated with a Book. So, you should set the orphanRemoval attribute of the @OneToMany association to true. And you also need to set the cascade attribute to CascadeType.PERSIST or CascadeType.ALL.
+@Entity
+public class Book {
+ 
+    @OneToMany(mappedBy = "book", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    private List<Review> reviews = new ArrayList<Review>();
+     
+    ...
+}
+em = emf.createEntityManager();
+em.getTransaction().begin();
+ 
+Book b = em.find(Book.class, 1L);
+b.getReviews().remove(0);
+ 
+em.getTransaction().commit();
+em.close();
+As you can see in the following log messages, Hibernate performs 2 SQL SELECT statements to get the Book entity with id 1 and all associated Review entities. And when I commit the transaction, it also performs an SQL DELETE operation to remove the Review entity from the database.
+
+5) What are the three types of Inheritance Mapping Strategies described in JPA?
+-) single table per class hierarchy  – all enity one table, to identify the type of entity is determined by a special column “discriminator column” .
+@Entity  
+@Table(name = "employee101")  
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)  
+@DiscriminatorColumn(name="type",discriminatorType=DiscriminatorType.STRING)  
+@DiscriminatorValue(value="employee")  
+  
+public class Employee {  
+}
+
+@Entity  
+@DiscriminatorValue("regularemployee")  
+public class Regular_Employee extends Employee{
+}
