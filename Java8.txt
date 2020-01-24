@@ -1,0 +1,98 @@
+Q) What is Spliterator in Java SE 8?Differences between Iterator and Spliterator in Java SE 8?
+
+Java Spliterator interface is an internal iterator that breaks the stream into the smaller parts. These smaller parts can be processed in parallel.
+In real life programming, we may never need to use Spliterator directly. Under normal operations, it will behave exactly same as Java Iterator.
+Spliterator Syntax
+Spliterator<T> spliterator = list.spliterator();
+he Java collection classes provide default stream() and parallelStream() methods which internally use the Spliterator through the call to the spliterator(). It helps in processing the collection data in parallel.
+Collection.java
+default Stream<E> stream() {
+    return StreamSupport.stream(spliterator(), false);
+}
+ 
+default Stream<E> parallelStream() {
+    return StreamSupport.stream(spliterator(), true);
+}
+Following is a list of features provided by Spliterator in Java.
+
+Spliterator has been introduced in Java 8.
+-It provides support for parallel processing of stream of elements for any collection.
+-It provides tryAdvance() method to iterate elements individually in different threads. It helps in parallel processing.
+-To iterate elements sequentially in a single Thread, use forEachRemaining() method.
+-The trySplit() method is used partition the spliterator, if it is possible.
+-It helps in combining the hasNext() and next() operations into one method.
+Java Spliterator Methods
+-int characteristics() : returns the list of characteristics of the spliterator. It can be any of ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED.
+-long estimateSize() : returns an estimate of the number of elements that would be encountered by a forEachRemaining() traversal, or returns Long.MAX_VALUE if infinite, unknown, or too expensive to compute.
+-default void forEachRemaining(Consumer action) : performs the given action for each remaining element, sequentially in the current thread, until all elements have been processed or the action throws an exception.
+-default Comparator getComparator() : if the spliterator’s source is SORTED by a Comparator, returns that Comparator.
+-default long getExactSizeIfKnown() : returns estimateSize() if this Spliterator is SIZED, else -1.
+-default boolean hasCharacteristics(int characteristics) : returns true if the dpliterator’s characteristics() contain all of the given characteristics.
+-boolean tryAdvance(Consumer action) : if a remaining element exists, performs the given action on it, returning true; else returns false.
+-Spliterator trySplit() : if the spliterator can be partitioned, returns a Spliterator covering elements, that will, upon return from this method, not be covered by this Spliterator.
+
+Q)What are the major drawbacks of External Iteration?
+
+We need to write code in Imperative Style.
+There is no clear separation of Responsibilities. Tightly-Coupling between “What is to be done” and “How it is to be done” code.
+Less Readable Code.
+More Verbose and Boilerplate code.
+We have to iterate elements in Sequential order only.
+It does not support Concurrency and Parallelism properly.
+
+Q)What are the major advantages of Internal Iteration over External Iteration?
+Compare to External Iteration, Internal Iteration has the following advantages:
+
+As it follows Functional Programming style, we can write Declarative Code.
+More Readable and concise code.
+Avoids writing Verbose and Boilerplate code
+No need to iterate elements in Sequential order.
+It supports Concurrency and Parallelism properly.
+We can write Parallel code to improve application performance.
+Clear separation of Responsibilities. Loosely-Coupling between “What is to be done” and “How it is to be done” code.
+We need to write code only about “What is to be done” and Java API takes care about “How it is to be done” code.
+What is the major drawback of Internal Iteration over External Iteration?
+Compare to External Iteration, Internal Iteration has one major drawback:
+
+In Internal Iteration, as Java API takes care about Iterating elements internally, we do NOT have control over Iteration.
+
+Q)What is the major advantage of External Iteration over Internal Iteration?
+Compare to Internal Iteration, External Iteration has one major advantage:
+
+In External Iteration, as Java API does NOT take care about Iterating elements, we have much control over Iteration.
+When do we need to use Internal Iteration? When do we need to use External Iteration?
+We need to understand the situations to use either Internal Iteration or External Iteration.
+
+When we need more control over Iteration, we can use External Iteration.
+When we do NOT need more control over Iteration, we can use Internal Iteration.
+When we need to develop Highly Concurrency and Parallel applications and we , we should use Internal Iteration.
+
+Q)Is it possible to provide method implementations in Java Interfaces? If possible, how do we provide them?
+In Java 7 or earlier, It is not possible to provide method implementations in Interfaces. Java 8 on-wards, it is possible.
+
+In Java SE 8, We can provide method implementations in Interfaces by using the following two new concepts:
+
+Default Methods
+Static Methods
+
+Q)What is a Default Method? Why do we need Default methods in Java 8 Interfaces?
+A Default Method is a method which is implemented in an interface with “default” keyword. It’s new featured introduced in Java SE 8.
+
+We need Default Methods because of the following reasons:
+
+It allow us to provide method’s implementation in Interfaces.
+To add new Functionality to Interface without breaking the Classes which implement that Interface.
+To provide elegant Backwards Compatibility Feature.
+To ease of extend the existing Functionality.
+To ease of Maintain the existing Functionality.
+
+Q)What is a Static Method? Why do we need Static methods in Java 8 Interfaces?
+A Static Method is an Utility method or Helper method, which is associated to a class (or interface). It is not associated to any object.
+
+We need Static Methods because of the following reasons:
+
+We can keep Helper or Utility methods specific to an interface in the same interface rather than in a separate Utility class.
+We do not need separate Utility Classes like Collections, Arrays etc to keep Utility methods.
+Clear separation of Responsibilities. That is we do not need one Utility class to keep all Utility methods of Collection API like Collections etc.
+Easy to extend the API.
+Easy to Maintain the API.

@@ -190,3 +190,126 @@ When Spring loads your bean definitions, and has been configured to look for @Tr
 However, the proxies can also be supplied with interceptors, and when present these interceptors will be invoked by the proxy before it invokes your target bean's method. For target beans annotated with @Transactional, Spring will create a TransactionInterceptor, and pass it to the generated proxy object. So when you call the method from client code, you're calling the method on the proxy object, which first invokes the TransactionInterceptor (which begins a transaction), which in turn invokes the method on your target bean. When the invocation finishes, the TransactionInterceptor commits/rolls back the transaction. It's transparent to the client code.
 
 As for the "external method" thing, if your bean invokes one of its own methods, then it will not be doing so via the proxy. Remember, Spring wraps your bean in the proxy, your bean has no knowledge of it. Only calls from "outside" your bean go through the proxy.
+
+Q)
+If we make @Transactional(readOnly = true), then we will not able to persist the data into the database.
+
+@Transactional Implementation Details
+Spring creates a proxy or manipulates the class byte-code to manage the creation, commit, and rollback of the transaction. In the case of a proxy, Spring ignores @Transactional in internal method calls.
+
+Simply put, if we have a method like callMethod and we mark it as @Transactional, Spring would wrap some transaction management code around the invocation:@Transactional method called:
+createTransactionIfNecessary();
+try {
+    callMethod();
+    commitTransactionAfterReturning();
+} catch (exception) {
+    completeTransactionAfterThrowing();
+    throw exception;
+}
+
+Q) Transaction Propagation?
+Propagation defines our business logic ‘s transaction boundary. Spring manages to start and pause a transaction according to our propagation setting.
+
+Spring calls TransactionManager::getTransaction to get or create a transaction according to the propagation. It supports some of the propagations for all types of TransactionManager, but there are a few of them that only supported by specific implementations of TransactionManager.
+1) REQUIRED Propagation :
+REQUIRED is the default propagation. Spring checks if there is an active transaction, then it creates a new one if nothing existed. Otherwise, the business logic appends to the currently active transaction:
+@Transactional(propagation = Propagation.REQUIRED)
+ pseudo-code of how transaction creation works for REQUIRED propagation:
+ if (isExistingTransaction()) {
+    if (isValidateExistingTransaction()) {
+        validateExisitingAndThrowExceptionIfNotValid();
+    }
+    return existing;
+}
+return createNewTransaction();
+
+2) SUPPORTS Propagation:
+For SUPPORTS, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be used. If there isn't a transaction, it is executed non-transactional:
+@Transactional(propagation = Propagation.SUPPORTS)
+
+transaction creation's pseudo-code for SUPPORTS:
+if (isExistingTransaction()) {
+    if (isValidateExistingTransaction()) {
+        validateExisitingAndThrowExceptionIfNotValid();
+    }
+    return existing;
+}
+return emptyTransaction;
+
+3)MANDATORY Propagation:
+When the propagation is MANDATORY, if there is an active transaction, then it will be used. If there isn't an active transaction, then Spring throws an exception:
+@Transactional(propagation = Propagation.MANDATORY)
+
+transaction creation's pseudo-code for MANDATORY:
+if (isExistingTransaction()) {
+    if (isValidateExistingTransaction()) {
+        validateExisitingAndThrowExceptionIfNotValid();
+    }
+    return existing;
+}
+throw IllegalTransactionStateException;
+
+4)NEVER Propagation	
+For transactional logic with NEVER propagation, Spring throws an exception if there's an active transaction:
+@Transactional(propagation = Propagation.NEVER)
+
+ pseudo-code of how transaction creation works for NEVER propagation:
+ if (isExistingTransaction()) {
+    throw IllegalTransactionStateException;
+}
+return emptyTransaction;
+
+5)NOT_SUPPORTED Propagation
+Spring at first suspends the current transaction if it exists, then the business logic is executed without a transaction.
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+
+6)REQUIRES_NEW Propagation
+
+When the propagation is REQUIRES_NEW, Spring suspends the current transaction if it exists and then creates a new one:
+
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+
+Code: if (isExistingTransaction()) {
+    suspend(existing);
+    try {
+        return createNewTransaction();
+    } catch (exception) {
+        resumeAfterBeginException();
+        throw exception;
+    }
+}
+return createNewTransaction();
+
+7)NESTED Propagation :
+For NESTED propagation, Spring checks if a transaction exists, then if yes, it marks a savepoint. This means if our business logic execution throws an exception, then transaction rollbacks to this savepoint. If there's no active transaction, it works like REQUIRED.
+@Transactional(propagation = Propagation.NESTED)
+
+Q)Transaction Isolation ?
+
+Isolation is one of the common ACID properties: Atomicity, Consistency, Isolation, and Durability. Isolation describes how changes applied by concurrent transactions are visible to each other.
+
+Each isolation level prevents zero or more concurrency side effects on a transaction:
+
+-)Dirty read: read the uncommitted change of a concurrent transaction
+-)Nonrepeatable read: get different value on re-read of a row if a concurrent transaction updates the same row and commits
+-)Phantom read: get different rows after re-execution of a range query if another transaction adds or removes some rows in the range and commits
+We can set the isolation level of a transaction by @Transactional::isolation. It has these five enumerations in Spring: DEFAULT, READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE.
+1)READ_UNCOMMITTED
+READ_UNCOMMITTED isolation level states that a transaction may read data that is still uncommitted by other transactions. This constraint is very relaxed in what matters to transactional concurrency but it may lead to some issues like dirty reads
+In this example Transaction A writes a record. Meanwhile Transaction B reads that same record before Transaction A commits. Later Transaction A decides to rollback and now we have changes in Transaction B that are inconsistent. This is a dirty read. Transaction B was running in READ_UNCOMMITTED isolation level so it was able to read Transaction A changes before a commit occurred.
+
+2)READ_COMMITTED
+READ_COMMITTED isolation level states that a transaction can't read data that is not yet committed by other transactions. This means that the dirty read is no longer an issue, but even this way other issues may occur.
+
+In this example Transaction A reads some record. Then Transaction B writes that same record and commits. Later Transaction A reads that same record again and may get different values because Transaction B made changes to that record and committed. This is a non-repeatable read.
+
+3)REPEATABLE_READ
+REPEATABLE_READ isolation level states that if a transaction reads one record from the database multiple times the result of all those reading operations must always be the same. This eliminates both the dirty read and the non-repeatable read issues, but even this way other issues may occur
+
+In this example Transaction A reads a range of records. Meanwhile Transaction B inserts a new record in the same range that Transaction A initially fetched and commits. Later Transaction A reads the same range again and will also get the record that Transaction B just inserted. This is a phantom read: a transaction fetched a range of records multiple times from the database and obtained different result sets (containing phantom records).
+
+4)SERIALIZABLE
+SERIALIZABLE isolation level is the most restrictive of all isolation levels. Transactions are executed with locking at all levels (read, range and write locking) so they appear as if they were executed in a serialized way. This leads to a scenario where none of the issues mentioned above may occur, but in the other way we don't allow transaction concurrency and consequently introduce a performance penalty.
+
+5)DEFAULT
+DEFAULT isolation level, as the name states, uses the default isolation level of the datastore we are actually connecting from our application.
