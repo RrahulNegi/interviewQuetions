@@ -112,10 +112,15 @@ Explain executor framework.
 
 Difference between interface and abstract class.
 
-Why we explicitly give public static final for constants if JVM internally treats this as same in interface.
+Q) Why we explicitly give public static final for constants if JVM internally treats this as same in interface.
 
 
+public: for the accessibility across all the classes, just like the methods present in the interface
 
-Java has no concept of object immutability; this is achieved by carefully designing the object, and is a far-from-trivial endeavor.
+static: as interface cannot have an object, the interfaceName.variableName can be used to reference it or directly the variableName in the class implementing it.
 
-How do you display duplicates with their count using collection.  
+final: to make them constants. If 2 classes implement the same interface and you give both of them the right to change the value, conflict will occur in the current value of the var, which is why only one time initialization is permitted.
+
+Q)Java has no concept of object immutability; this is achieved by carefully designing the object, and is a far-from-trivial endeavor.
+
+Q)How do you display duplicates with their count using collection.  
