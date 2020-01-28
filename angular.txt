@@ -1,0 +1,273 @@
+Q) What does Single page application really mean ?
+
+This actually mean that you will load your page only once and all the navigations will happen with in the same single page 
+you have loaded at first time like in ajax to provide awesome experience.
+
+In angular index.html is the only file served by server, that is the reason that it is called as single page application. 
+All the other files (referred as components in angular) are served by angular.
+
+Single page application (SPA) is a web application that fits on a single page. All your code (JS, HTML, CSS) is retrieved with a single page load. And navigation between pages performed without refreshing the whole page.
+
+Pros
+-No page refresh
+When you are using SPA, you don’t need to refresh the whole page, just load the part of the page which needs to be changed. Angular allows you to pre-load and cache all your pages, so you don’t need extra requests to download them.
+
+-Better user experience
+SPA feels like a native application: fast and responsive.
+
+-Ability to work offline
+Even if user loses internet connection, SPA can still work because all the pages are already loaded.
+
+Cons
+-More complex to build
+You need to write pretty much javascript, handle shared state between pages, manage permissions, etc.
+
+-SEO
+To index your SPA app, search engine crawlers should be able to execute javascript. Only recently Google and Bing started indexing Ajax-based pages by executing JavaScript during crawling. You need to create static HTML snapshots specially for search engines.
+
+-Initial load is slow
+SPA needs to download more resources when you open it.
+
+-Client should have javascript enabled
+Of course, SPA requires javascript. But fortunately, almost everyone has javascript enabled.
+
+Q) What is the difference between javascript and typescript ?
+In highlevel difference between javascript and typescript is,
+
+Javascript developed with ES5 standards and
+Typescript developed with ES6 standards.
+
+Q) What is CLI / Angular CLI ?
+
+Angular CLI is nothing but Angular command Line Interface, which provides the way to create and manage the angular application through command line interface only.
+
+We need to have npm package manager installed to start working on angular command line interface
+
+Q) How Angular works?
+Main.ts > AppModule > App.component, it serves the content available in the Template file.
+index.html file looks like this,
+
+index.html file is the only file served by our servers, all the others are served by angular, that is why it is called as single page application.
+
+<body>
+<app-root>Loading...</app-root>
+</body>
+
+here app-root is the default and only component(referred as selector in angular) created by angular, which allows to load our own components.
+and your first angular generates
+
+component.ts file – it is a component file, because it is annotated with @Component annotation.
+module.ts – NgModule file
+.html – template file for the above mentioned component
+.css – style file for the above mentioned component
+ 
+
+Here in the angular component.ts file we have a selector:’app-root’ which is the one referred in the index.html file, which basically prints/gives the output based on the above templates(.html file) values configured in the component.
+
+main.ts is the file where angular starts it execution, which just bootstraps or starts Angular Module (module.ts) then the module.ts file will just bootstraps the component.ts file and serves the output based on the template mapped to the particular component file.
+Note, all angular pages source codes will not have any additional contents/source codes other than <app-root>, but angular internally imports many java script files based on our components/modules to bring the expected output.
+
+Q) Binding in Angular?
+Event binding
+property binding
+Two way data binding
+
+Q)What is event binding ?
+
+Event Binding in angular adds an event handler which will be triggered on the added event action.
+<button (click) = “addMe()”> Add Me </button>
+
+Q) What is property binding ?
+Binding html properties like disabled[disabled], class[ngClass] and style[ngStyle] dynamically with component properties is 
+called property binding in angular. You can even create your own custom property using @Input.
+
+Syntax:[] (any html properties inside the square brackets)
+-Component property binding is performed as below.
+<my-msg  prefixMsg= "Website name is " [siteName] = "website.name"> </my-msg> 
+-Element property binding is performed as below.
+<a [href]="website.url" [textContent]="website.name"> </a> 
+-Directive property binding is performed as below.
+<p [ngClass]="'one two'"> Angular 2 Property Binding Example </p> 
+
+Q) What is Two way data binding ?
+
+Two way Databinding is nothing but tightly binding the model and the view variable, so whenever there is a change in the UI view, immediately model also be updated with the change and vice versa.
+
+For example:
+<input type=”text” [(ngModel)]=”username” >
+here [(ngModel)] = “username” is a two way databinding and username variable is a variable mapped to this two way databinding.
+
+Q) What is String interpolation ?
+
+String interpolation is basically used to output the values from the typescript file(class/component) to template(html) file. Whenever you want to dynamically display the values through 
+backends/http requests/from DB then you can make use of this string interpolation to directly output your contents to templates.
+Syntax: {{}}
+
+Q) What are directives ?
+
+Directives are instructions in the DOM for angular. Components are also directives. Because components selector:’myComponentSelector’ also instructs the DOM runtime in angular to load the respective templates and typescript component files.
+
+- Component Directives
+These form the main class having details of how the component should be processed, instantiated and used at runtime.
+
+- Structural Directives
+A structure directive basically deals with manipulating the dom elements. Structural directives have a * sign before the directive. For example, *ngIf and *ngFor.
+
+- Attribute Directives
+Attribute directives deal with changing the look and behavior of the dom element. You can create your own directives as shown below.
+
+How to Create Custom Directives?
+-) ng g directive changeText
+-)import { Directive, ElementRef} from '@angular/core';
+@Directive({
+   selector: '[changeText]'
+})
+
+export class ChangeTextDirective {
+   constructor(Element: ElementRef) {
+      console.log(Element);
+      Element.nativeElement.innerText="Text is changed by changeText Directive. ";
+   }
+}
+
+-) <div style="text-align:center">
+   <span changeText >Welcome to {{title}}.</span>
+</div>
+
+-)Difference between Component & Directive in Angular:
+
+Component:
+
+Components can be created using @Component annotation.
+<app-header></app-header>, here app-header is the component.
+Components helps to split the application into smaller components.
+Only one component can be used per DOM element. <app-header app-footer></app-header app-footer> can’t do like this and all.
+
+Directive:
+
+Directive can be created using @Directive annotation.
+<button highLightMe>I log when clicked!</button>, here highLightMe is the directive.
+Directives helps to design re-usable components. [highLightMe can be used in different tags to highlight the text present inside the tags].
+Multiple directive can be used per DOM element. <p highLightMe boldMe></p> two different directive used for the same DOM element tag p.
+
+
+Q)What are angular lifecycle hooks ?
+
+Angular has 8 lifecycle hooks and these are,
+
+ngOnInit() and ngOnDestroy() – called only once.
+ngAfterContentInit() and ngAfterViewInit() – Called after the projected content and view has been initialized.
+ngAfterContentChecked() and ngAfterViewChecked() – Called every time the projected content and view have been checked.
+ngOnChanges() – Called after @Input property changes. (Bounded input properties)
+ngDoCheck() – Called during all the change detection run.
+All the above (onChanges, onInit, DoCheck etc..) should be imported from @angular/core.
+
+Note: Directives will not have all the lifecycle hooks like components other ngOnInit and ngOnDestroy, because there is no view with directives
+
+Q)What is Pure and Impure Pipes ?
+
+Built-in angular pipes are pure by default and good for performances as it is not running on every change detection cycle.
+
+pure:false attribute can be used inside the @Pipe decorator to change the pure pipes to impure pipes.
+
+Below custom pipe is the best example for impure pipes and it runs on every change detection cycles.
+
+If suppose you are using a filter for some array and during the pipe execution if the array changed at the backend, array recent changes may not be captured with pure pipe, where as impure pipe catches the parallel changes during change detection cycle and reflects the result.
+
+@Pipe({name:'SimplePipe',pure:false})
+
+export class SimplePipe implements PipeTransform{
+
+transform(value:any){
+
+return value.subString(0,5);
+
+}
+
+}
+
+Q)what is Routing?
+Routing basically means navigating between pages. You have seen many sites with links that direct you to a new page. This can be achieved using routing. 
+Here the pages that we are referring to will be in the form of components. 
+- import { RouterModule} from '@angular/router'
+- RouterModule.forRoot([
+   {
+      path: 'new-cmp',
+      component: NewCmpComponent
+   }
+])
+RouterModule refers to the forRoot which takes an input as an array, which in turn has the object of the path and the component.
+ Path is the name of the router and component is the name of the class, i.e., the component created.
+
+- We create a component New-cmp.component.ts 
+- we add routing detail in app.component.html
+- <a routerLink = "new-cmp">New component</a>
+
+<br />
+<br/>
+<router-outlet></router-outlet>
+
+Q) Difference between renderer and elementRef ?
+
+The Renderer is a class that is a partial abstraction over the DOM. Using the Renderer for manipulating the DOM doesn't break server-side rendering or Web Workers (where direct access to the DOM would break).
+
+ElementRef is a class that can hold a reference to a DOM element. This is again an abstraction to not break in environments where the browsers DOM isn't actually available.
+
+If ElementRef is injected to a component, the injected instance is a reference to the host element of the current component.
+
+There are other ways to acquire an ElementRef instance like @ViewChild(), @ViewChildren(), @ContentChild(), @ContentChildren(). In this case ElementRef is a reference to the matching element(s) in the template or children.
+
+Renderer and ElementRef are not "either this or that", but instead they have to be used together to get full platform abstraction.
+
+Renderer acts on the DOM and ElementRef is a reference to an element in the DOM the Renderer acts on.
+
+The Renderer2 class is an abstraction provided by Angular in the form of a service that allows to manipulate elements of your app without having to touch the DOM directly. This is the recommended approach because it then makes it easier to develop apps that can be rendered in environments that don’t have DOM access, like on the server, in a web worker or on native mobile.
+
+-) Basic Usage
+You’ll often use Renderer2 in custom directives because of how Angular directives are the logical building block 
+for modifying elements. Here’s a simple example that uses Renderer2’s addClass method to add the wild class to elements that have the directive:
+
+go-wild.directive.ts
+
+import { Directive, Renderer2, ElementRef, OnInit } from '@angular/core';
+
+@Directive({
+  selector: '[appGoWild]'
+})
+export class GoWildDirective implements OnInit {
+  constructor(private renderer: Renderer2, private el: ElementRef) {}
+
+  ngOnInit() {
+    this.renderer.addClass(this.el.nativeElement, 'wild');
+  }
+}
+
+And now, you can add the directive to elements in a template and the wild class will be added when rendered:
+
+<h1 appGoWild>
+  Hello World!
+</h1>
+<!-- <h1 class="wild">Hello World!</h1> -->
+
+-) createElement / appendChild / createText
+Create new DOM elements and append them inside other elements. In this example, we create a new div and we create a text node. We then place the text node inside our new div and finally our div is added to the element referenced by our directive:
+
+constructor(private renderer: Renderer2, private el: ElementRef) {}
+
+ngOnInit() {
+  const div = this.renderer.createElement('div');
+  const text = this.renderer.createText('Hello world!');
+
+  this.renderer.appendChild(div, text);
+  this.renderer.appendChild(this.el.nativeElement, div);
+}
+
+Our template, once rendered, will look like this, given that we applied the directive on an article element:
+
+<article>
+  <div>Hello world!</div>
+</article>
+
+
+Q)What is the difference between observable and promises ?
+
