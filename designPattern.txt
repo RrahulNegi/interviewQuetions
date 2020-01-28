@@ -1,0 +1,412 @@
+Q) Can you name few design patterns used in standard JDK library?
+
+Decorator design pattern which is used in various Java IO classes, Singleton pattern which is used in Runtime , Calendar and various other classes, Factory pattern which is used along with various Immutable classes likes Boolean e.g. Boolean.valueOf and Observer pattern which is used in Swing and many event listener frameworks.
+
+Q)What is main benefit of using factory pattern ? Where do you use it?
+
+Factory pattern’s main benefit is increased level of encapsulation while creating objects. If you use Factory to create object you can later replace original implementation of Products or classes with more advanced and high performance implementation without any change on client layer. See my post on Factory pattern for more detailed explanation and benefits.
+
+Factory pattern’s main benefit is increased level of encapsulation while creating objects. If you use Factory to create object you can later replace original implementation of Products or classes with more advanced and high performance implementation without any change on client layer. See my post on Factory pattern for more detailed explanation and benefits.
+
+example: Some more examples of factory method design pattern from JDK is :
+
+valueOf() method which returns object created by factory equivalent to value of parameter passed.
+
+getInstance() method which creates instance of Singleton class.
+
+newInstance() method which is used to create and return new instance from factory method every time called.
+
+getType() and newType() equivalent of getInstance() and newInstance() factory method but used when factory method resides in separate class.
+
+-Problem which is solved by Factory method Pattern in Java
+1)Some time our application or framework will not know that what kind of object it has to create at run-time it knows only the interface or abstract class and as we know we can not create object of interface or abstract class so main problem is frame work knows when it has to create but don’t know what kind of object.
+
+2)Whenever we create object using new() we violate principle of programming for interface rather than implementation which eventually result in inflexible code and difficult to change in maintenance. By using Factory design pattern in Java we get rid of this problem.
+
+3)Another problem we can face is class needs to contain objects of other classes or class hierarchies within it; this can be very easily achieved by just using the new keyword and the class constructor.
+
+Q) What is Observer design pattern?
+Observer design pattern is useful when you are interested in the state of an object and want to get notified whenever there is any change
+. The objects which are watching the state changes are called subject and . The objects which are watching the state changes are called observers
+. In this pattern, there are many observers (objects) which are observing a particular subject (object). Observers are basically interested and want to be notified when there is a change made inside that subject. So, they register themselves to that subject. When   they lose interest in the subject they simply unregister from the subject. Sometimes this model is also referred to as the 
+
+example :
+We can think about a celebrity who has many followers on twitter. Each of these followers wants to get all the latest updates of his/her favorite celebrity. So, he/she can follow the celebrity as long as his/her interest persists. When he loses interest, he simply stops following that celebrity. Here we can think of the follower as an observer and the celebrity as a subject.
+
+Q)Give example of decorator design pattern in Java ? Does it operate on object level or class level ?
+
+Decorator pattern enhances capability of individual object. Java IO uses decorator pattern extensively and classical example is Buffered classes like BufferedReader and BufferedWriter which enhances Reader and Writer objects to perform Buffer level reading and writing for improved performance
+
+What is decorator design pattern in Java?
+
+·          Decorator design pattern is used to enhance the functionality of a particular object at run-time or dynamically.
+·          At the same time other instance of same class will not be affected by this so individual object gets the new behavior.
+·          Basically we wrap the original object through decorator object.
+·          Decorator design pattern is based on abstract classes and we derive concrete implementation from that classes,
+·          It’s a structural design pattern and most widely used.
+
+When to use Decorator pattern in Java
+
+·          When sub classing is become impractical and we need large number of different possibilities to make independent object or we can say we have number of combination for an object.
+
+·          Secondly when we want to add functionality to individual object not to all object at run-time we use decorator design pattern.
+
+example : if we want to get a car at runtime that has both the features of sports car and luxury car, then the implementation gets complex and if further more we want to specify which features should be added first, it gets even more complex. Now imagine if we have ten different kind of cars, the implementation logic using inheritance and composition will be impossible to manage. To solve this kind of programming situation, we apply decorator pattern in java.
+
+1)Component Interface – The interface or abstract class defining the methods that will be implemented. In our case Car will be the component interface
+public interface Car {
+
+	public void assemble();
+}
+
+2)  Concrete Component: it implements Component and we add new behavior to this object at dynamically.
+public class BasicCar implements Car {
+
+	@Override
+	public void assemble() {
+		System.out.print("Basic Car.");
+	}
+
+}
+3) Decorator: Decorator contains a HAS a Relationship in simple word we can say it has a instance variable that holds reference for component they implement same component which they are going to decorate
+
+public class CarDecorator implements Car {
+
+	protected Car car;
+	
+	public CarDecorator(Car c){
+		this.car=c;
+	}
+	
+	@Override
+	public void assemble() {
+		this.car.assemble();
+	}
+
+}
+4)Concrete Decorators – Extending the base decorator functionality and modifying the component behavior accordingly. We can have concrete decorator classes as LuxuryCar and SportsCar.
+public class SportsCar extends CarDecorator {
+
+	public SportsCar(Car c) {
+		super(c);
+	}
+
+	@Override
+	public void assemble(){
+		super.assemble();
+		System.out.print(" Adding features of Sports Car.");
+	}
+}
+public class LuxuryCar extends CarDecorator {
+
+	public LuxuryCar(Car c) {
+		super(c);
+	}
+	
+	@Override
+	public void assemble(){
+		super.assemble();
+		System.out.print(" Adding features of Luxury Car.");
+	}
+}
+
+5)public class DecoratorPatternTest {
+
+	public static void main(String[] args) {
+		Car sportsCar = new SportsCar(new BasicCar());
+		sportsCar.assemble();
+		System.out.println("\n*****");
+		
+		Car sportsLuxuryCar = new SportsCar(new LuxuryCar(new BasicCar()));
+		sportsLuxuryCar.assemble();
+	}
+
+}
+
+Q)What is FrontController design pattern in Java ? Give an example of front controller pattern ?
+The front controller design pattern is used to provide a centralized request handling mechanism so that all requests will be handled by a single handler. This handler can do the authentication/ authorization/ logging or tracking of request and then pass the requests to corresponding handlers. Following are the entities of this type of design pattern.
+
+Front Controller - Single handler for all kinds of requests coming to the application (either web based/ desktop based).
+
+Dispatcher - Front Controller may use a dispatcher object which can dispatch the request to corresponding specific handler.
+
+View - Views are the object for which the requests are made.
+
+Step 1
+Create Views.
+
+HomeView.java
+
+public class HomeView {
+   public void show(){
+      System.out.println("Displaying Home Page");
+   }
+}
+StudentView.java
+
+public class StudentView {
+   public void show(){
+      System.out.println("Displaying Student Page");
+   }
+}
+Step 2
+Create Dispatcher.
+
+Dispatcher.java
+
+public class Dispatcher {
+   private StudentView studentView;
+   private HomeView homeView;
+   
+   public Dispatcher(){
+      studentView = new StudentView();
+      homeView = new HomeView();
+   }
+
+   public void dispatch(String request){
+      if(request.equalsIgnoreCase("STUDENT")){
+         studentView.show();
+      }
+      else{
+         homeView.show();
+      }	
+   }
+}
+Step 3
+Create FrontController
+
+FrontController.java
+
+public class FrontController {
+	
+   private Dispatcher dispatcher;
+
+   public FrontController(){
+      dispatcher = new Dispatcher();
+   }
+
+   private boolean isAuthenticUser(){
+      System.out.println("User is authenticated successfully.");
+      return true;
+   }
+
+   private void trackRequest(String request){
+      System.out.println("Page requested: " + request);
+   }
+
+   public void dispatchRequest(String request){
+      //log each request
+      trackRequest(request);
+      
+      //authenticate the user
+      if(isAuthenticUser()){
+         dispatcher.dispatch(request);
+      }	
+   }
+}
+Step 4
+Use the FrontController to demonstrate Front Controller Design Pattern.
+
+FrontControllerPatternDemo.java
+
+public class FrontControllerPatternDemo {
+   public static void main(String[] args) {
+   
+      FrontController frontController = new FrontController();
+      frontController.dispatchRequest("HOME");
+      frontController.dispatchRequest("STUDENT");
+   }
+}
+
+Q) What is Chain of Responsibility design pattern ?
+
+Chain of responsibility pattern is used to achieve loose coupling in software design where a request from the client is passed to a chain of objects to process them. Later, the object in the chain will decide themselves who will be processing the request and whether the request is required to be sent to the next object in the chain or not.
+
+Where and When Chain of Responsibility pattern is applicable :
+
+When you want to decouple a request’s sender and receiver
+Multiple objects, determined at runtime, are candidates to handle a request
+When you don’t want to specify handlers explicitly in your code
+When you want to issue a request to one of several objects without specifying the receiver explicitly.
+
+interface Chain 
+{ 
+    public abstract void setNext(Chain nextInChain); 
+    public abstract void process(Number request); 
+} 
+  
+class Number 
+{ 
+    private int number; 
+  
+    public Number(int number) 
+    { 
+        this.number = number; 
+    } 
+  
+    public int getNumber() 
+    { 
+        return number; 
+    } 
+  
+} 
+  
+class NegativeProcessor implements Chain 
+{ 
+    private Chain nextInChain; 
+  
+    public void setNext(Chain c) 
+    { 
+        nextInChain = c; 
+    } 
+  
+    public void process(Number request) 
+    { 
+        if (request.getNumber() < 0) 
+        { 
+            System.out.println("NegativeProcessor : " + request.getNumber()); 
+        } 
+        else
+        { 
+            nextInChain.process(request); 
+        } 
+    } 
+} 
+  
+class ZeroProcessor implements Chain 
+{ 
+      
+    private Chain nextInChain; 
+  
+    public void setNext(Chain c) 
+    { 
+        nextInChain = c; 
+    } 
+  
+    public void process(Number request) 
+    { 
+        if (request.getNumber() == 0) 
+        { 
+            System.out.println("ZeroProcessor : " + request.getNumber()); 
+        } 
+        else
+        { 
+            nextInChain.process(request); 
+        } 
+    } 
+} 
+  
+class PositiveProcessor implements Chain 
+{ 
+  
+    private Chain nextInChain; 
+  
+    public void setNext(Chain c) 
+    { 
+        nextInChain = c; 
+    } 
+  
+    public void process(Number request) 
+    { 
+        if (request.getNumber() > 0) 
+        { 
+            System.out.println("PositiveProcessor : " + request.getNumber()); 
+        } 
+        else
+        { 
+            nextInChain.process(request); 
+        } 
+    } 
+} 
+  
+class TestChain 
+{ 
+    public static void main(String[] args) { 
+        //configure Chain of Responsibility 
+        Chain c1 = new NegativeProcessor(); 
+        Chain c2 = new ZeroProcessor(); 
+        Chain c3 = new PositiveProcessor(); 
+        c1.setNext(c2); 
+        c2.setNext(c3); 
+  
+        //calling chain of responsibility 
+        c1.process(new Number(90)); 
+        c1.process(new Number(-50)); 
+        c1.process(new Number(0)); 
+        c1.process(new Number(91)); 
+    } 
+} 	
+
+Q) What is strategy design pattern?
+In Strategy pattern, a class behavior or its algorithm can be changed at run time. This type of design pattern comes under behavior pattern.
+
+In Strategy pattern, we create objects which represent various strategies and a context object whose behavior varies as per its strategy object. The strategy object changes the executing algorithm of the context object.
+
+Step 1
+Create an interface.
+
+Strategy.java
+
+public interface Strategy {
+   public int doOperation(int num1, int num2);
+}
+Step 2
+Create concrete classes implementing the same interface.
+
+OperationAdd.java
+
+public class OperationAdd implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 + num2;
+   }
+}
+OperationSubstract.java
+
+public class OperationSubstract implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 - num2;
+   }
+}
+OperationMultiply.java
+
+public class OperationMultiply implements Strategy{
+   @Override
+   public int doOperation(int num1, int num2) {
+      return num1 * num2;
+   }
+}
+Step 3
+Create Context Class.
+
+Context.java
+
+public class Context {
+   private Strategy strategy;
+
+   public Context(Strategy strategy){
+      this.strategy = strategy;
+   }
+
+   public int executeStrategy(int num1, int num2){
+      return strategy.doOperation(num1, num2);
+   }
+}
+Step 4
+Use the Context to see change in behaviour when it changes its Strategy.
+
+StrategyPatternDemo.java
+
+public class StrategyPatternDemo {
+   public static void main(String[] args) {
+      Context context = new Context(new OperationAdd());		
+      System.out.println("10 + 5 = " + context.executeStrategy(10, 5));
+
+      context = new Context(new OperationSubstract());		
+      System.out.println("10 - 5 = " + context.executeStrategy(10, 5));
+
+      context = new Context(new OperationMultiply());		
+      System.out.println("10 * 5 = " + context.executeStrategy(10, 5));
+   }
+}
