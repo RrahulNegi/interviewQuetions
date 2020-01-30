@@ -1,9 +1,102 @@
 1. when abstract class and interface is having the same abstract method. instantiation of child class using abstract class reference works fine when calling overriden method.
+public class AbstractTest {
+
+	public static void main(String[] args) {
+		AbstractC ab =new TestAb();
+				ab.show();
+	}
+
+}
+
+interface I1 {
+	public void show();
+}
+
+abstract class AbstractC implements I1 {
+	public abstract void show();
+}
+
+class TestAb extends AbstractC{
+
+	@Override
+	public void show() {
+		System.out.println("In Test");
+		
+	}
+	
+}
+It run fine and print "	In Test"
 2.Although when assigning instance to reference of interface gives comilation error on the methods which are not present in interface and present in abstract class. Although casting the interface reference to abstract class allow calling of abstract methods.
+
+public class AbstractTest {
+
+	public static void main(String[] args) {
+		//AbstractC ab =new TestAb();
+		I1 ab =new TestAb();
+		ab.showAbstract();
+				ab.show();
+	}
+
+}
+
+interface I1 {
+	public void show();
+}
+
+abstract class AbstractC implements I1 {
+	public abstract void show();
+	public void showAbstract(){
+		System.out.println("In show Abstract");
+	}
+}
+
+class TestAb extends AbstractC{
+
+	@Override
+	public void show() {
+		System.out.println("In Test");
+		
+	}
+	
+}
+
+throws error at line 8 showAbstract() not found
+
 3. Hence calling of any method/attribute using the reference variable which is of super class, abstract class, interface which is not present in these will raise compile time exception. you need to type cast the refrence to the class whose instance is created.
 4. When 2 interface having the same default method then we need to override that method in the implementation class. Also we can access the default methods of the specific interfaces by:
 
-Vehicle.super.turnAlarmOn();//Here Vehicle is the interface name.
+Vehicle.super.	();//Here Vehicle is the interface name.
+example : public static void main(String[] args) {
+		
+		TestInterface tf =new TestInterface();
+		tf.show();
+		TestInt t=new TestInterface();
+		t.show();
+	}
+
+}
+
+class TestInterface implements TestInt, TestInt2{
+
+	@Override
+	public void show() {
+		
+		TestInt2.super.show();
+	}
+	
+}
+
+interface TestInt {
+	default void show(){
+		System.out.println("In Interface Test");
+	}
+}
+
+interface TestInt2 {
+	default void show(){
+		System.out.println("In Interface Test 2");
+	}
+}
 
 5. Static Interface Methods: Since static methods don’t belong to a particular object, they are not part of the API of the classes implementing the interface, and they have to be called by using the interface name preceding the method name.
 	Defining a static method within an interface is identical to defining one in a class. Moreover, a static method can be invoked within other static and default methods.
@@ -12,6 +105,15 @@ Now, say that we want to calculate the horsepower of a given vehicle’s engine.
 		Vehicle.getHorsePower(2500, 480));
 		
 	Use: static methods in interfaces make possible to group related utility methods, without having to create artificial utility classes that are simply placeholders for static methods. the same can be done with abstract classes. The main difference lies in the fact that abstract classes can have constructors, state, and behavior.
+Java interface static method is similar to default method except that we can’t override them in the implementation classes. This feature helps us in avoiding undesired results incase of poor implementation in implementation classes. Let’s look into this with a 
+
+Important points about java interface static method:
+
+Java interface static method is part of interface, we can’t use it for implementation class objects.
+Java interface static methods are good for providing utility methods, for example null check, collection sorting etc.
+Java interface static method helps us in providing security by not allowing implementation classes to override them.
+We can’t define interface static method for Object class methods, we will get compiler error as “This static method cannot hide the instance method from Object”. This is because it’s not allowed in java, since Object is the base class for all the classes and we can’t have one class level static method and another instance method with same signature.
+We can use java interface static methods to remove utility classes such as Collections and move all of it’s static methods to the corresponding interface, that would be easy to find and use.
 
 package javaBestPractice;
 
@@ -97,7 +199,7 @@ public class Abc extends Test implements TestInt{//The inherited method Test.tes
 	
 		//((Abc) t).Abcshow();
 		TestInt t1=new Abc();
-		//t1.testshow();
+		//t1.testshow();  
 		( t1).testDisplay();
 		//((Abc) t1).Abcshow();
 		
@@ -576,6 +678,20 @@ Some Core concepts:
 			Integer d = 999;
 			System.out.println(a == b); // true
 			System.out.println(c == d); // false
+			
+			becz Integer is a wrapper class for int.
+
+Integer != Integer compares the actual object reference, where int != int will compare the values.
+
+As already stated, values -128 to 127 are cached, so the same objects are returned for those.
+
+If outside that range, separate objects will be created so the reference will be different.
+
+To fix it:
+
+Make the types int or
+Cast the types to int or
+Use .equals()
 
 -	 All wrapper classes provide this caching facility			
 			1. java.lang.Boolean store two inbuilt instances TRUE and FALSE, and return their reference if new keyword is not used.
@@ -887,6 +1003,44 @@ class Main{
        }
 }
 
+Another example---
+
+interface Marker{   
+}
+
+class MyException extends Exception {   
+    public MyException(String s){
+        super(s);
+    }
+}
+
+class A  {
+    void m1() throws MyException{        
+         if((this instanceof Marker)){
+             System.out.println("successfull");
+         }
+         else {
+             throw new MyException("Must implement interface Marker ");
+         }      
+    }   
+}
+
+public class CustomMarkerInterfaceExample  extends A implements Marker
+{ // if this class will not implement Marker, throw exception
+    public static void main(String[] args)  {
+        CustomMarkerInterfaceExample a= new CustomMarkerInterfaceExample();
+        try {
+            a.m1();
+        } catch (MyException e) {
+
+            System.out.println(e);
+        }
+
+
+    }
+
+}
+
 Serialization--------------
 
  JVM handles the creation and invocation of enum constructors internally. As enums don’t give their constructor definition to the program, it is not possible for us to access them by Reflection also
@@ -965,7 +1119,18 @@ what-is-static-and-dynamic-binding-in.html
 
 --------------------------------------------------------
 
-Immutable vs final
+Q)Immutable vs final
+
+Ans Final : In Java, final is a modifier which is used for class, method and variable also. When a variable is declared with final keyword, it’s value can’t be modified, essentially, a constant.
+
+Immutability : In simple terms, immutability means unchanging over time or unable to be changed. In Java, we know that String objects are immutable means we cant change anything to the existing String objects.
+
+Differences between final and immutability
+
+final means that you can’t change the object’s reference to point to another reference or another object, but you can still mutate its state (using setter methods e.g). Whereas immutable means that the object’s actual value can’t be changed, but you can change its reference to another one.
+final modifier is applicable for variable but not for objects, Whereas immutability applicable for an object but not for variables.
+By declaring a reference variable as final, we won’t get any immutability nature, Even though reference variable is final. We can perform any type of change in the corresponding Object. But we cant perform reassignment for that variable.
+final ensures that the address of the object remains the same whereas the Immutable suggests that we can’t change the state of the object once created.
 
 https://stackoverflow.com/questions/12306651/why-would-one-declare-an-immutable-class-final-in-java
 

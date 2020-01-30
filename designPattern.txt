@@ -410,3 +410,17 @@ public class StrategyPatternDemo {
       System.out.println("10 * 5 = " + context.executeStrategy(10, 5));
    }
 }
+
+Q) Association vs Composition vs Aggregation
+Here is the list of differences between Composition and Aggregation in point format, for quick review. As I said the key difference between them comes from the point that in the case of Composition, One object is OWNER of another object, while in the case of aggregation, one object is just a USER or another object.
+
+1) If A and B two classes are related to each other such that, B ceased to exist, when A is destroyed, then the association between two objects is known as Composition. An example is Car and Engine. While if A and B are associated with each other, such that B can exist without being associated with A, then this association in known as Aggregation.
+2) In the case of Composition A owns B e.g. Person is the owner of his Hand, Mind and Heart, while  in the case of Aggregation, A uses B e.g. Organization uses People as an employee.
+
+3) In UML diagram Association is denoted by a normal arrow head, while Composition is represented by filled diamond arrow head, and Aggregation is represented by an empty diamond arrow head, As shown in below and attached diagram in the third paragraph.
+
+Association  A---->B
+Composition  A-----<filled>B
+Aggregation  A-----<>B
+
+4) Aggregation is a lighter form of Composition, where a sub-part object can meaningfully exist without main objects.
