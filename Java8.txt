@@ -30,7 +30,53 @@ Java Spliterator Methods
 -default boolean hasCharacteristics(int characteristics) : returns true if the dpliterator’s characteristics() contain all of the given characteristics.
 -boolean tryAdvance(Consumer action) : if a remaining element exists, performs the given action on it, returning true; else returns false.
 -Spliterator trySplit() : if the spliterator can be partitioned, returns a Spliterator covering elements, that will, upon return from this method, not be covered by this Spliterator.
+Q) Diffrence between sequential and parrallel stream?
+Streams in Java
+A stream in Java is a sequence of objects represented as a conduit of data. It usually has a source where the data is situated and a destination where it is transmitted. Note that a stream is not a repository; instead, it operates on a data source such as on an array or a collection. The in-between bits in the passage are actually called the stream. During the process of transmission, the stream usually goes through one or more possible transformations, such as filtering or sorting, or it can be any other process operating on the data. This customizes the original data into a different form, typically, according to the need of the programmer. Therefore, a new stream is created according to the operation applied on it. For example, when a stream is sorted, it results in a new stream that produces a result which then s sorted. This means the new data is a transformed copy of the original rather than being in the original form.
 
+Sequential Stream
+Any stream operation in Java, unless explicitly specified as parallel, is processed sequentially. They are basically non-parallel streams used a single thread to process their pipeline. Sequential streams never take advantage of the multicore system even if the underlying system may support parallel execution. What happens, for example, when we apply multithreading to process the stream? Even then, it operates on a single core at a time. However, it may hop from one core to another unless explicitly pinned to a specific core. For example, processing in four different threads versus four different cores is obviously different where the former is no match with the latter. It is quite possible to execute multiple threads in a single core environment but parallel processing is a different genre altogether. A program needs to be designed ground up for parallel programming apart from executing in an environment that supports it. This is the reason parallel programming is a complex arena.
+
+ List<Integer> list=Arrays.asList(1,2,3,4,5,6,7,8,9);
+      list.stream().forEach(System.out::println);
+      System.out.println();
+      list.parallelStream().forEach(System.out::println);
+o/p:
+123456789
+685973214
+
+This example is an illustration of q sequential stream as well as q parallel stream in operation. The list.stream() works in sequence on a single thread with the println() operation. list.parallelStream(), on the other hand, is processed in parallel, taking full advantage of the underlying multicore environment. The interesting aspect is in the output of the preceding program. In the case of a sequential stream, the content of the list is printed in an ordered sequence. The output of the parallel stream, on the other hand, is unordered and the sequence changes every time the program is run. This signifies at least one thing: that invocation of the list.parallelStream() method makes the println statement operate in multiple threads, something which list.stream() does in a single thread.
+
+Parallel Stream
+The primary motivation behind using a parallel stream is to make stream processing a part of the parallel programming, even if the whole program may not be parallelized. Parallel stream leverage multicore processors, resulting in a substantial increase in performance. Unlike any parallel programming, they are complex and error prone. However, the Java stream library provides the ability to do it easily, and in a reliable manner. The whole program may not be parallelized. but at least the part that handles the stream can be parallelized. They are actually quite simple in the sense that we can invoke a few methods and the rest is taken care of. There are a couple of ways to do it. One such way is to obtain a parallel stream by invoking the parallelStream() method defined by Collection. Another way is to invoke the parallel() method defined by BaseStream on a sequential stream. The sequential stream is parallelized by the invocation. Note that the underlying platform must support parallel programming, such as with a multicore system. Otherwise, there is no point in the invocation. The stream would be processed in sequence in such a case, even if we have made the invocation. If the invocation is made on an already parallel stream, it does nothing and simply returns the stream.
+
+In the previous code, note how we have applied sorting on a stream one by using sequential execution.
+
+List<Employee> sortedItems = employees.stream()
+               .sorted(Comparator
+               .comparing(Employee::getName))
+               .collect(Collectors.toList());
+and parallel execution is achieved by changing the code slightly.
+
+List<Employee> anotherSortedItems = employees
+               .parallelStream().sorted(Comparator
+               .comparing(Employee::getName))
+               .collect(Collectors.toList());
+We'll also compare the system time to get an idea which part of the code takes more time. Parallel operation begins once the parallel stream is explicitly obtained by the parallelStream() method. There is another interesting method, called reduce(). When we apply this method to a parallel stream, the operation can occur in different threads.
+
+However, we always can switch between parallel and sequential as per the need. If we want to change the parallel stream to sequential, we may do so by invoking the sequential() method specified by BaseStream. As we saw in our first program, the operation performed on the stream can be ordered or unordered according to the order of the elements. This means that the order depends upon the data source. This, however, is not the situation in the case of parallel streams. To boost performance, they are processed in parallel. Because this is done without any sequence, where each partition of the stream is processed independently of the other partitions without any coordination, the consequence is unpredictably unordered. But, if we want specifically to perform an operation on each element in the parallel stream to be ordered, we can consider the forEachOrdered() method, which is an alternative to the forEach() method.
+
+To ensure that the result of parallel processing applied on stream is same as is obtained through sequential processing, parallel streams must be stateless, non-interfering, and associative
+Q) How Java8's Collection.parallelStream works?
+Looking at the stream’s parallel method, you may wonder where the threads used by the parallel stream come from, how many there are, and how you can customize the process. Parallel streams internally use the default ForkJoinPool, which by default has as many threads as you have processors, as returned by Runtime.getRuntime().availableProcessors(). But you can change the size of this pool using the system property java.util.concurrent.ForkJoinPool.common.parallelism.
+
+The infrastructure used behind the scenes by parallel streams to execute operations in parallel is the fork/join framework introduced in Java 7. It’s vital to have a good understanding of the parallel stream internals in order to use them correctly. The fork/join framework was designed to recursively split a parallelizable task into smaller tasks and then combine the results of each subtask to produce the overall result. It’s an implementation of the ExecutorService interface, which distributes those subtasks to worker threads in a thread pool, called ForkJoinPool.
+
+The Spliterator stands for “splitable iterator.” Like Iterators, Spliterators are used to traverse the elements of a source, but they’re also designed to do this in parallel. Although you may not have to develop your own Spliterator in practice, understanding how to do so will give you a wider understanding about how parallel streams work.
+
+The algorithm that splits a Stream into multiple parts is a recursive process. In the first step, a method called trySplit is invoked on the first Spliterator and generates a second one. Then in step 2 it’s called again on these two Spliterators, which results in a total of four. The framework keeps invoking the method trySplit on a Spliterator until it returns null to signal that the data structure that it’s processing is no longer divisible. Finally, this recursive splitting process terminates when all Spliterators have returned null to a trySplit invocation.
+
+The last abstract method declared by the Spliterator interface is characteristics, which returns an int encoding the set of characteristics of the Spliterator itself. The Spliterator clients can use these characteristics to better control and optimize its usage. They are: ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED. Depending on the specific characteristics of a stream, it may in fact not run in parallel at all.
 Q)What are the major drawbacks of External Iteration?
 
 We need to write code in Imperative Style.

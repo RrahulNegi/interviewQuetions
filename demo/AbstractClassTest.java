@@ -11,3 +11,4 @@ public abstract class AbstractClassTest implements NewInterface {
 	public abstract void  show();
 
 }
+

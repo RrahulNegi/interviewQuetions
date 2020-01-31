@@ -1,0 +1,39 @@
+Q)   Types of joins in SQL with example.
+1) The INNER JOIN keyword selects records that have matching values in both tables.
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+
+2)The LEFT JOIN keyword returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side, if there is no match.
+SELECT column_name(s)
+FROM table1
+LEFT JOIN table2
+ON table1.column_name = table2.column_name;
+
+3)The RIGHT JOIN keyword returns all records from the right table (table2), and the matched records from the left table (table1). The result is NULL from the left side, when there is no match.
+SELECT column_name(s)
+FROM table1
+RIGHT JOIN table2
+ON table1.column_name = table2.column_name;
+
+4)The FULL OUTER JOIN keyword returns all records when there is a match in left (table1) or right (table2) table records.
+Note: FULL OUTER JOIN can potentially return very large result-sets!
+
+Tip: FULL OUTER JOIN and FULL JOIN are the same
+SELECT column_name(s)
+FROM table1
+FULL OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+5) A self JOIN is a regular join, but the table is joined with itself.
+SELECT column_name(s)
+FROM table1 T1, table1 T2
+WHERE condition;
+
+q)       What are indexes, cursors and triggers and basic syntax how to write all these
+
+Q)  Difference between procedure and function and basic syntax how to write these both.
+
+Q) How to fetch nth highest salary of a employee from employee table.
