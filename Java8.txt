@@ -142,3 +142,12 @@ We do not need separate Utility Classes like Collections, Arrays etc to keep Uti
 Clear separation of Responsibilities. That is we do not need one Utility class to keep all Utility methods of Collection API like Collections etc.
 Easy to extend the API.
 Easy to Maintain the API.
+
+Q)CopyOnWriteArrayList in java?
+As the name indicates, CopyOnWriteArrayList creates a Cloned copy of underlying ArrayList, for every update operation at certain point both will be synchronized automatically ,which is taken care by JVM. Therefore there is no effect for threads which are performing read operation.
+It is costly to use because for every update operation a cloned copy will be created. Hence CopyOnWriteArrayList is the best choice if our frequent operation is read operation.
+It extends object and implements Serializable, Cloneable, Iterable<E>, Collection<E>, List<E> and RandomAccess
+The underlined data structure is grow-able array.
+It is thread-safe version of ArrayList.
+Insertion is preserved, duplicates are allowed and heterogeneous Objects are allowed.
+The main important point about CopyOnWriteArrayList is Iterator of CopyOnWriteArrayList can not perform remove operation otherwise we get Run-time exception saying UnsupportedOperationException.
