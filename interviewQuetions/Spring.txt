@@ -20,6 +20,17 @@ Spring @Required Annotation. Advertisements. The @Required annotation applies to
 
 Spring @Bean Annotation is applied on a method to specify that it returns a bean to be managed by Spring context. Spring Bean annotation is usually declared in Configuration classes methods.
 
+Q)  Difference between @Component and @Bean annotations
+In Spring, both annotations are quite different.
+
+@Component used to auto-detect and auto-configure beans using classpath scanning. There’s an implicit one-to-one mapping between the annotated class and the bean (i.e. one bean per class).
+
+@Bean is used to explicitly declare a single bean, rather than letting Spring do it automatically for us.
+
+Another big difference is that @Component is a class level annotation where as @Bean is a method level annotation and ,by default, name of the method serves as the bean name.
+
+
+
 3)AOP
 
 Pointcut
@@ -112,3 +123,63 @@ Apart from the fact that both Interceptors and filters are based on intercepting
 
 Filters: (1)Based on Servlet Specification (2)Executes on the pattern matches on the request.(3) Not configurable method calls
 Interceptors: (1)Based on Struts2. (2)Executes for all the request qualifies for a front controller( A Servlet filter ).And can be configured to execute additional interceptor for a particular action execution.(3)Methods in the Interceptors can be configured whether to execute or not by means of excludemethods or includeMethods
+
+Q)     How to get the list of beans/classes loaded into the spring container
+ String[] beans = appContext.getBeanDefinitionNames();
+ 
+Q) What is circular dependency and how to resolve it
+What is circular dependency ?
+In our day to day development life, while implementing the spring applications, we may have a requirement like : class A depending on class B  and class B also depending on class A, however this is not a good practice to program, depending 2 classes on each other, though it is not a good practice some times we can’t avoid such time of handling.
+
+
+What is spring circular dependency problem ?
+By chandrashekhar|June 19th, 2016|Spring
+In this tutorial, we are going to learn about what is Spring circular dependency problem ? and how to resolve it.
+
+What is circular dependency ?
+In our day to day development life, while implementing the spring applications, we may have a requirement like : class A depending on class B  and class B also depending on class A, however this is not a good practice to program, depending 2 classes on each other, though it is not a good practice some times we can’t avoid such time of handling.
+
+Spring considers this type of scenario as circular dependency, and it also given some good practices to handle this. Here we are going to discuss, how do we handle this kind of scenarios.
+
+Where we get circular dependency problem :
+In spring we have different types of dependency injections, if we inject the dependency through the constructor arguments <constructor-arg>, and the two classes are depending on each other then spring will throw an exception like BeanCurrentlyInCreationException, this is where we get circular dependency in spring.
+class A {
+    private B b;
+    public A(B b) {
+        this.b = b;
+    }
+}
+class B {
+    private A a;
+    public B(A a) {
+        this.a = a;
+    }
+}
+On the above, while creating the object A, object of B is required. Similarly to create an object for B, object A is required. Finally A & B both objects are not created, and an exception will be thrown by spring container.
+
+How to solve the circular dependency ?
+In order to solve the circular dependency problem at one side, the dependency injection type must be change to setter injection.
+
+In case of setter injection, the dependencies are injected after creating the object, but not while creating the objects.
+Example :
+class A {
+    private B b;
+    public void setB(B b) {
+        this.b = b;
+    }
+}
+class B {
+    private A a;
+    public void setA(A a) {
+        this.a = a;
+    }
+}
+In the above, Spring container will injects object of class B to A like following.
+
+A a = new A();
+B b = new B();
+a.setB(b)
+ 
+
+In case of constructor injection, the dependencies are injected while creating the object, so that, by the time creating the object of A, there is no B object and vice versa.
+
