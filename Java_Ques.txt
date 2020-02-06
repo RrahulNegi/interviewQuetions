@@ -1,0 +1,86 @@
+Q) Diffrence between Abstraction and encapsulation?
+
+Abstraction hides complexity by giving you a more abstract picture, a sort of 10,000 feet view, while Encapsulation hides internal working so that you can change it later. In other words, Abstraction hides details at the design level, while Encapsulation hides details at the implementation level.
+
+For example, when you first describe an object, you talk in more abstract term e.g. a Vehicle which can move, you don't tell how Vehicle will move, whether it will move by using tires or it will fly or it will sell. It just moves. This is called Abstraction. We are talking about a most essential thing, which is moving, rather than focusing on details like moving in plane, sky, or water.
+
+There are also the different levels of Abstraction and it's good practice that classes should interact with other classes with the same level of abstraction or higher level of abstraction. As you increase the level of Abstraction, things start getting simpler and simpler because you leave out details.
+
+On the other hand, Encapsulation is all about implementation. Its sole purpose is to hide internal working of objects from outside world so that you can change it later without impacting outside clients.
+
+For example, we have a HashMap which allows you to store the object using put() method and retrieve the object using the get() method. How HashMap implements this method (see here) is an internal detail of HashMap, the client only cares that put stores the object and get return it back, they are not concerned whether HashMap is using an array, how it is resolving the collision, whether it is using linked list or binary tree to store object landing on same bucket etc.
+
+Because of Encapsulation, you can change the internal implementation of HashMap with ease without impacting clients who are using HashMap. For example, in Java 8, the java.util.HashMap changes its implementation to use a binary tree instead of LinkedList to store objects in the same bucket after a certain threshold
+
+Difference between Abstraction vs Encapsulation
+Here are some of the key difference between Encapsulation and Abstraction in point format for your quick revision:
+
+1) The most important difference between Abstraction and Encapsulation is that Abstraction solves the problem at design level while Encapsulation solves it implementation level.
+
+2) Abstraction is about hiding unwanted details while giving out most essential details, while Encapsulation means hiding the code and data into a single unit e.g. class or method to protect inner working of an object from outside world. In other words, Abstraction means extracting common details or generalizing things.
+
+3) Abstraction lets you focus on what the object does instead of how it does, while Encapsulation means hiding the internal details of how an object works. When you keep internal working details private, you can change it later with a better method. The Head First Object Oriented Analysis and Design has some excellent examples of these OOP concepts, I suggest you read that book at least once to revisit OOP fundamentals.
+
+4) Abstraction focus on outer lookout e.g. moving of vehicle while Encapsulation focuses on internal working or inner lookout e.g. how exactly the vehicle moves.
+
+5) In Java, Abstraction is supported using interface and abstract class while Encapsulation is supported using access modifiers e.g. public, private and protected.
+
+
+Q)Composition vs Aggregation?
+Association is relation between two separate classes which establishes through their Objects. Association can be one-to-one, one-to-many, many-to-one, many-to-many.
+In Object-Oriented programming, an Object communicates to other Object to use functionality and services provided by that object. Composition and Aggregation are the two forms of association.
+
+Another example of Composition is Car and it's part e.g. engines, wheels etc. Individual parts of the car can not function when a car is destroyed.  While in the case of Aggregation, including object can exists without being part of the main object e.g. a Player which is part of a Team, can exist without a team and can become part of other teams as well.
+
+Another example of Aggregation is Student in School class, when School closed, Student still exist and then can join another School or so.  In UML notation, a composition is denoted by a filled diamond, while aggregation is denoted by an empty diamond, which shows their obvious difference in terms of strength of the relationship.
+
+The composition is stronger than Aggregation.  In Short, a relationship between two objects is referred as an association, and an association is known as composition when one object owns other while an association is known as aggregation when one object uses another object.
+
+
+
+Q) JVM Architecture?
+
+JVM Architecture
+Let's understand the Architecture of JVM. It contains classloader, memory area, execution engine etc.
+Working of Java Virtual Machine(JVM) & its Architecture
+
+1) ClassLoader
+
+The class loader is a subsystem used for loading class files. It performs three major functions viz. Loading, Linking, and Initialization.
+
+2) Method Area
+
+JVM Method Area stores class structures like metadata, the constant runtime pool, and the code for methods.
+
+3) Heap
+
+All the Objects, their related instance variables, and arrays are stored in the heap. This memory is common and shared across multiple threads.
+
+4) JVM language Stacks
+
+Java language Stacks store local variables, and it’s partial results. Each thread has its own JVM stack, created simultaneously as the thread is created. A new frame is created whenever a method is invoked, and it is deleted when method invocation process is complete.
+
+5)  PC Registers
+
+PC register store the address of the Java virtual machine instruction which is currently executing. In Java, each thread has its separate PC register.
+
+6) Native Method Stacks
+
+Native method stacks hold the instruction of native code depends on the native library. It is written in another language instead of Java.
+
+7) Execution Engine
+
+
+It is a type of software used to test hardware, software, or complete systems. The test execution engine never carries any information about the tested product.
+
+8) Native Method interface
+
+The Native Method Interface is a programming framework. It allows Java code which is running in a JVM to call by libraries and native applications.
+
+9) Native Method Libraries
+
+Native Libraries is a collection of the Native Libraries(C, C++) which are needed by the Execution Engine.
+
+Q) JVM 32 bit vs 64 bit?
+
+
