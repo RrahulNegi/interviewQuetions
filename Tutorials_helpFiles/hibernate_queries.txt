@@ -2,6 +2,17 @@ JPA vs Hibernate
 -------------------------------------
 https://thoughts-on-java.org/what-is-spring-data-jpa-and-why-should-you-use-it/ 
 https://dzone.com/articles/introduction-to-jpa-architecture
+
+Let's describe each of the units shown in the above architecture.
+
+EntityManagerFactory — This is a factory class of EntityManager. It creates and manages multiple EntityManager instances.
+EntityManager — It is an interface; it manages the persistence operations on objects. It works like a factory for Query instance.
+Entity — Entities are the persistence objects, stored as records in the database.
+EntityTransaction — It has one-to-one relationship with EntityManager. For each EntityManager, operations are maintained by the EntityTransaction class.
+Persistence — This class contains static methods to obtain the EntityManagerFactory instance.
+Query - This interface is implemented by each JPA vendor to obtain relational objects that meet the criteria.
+
+
 https://howtodoinjava.com/hibernate/how-to-define-association-mappings-between-hibernate-entities/
 https://www.codejava.net/frameworks/hibernate/hibernate-basics-3-ways-to-delete-an-entity-from-the-datastore
 
@@ -349,6 +360,19 @@ The difference between the two settings is in the response to disconnecting a re
 If orphanRemoval=true is specified the disconnected Address instance is automatically removed. This is useful for cleaning up dependent objects (e.g. Address) that should not exist without a reference from an owner object (e.g. Employee).
 If only cascade=CascadeType.REMOVE is specified no automatic action is taken since disconnecting a relationship is not a remove
 operation.
+
+Cascading Remove
+Marking a reference field with CascadeType.REMOVE (or CascadeType.ALL, which includes REMOVE) indicates that remove operations should be cascaded automatically to entity objects that are referenced by that field (multiple entity objects can be referenced by a collection field):
+
+@Entity
+class Employee {
+     :
+    @OneToOne(cascade=CascadeType.REMOVE)
+    private Address address;
+     :
+}
+In the example above, the Employee entity class contains an address field that references an instance of Address, which is another entity class. Due to the CascadeType.REMOVE setting, when an Employee instance is removed the operation is automatically cascaded to the referenced Address instance, which is then automatically removed as well. Cascading may continue recursively when applicable (e.g. to entity objects that the Address object references, if any).
+
 
 -----------------------------------------------------------------------------
 when we create an entity in hibernate why implement serializable

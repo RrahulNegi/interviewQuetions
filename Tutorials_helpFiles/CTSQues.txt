@@ -22,11 +22,45 @@
 15) WAP to move the highest element one level up and add -1 at the end. ex. (16,17,3,4,5,2)==> 17,5,5,5,2,-1
 16) make class immutable. why strings are immutable?
 17) interrupted exception and its super class.
+
+Thrown when a thread is waiting, sleeping, or otherwise occupied, and the thread is interrupted, either before or during the activity. Occasionally a method may wish to test whether the current thread has been interrupted, and if so, to immediately throw this exception. The following code can be used to achieve this effect:
+  if (Thread.interrupted())  // Clears interrupted status!
+      throw new InterruptedException();
+ 
 18)IllegalMonitorStateException
+
+This exception, when thrown, indicates that the calling thread has attempted to wait on an object’s monitor, or has attempted to notify other threads that wait on an object’s monitor, without owning the specified monitor.
+
+The IllegalMonitorStateException extends the RuntimeException class and thus, belongs to those exceptions that can be thrown during the operation of the Java Virtual Machine (JVM). It is an unchecked exception and thus, it does not need to be declared in a method’s or a constructor’s throws clause.
+
+
+As we have already described, the IllegalMonitorStateException indicates that the calling thread does not own the specified monitor. A thread can wait on a monitor after invoking the wait 
+
+Before calling Wait(), notify() and notifyAll() methods thread must own lock on object’s monitor, means wait(), notify() and notifyAll() methods must be called either from synchronized blocks or synchronized method otherwise IllegalMonitorStateException is thrown at runtime.
+
+public void run() {
+      System.out.println("MyRunnable,in run() method");
+      try {
+           this.wait(1000); // calling wait() without acquiring object lock
+                             // throws IllegalMonitorStateException
+      } catch (InterruptedException e) {
+           e.printStackTrace();
+      }
+      System.out.println("Thread in runnable state after 1000 millisecs");
+  }
+
+
+
 19) Why NoSQL and its usage?
 20) ConcurrentHashMap internal working?
 21) what all exception is thrown during multi threading and parallel execution.
-22) execute vs submit
+22) execute vs submit ?
+
+As you see from the JavaDoc execute(Runnable) does not return anything.
+
+However, submit(Callable<T>) returns a Future object which allows a way for you to programatically cancel the running thread later as well as get the T that is returned when the Callable completes.
+
+
 23) in what all ways schedulerExecutorService methods can be implemented.
 24) WAP to implement a linked list.
 25) How can you ensure any instance is never garbage collected?

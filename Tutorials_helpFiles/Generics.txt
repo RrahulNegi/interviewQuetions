@@ -275,3 +275,16 @@ Types of Generics:
 				public class GenericException<T> extends Exception {}
 				
 				When you try to create such an exception, you will end up with message like this: The generic class GenericException may not subclass java.lang.Throwable.
+				
+				
+				
+Q) Box<Integer> integerBox = new Box<Integer>();
+
+//Compiler Error:
+//Cannot perform instanceof check against 
+//parameterized type Box<Integer>. 
+//Use the form Box<?> instead since further 
+//generic type information will be erased at runtime
+if(integerBox instanceof Box<Integer>) { }
+Because compiler uses type erasure, the runtime does not keep track of type parameters, so at runtime difference between Box<Integer> and Box<String> cannot be verified using instanceOf operator.
+
