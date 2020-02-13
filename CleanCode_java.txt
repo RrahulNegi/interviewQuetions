@@ -1,0 +1,11 @@
+Q)Throws or try-catch???
+
+catch an exception only if you can handle it in a meaningful way
+declare throwing the exception upward if it is to be handled by the consumer of the current method
+throw exceptions if they are caused by the input parameters (but these are more often unchecked)
+
+
+Q)Best pratices for throwing exception
+
+https://stackify.com/best-practices-exceptions-java/
+https://howtodoinjava.com/best-practices/java-exception-handling-best-practices/#1

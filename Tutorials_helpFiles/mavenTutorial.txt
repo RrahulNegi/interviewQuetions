@@ -38,6 +38,14 @@ Maven:
 	3. Dependency scope
 	4. Excluded dependencies
 	5. Optional dependencies
+	q) Maven - External Dependencies ?
+	<dependency>
+         <groupId>ldapjdk</groupId>
+         <artifactId>ldapjdk</artifactId>
+         <scope>system</scope>
+         <version>1.0</version>
+         <systemPath>${basedir}\src\lib\ldapjdk.jar</systemPath>
+      </dependency>
 	
 3. Repositories:
 
@@ -54,7 +62,28 @@ Maven:
 		</repository>
 	</repositories>
 	Please note that you can use multiple repositories in your projects.
-	
+1) Central Repository
+Maven central repository is repository provided by Maven community. It contains a large number of commonly used libraries.
+
+When Maven does not find any dependency in local repository, it starts searching in central repository using following URL − https://repo1.maven.org/maven2/
+2)Remote Repository
+	Sometimes, Maven does not find a mentioned dependency in central repository as well. It then stops the build process and output error message to console. To prevent such situation, Maven provides concept of Remote Repository, which is developer's own custom repository containing required libraries or other project jars.
+3)Local Repository
+Maven local repository is a folder location on your machine. It gets created when you run any maven command for the first time.
+
+Maven local repository keeps your project's all dependencies (library jars, plugin jars etc.). When you run a Maven build, then Maven automatically downloads all the dependency jars into the local repository. It helps to avoid references to dependencies stored on remote machine every time a project is build.
+
+Maven Dependency Search Sequence
+When we execute Maven build commands, Maven starts looking for dependency libraries in the following sequence −
+
+Step 1 − Search dependency in local repository, if not found, move to step 2 else perform the further processing.
+
+Step 2 − Search dependency in central repository, if not found and remote repository/repositories is/are mentioned then move to step 4. Else it is downloaded to local repository for future reference.
+
+Step 3 − If a remote repository has not been mentioned, Maven simply stops the processing and throws error (Unable to find dependency).
+
+Step 4 − Search dependency in remote repository or repositories, if found then it is downloaded to local repository for future reference. Otherwise, Maven stops processing and throws error (Unable to find dependency).
+
 4. Properties
 Custom properties can help to make your pom.xml file easier to read and maintain. In the classic use case, you would use custom properties to define versions for your project’s dependencies.
 
