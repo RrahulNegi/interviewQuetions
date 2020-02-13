@@ -271,3 +271,12 @@ Our template, once rendered, will look like this, given that we applied the dire
 
 Q)What is the difference between observable and promises ?
 
+
+Q)What is the difference between lazy loading and eager loading in Angular 2?
+Eager loading: To load a feature module eagerly we need to import it into application module using imports metadata of @NgModule decorator. Eager loading is useful in small size applications. In eager loading, all the feature modules will be loaded before the application starts. Hence the subsequent request to the application will be faster.
+Lazy loading: To load a feature module lazily we need to load it using loadChildren property in route configuration and that feature module must not be imported in application module. Lazy loading is useful when the application size is growing. In lazy loading, feature module will be loaded on demand and hence application start will be faster.
+Preloading: To preload a feature module we need to load it using loadChildren property and configure preloadingStrategy property with RouterModule.forRoot. That feature module must not be imported in application module. When we assign Angular PreloadAllModules strategy to preloadingStrategy property, then all feature modules configured with loadChildren, are preloaded. To preload selective modules, we need to use custom preloading strategy. We should preload only those features which will be visited by users just after application start and rest feature modules can be loaded lazily. In this way we can improve the performance of our bigger size application.
+
+In our demo application we have two feature modules CountryModule and PersonModule. We will create three demo applications. In the first application, we will load these feature modules eagerly. In the second application, we will load them lazily and in the third application we will preload them.
+
+

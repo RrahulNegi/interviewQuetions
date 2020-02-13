@@ -113,3 +113,46 @@ It’s fixed in Java 1.5 but Sun doesn’t intend to fix it in 1.4.
 The issue is that at construction time, a Thread is added to a list of references in an internal thread table. It won’t get removed from that list until its start() method has completed. As long as that reference is there, it won’t get garbage collected.
 
 
+Q) Volatile vs Atomic
+
+Visibility problem :- default boolean flag = true;
+Thread 1 set boolean to false and since this flag is not shared so Thread 2 dosnt knw whats its updated value so for Thread2 its value is true only.
+So to solve this we use volatile keyword and after ths this update of value of flag is visible to Thread2
+
+Synchronization problem:
+int val =1;
+Thread1 we do val++ and Thread2 we do val++ so in one way we expecting val=2 at Thread1 and val=3 as Thread2 but its will not happend if we put val as volatile then too it will not work since its not a visibility problem since in this we have tow operation reading and writing
+
+first way to solve is using syncronize block
+Second way is use AtomicInteger.
+AtomicInteger val= new AtomicInteger();
+val.incrementAndGet
+
+
+Q) Which is more preferred – Synchronized method or Synchronized block?
+Synchronized block is more preferred way because it doesn’t lock the Object, synchronized methods lock the Object and if there are multiple synchronization blocks in the class, even though they are not related, it will stop them from execution and put them in wait state to get the lock on Object.
+
+Q) What is Thread Group? Why it’s advised not to use it?
+ThreadGroup is a class which was intended to provide information about a thread group. ThreadGroup API is weak and it doesn’t have any functionality that is not provided by Thread. It has two main features – to get the list of active threads in a thread group and to set the uncaught exception handler for the thread. But Java 1.5 has added setUncaughtExceptionHandler(UncaughtExceptionHandler eh) method using which we can add uncaught exception handler to the thread. So ThreadGroup is obsolete and hence not advised to use anymore.
+
+
+t1.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
+
+@Override
+public void uncaughtException(Thread t, Throwable e) {
+    System.out.println("exception occured:"+e.getMessage());
+}
+            
+});
+
+Q) What is Java Thread Dump, How can we get Java Thread dump of a Program?
+A thread dump is a list of all the threads active in the JVM, thread dumps are very helpful in analyzing bottlenecks in the application and analyzing deadlock situations. There are many ways using which we can generate Thread dump – Using Profiler, Kill -3 command, jstack tool, etc. I prefer jstack tool to generate thread dump of a program because it’s easy to use and comes with JDK installation. Since it’s a terminal-based tool, we can create a script to generate thread dump at regular intervals to analyze it later on.
+
+Q)What is Deadlock? How to analyze and avoid deadlock situation?
+Deadlock is a programming situation where two or more threads are blocked forever, this situation arises with at least two threads and two or more resources.
+
+To analyze a deadlock, we need to look at the java thread dump of the application, we need to look out for the threads with state as BLOCKED and then the resources it’s waiting to lock, every resource has a unique ID using which we can find which thread is already holding the lock on the object.
+
+Avoid Nested Locks, Lock Only What is Required and Avoid waiting indefinitely are common ways to avoid deadlock situation, read this post to learn how to analyze deadlock in java with a sample program.
+
+
