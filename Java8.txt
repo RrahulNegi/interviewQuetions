@@ -151,3 +151,41 @@ The underlined data structure is grow-able array.
 It is thread-safe version of ArrayList.
 Insertion is preserved, duplicates are allowed and heterogeneous Objects are allowed.
 The main important point about CopyOnWriteArrayList is Iterator of CopyOnWriteArrayList can not perform remove operation otherwise we get Run-time exception saying UnsupportedOperationException.
+
+
+Q)Weak, Soft, and Phantom References in Java (and Why They Matter)?
+The Problem
+One common problem of all computer languages that allow for dynamic memory allocation is finding a way to “collect” the memory after is not used anymore.
+
+It is a bit like in a restaurant. In the beginning, you can accommodate customers with empty tables, but when you don’t have empty tables anymore, you need to check if some of the already-allocated tables have got free in the meanwhile.
+
+Some languages, like C, leave the responsibility to users: You have the memory and now it is your responsibility to free it. It’s a bit like in fast food, where you are (in theory) supposed to clean up your table after the meal.
+
+This is very efficient… if everybody behaves correctly. But if some customers forget to clean up, it will easily become a problem. Same with memory: It’s very easy to forget to free an area of memory.
+
+So Garbage Collectors (GC from here on) come to help. Some languages, namely Java, use a special algorithm to collect all the memory that is not used. That is very nice of them and very convenient for programmers. You may be forgiven if you think that GC is a relatively recent technique.
+
+Garbage collection was invented by John McCarthy around 1959 to simplify manual memory management in Lisp.
+Modern GCs are very sophisticated programs, and they use several combined techniques to quickly identify memory that can be reused. For the moment, let’s assume Java GC works flawlessly and that it will free all objects that are not reachable anymore.
+
+That introduces a new problem: What if we want to keep a reference to an object, but we don’t want to prevent GC from freeing it if there is no other reference? It’s a bit like sitting a while at a table at a restaurant after having finished, but also being ready to leave if a new customer needs the table.
+
+The Solution
+You may wonder why would I need such a thing. Actually, there are a few use cases. Let’s introduce our protagonists from the Java documentation:
+
+SoftReference: Soft reference objects are cleared at the discretion of the garbage collector in response to memory demand. Soft references are most often used to implement memory-sensitive caches. All soft references to softly reachable objects are guaranteed to have been cleared before the virtual machine throws an OutOfMemoryError.
+
+WeakReference: Weak reference objects do not prevent their referents from being made finalizable, finalized, and then reclaimed. Weak references are most often used to implement canonicalizing mappings. (Here, Canonicalizing mappings means mapping only reachable object instances.)
+
+PhantomReference: Phantom reference objects are enqueued after the collector determines that their referents may otherwise be reclaimed. Phantom references are most often used for scheduling pre-mortem cleanup actions in a more flexible way than is possible with the Java finalization mechanism. Unlike soft and weak references, phantom references are not automatically cleared by the garbage collector as they are enqueued. An object that is reachable via phantom references will remain so until all such references are cleared or themselves become unreachable.
+
+To reuse (and stretch) our restaurant metaphor one last time: A SoftReference is like a customer that says, "I’ll leave my table only when there are no other tables available." A WeakReference is like someone ready to leave as soon as a new customer arrives. A PhantomReference is like someone ready to leave as soon as a new customer arrives, but actually not leaving until the manager gives them permission.
+
+1)Counter counter = new Counter(); // strong reference - line 1 WeakReference<Counter> weakCounter = new WeakReference<Counter>(counter); //weak reference counter = null; // now Counter object is eligible for garbage collection
+
+2)Counter prime = new Counter(); // prime holds a strong reference - line 2 SoftReference<Counter> soft = new SoftReference<Counter>(prime) ; //soft reference variable has SoftReference to Counter Object created at line 2 prime = null; // now Counter object is eligible for garbage collection but only be collected when JVM absolutely needs memory
+
+3)DigitalCounter digit = new DigitalCounter(); // digit reference variable has strong reference - line 3
+PhantomReference<DigitalCounter> phantom = new PhantomReference<DigitalCounter>(digit); // phantom reference to object created at line 3
+
+digit = null;
