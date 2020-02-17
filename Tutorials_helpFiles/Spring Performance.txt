@@ -57,3 +57,67 @@ It is not necessary to configure your own connection pool implementation (such a
 All of these servers provide you with connection pool implementations and management tools to configure them.
 
 In WildFly you can set this up with your DataSource configuration in the management console or use the CLI.
+
+
+
+Q) When to Use Put and When Patch?
+Let's start with a simple, and slightly simple statement.
+
+When a client needs to replace an existing Resource entirely, they can use PUT. When they're doing a partial update, they can use HTTP PATCH.
+
+For instance, when updating a single field of the Resource, sending the complete Resource representation might be cumbersome and utilizes a lot of unnecessary bandwidth. In such cases, the semantics of PATCH make a lot more sense.
+
+Another important aspect to consider here is idempotence; PUT is idempotent; PATCH can be, but isn't required to. And, so – depending on the semantics of the operation we're implementing, we can also choose one or the other based on this characteristic.
+
+Implementing PUT and PATCH Logic
+Let's say we want to implement the REST API for updating a HeavyResource with multiple fields:
+
+public class HeavyResource {
+    private Integer id;
+    private String name;
+    private String address;
+    // ...
+First, we need to create the endpoint that handles a full update of the resource using PUT:
+
+
+@PutMapping("/heavyresource/{id}")
+public ResponseEntity<?> saveResource(@RequestBody HeavyResource heavyResource,
+  @PathVariable("id") String id) {
+    heavyResourceRepository.save(heavyResource, id);
+    return ResponseEntity.ok("resource saved");
+}
+This is a standard endpoint for updating resources.
+
+Now, let's say that address field will often be updated by the client. In that case, we don't want to send the whole HeavyResource object with all fields, but we do want the ability to only update the address field – via the PATCH method.
+
+We can create a HeavyResourceAddressOnly DTO to represent a partial update of the address field:
+
+public class HeavyResourceAddressOnly {
+    private Integer id;
+    private String address;
+     
+    // ...
+}
+Next, we can leverage the PATCH method to send a partial update:
+
+@PatchMapping("/heavyresource/{id}")
+public ResponseEntity<?> partialUpdateName(
+  @RequestBody HeavyResourceAddressOnly partialUpdate, @PathVariable("id") String id) {
+     
+    heavyResourceRepository.save(partialUpdate, id);
+    return ResponseEntity.ok("resource address updated");
+}
+
+Testing PUT and PATCH :
+
+mockMvc.perform(put("/heavyresource/1")
+  .contentType(MediaType.APPLICATION_JSON_VALUE)
+  .content(objectMapper.writeValueAsString(
+    new HeavyResource(1, "Tom", "Jackson", 12, "heaven street")))
+  ).andExpect(status().isOk());
+
+mockMvc.perform(patch("/heavyrecource/1")
+  .contentType(MediaType.APPLICATION_JSON_VALUE)
+  .content(objectMapper.writeValueAsString(
+    new HeavyResourceAddressOnly(1, "5th avenue")))
+  ).andExpect(status().isOk());

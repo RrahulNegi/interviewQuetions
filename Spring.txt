@@ -313,3 +313,7 @@ SERIALIZABLE isolation level is the most restrictive of all isolation levels. Tr
 
 5)DEFAULT
 DEFAULT isolation level, as the name states, uses the default isolation level of the datastore we are actually connecting from our application.
+
+
+@) Why put method is idempotent?
+Generally – not necessarily – PUT APIs are used to update the resource state. If you invoke a PUT API N times, the very first request will update the resource; then rest N-1 requests will just overwrite the same resource state again and again – effectively not changing anything. Hence, PUT is idempotent.
