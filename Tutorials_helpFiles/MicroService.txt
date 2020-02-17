@@ -125,6 +125,51 @@ SpringBoot:
 
 @SpringBootApplication : @Configuration+@EnableAutoConfiguration+@ComponentScan
 
+-@EnableAutoConfiguration Annotation in Spring Boot :
+EnableAutoConfiguration annotation auto-configures the beans that are present in the classpath. This simplifies the developers work by guessing the required beans from the classpath and configure it to run the application. This annotation is part of the spring boot project.
+
+For example, if you have tomcat-embedded.jar in the classpath, then you will need a TomcatEmbeddedServletContainerFactory bean to configure the tomcat server. This will be searched and configured without any manual XML configurations.
+
+The following are the parameters that can be passed inside this annotation:
+
+exclude – Exclude the list of classes from the auto configuration.
+excludeNames – Exclude the list of fully qualified class names from the auto configuration. This parameter added since spring boot 1.3.0.
+The above parameters helps you to exclude the list of configuration classes that are not required to be auto-configured.
+
+Here is the sample snippet for how to use the parameters:
+
+1
+@EnableAutoConfiguration(exclude={Book.class})
+
+
+-) component-scan :
+
+This element has been introduced in Spring configuration from version 2.5. If you have worked with the previous versions of Spring, all the beans has to be manually configured in the XML files. There are no annotations supported in the Java beans. This will result in lot of XML code in the configuration files and every time developer has to update the XML file for configuring the new beans. context:component-scan element in the spring configuration file would eliminate the need for declaring all the beans in the XML files. Look at the below declaration in your spring configuration file:
+
+
+1
+<context:component-scan base-package="org.controller"/>
+The above declaration in the spring application configuration file would scan the classes inside the specified package and create the beans instance. Note that it could create beans only if that class is annotated with correct annotations. The following are the annotations scanned by this element:
+
+
+ 
+@Component
+@Repository
+@Service
+@Controller
+
+-)@Configuration Annotation in Spring 3.0 :
+ If you annotate a class with @Configuration annotation, it indicates that the class is used for defining the beans using the @Bean annotation. This is very much similar to the <bean/> element in the spring XML configurations.
+ 
+ @Configuration
+public class JavaConfig {
+	@Bean(name="userDetails")
+	public UserDetails userDetails(){
+		return new UserDetails();
+	}
+}
+
+
 Testing in Spring Boot
 ----------------------
 Integration Testing with @DataJpaTest

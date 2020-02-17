@@ -117,3 +117,77 @@ https://www.javainuse.com/spring/spring-boot-oauth-authorization-code
 
 Q) Security Interview question?
 https://www.javainuse.com/spring/spring-security-interview-questions
+
+
+
+Spring REST + Spring Security Example :
+1. Project Directory /:
+ <!-- spring mvc, rest -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- spring security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- spring security test -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+		
+2) Spring Controller :
+
+@RestController
+@Validated
+public class BookController {
+}
+
+3. Spring Security
+4.1 Create a new @Configuration class and extends WebSecurityConfigurerAdapter. In below example, we will use the HTTP Basic authentication to protect the REST endpoints. Read comment for self explanatory.
+
+SpringSecurityConfig.java
+package com.mkyong.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Create 2 users for demo
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.inMemoryAuthentication()
+                .withUser("user").password("{noop}password").roles("USER")
+                .and()
+                .withUser("admin").password("{noop}password").roles("USER", "ADMIN");
+
+    }
+
+    // Secure the endpoins with HTTP Basic authentication
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        http
+                //HTTP Basic authentication
+                .httpBasic()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/books/**").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
+   
+                .and()
+                .csrf().disable()
+                .formLogin().disable();
+    }
