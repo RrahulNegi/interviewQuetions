@@ -365,7 +365,7 @@ public WebMvcConfigurer corsConfigurer() {
 
 12)Spring Boot - Internationalization
 
-Dependencies :
+Dependencies  :
 spring-boot-starter-web
 spring-boot-starter-thymeleaf
 
@@ -497,7 +497,7 @@ To enable Spring Boot actuator endpoints to your Spring Boot application, we nee
 
 a)Maven users can add the below dependency in your pom.xml file.
 
-<dependency>
+<dependency 
    <groupId>org.springframework.boot</groupId>
    <artifactId>spring-boot-starter-actuator</artifactId>
 </dependency>

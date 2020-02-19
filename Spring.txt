@@ -234,7 +234,7 @@ if (isExistingTransaction()) {
     }
     return existing;
 }
-return emptyTransaction;
+return emptyTransaction; 
 
 3)MANDATORY Propagation:
 When the propagation is MANDATORY, if there is an active transaction, then it will be used. If there isn't an active transaction, then Spring throws an exception:

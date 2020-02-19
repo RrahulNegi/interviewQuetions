@@ -1,4 +1,4 @@
-There are no structural differences between the files; they are all archived using zip/jar compression. However, they are intended for different purposes.
+`There are no structural differences between the files; they are all archived using zip/jar compression. However, they are intended for different purposes.
 
 	Jar files (files with a .jar extension) are intended to hold generic libraries of Java classes, resources, auxiliary files, etc.
 	War files (files with a .war extension) are intended to contain complete Web applications. In this context, a Web application is defined as a single group of files, classes, resources, .jar files that can be packaged and accessed as one servlet context.
