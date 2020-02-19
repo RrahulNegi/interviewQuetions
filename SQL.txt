@@ -32,8 +32,229 @@ SELECT column_name(s)
 FROM table1 T1, table1 T2
 WHERE condition;
 
-q)       What are indexes, cursors and triggers and basic syntax how to write all these
+q) What are indexes, cursors and triggers and basic syntax how to write all these
 
 Q)  Difference between procedure and function and basic syntax how to write these both.
 
 Q) How to fetch nth highest salary of a employee from employee table.
+
+
+q)diffrence types of keys used in sql?
+
+ What is a primary key?
+
+A primary key is a combination of fields which uniquely specify a row. This is a special kind of unique key, and it has implicit NOT NULL constraint. It means, Primary key values cannot be NULL.
+
+Q) What is a unique key?
+
+
+A Unique key constraint uniquely identified each record in the database. This provides uniqueness for the column or set of columns.
+
+A Primary key constraint has automatic unique constraint defined on it. But not, in the case of Unique Key.
+
+There can be many unique constraint defined per table, but only one Primary key constraint defined per table.
+
+Q) What is a foreign key?
+
+A foreign key is one table which can be related to the primary key of another table. Relationship needs to be created between two tables by referencing foreign key with the primary key of another table.
+
+Q1) What is the difference between DELETE and TRUNCATE statements?
+
+Delete command is used to delete a row in a table.	Truncate is used to delete all the rows from a table.
+You can rollback data after using delete statement.	You cannot rollback data.
+It is a DML command.	Truncate  is a DDL command.
+It is slower than truncate statement.	Truncate is faster.
+
+
+Q2. What are the different subsets of SQL?
+DDL (Data Definition Language) – It allows you to perform various operations on the database such as CREATE, ALTER and DELETE objects.
+DML ( Data Manipulation Language) – It allows you to access and manipulate data. It helps you to insert, update, delete and retrieve data from the database.
+DCL ( Data Control Language) – It allows you to control access to the database. Example – Grant, Revoke access permissions.
+
+ Q) What is the difference between CHAR and VARCHAR2 datatype in SQL?
+Both Char and Varchar2 are used for characters datatype but varchar2 is used for character strings of variable length whereas Char is used for strings of fixed length. For example, char(10) can only store 10 characters and will not be able to store a string of any other length whereas varchar2(10) can store any length i.e 6,8,2 in this variable.
+
+Q)  What are Constraints?
+Constraints are used to specify the limit on the data type of the table. It can be specified while creating or altering the table statement. The sample of constraints are:
+
+NOT NULL
+CHECK
+DEFAULT
+UNIQUE
+PRIMARY KEY
+FOREIGN KEY
+
+Q) What is a Unique key?
+Uniquely identifies a single row in the table.
+Multiple values allowed per table.
+Null values allowed.
+
+Q)What is a Foreign key?
+Foreign key maintains referential integrity by enforcing a link between the data in two tables.
+The foreign key in the child table references the primary key in the parent table.
+The foreign key constraint prevents actions that would destroy links between the child and parent tables.
+
+Q)What is the difference between clustered and non clustered index in SQL?
+The differences between the clustered and non clustered index in SQL are :
+
+Clustered index is used for easy retrieval of data from the database and its faster whereas reading from non clustered index is relatively slower.
+Clustered index alters the way records are stored in a database as it sorts out rows by the column which is set to be clustered index whereas in a non clustered index, it does not alter the way it was stored but it creates a separate object within a table which points back to the original table rows after searching.
+One table can only have one clustered index whereas it can have many non clustered index.
+
+Unique Index:
+This index does not allow the field to have duplicate values if the column is unique indexed. If a primary key is defined, a unique index can be applied automatically.
+
+CREATE INDEX index_name
+ON table_name (column1, column2, ...);
+
+Q)Write a SQL query to display the current date?
+In SQL, there is a built-in function called GetDate() which helps to return the current timestamp/date.
+
+Q)What do you mean by Denormalization?
+Denormalization refers to a technique which is used to access data from higher to lower forms of a database. It helps the database managers to increase the performance of the entire infrastructure as it introduces redundancy into a table. It adds the redundant data into a table by incorporating database queries that combine data from various tables into a single table
+
+
+Q) What is Normalization and what are the advantages of it?
+Normalization is the process of organizing data to avoid duplication and redundancy. Some of the advantages are:
+
+Better Database organization
+More Tables with smaller rows
+Efficient data access
+Greater Flexibility for Queries
+Quickly find the information
+Easier to implement Security
+Allows easy modification
+Reduction of redundant and duplicate data
+More Compact Database
+Ensure Consistent data after modification
+Apart from this SQL Interview Questions Blog, if you want to get trained from professionals on this technology, you can opt for a structured training from edureka! Click below to know more.
+
+Q)2. Explain different types of Normalization.
+There are many successive levels of normalization. These are called normal forms. Each consecutive normal form depends on the previous one.The first three normal forms are usually adequate.
+
+First Normal Form (1NF) – No repeating groups within rows
+Second Normal Form (2NF) – Every non-key (supporting) column value is dependent on the whole primary key.
+Third Normal Form (3NF) – Dependent solely on the primary key and no other non-key (supporting) column value.
+
+Q)What is ACID property in a database?
+ACID stands for Atomicity, Consistency, Isolation, Durability. It is used to ensure that the data transactions are processed reliably in a database system. 
+
+Atomicity: Atomicity refers to the transactions that are completely done or failed where transaction refers to a single logical operation of a data. It means if one part of any transaction fails, the entire transaction fails and the database state is left unchanged.
+A transaction is an atomic unit; hence, all the instructions within a transaction will successfully execute, or none of them will execute. The following transaction transfers 20 dollars from Alice’s bank account to Bob’s bank account. If any of the instructions fail, the entire transaction should abort and rollback.
+
+Consistency: Consistency ensures that the data must meet all the validation rules. In simple words,  you can say that your transaction never leaves the database without completing its state.
+A database is initially in a consistent state, and it should remain consistent after every transaction. Suppose that the transaction in the previous example fails after Write(A_b) and the transaction is not rolled back; then, the database will be inconsistent as the sum of Alice and Bob’s money, after the transaction, will not be equal to the amount of money they had before the transaction.
+
+Isolation: The main goal of isolation is concurrency control.
+If the multiple transactions are running concurrently, they should not be affected by each other; i.e., the result should be the same as the result obtained if the transactions were running sequentially. Suppose B_bal is initially 100. If a context switch occurs after B_bal *= 20, T2 will read the incorrect value of 100 as the updated value will not have been written back to the database. This violates the isolation property as the result is different from the answer that would have been​ obtained if T1 had ​finished before T2.
+
+Durability: Durability means that if a transaction has been committed, it will occur whatever may come in between such as power loss, crash or any sort of error.
+Changes that have been committed to the database should remain even in the case of software and hardware failure. For instance, if Bob’s account contains $120, this information should not disappear upon hardware or software
+ failure.
+ 
+ Q)What do you mean by “Trigger” in SQL?
+Trigger in SQL is are a special type of stored procedures that are defined to execute automatically in place or after data modifications. It allows you to execute a batch of code when an insert, update or any other query is executed against a specific table
+
+CREATE OR REPLACE TRIGGER display_salary_changes 
+BEFORE DELETE OR INSERT OR UPDATE ON customers 
+FOR EACH ROW 
+WHEN (NEW.ID > 0) 
+DECLARE 
+   sal_diff number; 
+BEGIN 
+   sal_diff := :NEW.salary  - :OLD.salary; 
+   dbms_output.put_line('Old salary: ' || :OLD.salary); 
+   dbms_output.put_line('New salary: ' || :NEW.salary); 
+   dbms_output.put_line('Salary difference: ' || sal_diff); 
+END; 
+
+Q) Diffrence between Function and Procedures?
+
+Functions − These subprograms return a single value; mainly used to compute and return a value.
+
+Procedures − These subprograms do not return a value directly; mainly used to perform an action.
+
+DECLARE 
+   a number; 
+   b number; 
+   c number;
+PROCEDURE findMin(x IN number, y IN number, z OUT number) IS 
+BEGIN 
+   IF x < y THEN 
+      z:= x; 
+   ELSE 
+      z:= y; 
+   END IF; 
+END;   
+BEGIN 
+   a:= 23; 
+   b:= 45; 
+   findMin(a, b, c); 
+   dbms_output.put_line(' Minimum of (23, 45) : ' || c); 
+END; 
+
+Q)Are NULL values same as that of zero or a blank space? 
+A NULL value is not at all same as that of zero or a blank space. NULL value represents a value which is unavailable, unknown, assigned or not applicable whereas a zero is a number and blank space is a character.
+
+Q) What is the difference between cross join and natural join?
+The cross join produces the cross product or Cartesian product of two tables whereas the natural join is based on all the columns having the same name and data types in both the tables
+
+Q)What is subquery in SQL?
+A subquery is a query inside another query where a query is defined to retrieve data or information back from the database. In a subquery, the outer query is called as the main query whereas the inner query is called subquery. Subqueries are always executed first and the result of the subquery is passed on to the main query. It can be nested inside a SELECT, UPDATE or any other query. A subquery can also use any comparison operators such as >,< or =.
+
+Q)Write a SQL query to find the names of employees that begin with ‘A’?
+To display name of the employees that begin with ‘A’, type in the below command:
+
+1
+SELECT * FROM Table_name WHERE EmpName like 'A%'
+
+Q)Write a SQL query to get the third highest salary of an employee from employee_table?
+SELECT TOP 1 salary
+FROM(
+SELECT TOP 3 salary
+FROM employee_table
+ORDER BY salary DESC) AS emp
+ORDER BY salary ASC;
+
+Q) How can you insert NULL values in a column while inserting the data?
+NULL values can be inserted in the following ways:
+
+Implicitly by omitting column from column list.
+Explicitly by specifying NULL keyword in the VALUES clause
+
+Q)What is the main difference between ‘BETWEEN’ and ‘IN’ condition operators?
+BETWEEN operator is used to display rows based on a range of values in a row whereas the IN condition operator is used to check for values contained in a specific set of values.
+
+Example of BETWEEN:
+SELECT * FROM Students where ROLL_NO BETWEEN 10 AND 50;
+Example of IN:
+SELECT * FROM students where ROLL_NO IN (8,15,25);
+
+Q)What is CLAUSE in SQL?
+SQL clause helps to limit the result set by providing a condition to the query. A clause helps to filter the rows from the entire set of records.
+
+For example – WHERE, HAVING clause.
+
+Apart from this SQL Interview Questions Blog, if you want to get trained from professionals on this technology, you can opt for a structured training from edureka! Click below to know more.
+
+Q41. What is the difference between ‘HAVING’ CLAUSE and a ‘WHERE’ CLAUSE?
+HAVING clause can be used only with SELECT statement. It is usually used in a GROUP BY clause and whenever GROUP BY is not used, HAVING behaves like a WHERE clause. 
+Having Clause is only used with the GROUP BY function in a query whereas WHERE Clause is applied to each row before they are a part of the GROUP BY function in a query.
+
+Q)What is a View?
+A view is a virtual table which consists of a subset of data contained in a table. Since views are not present, it takes less space to store. View can have data of one or more tables combined and it depends on the relationship.
+
+Q55. What are Views used for?
+A view refers to a logical snapshot based on a table or another view. It is used for the following reasons:
+
+Restricting access to data.
+Making complex queries simple.
+Ensuring data independence.
+Providing different views of same data.
+
+CREATE VIEW [Brazil Customers] AS
+SELECT CustomerName, ContactName
+FROM Customers
+WHERE Country = "Brazil";
+
+SELECT * FROM [Brazil Customers];

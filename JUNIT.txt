@@ -296,3 +296,53 @@ When using @Spy, mockito creates a real instance of the class and track every in
 In mockito, we need to create the object of class to be tested and than insert it’s dependencies (mocked) to completely test the behavior. To do this, we use @InjectMocks annotation.
 
 @InjectMocks marks a field on which injection should be performed. Mockito will try to inject mocks only either by constructor injection, setter injection, or property injection – in this order. If any of the given injection strategy fail, then Mockito won’t report failure.
+
+
+When shoud you use mock or spy? If you want to be safe and avoid calling external services and just want to test the logic inside of the unit, then use mock. If you want to call external service and perform calling of real dependency, or simply say, you want to run the program as it is and just stub specific methods, then use spy. So that’s the difference between spy and mock in mockito.
+
+
+Q) EasyMock Private Method Mock using PowerMock ?
+
+For stubbing private method behavior, we have to use PowerMock.createPartialMock() to get the mock object. This is required so that we don’t mock the methods where these private methods are being called.
+
+After that, use PowerMock.expectPrivate() method to stub the private method behavior.
+
+Make sure to call PowerMock.replay() before writing the test code that uses the stubbed methods. For stub methods call verification, use PowerMock.verify() method.
+
+class Foo {
+	private boolean isInit() {
+		return false;
+	}
+	private String reverse(String s) {
+		return null;
+	}
+	public boolean checkStatus() {
+		return isInit();
+	}
+	public String doReverse(String s) {
+		return reverse(s);
+	}
+}
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Foo.class)
+public class JUnit4PowerMockEasyMockPrivateExample {
+
+	@Test
+	public void test_private_method() throws Exception {
+		Foo mock = createPartialMock(Foo.class, "isInit", "reverse");
+		
+		expectPrivate(mock, "isInit").andReturn(true);
+		expectPrivate(mock, "reverse", "cat").andReturn("tac");
+		expectPrivate(mock, "reverse", "123").andReturn("321");
+		replay(mock);
+		
+		assertTrue(mock.checkStatus());
+		assertEquals("tac", mock.doReverse("cat"));
+		assertEquals("321", mock.doReverse("123"));
+		
+		verify(mock);
+	}
+}
+
+Notice that we are creating partial mock for only private methods, public methods are not mocked. So when we call these public methods, the real method will get called that will internally call the private method and our stubbed method implementation will be used.
