@@ -37,6 +37,10 @@ Another example of Aggregation is Student in School class, when School closed, S
 The composition is stronger than Aggregation.  In Short, a relationship between two objects is referred as an association, and an association is known as composition when one object owns other while an association is known as aggregation when one object uses another object.
 
 
+Q)ClassNotFoundException is an exception that occurs when you try to load a class at run time using Class.forName() or loadClass() methods and mentioned classes are not found in the classpath.
+
+NoClassDefFoundError is an error that occurs when a particular class is present at compile time, but was missing at run time.
+
 
 Q) JVM Architecture?
 
@@ -82,5 +86,7 @@ The Native Method Interface is a programming framework. It allows Java code whic
 Native Libraries is a collection of the Native Libraries(C, C++) which are needed by the Execution Engine.
 
 Q) JVM 32 bit vs 64 bit?
+
+
 
 

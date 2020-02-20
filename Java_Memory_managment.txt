@@ -1,0 +1,63 @@
+Q) difference-in-string-pool-between-java6-java7 ?
+
+String pool in Java is a pool of String literals and interned Strings in JVM for efficient use of String object. Since String is immutable in Java, it makes sense to cache and shares them in JVM. The String pool has gone through an important change in Java 7 release when it was relocated from PermGen space to heap space. Till Java 1.6, interned String and literals are stored in the PermGen space of JVM memory, which was a fixed size area for storing class metadata. The biggest issue of having String pool in PermGen is the small and fixed size of PermGen space. In some JVM it ranges from 32M to 96M, which is quite small for a large program. Since String is extensively used in both small and large Java application, Java designers thought String pool is the best way optimize the use of String object in Java.
+
+Btw, you can also change the size of PermGen space using JVM parameters -XX+PermGenSize, it is still fixed. Such limitation requires very restricted use of String.intern() method, you would better not using String.intern() method in a loop or at large scale to avoid java.lang.OutOfMemoryError : PermGen space.
+
+By relocating String pool to heap space, you gain the benefit of large memory space. String pool can grow and shrink much more smoothly than they were in PermGen space. Since String literals and interned String are also garbage collected, the size of the pool will grow and shrink depending upon the state of your program.
+The default size of String pool has increased on  Java 7 update 40 release. The String pool is implemented using a HashMap in Java and default size of the table in Java 6 was 1009 , which was further increased to 60013 in Java 7. See Java Performance The Definitive Guide by Scott Oaks to learn more about Java 7 changes which affect the performance of  Java applications.
+
+Difference between String pool in Java 6 and 7
+
+
+You can also customize string pool size using -XX:StringTableSize parameter. If you do provide a custom size for String pool, consider giving a prime number. Depending upon your Java application, having a String pool of 1 million entries may not be a bad idea. Though default size of String pool, 60013 is also good enough for many Java programs and hence retained in Java 8 as well.
+
+If you are not sure about String pool usage then you can also print string pool statistics using -XX:+PrintStringTableStatistics JVM option. It will print string pool usage data once your program finished execution.
+
+Due to this relocation of String pool from PermGen memory space to heap space, the String.intern() method, which is used to intern a String object and store inside string pool for further reuse has now become even more useful. You can intern a large number of String than before. You are only limited by your JVM heap size as far as String pool goes.
+
+In summary here, is the important difference in String pool in Java 6 and 7:
+String pool is relocated to Java heap space from PermGen space.
+The default size of String pool is increased to 600013 entries from 1009 in Java 6.
+The -XX:StringTableSize JVM option is provided to specify the size of String pool. 
+Apart from that String class is also changed e.g. now the char[] is not referenced when you create substring, instead a new array is created with only necessary data required by substring method
+
+Q)PermGen and Metaspace ?
+
+PermGen is an abbreviation for Permanent Generation and it’s a special heap space which is separate from the main Java heap where JVM keeps track of metadata of the classes which have been loaded. In Java 8, PermGen has been renamed to Metaspace - with some subtle differences. From our perspective, it is important to note that Metaspace has an unlimited default maximum size. On the contrary, PermGen from Java 7 and earlier has a default maximum size of 64 MB on 32-bit JVM and 82 MB on the 64-bit version. Of course, these are not the same as the initial sizes. Java 7 and earlier starts with something around 12-21 MB of the initial PermGen space.
+
+It is worthwhile to mention that prior to Java 7, interned Strings used to be kept on the PermGen. That caused some serious problems with the infamous:
+
+java.lang.OutOfMemoryError: PermGen space
+
+Whenever there is a need to resize PermGen/Metaspace, JVM will do it as it does with the standard heap. Resizing those spaces requires a full GC, which is always an expensive operation. It can usually be observed during a startup when a lot of classes are being loaded. Especially if the application has dependencies on many external libraries. If there are a lot of full GCs during the startup, it’s usually because of that. If that case, increasing the initial size can boost the startup performance.
+
+To increase PermGen, we have the following commands:
+
+-XX:PermSize=N -  sets the initial (and minimum size) of the Permanent Generation space.
+
+-XX:MaxPermSize=N  -  sets the maximum size of the Permanent Generation space.
+
+In Java 8 and onwards, we can set the initial and maximum size of Metaspace using the following commands:
+
+-XX:MetaspaceSize=N  - sets the initial (and minimum size) of the Metaspace.
+
+-XX:MaxMetaspaceSize=N  - sets the maximum size of the Metaspace.
+
+Q)Memory Management in Java – Java Garbage Collection Types ?
+
+There are five types of garbage collection types that we can use in our applications. We just need to use the JVM switch to enable the garbage collection strategy for the application. Let’s look at each of them one by one.
+
+Serial GC (-XX:+UseSerialGC): Serial GC uses the simple mark-sweep-compact approach for young and old generations garbage collection i.e Minor and Major GC.
+Serial GC is useful in client machines such as our simple stand-alone applications and machines with smaller CPU. It is good for small applications with low memory footprint.
+
+Parallel GC (-XX:+UseParallelGC): Parallel GC is same as Serial GC except that is spawns N threads for young generation garbage collection where N is the number of CPU cores in the system. We can control the number of threads using -XX:ParallelGCThreads=n JVM option.
+Parallel Garbage Collector is also called throughput collector because it uses multiple CPUs to speed up the GC performance. Parallel GC uses a single thread for Old Generation garbage collection.
+
+Parallel Old GC (-XX:+UseParallelOldGC): This is same as Parallel GC except that it uses multiple threads for both Young Generation and Old Generation garbage collection.
+
+Concurrent Mark Sweep (CMS) Collector (-XX:+UseConcMarkSweepGC): CMS Collector is also referred as concurrent low pause collector. It does the garbage collection for the Old generation. CMS collector tries to minimize the pauses due to garbage collection by doing most of the garbage collection work concurrently with the application threads.
+CMS collector on the young generation uses the same algorithm as that of the parallel collector. This garbage collector is suitable for responsive applications where we can’t afford longer pause times. We can limit the number of threads in CMS collector using -XX:ParallelCMSThreads=n JVM option.
+
+G1 Garbage Collector (-XX:+UseG1GC): The Garbage First or G1 garbage collector is available from Java 7 and its long term goal is to replace the CMS collector. The G1 collector is a parallel, concurrent, and incrementally compacting low-pause garbage collector.
+Garbage First Collector doesn’t work like other collectors and there is no concept of Young and Old generation space. It divides the heap space into multiple equal-sized heap regions. When a garbage collection is invoked, it first collects the region with lesser live data, hence “Garbage First”
