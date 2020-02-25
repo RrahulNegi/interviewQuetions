@@ -1,0 +1,16 @@
+1) select e.firstname,e.lastname,e.employeenumber from employee e, courseresult cr
+where cr.employeeid=e.id and cr.courseid=(select id from course c1 where c1.name='First Aid,Standard') 
+and cr.result!='P' and cr.courseDate<'2018-01-28';
+
+
+
+
+
+
+
+2)
+select distinct(e.firstname),e.lastname,e.employeenumber,
+case when  cr.courseid!=1   then 1
+when  cr.courseid=1 and cr.result!='P'   then 2
+    end PriorityLevel  from courseresult cr, employee e where  e.id=cr.employeeid    order by  PriorityLevel
+    
