@@ -394,3 +394,152 @@ The request method is not supported by the server and cannot be handled. The onl
 This error response means that the server, while working as a gateway to get a response needed to handle the request, got an invalid response.
 503 Service Unavailable
 The server is not ready to handle the request. Common causes are a server that is down for maintenance or that is overloaded. Note that together with this response, a user-friendly page explaining the problem should be sent. This responses should be used for temporary conditions and the Retry-After: HTTP header should, if possible, contain the estimated time before the recovery of the service. The webmaster must also take care about the caching-related headers that are sent along with this response, as these temporary condition responses should usually not be cached.
+
+) What Is a Circular Dependency?
+It happens when a bean A depends on another bean B, and the bean B depends on the bean A as well:
+
+Bean A → Bean B → Bean A
+
+Of course, we could have more beans implied:
+
+Bean A → Bean B → Bean C → Bean D → Bean E → Bean A
+
+Q)What Happens in Spring
+When Spring context is loading all the beans, it tries to create beans in the order needed for them to work completely. For instance, if we didn’t have a circular dependency, like the following case:
+
+Bean A → Bean B → Bean C
+
+Spring will create bean C, then create bean B (and inject bean C into it), then create bean A (and inject bean B into it).
+
+But, when having a circular dependency, Spring cannot decide which of the beans should be created first, since they depend on one another. In these cases, Spring will raise a BeanCurrentlyInCreationException while loading context.
+
+It can happen in Spring when using constructor injection; if you use other types of injections you should not find this problem since the dependencies will be injected when they are needed and not on the context loading.
+
+@Component
+public class CircularDependencyA {
+ 
+    private CircularDependencyB circB;
+ 
+    @Autowired
+    public CircularDependencyA(CircularDependencyB circB) {
+        this.circB = circB;
+    }
+}
+
+
+@Component
+public class CircularDependencyB {
+ 
+    private CircularDependencyA circA;
+ 
+    @Autowired
+    public CircularDependencyB(CircularDependencyA circA) {
+        this.circA = circA;
+    }
+}
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { TestConfig.class })
+public class CircularDependencyTest {
+ 
+    @Test
+    public void givenCircularDependency_whenConstructorInjection_thenItFails() {
+        // Empty test; we just want the context to load
+    }
+}
+If you try to run this test, you will get the following exception:
+
+BeanCurrentlyInCreationException: Error creating bean with name 'circularDependencyA':
+Requested bean is currently in creation: Is there an unresolvable circular reference?
+
+The Workarounds :
+1)Use @Lazy
+A simple way to break the cycle is saying Spring to initialize one of the beans lazily. That is: instead of fully initializing the bean, it will create a proxy to inject it into the other bean. The injected bean will only be fully created when it’s first needed.
+
+To try this with our code, you can change the CircularDependencyA to the following:
+
+@Component
+public class CircularDependencyA {
+ 
+    private CircularDependencyB circB;
+ 
+    @Autowired
+    public CircularDependencyA(@Lazy CircularDependencyB circB) {
+        this.circB = circB;
+    }
+}
+
+2)Use Setter/Field Injection :
+One of the most popular workarounds, and also what Spring documentation proposes, is using setter injection.
+
+Simply put if you change the ways your beans are wired to use setter injection (or field injection) instead of constructor injection – that does address the problem. This way Spring creates the beans, but the dependencies are not injected until they are needed.
+
+Let's do that – let's change our classes to use setter injections and will add another field (message) to CircularDependencyB so we can make a proper unit test:
+
+@Component
+public class CircularDependencyA {
+ 
+    private CircularDependencyB circB;
+ 
+    @Autowired
+    public void setCircB(CircularDependencyB circB) {
+        this.circB = circB;
+    }
+ 
+    public CircularDependencyB getCircB() {
+        return circB;
+    }
+}
+@Component
+public class CircularDependencyB {
+ 
+    private CircularDependencyA circA;
+ 
+    private String message = "Hi!";
+ 
+    @Autowired
+    public void setCircA(CircularDependencyA circA) {
+        this.circA = circA;
+    }
+ 
+    public String getMessage() {
+        return message;
+    }
+}
+
+3)@PostConstruct :
+nother way to break the cycle is injecting a dependency using @Autowired on one of the beans, and then use a method annotated with @PostConstruct to set the other dependency.
+
+
+Our beans could have the following code:
+
+@Component
+public class CircularDependencyA {
+ 
+    @Autowired
+    private CircularDependencyB circB;
+ 
+    @PostConstruct
+    public void init() {
+        circB.setCircA(this);
+    }
+ 
+    public CircularDependencyB getCircB() {
+        return circB;
+    }
+}
+@Component
+public class CircularDependencyB {
+ 
+    private CircularDependencyA circA;
+     
+    private String message = "Hi!";
+ 
+    public void setCircA(CircularDependencyA circA) {
+        this.circA = circA;
+    }
+     
+    public String getMessage() {
+        return message;
+    }
+}

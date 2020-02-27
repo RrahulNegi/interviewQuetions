@@ -189,3 +189,7 @@ To reuse (and stretch) our restaurant metaphor one last time: A SoftReference is
 PhantomReference<DigitalCounter> phantom = new PhantomReference<DigitalCounter>(digit); // phantom reference to object created at line 3
 
 digit = null;
+
+
+Q) Stream questions----------------------->
+https://stackify.com/streams-guide-java-8/
