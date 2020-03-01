@@ -645,9 +645,9 @@ The cross-cutting concern is a concern which is applicable throughout the applic
 Q)What are the difference between Spring AOP and AspectJ AOP?
 Spring AOP vs AspectJ AOP
 Spring AOP	AspectJ AOP
-Runtime weaving through proxy is done	Compile time weaving through AspectJ Java tools is done 
-It supports only method level PointCut	It suports field level Pointcuts
-It is DTD based 	It is schema based and Annotation configuration
+Runtime weaving through proxy is done  |	Compile time weaving through AspectJ Java tools is done 
+It supports only method level PointCut  |  	It suports field level Pointcuts
+It is DTD based 						| It is schema based and Annotation configuration
 45. What do you mean by Proxy in Spring Framework?
 An object which is created after applying advice to a target object is known as a Proxy. In case of client objects the target object and the proxy object are the same.
 
@@ -656,4 +656,6 @@ The process of linking an aspect with other application types or objects to crea
 
 Q)Describe DispatcherServlet.
 The DispatcherServlet is the core of Spring Web MVC framework. It handles all the HTTP requests and responses. The DispatcherServlet receives the entry of handler mapping from the configuration file and forwards the request to the controller. The controller then returns an object of Model And View. The DispatcherServlet checks the entry of view resolver in the configuration file and calls the specified view component.
+
+
 

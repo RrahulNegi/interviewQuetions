@@ -191,3 +191,111 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .formLogin().disable();
     }
+	
+Q) Spring Security @Secured Annotation Example ?
+
+1)Add Spring Security Dependency
+To use Spring Method Level security and the @Secured annotation in your Spring Boot application you will need to add Spring Security dependency to pom.xml file. Below is a code snippet that you can use to add Spring Security to your Spring Boot Project.
+
+<dependency>
+ <groupId>org.springframework.boot</groupId>
+ <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+
+2_Enable @Secured Annotation
+To enable @Secured annotation in your Spring Boot application you will need to first enable the Global Method Security by adding the @EnableGlobalMethodSecurity annotation to any Class in your application which has the @Configuration annotation or is a configuration class itself. For example, if your application has Spring Security enabled and at least Basic Authentication configured, you should then most likely have a Java class with @EnableWebSecurity annotation like the one below. You can add the @EnableGlobalMethodSecurity annotation and enable method level security in that class as well. 
+
+
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
+public class WebSecurity extends WebSecurityConfigurerAdapter {
+   
+ @Override
+    protected void configure(HttpSecurity http) throws Exception { 
+        // Some code here
+    }
+}
+
+3)Using @Secured Annotation
+@Secured annotation is used on a method level. For example, you can add the @Secured annotation above the @RequestMapping method that handles HTTP DELETE request to allow only those users who have an ADMIN Role to invoke this method.
+
+Note: @Secured annotation takes in an Authority name. If this annotation is being used with a Role name, then do not forget to use the “ROLE_” prefix. Below is an example with @Secured annotation that uses a role name.
+
+@Secured("ROLE_ADMIN")  
+@DeleteMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+@Transactional
+public OperationStatusModel deleteUser(@PathVariable String id) {
+ OperationStatusModel returnValue = new OperationStatusModel();
+ returnValue.setOperationName(RequestOperationName.DELETE.name());
+
+ userService.deleteUser(id);
+
+ returnValue.setOperationResult(Req@Secured ({"ROLE_ADMIN", "ROLE_SUPERADMIN"})
+
+ -----------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ -} Enable the @PostAuthorize Annotation :
+ To enable @PreAuthorize and also @PostAuthorize annotations in your Spring Boot application you will need to first enable the Global Method Security. To enable the Global Method Security, add the @EnableGlobalMethodSecurity annotation to any Java class in your application which has the @Configurationannotation. If your application has Spring Security enabled and at least a Basic Authentication configured, then you can add the @EnableGlobalMethodSecurity annotation and enable method level security in a class that configures HTTPSecurity and is annotated with @EnableWebSecurity annotation.
+
+
+ @PostAuthorize Annotation Example
+When using the @PostAuthorize annotation it is very important to keep in mind that this annotation will allow the business logic of a method to execute first and only then, the security expression it contains will be evaluated. So, be careful and do not use this annotation with methods that perform modifying queries like for example Delete User or Update User.
+
+One of the good use cases to use the @PostAuthorize annotation will be a method that reads some information from a database and other sources and returns a return value. For example, we can use the @PostAuthorize annotation with a method that reads user details from a database and then returns a user object from a method.
+
+Let’s write a security expression that allows the method to return user object only if the userId of a user matches the userId of a currently logged in principal user.
+
+The returnObject
+
+The @PostAuthorize annotation has access to an object that the method is going to return. Any object that your method is going to return, can be accessed in a security expression via the “returnObject“.
+
+Below is an example of a Java class that contains user details. When writing a security expression for the @PreAuthorize annotation, you can access the userId property of the below class with returnObject.userId.
+
+public class User {
+ private String userId;
+ private String firstName;
+ private String lastName;
+
+}
+
+The below method returns an object of User class. A security expression used in the @PostAuthorize annotation will be validated after the method is executed but the method will actually return a value only of the userId of a currently logged in user will match the userId of a User object.
+
+@PostAuthorize("returnObject.userId == principal.userId")
+@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+public User getUser(@PathVariable String id) {
+ User returnValue = new User();
+ UserDto userDto = userService.getUserByUserId(id);
+ ModelMapper modelMapper = new ModelMapper();
+ returnValue = modelMapper.map(userDto, User.class);
+ return returnValue;
+}
+
+Roles and Authorities
+
+If your application supports user Roles and Authorities, you can write security expressions that validate user authority. For example, the below @PreAuthorize security annotation will allow a method to return a value only if a logged-in user has an ADMIN role or is an owner of the object that is being returned.
+
+@PostAuthorize("hasRole('ADMIN') or returnObject.userId == principal.userId")
+
+=======================================================================================================================
+
+Using the @PreAuthorize Annotation
+@PreAuthorize annotation is used on a method level. For example, you can add the @PreAuthorize annotation above the @RequestMapping method that handles HTTP DELETE requests to allow only those users who have an ADMIN Role to invoke this method.
+
+@PreAuthorize annotation supports method security expressions. The business logic in a method annotation with @PreAuthorize annotation will not be executed unless security expression validation allows so. Let’s have a look at a couple of security expressions.
+
+HasRole()
+
+When using the hasRole() security expression, the prefix ROLE_ is skipped. This is because Spring Framework will add the prefix automatically for us.
+
+@PreAuthorize("hasRole('ADMIN')")
+
+@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	
+
+
+
+
+ 
+
+

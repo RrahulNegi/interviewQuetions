@@ -480,7 +480,8 @@ Enter keystore password:
    [no]: yes
    
 b)Configure HTTPS
-We need to provide the server port as 443, key-store file path, key-store-password, key-store-type and key alias name into the application.properties file. Observe the code given here −
+We need to provide the server port as 443, key-store file path, key-store-password, key-store-type and key alias name into the application.properties file. Observe the 
+code given here −
 
 server.port: 443
 server.ssl.key-store: keystore.p12
