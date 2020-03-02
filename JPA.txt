@@ -59,3 +59,25 @@ public class Employee {
 @DiscriminatorValue("regularemployee")  
 public class Regular_Employee extends Employee{
 }
+
+
+Q)Spring JPA query IN and NOT IN query examples
+2.1 Spring JPA query IN clause example
+In bellow repository, we have defined three methods:
+
+In the first method, we have fetched records using the method name, When we define a method with a specified naming conversation then spring JPA will automatically generate the query at runtime and return the result.
+In the second method, We have used @Query and passed names as a parameter List.
+In the third and last method, We have used the native query in which, nativeQuery = true means value contains the native query.
+@Repository
+@Transactional
+public interface EmployeeDAO extends JpaRepository<Employee,Integer> {
+
+    List<Employee> findByEmployeeNameIn(List<String> names);                // 1. Spring JPA In cause using method name
+
+    @Query("SELECT e FROM Employee e WHERE e.employeeName IN (:names)")     // 2. Spring JPA In cause using @Query
+    List<Employee> findByEmployeeNames(@Param("names")List<String> names);
+
+    @Query(nativeQuery =true,value = "SELECT * FROM Employee as e WHERE e.employeeName IN (:names)")   // 3. Spring JPA In cause using native query
+    List<Employee> findByEmployeeName(@Param("names") List<String> names);
+}
+

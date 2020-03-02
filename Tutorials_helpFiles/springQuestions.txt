@@ -157,7 +157,13 @@ public class HelloWorldApp{
 Conclusion
 The ApplicationContext includes all the functionality of the BeanFactory. It is generally recommended to use the former. There are some limited situations, such as in mobile applications, where memory consumption might be critical. In those scenarios, it would be justifiable to use the more lightweight BeanFactory. However, in most enterprise applications, the ApplicationContext is what you will want to use.
 
-For all differences, please refer to the reference.
+1) BeanFactory doesn't provide support for internationalization i.e. i18n but ApplicationContext provides support for it.
+
+2) Another difference between BeanFactory vs ApplicationContext is ability to publish event to beans that are registered as listener.
+
+3) One of the popular implementation of BeanFactory interface is XMLBeanFactory while one of the popular implementation of ApplicationContext interface is ClassPathXmlApplicationContext. On Java web application we use WebApplicationContext  which extends ApplicationContext interface and adds getServletContext method.
+
+4) If you are using auto wiring and using BeanFactory than you need to register AutoWiredBeanPostProcessor using API which you can configure in XML if you are using  ApplicationContext. In summary BeanFactory is OK for testing and non production use but ApplicationContext is more feature rich container implementation and should be favored over BeanFactory
 
 Q8. What is a Spring Bean?
 The Spring Beans are Java Objects that are initialized by the Spring IoC container.
@@ -238,11 +244,7 @@ You can do either by:
 
 Implementing Spring-aware interfaces. The complete list is available here.
 Using @Autowired annotation on those beans:
-1
-2
-3
-4
-5
+
 @Autowired
 ServletContext servletContext;
  
@@ -256,9 +258,26 @@ If you need to take a step back, we recommend having a look at the concept of th
 Q21. How does the @RequestMapping annotation work?
 The @RequestMapping annotation is used to map web requests to Spring Controller methods. In addition to simple use cases, we can use it for mapping of HTTP headers, binding parts of the URI with @PathVariable, and working with URI parameters and the @RequestParam annotation.
 
-More details on @RequestMapping are available here.
+Q) Ways to pass variable from jsp to controller?
 
-For more Spring MVC questions, please check out Spring MVC Interview Questions article.
+1- Pass form fields:
+
+@RequestMapping(value = "/login", method = RequestMethod.POST)
+public void login(Credentials credentials
+
+2- Pass Query Parameters :
+<a href="/getUserDetails?userId=123"> Get user details</a>
+
+@RequestMapping(value = "/getUserDetails", method = RequestMethod.GET)
+public ModelAndView getUserDetails(@RequestParam int userId) {
+
+3- Pass Path Parameters :
+1
+<a href="/getUserDetails/12345"> Get user details</a>
+@RequestMapping(value = "/getUserDetails/{userId}", method = RequestMethod.GET)
+public ModelAndView getUserDetails(@PathVariable int userId) {
+
+
 
 4. Spring Data Access
 Q22. What is Spring JDBCTemplate class and how to use it?
@@ -320,6 +339,10 @@ Problem with HandlerInterceptor interface is that your new class will have to im
 
 https://stackoverflow.com/questions/35856454/difference-between-interceptor-and-filter-in-spring-mvc
 
+Filter: - A filter as the name suggests is a Java class executed by the servlet container for each incoming HTTP request and for each http response. This way, is possible to manage HTTP incoming requests before them reach the resource, such as a JSP page, a servlet or a simple static page; in the same way is possible to manage HTTP outbound response after resource execution.
+
+Interceptor: - Spring Interceptors are similar to Servlet Filters but they acts in Spring Context so are many powerful to manage HTTP Request and Response but they can implement more sophisticated behavior because can access to all Spring context.
+
 ==================================================================================================
 
  MVC Configuration
@@ -327,54 +350,42 @@ Let’s explore the configuration required to create a JSP web application using
 
 Spring requires defining the dispatcher servlet, mappings, and other supporting configurations. We can do this using either the web.xml file or an Initializer class:
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-public class MyWebAppInitializer implements WebApplicationInitializer {
-  
-    @Override
-    public void onStartup(ServletContext container) {
-        AnnotationConfigWebApplicationContext context
-          = new AnnotationConfigWebApplicationContext();
-        context.setConfigLocation("com.baeldung");
-  
-        container.addListener(new ContextLoaderListener(context));
-  
-        ServletRegistration.Dynamic dispatcher = container
-          .addServlet("dispatcher", new DispatcherServlet(context));
-          
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/");
-    }
+
+public class AppInitializer implements WebApplicationInitializer {
+
+	public void onStartup(ServletContext container) throws ServletException {
+
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		ctx.register(WebConfig.class);
+		ctx.setServletContext(container);
+		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
+		servlet.setLoadOnStartup(1);
+		servlet.addMapping("/");
+	}
+
 }
 We also need to add the @EnableWebMvc annotation to a @Configuration class and define a view-resolver to resolve the views returned from the controllers:
 
-@EnableWebMvc
 @Configuration
-public class ClientWebConfig implements WebMvcConfigurer { 
-   @Bean
-   public ViewResolver viewResolver() {
-      InternalResourceViewResolver bean
-        = new InternalResourceViewResolver();
-      bean.setViewClass(JstlView.class);
-      bean.setPrefix("/WEB-INF/view/");
-      bean.setSuffix(".jsp");
-      return bean;
-   }
+@EnableWebMvc
+@ComponentScan(basePackages = "com.devglan")
+public class WebConfig extends WebMvcConfigurerAdapter {
+	
+	@Bean
+	public ViewResolver viewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/WEB-INF/jsp/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
+	}
+	
+	@Override
+	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/js/**").addResourceLocations("/ui/js/");
+		registry.addResourceHandler("/css/**").addResourceLocations("/ui/css/");
+	}
+
 }
 By comparison to all this, Spring Boot only needs a couple of properties to make things work, once we’ve added the web starter:
 
@@ -388,48 +399,7 @@ What this means is that Spring Boot will look at the dependencies, properties, a
 
 Of course, if we want to add our own custom configuration, then the Spring Boot auto-configuration will back away.
 
-5.1. Configuring Template Engine
-Let’s now learn how to configure a Thymeleaf template engine in both Spring and Spring Boot.
 
-In Spring we need to add the thymeleaf-spring5 dependency and some configurations for the view resolver:
-
-
-@Configuration
-@EnableWebMvc
-public class MvcWebConfig implements WebMvcConfigurer {
- 
-    @Autowired
-    private ApplicationContext applicationContext;
- 
-    @Bean
-    public SpringResourceTemplateResolver templateResolver() {
-        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(applicationContext);
-        templateResolver.setPrefix("/WEB-INF/views/");
-        templateResolver.setSuffix(".html");
-        return templateResolver;
-    }
- 
-    @Bean
-    public SpringTemplateEngine templateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver());
-        templateEngine.setEnableSpringELCompiler(true);
-        return templateEngine;
-    }
- 
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
-        resolver.setTemplateEngine(templateEngine());
-        registry.viewResolver(resolver);
-    }
-}
-Spring Boot 1 required only the dependency of spring-boot-starter-thymeleaf to enable Thymeleaf support in a web application. But because of the new features in Thymeleaf3.0, we have to add thymeleaf-layout-dialect also as a dependency in a Spring Boot 2 web application.
-
-Once the dependencies are in place, we can add the templates to the src/main/resources/templates folder and the Spring Boot will display them automatically.
-
-https://examples.javacodegeeks.com/enterprise-java/spring/mvc/spring-mvc-hibernate-tutorial/
 
 ==========================================================================================================
 
