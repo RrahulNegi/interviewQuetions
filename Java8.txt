@@ -193,3 +193,101 @@ digit = null;
 
 Q) Stream questions----------------------->
 https://stackify.com/streams-guide-java-8/
+
+Q)Java | BiFunction Interface methods – apply() and addThen()
+
+The BiFunction Interface is a part of the java.util.function package which has been introduced since Java 8, to implement functional programming in Java. It represents a function which takes in two arguments and produces a result.
+
+Hence this functional interface which takes in 3 parameters namely:-
+
+T: denotes the type of the first argument to the function
+U: denotes the type of the second argument to the function
+R: denotes the return type of the function
+The lambda expression assigned to an object of BiFunction type is used to define its apply() which eventually applies the given function on the arguments. The main advantage of using a BiFunction is that it allows us to use 2 input arguments while in function we can only have 1 input argument.
+
+The BiFunction interface consists of the following two functions:
+
+1. apply()
+This method applies the given function to the arguments.
+
+Syntax:
+
+R apply(T t, U u)
+Parameters: This method takes two parameters:
+
+t– the first function argument
+u– the second function argument
+Returns: This method returns the function result which is of type R.
+
+ BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b; 
+  
+        // Implement add using apply() 
+        System.out.println("Sum = " + add.apply(2, 3)); 
+  
+        // BiFunction to multiply 2 numbers 
+        BiFunction<Integer, Integer, Integer> multiply = (a, b) -> a * b; 
+  
+        // Implement add using apply() 
+        System.out.println("Product = " + multiply.apply(2, 3));
+		
+		
+2. addThen() :
+
+It returns a composed function wherein the parameterized function will be executed after the first one. If evaluation of either function throws an error, it is relayed to the caller of the composed function.
+
+Note: The function being passed as the argument should be of type Function and not BiFunction.
+
+
+ 
+
+Syntax:
+
+default <V> 
+    BiFunction<T, U, V> 
+        andThen(Function<? super R, ? extends V> after)
+where V is the type of output of the after function, and of the composed function
+
+Parameters: This method accepts a parameter after which is the function to be applied after this function is one.
+
+Return Value: This method returns a composed function that first applies the current function first and then the after function
+
+Exception: This method throws NullPointerException if the after function is null.
+
+Below is the code to illustrate addThen() method:
+
+Program 1:
+
+
+
+brightness_4
+// Java Program to demonstrate 
+// BiFunction's addThen() method 
+  
+import java.util.function.BiFunction; 
+  
+public class Main { 
+    public static void main(String args[]) 
+    { 
+        // BiFunction to demonstrate composite functions 
+        // Here it will find the sum of two integers 
+        // and then return twice their sum 
+        BiFunction<Integer, Integer, Integer> composite1 = (a, b) -> a + b; 
+  
+        // Using addThen() method 
+        composite1 = composite1.andThen(a -> 2 * a); 
+  
+        // Printing the results 
+        System.out.println("Composite1 = " + composite1.apply(2, 3)); 
+  
+        // BiFunction to demonstrate composite functions 
+        // Here it will find the sum of two integers 
+        // and then return twice their sum 
+        BiFunction<Integer, Integer, Integer> composite2 = (a, b) -> a * b; 
+  
+        // Using addThen() method 
+        composite2 = composite2.andThen(a -> 3 * a); 
+  
+        // Printing the result 
+        System.out.println("Composite2 = " + composite2.apply(2, 3)); 
+    } 
+} 

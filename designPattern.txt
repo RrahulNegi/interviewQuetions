@@ -424,3 +424,107 @@ Composition  A-----<filled>B
 Aggregation  A-----<>B
 
 4) Aggregation is a lighter form of Composition, where a sub-part object can meaningfully exist without main objects.
+
+
+Q)Facade Design Pattern ?
+
+In Java, the interface JDBC can be called a facade because, we as users or clients create connection using the “java.sql.Connection” interface, the implementation of which we are not concerned about. The implementation is left to the vendor of driver.
+
+Another good example can be the startup of a computer. When a computer starts up, it involves the work of cpu, memory, hard drive, etc. To make it easy to use for users, we can add a facade which wrap the complexity of the task, and provide one simple interface instead.
+Same goes for the Facade Design Pattern. It hides the complexities of the system and provides an interface to the client from where the client can access the system.
+
+Now Let’s try and understand the facade pattern better using a simple example. Let’s consider a hotel. This hotel has a hotel keeper. There are a lot of restaurants inside hotel e.g. Veg restaurants, Non-Veg restaurants and Veg/Non Both restaurants.
+You, as client want access to different menus of different restaurants . You do not know what are the different menus they have. You just have access to hotel keeper who knows his hotel well. Whichever menu you want, you tell the hotel keeper and he takes it out of from the respective restaurants and hands it over to you. Here, the hotel keeper acts as the facade, as he hides the complexities of the system hotel.
+Let’s see how it works :
+
+1)package structural.facade; 
+public interface Hotel 
+{ 
+	public Menus getMenus(); 
+} 
+
+
+2)package structural.facade; 
+
+public class NonVegRestaurant implements Hotel 
+{ 
+	public Menus getMenus() 
+	{ 
+		NonVegMenu nv = new NonVegMenu(); 
+		return nv; 
+	} 
+} 
+
+3)package structural.facade; 
+
+public class VegRestaurant implements Hotel 
+{ 
+	public Menus getMenus() 
+	{ 
+		VegMenu v = new VegMenu(); 
+		return v; 
+	} 
+} 
+
+4)package structural.facade; 
+
+public class VegNonBothRestaurant implements Hotel 
+{ 
+	public Menus getMenus() 
+	{ 
+		Both b = new Both(); 
+		return b; 
+	} 
+} 
+
+5)package structural.facade; 
+
+public class HotelKeeper 
+{ 
+	public VegMenu getVegMenu() 
+	{ 
+		VegRestaurant v = new VegRestaurant(); 
+		VegMenu vegMenu = (VegMenu)v.getMenus(); 
+		return vegMenu; 
+	} 
+	
+	public NonVegMenu getNonVegMenu() 
+	{ 
+		NonVegRestaurant v = new NonVegRestaurant(); 
+		NonVegMenu NonvegMenu = (NonVegMenu)v.getMenus(); 
+		return NonvegMenu; 
+	} 
+	
+	public Both getVegNonMenu() 
+	{ 
+		VegNonBothRestaurant v = new VegNonBothRestaurant(); 
+		Both bothMenu = (Both)v.getMenus(); 
+		return bothMenu; 
+	}	 
+} 
+
+6)package structural.facade; 
+
+public class Client 
+{ 
+	public static void main (String[] args) 
+	{ 
+		HotelKeeper keeper = new HotelKeeper(); 
+		
+		VegMenu v = keeper.getVegMenu(); 
+		NonVegMenu nv = keeper.getNonVegMenu(); 
+		Both = keeper.getVegNonMenu(); 
+
+	} 
+} 
+
+When Should this pattern be used?
+
+The facade pattern is appropriate when you have a complex system that you want to expose to clients in a simplified way, or you want to make an external communication layer over an existing system which is incompatible with the system. Facade deals with interfaces, not implementation. Its purpose is to hide internal complexity behind a single interface that appears simple on the outside.
+
+Q)Adapter Design Pattern ?
+The adapter design pattern is a structural design pattern that allows two unrelated/uncommon interfaces to work together. In other words, the adapter pattern makes two incompatible interfaces compatible without changing their existing code.
+Interfaces may be incompatible, but the inner functionality should match the requirement.
+The adapter pattern is often used to make existing classes work with others without modifying their source code.
+Adapter patterns use a single class (the adapter class) to join functionalities of independent or incompatible interfaces/classes.
+The adapter pattern also is known as the wrapper, an alternative naming shared with the decorator design pattern.

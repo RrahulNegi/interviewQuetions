@@ -154,3 +154,59 @@ The above lines simply state that if a high module or class will be dependent mo
 You can consider the real-life example of a TV remote battery. Your remote needs a battery but it’s not dependent on the battery brand. You can use any XYZ brand that you want and it will work. So we can say that the TV remote is loosely coupled with the brand name. Dependency Inversion makes your code more reusable.
 
 
+Q) IdentityHashMap ?
+
+IdentityHashMap in Java was added in Java 1.4 but still it's one of those lesser known class in Java. The main difference between IdentityHashMap and HashMap in Java is that IdentityHashMap is a special implementation of Map interface which doesn't use equals() and hashCode() method for comparing object unlike other implementation of Map e.g. HashMap. Instead, IdentityHashMap uses equality operator "=="  to compare keys and values in Java which makes it faster compare to HashMap and suitable where you need reference equality check and instead of logical equality. By the way, IdentityHashMap is a special implementation of Map interface much like EnumMap but it also violates general contract of Map interface which mandates using equals method for comparing Object. Also, IdentityHashMap vs HashMap is a good Java question and have been asked a couple of times.  
+
+Even though this question is not as popular as How HashMap works in Java or Difference between Hashtable and HashMap, it’s still a good question to ask. In this Java tutorial, we will see an example of IdentityHashMap and explores some key differences between IdentityHashMap and HashMap in Java.
+
+hough both HashMap and IdentityHashMap implements Map interface, have fail-fast Iterator and non-synchronized collections, following are some key differences between HashMap and IdentityHashMap in Java.
+
+
+1) The main difference between HashMap vs IdentityHashMap is that IdentityHashMap uses equality operator "==" for comparing keys and values inside Map while HashMap uses equals method for comparing keys and values.
+
+2) Unlike HashMap, who uses hashcode to find bucket location, IdentityHashMap also doesn't use hashCode() instead it uses System.identityHashCode(object).
+
+3) Another key difference between IdentityHashMap and HashMap in Java is Speed. Since IdentityHashMap doesn't use equals() its comparatively faster than HashMap for object with expensive equals() and hashCode().
+
+4) One more difference between HashMap and IdentityHashMap is Immutability of the key. One of the basic requirement to safely store Objects in HashMap is keys needs to be immutable, IdentityHashMap doesn't require keys to be immutable as it is not relied on equals and hashCode.
+
+There is also a class called IdentityHashtable which is analogous to Hashtable in Java but it’s not part of standard JDK and available in com.sun... package.
+
+Example of IdentityHashMap in Java
+Here is an example of IdentityHashMap in Java which shows the key difference between HashMap and IdentityHashMap in comparing Objects.  IdentityHashMap uses equality operator for comparison instead of equals method in Java :
+
+import java.util.IdentityHashMap;
+
+/**
+ * Java program to show difference between HashMap and IdentityHashMap in Java
+ * @author Javin Paul
+ */
+public abstract class Testing {
+
+   public static void main(String args[]) {
+        IdentityHashMap<String, String> identityMap = new IdentityHashMap<String, String>();
+      
+        identityMap.put("sony", "bravia");
+        identityMap.put(new String("sony"), "mobile");
+      
+       //size of identityMap should be 2 here because two strings are different objects
+        System.out.println("Size of IdentityHashMap: " + identityMap.size());
+        System.out.println("IdentityHashMap: " + identityMap);
+      
+        identityMap.put("sony", "videogame");
+      
+         //size of identityMap still should be 2 because "sony" and "sony" is same object
+        System.out.println("Size of IdentityHashMap: " + identityMap.size());
+        System.out.println("IdentityHashMap: " + identityMap);
+    
+   }
+}
+
+Output
+Size of IdentityHashMap: 2
+IdentityHashMap: {sony=bravia, sony=mobile}
+Size of IdentityHashMap: 2
+IdentityHashMap: {sony=videogame, sony=mobile}
+
+
