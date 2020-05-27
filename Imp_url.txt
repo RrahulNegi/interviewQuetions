@@ -1,1 +1,7 @@
 https://www.javaguides.net/2019/01/handle-circular-dependencies-in-spring.html
+
+
+Microservices ACID :- https://microservices.io/patterns/data/saga.html
+
+
+Java interview :--http://javabypatel.blogspot.com/2016/09/concurrenthashmap-interview-questions.html

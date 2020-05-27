@@ -291,3 +291,61 @@ public class Main {
         System.out.println("Composite2 = " + composite2.apply(2, 3)); 
     } 
 } 
+
+
+Q)Java.util.function.BiPredicate interface in Java with Examples
+The BiPredicate<T, V> interface was introduced in JDK 8. This interface is packaged in java.util.function package. It operates on two objects and returns a predicate value based on that condition. It is a functional interface and thus can be used in lambda expression also.
+
+
+Methods
+
+test(): This function evaluates a conditional check on the two objects, and returns a boolean value denoting the outcome.
+
+boolean test(T obj, V obj1)
+1)and(): This function applies the AND operation on the current object and the object recieved as argument, and returns the newly formed predicate. This method has a default implementation.
+default BiPredicate<T, V> and(BiPredicate<? super T, ? super V> other)
+2)negate(): This function returns the inverse of the current predicate i.e reverses the test condition. This method has a default implementation.
+default BiPredicate<T, V> negate() 
+3)or(): This function applies the OR operation on the current object and the object recieved as argument, and returns the newly formed predicate. This method has a default implementation.
+default BiPredicate<T, V> or(BiPredicate<? super T, ? super V> other)
+
+
+// Java example to demonstrate BiPredicate interface 
+
+import java.util.function.BiPredicate; 
+
+public class BiPredicateDemo { 
+	public static void main(String[] args) 
+	{ 
+		// Simple predicate for checking equality 
+		BiPredicate<Integer, String> biPredicate = (n, s) -> 
+		{ 
+			if (n == Integer.parseInt(s)) 
+				return true; 
+			return false; 
+		}; 
+
+		System.out.println(biPredicate.test(2, "2")); 
+
+		// Predicate for checking greater than 
+		BiPredicate<Integer, String> biPredicate1 = (n, s) -> 
+		{ 
+			if (n > Integer.parseInt(s)) 
+				return true; 
+			return false; 
+		}; 
+
+		// ANDing the two predicates 
+		BiPredicate<Integer, String> biPredicate2 
+			= biPredicate.and(biPredicate1); 
+		System.out.println(biPredicate2.test(2, "3")); 
+
+		// ORing the two predicates 
+		biPredicate2 = biPredicate.or(biPredicate1); 
+		System.out.println(biPredicate2.test(3, "2")); 
+
+		// Negating the predicate 
+		biPredicate2 = biPredicate.negate(); 
+		System.out.println(biPredicate2.test(3, "2")); 
+	} 
+} 

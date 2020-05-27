@@ -100,3 +100,27 @@ Their is a  coordinator which can be a different service or one of them
  It is faster then 2 phase or 3 phase
  
  isolation =>since all transaction is local and all is flowwing in sequence order so these ms will not get multiple req at given point of time
+=======
+  
+  
+ Q) Imp ---> 12 factor App 
+ https://12factor.net/
+ 
+ 
+ Q) Ways to implement ACID transaction?
+ 1) 2pc :
+ Two-Phase Commit Protocol
+This mechanism is designed initially for distributed systems. As Microservices architecture inherently distributed systems in nature, we can use the Two-phase commit protocol (or 2PC) as one of the approaches. Primary drivers in a distributed transaction management are the message broker/transaction coordinator.
+The distributed transaction contains two steps:
+Prepare phase
+Commit or Rollback phase
+Prepare Phase:
+All the participants of a transaction in this phase will be prepared for the commit and inform the transaction coordinator/message broker that they are ready for completing the transaction
+Commit or Rollback phase:
+In this phase, transaction coordinator will issue one of the commands they are a commit or a rollback to all the participants.
+The main issue with the 2PC approach is that it is a bit slow compared to the time for the operation on a single Microservice because it has to coordinate the transaction between services even if all the microservices are on the same network, still operation will be slow. So we need to be careful while implementing this for high demand services.
+
+DrawBack:- its very slow.
+
+2) SAGA principle:
+https://dzone.com/articles/saga-pattern-how-to-implement-business-transaction-1
