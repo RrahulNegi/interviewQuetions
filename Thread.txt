@@ -134,7 +134,10 @@ Synchronized block is more preferred way because it doesn’t lock the Object, s
 
 Q) What is Thread Group? Why it’s advised not to use it?
 ThreadGroup is a class which was intended to provide information about a thread group. ThreadGroup API is weak and it doesn’t have any functionality that is not provided by Thread. It has two main features – to get the list of active threads in a thread group and to set the uncaught exception handler for the thread. But Java 1.5 has added setUncaughtExceptionHandler(UncaughtExceptionHandler eh) method using which we can add uncaught exception handler to the thread. So ThreadGroup is obsolete and hence not advised to use anymore.
-
+ThreadGroup tg1 = new ThreadGroup("Group A");   
+Thread t1 = new Thread(tg1,new MyRunnable(),"one");     
+Thread t2 = new Thread(tg1,new MyRunnable(),"two");     
+Thread t3 = new Thread(tg1,new MyRunnable(),"three");    
 
 t1.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
 
@@ -148,11 +151,13 @@ public void uncaughtException(Thread t, Throwable e) {
 Q) What is Java Thread Dump, How can we get Java Thread dump of a Program?
 A thread dump is a list of all the threads active in the JVM, thread dumps are very helpful in analyzing bottlenecks in the application and analyzing deadlock situations. There are many ways using which we can generate Thread dump – Using Profiler, Kill -3 command, jstack tool, etc. I prefer jstack tool to generate thread dump of a program because it’s easy to use and comes with JDK installation. Since it’s a terminal-based tool, we can create a script to generate thread dump at regular intervals to analyze it later on.
 
+
+
 Q)What is Deadlock? How to analyze and avoid deadlock situation?
 Deadlock is a programming situation where two or more threads are blocked forever, this situation arises with at least two threads and two or more resources.
 
 To analyze a deadlock, we need to look at the java thread dump of the application, we need to look out for the threads with state as BLOCKED and then the resources it’s waiting to lock, every resource has a unique ID using which we can find which thread is already holding the lock on the object.
 
-Avoid Nested Locks, Lock Only What is Required and Avoid waiting indefinitely are common ways to avoid deadlock situation, read this post to learn how to analyze deadlock in java with a sample program.
+Avoid Nested Locks, Lock Only What is Required and Avoid waiting indefinitely are common ways to avoid deadlock situation, read this post to learn how  to analyze deadlock in java with a sample program.
 
 

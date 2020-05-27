@@ -50,4 +50,53 @@ Q) how we do service discovery?
    
    Create Eureka Server
    - pom eureka discoverys 
+   
+Q) Microservices distributed Transaction
+
+1) Two Phase commit :-
+In this all transaction occured in two phase :-
+- prepare phase - commit phase
+Their is a  coordinator which can be a different service or one of them
+ this co-ordinator keep and eye on all the transaction held.
+ So let their be two services customer wallet and order services. Now coordinator will first prepare the both services for transaction if it return ok so transaction will lock the rows of both the database. So after that it will ask customer wallet and order to start commit and both have to send response as ok commit.
+ Failure phase :- 
+ 1) If customer wallet dosnt have enough balance then in prepare phase it will through not ok prepare i,e error as coordinator see error the whole process get invalidated
+ 2)If their is some inconsistent value at commit state then also it will throw error
+  \3)Iolation will happend at prepare phase it will lock the database 
   
+  4) cordinator  should have a timeout as if certain services is down so it wont response back so after some time coordinator should abord the whole process
+  
+  Advantages/Disadvantage
+  Advantage=consistence
+  it is slow 
+  
+ 2) 3 phase commit:-
+ it has a third phase which help if coordinator fails 
+ pre-commit step :- is one extra steps is theor it help in case of coordinator failure or participant failure
+ - their can be many participant i.e diffrent nodes
+ and coordinator can be any one and since it is precommit so any participant can take over failed coordinator and can start in middle 
+ by understatnding state of precommit.
+ I phase -> can commit in this cordinator knows how many participant is their so it send the request and it get response as yes.
+ 
+ II phase :- this is where coordinantor tell to prepare the data and lock the data and get ackowledgment
+ 
+ III phase:- is do commit
+ 
+ How 3 phase commit help when coordinantor fails ?
+  => the new coordinantor need to talk to participant if atleaste one participant said i have the do commit msg recived that means new co-ordinator guess that the old co-ordinator is ready to give do commit  to other participant
+  
+  => if non of the participant said it hasnt recive precommit taht means for sure the new coordinantor guess non of participant has done do commit and hence all of the data will remain consistence.
+  
+  2 phase and 3 phase have drawback is that it is synchronous
+  
+  3) SAGA 
+ -> it works asynchronous
+ ->The series of microservices talks using queue as messaging queue
+ ->
+ when user plasces order it goes to order MS in this it check the inventory and its add mesage like order created into queue and the customer wallets ms is free then it picks the messaage from queue the order ms put some msg and respective amount from wallet is get deducted so if all goes well So whole cycle is successeded
+ 
+ If some thing get failed like customer wallet dodnt have any money so it generate an another queue and set msg like rollback the order and this msg will readed by order ms and it will get rollbacked
+ 
+ It is faster then 2 phase or 3 phase
+ 
+ isolation =>since all transaction is local and all is flowwing in sequence order so these ms will not get multiple req at given point of time

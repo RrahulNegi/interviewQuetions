@@ -1,0 +1,9 @@
+ecom modules:-
+
+1)master
+2)Order
+3)payment
+4)product
+5)search->using Elastic Search 	  
+6)communication -> send mail, otp, sms ==>all type of notification
+
