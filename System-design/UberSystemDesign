@@ -1,0 +1,61 @@
+UBER System Desing:
+
+Earlier they use Monolethic design pattern . they used python , and sql
+
+-Thent they changed it into microservice based arch as they introduse many other services like ubberfood, cargo every thing build in same system etc.
+
+- they are Supply- Demand system
+
+Disco(Dispatch System)-:
+
+- it completely work on map or location data properly
+- Uber use GoogleS2 library. it takes spherical map data and divide into tiny cell when we join cell it gives complete map each cells has unique id. S2 lib give coverage of map like if we want to find the cabs available in a given location so what we gona do is use S2 lib and give radius like 2 km to it, and it will filter data of that particular sell and we can filter out or uss ETA etc . So it will give all cabs available in particular radius and we need to calculate ETA(distance) of cabs from the location depends on he road map from location to cabs and we get shortest distance. if we get shortest distance and we can send notification to drver and rider.
+
+-Its a supply=cabs and demands =user
+-every 4 sec cab send their location  to kafka using Web Application Framework and copy of info given back to db i.e nosql and one data given to DISCO to show latest location of cab
+- We need WFA web id based firewall for sequirty rason like we have to block some location, somee id or block request from where uber is not started. OS majurly its used for blocking sending particular request.
+
+- we use load balancer we  have diffren types of load balancer like layer 3 n all .
+
+-kafka rest api provide ends points to consume all localtion data of any cabbs and so that it can be consumed by many apllication and it can also used by DISCo and saved in nosql.
+
+-we also used WebSockets for async calls from client to server or vice versa. websokect keeps connection open and based on change happend in system will send the msg to and fro.
+
+How to scale the server at diffrent regions:-
+
+-uber uses repop it has feature like consistant  hashing
+-it also uses RPC calls to send calls from server to server
+- it also used SWIM portocols or gossip portocols which every server knows responsibilty of each server. Advantage of gossip protocol is we can easily add and remove the server and every server know abt it.
+
+-If user send a request for ride and it lands on supply demand service using web socket then demand service calls a supply service that it needs a particular cabs at particular location and supply knows cell id of user on maps so demand give cell id to supply and based on id it contacts a one of server in a ring like lets we have a 10 cells(10 ueser) so each server at region will handel diffrent cells like Region 1 server handel cell of 1,2  and region 2 will handel cell 3,4 etc So supply will hit server of region 5 and get details of location and it will find all the cabs and then n uses Map ETA service it give all info to supply services and with use of web socket supply service send sa request to few cabs near to rider and who ever recive the call first then that prticular rider info sends back to the user.
+
+-We need to add new server to ring pop server to handel all the traffic so what ring pop. So the responsibilty of that server is unknown so what ringpop does is it it knows all the newly added cells and send it to newly added servers and same way it works when we take down the server it re suffel the responsibility to other servers
+
+-Geospatic design--->>
+
+Google map api  for all work realted maps
+
+How ETA calculated:-
+a user requesting a cabs a particular point and available cabs near by and its draw cicrle and know that three cabs are free to ride so it calculate ETA for all three cbs nad assign the cab to user. But it always dosnt work say we have one more cabs whcih is abt to finsh its previous  ride and it is much more near to the rider So uber include all diffrent factors like uturn cost , traffic cost and calculate the eta so sometime the cabs serving the ride may also included.
+
+
+Database:-
+
+-earlier it use postgrace rdbms so now it use nosql databse becoz :-
+:it should be horizontal layerd we can have diffrent nodes.
+:Its a writale and redable system 
+: system should be up n running so its a schemaless on top of mysql 
+
+Analytics :-
+we need to understand the behaviour of custemrs , cabs driver to more optimise the ssytem. and make minimise the cost of sytem
+:use hadoop on data from nosql and we can analyis on existing data.
+:ETA component we can consume historical data and real time data and we can improve the maps and we can know abt traffic situation and all.
+:we can also use to learn abt frauds is done using MLlike payment fraud etc 
+
+Loggers :-
+we use ELK for loggers to debugg the services
+
+Backup data center :-
+
+for total data centerv failuer uber created a Backuop data center and that has all the data to run the  system. Here uber nevr copies the existing data to backup datacenters. 
+So uber driver apps act as a datastore on failuer so every time call hapenning between cabs apps and datacenter it always keep track of what kind of knowledge it have at driver apps. for example if datacenter wents down next time it the cabs or rider app  directly call to backup data center and since backup dc dosnnt knows abt what is happeing to trip now so using state digest present in cabs app it gives out all the data from app to backup dc so now it knows what happening at present. So at that time user or cab driver dosntge to knw that their was a datacenter failure.

@@ -1,0 +1,91 @@
+Distributed Tracing in Microservices with Spring cloud sleuth and zipkin
+
+- Ziking use for distribute tracing in miroservices, let for example we r working with 4 Microservices so here with zipkin and sleuth distributed tracing Enable we can trace which component take how much time. So we can trace wihc service is slow .
+
+Steps :-
+
+-create  payment-service with pom:
+web, sleuth and zipkin depenceies
+
+- PaymentServiceApplication annotated with @RestController, @SpringBootApplication
+@RestController
+@SpringBootApplication
+class PaymentServiceApplication {
+
+private static final looger log =LoggerFactory.getLogger(PaymentServiceApplication.class);
+ 
+@GetMapping("/getDiscount")
+public String discount(){
+	log.info("discount service called....");
+	return "added discount 15%"
+}
+
+pvsm(){
+}
+}
+
+- create new Class CloudConfig
+
+@Configuration
+public class CloudConfig {
+
+@Bean
+public RestTemplate template(){
+breturn new RestTemplate();
+}
+
+//to push trace detail to zipkin
+@Bean
+pulic AlwaysSampler defaultSampler(){
+
+return new AlwaysSampler();
+}
+
+}
+
+- So when we run the application and call service like 
+
+localhost:8080/getDiscount in console we can see the log info like:
+INFO [-,b2b2b22b2b,b2b2b2b2b2,true]
+ here we can mark traceid and spanId both are same since we have hit only one Microservice if comunicate diffrent microservices it will be diffrent.
+ 
+ -We cann create one more microservice  we can call it from paymentService MS using restTemplate  so isted of doing this we create a normal service in PaymentService and all it using restTemplate 
+ 
+ @GetMapping("/payment")
+ public String payment(){
+ log.info("payment service called with discount....");
+ return template.getForObject("http://localhost:8080/getDiscount",String.class);
+ }
+ 
+ application.properties
+ 
+ application.name : Payment-Service
+ 
+ we call localhost:8080/payment
+ 
+ and in console we getDiscount
+ INFO [Payment-servie c1c1c1c11,c1c11c1c11c,true]
+ 
+ first is traceid and second is spanId
+ so for every MS traceid should be same but spanid must be diffrent
+ 
+ Till Now we are tracing it in console but now we will trace it in Zipiki server===>>>
+ 
+ Steps
+ 
+ 1) cReate application zipkin-server with pom:
+ web,zipkin dependency, spring-cloud
+ 
+ 2) Main Application ZipkinApplication  port 8081
+ @SpringBootApplication
+ @EnableZipKinServer
+ class ZipkinServerApplication {
+	psvm(){
+	}
+ }
+ 
+ 
+ Now run both payment service and zipkin service
+ -we hit payment service application localhost:8080/payment and localhost:8080/discount hit both application two three times 
+ -and now run zipkin server localhost:9411/zipkin/ here we can see a ui desktop so we can find traceid and spanid in it and we can get all info regarding it like time it took, description etc
+ 

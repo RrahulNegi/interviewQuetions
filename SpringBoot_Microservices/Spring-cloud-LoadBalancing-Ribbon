@@ -1,0 +1,80 @@
+CLient side Load Balancing using Spring cloud Ribbon
+
+-It means distribute ur incomming request in multiple server i.e we have to distribute our application instance in multiple server so that incomming request will divert to particular server.
+
+- Lets example we create a chatbook api and initially we design a app for 10000 request. if its getting n no of request so it cant handel such traffic so for this we create a multiple instance of chatbook at multiple server and divert traffic from one server to another, so for doing this we need a LoadBalancer between which divert the traffic to diffrent server.
+
+Load balancer use certaion algo for that :\
+-Round robin:- In this req1 goes ro server1 and req2 goes ro server2  similarly req3 goes to server1 and req2 goes to server2 so its a sequential order.
+
+In Ribbon client default algo is round robin
+
+-Least Connection :- we can divide request like 100 req can goes to server1 and other 100 will goes to server2
+
+-Ip hash :- Like base on ip adress we can divide the request to server 
+
+
+Steps :-
+
+1) Create a chatBook application and create a service 
+
+@Value("{server.port}")
+private String port;
+
+@GetMapping("/chat")
+public String chatNow(){
+{
+	return "application is up on port :"+this.port;
+}
+
+application.properties
+-server.port:8081
+
+Now we will create a three instances of chatbook server but running the application  in three diffrent port 8082 and 8083
+
+2)Create a user-app application with dependency :-web, ribbion and devtools 
+-create MainApplication progrm annotate with 
+: @SpringBootApplication
+: @RestCintroller
+: @RibbonClient(name="chatBook", configuration=RibbonConfiguration.class)
+: 
+@GetMapping("/invoke")
+public String invokeChatBook()
+{
+String url="http://localhost:8081/chatBook-application/chat" ; //But we cant hardcode the url since we have diffrent instance of chatbook application
+
+String url="http://chatbook/chatBook-application/chat"; //So based on chatbook the request will go to yml/application files and check all the refrence and so first request will go to 8081, then 8082, and 8083
+return template.getForObject(url, String.class);
+}
+
+
+-Create RibbonConfiguration.java
+
+public class RiboonConfiguration {
+
+@Autowired
+IClientConfig ribbonClient;
+
+@Bean
+public IPing ping(IClientConfig ribbonClient){
+	return new PingUrl();
+	return AvailablityFilteringRule();
+}
+
+@Bean
+public IRule role(IClientConfig ribbonClient){
+	return new AvailablityFilteringRule();
+}
+
+}
+-Create RestTemplate and annotate with @Bean and @LoadBalance
+
+-application.properties/application.yml file
+
+chatbook.ribbon.eureka.enable: false
+chatbook.ribbon.listOfServers: localhost:8081, localhost:8082, localhost:8083
+chatbook.ribbon.ServerListRefreshInterval: 2000  //TimeInterval
+
+server.port:9090
+
+So when we will run this applicaton like on http://localhost:9090/invoke  so it will first call chatbook using 8081 port, if we hit again it will send req to chatbook on port 8082

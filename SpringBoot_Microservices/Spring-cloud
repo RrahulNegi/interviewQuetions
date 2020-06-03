@@ -1,0 +1,17 @@
+Spring cloud framework
+
+-Tools for devlopwers to quickley build some of common pattern in distributed ststem like configuration managment, service discovery,circuit breakres,intelligent routing, micro-proxy etc. 
+features:-
+1)Spring cloud config server :- We can put all configuration relatd info in this common place and this also provide basic security etc.
+
+2)Dynamic ScaleUp and down :-
+-Naming server(Eureka)
+-Ribbon (client side load balancing)
+-Feign (Easier REST clients)
+
+3)Visibility and monotoring :-
+-Zipkin Distributed Tracing :- We can watch that this request gone throw MS1, MS2 etc
+-Netflix Api gateway :- Implements common features for this microservices liek ecurity, auditing etc.
+
+4)Fault tolerence :-
+-Hystrix :-When service is down we can give default response using hystrix

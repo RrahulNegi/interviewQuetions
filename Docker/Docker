@@ -1,0 +1,47 @@
+Docker
+
+Q) why we use Docker?
+
+-Docker wants to make it really easy and really straightforward for you to install and run software on any given computer
+-Docker makes it really easy to install and run software without worying abt setup and dependencies.
+
+Q) What Docker is ?
+ -Docker is a platform or ecosystem around creating and running containers.
+ -Docker Ecosystem:- Docker Client, Docker Server, Docker Machine, Docker Images, Docker Hub and Docker compose
+ 
+ Container- 
+For example Berettas which is what the image I just downloaded was supposed to run.
+This is a single file that gets stored on your hard drive and at some point in time it you can use this image to create something called a container.
+A container is an instance of an image.And you can kind of think of it as being like a running program.
+
+so image is a single file with all deps and config required to run a program.
+
+But right now all we really need to understand is that a container is a program with its own isolated set of hardware resources.
+so it kind of has its own little set or its own little space of memory has its own little space of networking technology and its own little space of hard drive space as well.
+
+
+Q) Docker for windows?
+It has two tools:
+1) Docker client(Docker CLI) tools used to issue commands to Doocker Server.
+2) Docker Server(Docker Daemon) tools that is responsible for creating images, running containers, etc.
+
+Q)Command to run like docker run hello-world
+
+-It run in Docker Cli then it call Docker Server 
+-if we run command hellow-world that meant that we wanted to start up a new container using the image with the name of hello world the
+hello world image has a tiny little program inside of it whose sole purpose sole job is to print out the message
+-Now when we ran that command and it was issued over to the docker server a series of actions very quickly
+
+occurred in the background.
+The Dockers server saw that we were trying to start up a new container using an image called Hello world.The first thing that the Dockers server did was check to see if it already had a local copy like a copy on your personal machine of the hello world image or hello world file.So the docker server looked into something called the image cache.
+Now because you and I just installed docker on our personal computers that image cache is currently empty.
+We have no images that have already been downloaded before.So because the image cache was empty the Dockers server decided to reach out to a free service called docker hub the Dakar hub is a repository of free public images that you can freely download and run on your personal computer so server or reach out to dock or hub and said hey I'm looking for an image
+called Hello world.Do you have one. Of course the docker How does have server downloaded this. Hello world file and stored it on your personal computer.
+In this image cache where it can now be rerun at some point in the future very quickly without having to read download it from the dock or hub.
+So essentially we downloaded it over here Lexa.
+After that the darker server then said OK great I've got this image and now it's time to use it to create an instance of a container. And I remember what we just said about a container a moment ago an instant container is an instanc of an image.
+Its sole purpose is to run one very specific program so the Dockers server then essentially took that single file load it up into memory created a container out of it and then ran a single program inside of it and that single program's purpose was to print out the message that you see right here.
+That's what happens when you run this docker run command. It reaches out to Dr. hub.It grabs the image and then it creates a container out of that image.
+Now one thing that you'll notice that's kind of interesting if we run the docker run hello world command a second time.You'll notice that we are not going to see the message of downloading or contain or image not found locally though we saw the first time.
+
+So sc
