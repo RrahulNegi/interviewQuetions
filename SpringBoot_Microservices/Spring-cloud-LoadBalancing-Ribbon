@@ -67,7 +67,33 @@ public IRule role(IClientConfig ribbonClient){
 }
 
 }
--Create RestTemplate and annotate with @Bean and @LoadBalance
+-Create RestTemplate and annotate with @Bean and @LoadBalance:
+
+@SpringBootApplication
+@RestController
+@RibbonClient(name = "chatbook", configuration = RibbonConfiguration.class)
+public class UserAppApplication {
+	
+	
+	@Autowired
+	private RestTemplate template;
+
+	@GetMapping("/invoke")
+	public String invokeCharbook() {
+		return template.getForObject("http://chatbook/chatbook-application/chat" , String.class);
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(UserAppApplication.class, args);
+	}
+
+	@Bean
+	@LoadBalanced
+	public RestTemplate template() {
+		return new RestTemplate();
+	}
+}
+
 
 -application.properties/application.yml file
 

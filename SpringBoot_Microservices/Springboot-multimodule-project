@@ -1,0 +1,86 @@
+Spring boot multi module project
+
+-To create hospital managment Application we need following service :;
+-For Example we have Doctor-service, Patient-service, Diagnosis-service and billing-service.
+-  Disadvantage in our traditional approch :
+1)Code Reusability : from billing service i need some class in doctor services so i need to copy some billing service class in doctor service. I cant reuse those class isted we doing code duplicasy.
+
+2)in my production server Doctor server is getting failed and in knw that the fix in dao and repository layer so I have to rebuild whole doctor-service and push it in production. SO we can create seprate repo module and i can redeploy that particular module insted of redeploying whole doctor services.
+
+3) I have some common  generic common notification service uded by doctor service or billing service so i need to do restcall but always doing restcall is not a good approch so insted we can make service generic and we can reuse it.
+
+Multi Module Approch 1 :
+We can create a paraent module under which we have a seprate serviceModule, ControllereModue and RepostoryModule  based on our business
+
+Steps:-
+
+1)Create project hospital-managment-system
+pom: lombok, web,jpa,h2
+
+2)Create seprate module like domain or servicemodule with seprate pom like here we creatd artificateId as domain :
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>hospital-management-system</artifactId>
+        <groupId>com.javatechie</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>domain</artifactId>
+<packaging>jar</packaging>
+
+</project>
+
+Similarly create other module like service and repository module and web and email module
+
+so in pom we can see hospital-manament-system as parent module and  all the rest like domain,web,repository,emailis ur sub module. So now i will generate individual jar for all sub module so that if their is some error in particular module i will generate a seprate jar in push it in production
+
+-Now create model in domain module like Doctor and Patient etc
+-Similarly create a repository we add DoctorRepo , PatientRepo  etc like
+public interface DoctorRepository extends JpaRepository<Doctor,Integer>
+since we didnt have Doctor.class in repository sub module so we can add it as dependency in our repository submodule pom.xml :
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>hospital-management-system</artifactId>
+        <groupId>com.javatechie</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>repository</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.javatechie</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
+
+So using this <dependency>  we can add depenedncy of domain submoule we can get Doctor.class repository.
+
+Similarly we can get create our all sub module
+
+We create a SpringBootMainApplication.java
+
+@SpringBootApplication
+@ComponentScan(basePackages = {"com.javatechie.*"}) //since we using multi module structure
+@EntityScan(basePackages = {"com.javatechie.*"}) //Simlarly we have to enable entityScan since in our domain we using multiple entities
+@EnableJpaRepositories(basePackages = {"com.javatechie.*"})
+public class SpringBootMainApplication {
+
+    public static void main(String[] args) {
+
+        SpringApplication.run(SpringBootMainApplication.class);
+    }
+}
+
+

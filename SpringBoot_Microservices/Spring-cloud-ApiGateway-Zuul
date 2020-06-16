@@ -1,0 +1,180 @@
+Spring cloud netflix zuul Api Gateway
+
+- Its a server side jvm based router and load balancer
+-Since we have more then one MIcroservices deployed in server and  based on the url pattern the request will go to corresponding microservices. So this filter and routing logic is take care by this zuul proxy.
+- We have UI and mobile Browser we have Api Gateway in between  and using this api gateway all request will be filter/route on diffrent MS like Doctor Service, Dignosis service and PatientService
+-so on basis of url pattern we can route our request to corresponding microservices.
+
+
+Api gateway Zuul has some components :
+'their is 4 filter inside zuul gateway:
+
+
+1)pre-filter: call before request route to microservices
+2)route-filter: Once request route we call route filters will be called
+3)post-filter: Once our microservices end point execution done so it will give t.he response so for this we use post filters
+4)error-filter: if their is some error during the route filte and post filter this error filter will call.
+
+Steps:-
+
+
+-1) we create Dignosis-service and Doctor-service is created
+
+2) Now create hospital-gateway service:-
+pom: web, zuul and devtool
+
+-application.properties:
+
+zuul.routes.doctor-service.path=/doctor-api/**  //if request is comming like url /doctor-api forward my request to doctor microservices
+zuul.routes.doctor-service.url=http://localhost:8081/
+
+zuul.routes.diagnosis-service.path=/diagnosis-api/**  //if request is comming like url /doctor-api forward my request to doctor microservices
+zuul.routes.diagnosis-service.url=http://localhost:8082/getDiagnosis
+
+ribbon.eureka.enabled=false
+server.port=8080
+
+-Create main application HospitalGatewayApplication.java
+
+@SpringBootApplication
+@EnableZuulProxy
+public class HospitalGatewayApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(HospitalGatewayApplication.class, args);
+	}
+}
+
+- Now create filters to trace our flow:
+
+a) PreFilter.java
+
+@Component
+public class PreFilter extends ZuulFilter {
+	private static Logger log = LoggerFactory.getLogger(PreFilter.class);
+
+	  @Override
+	  public String filterType() {
+	    return "pre";
+	  }
+
+	  @Override
+	  public int filterOrder() {
+	    return 1;
+	  }
+
+	  @Override
+	  public boolean shouldFilter() {
+	    return true;
+	  }
+
+	  @Override
+	  public Object run() {
+	    RequestContext ctx = RequestContext.getCurrentContext();
+	    HttpServletRequest request = ctx.getRequest();
+
+	    log.info("PreFilter: " + String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+	    
+	    return null;
+	  }
+}
+
+
+b) PostFilter.java
+
+@Component
+public class PostFilter extends ZuulFilter {
+	private static Logger log = LoggerFactory.getLogger(PostFilter.class);
+
+	  @Override
+	  public String filterType() {
+	    return "post";
+	  }
+
+	  @Override
+	  public int filterOrder() {
+	    return 1;
+	  }
+
+	  @Override
+	  public boolean shouldFilter() {
+	    return true;
+	  }
+
+	  @Override
+	  public Object run() {
+	    HttpServletResponse response = RequestContext.getCurrentContext().getResponse();
+	    
+	    log.info("PostFilter: " + String.format("response's content type is %s", response.getStatus()));
+	    
+	    return null;
+	  }
+}
+
+c) RouteFilter.java
+
+@Component
+public class RouteFilter extends ZuulFilter {
+	private static Logger log = LoggerFactory.getLogger(RouteFilter.class);
+
+	@Override
+	public String filterType() {
+		return "route";
+	}
+
+	@Override
+	public int filterOrder() {
+		return 1;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() {
+		
+		RequestContext ctx = RequestContext.getCurrentContext();
+		HttpServletRequest request = ctx.getRequest();
+
+		log.info("RouteFilter: " + String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+		
+		return null;
+	}
+}
+
+d) ErrorFilter.java
+
+@Component
+public class ErrorFilter extends ZuulFilter {
+	private static Logger log = LoggerFactory.getLogger(PostFilter.class);
+
+	  @Override
+	  public String filterType() {
+	    return "error";
+	  }
+
+	  @Override
+	  public int filterOrder() {
+	    return 1;
+	  }
+
+	  @Override
+	  public boolean shouldFilter() {
+	    return true;
+	  }
+
+	  @Override
+	  public Object run() {
+	    HttpServletResponse response = RequestContext.getCurrentContext().getResponse();
+	    
+	    log.info("ErrorFilter: " + String.format("response status is %d", response.getStatus()));
+	    
+	    return null;
+	  }
+}
+
+- Now run the doctor 8081 and diagnosis-service 8082 and run hospital-gateway service on 8080
+
+-So when we hit diagonis service we call like http://localhost:8080/diagnosis-service since we r hitting the hospital-gateway api port it will look into so based on service name it will go to api-gateway it will found the mapped service in the   application.properties and call the diagnosis-servicelocalhost:8082 as wejust provided the service name the request is redricting to diagnosis-service 

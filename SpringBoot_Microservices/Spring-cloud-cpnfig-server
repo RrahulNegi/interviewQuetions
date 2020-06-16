@@ -13,16 +13,45 @@ If insurance provider needs to change its url so it will push changes to git and
 
 Steps :-
 
-1) Create insurance-provider-service and create Restcontroller and a service
+1) Create insurance-provider-service and create Restcontroller and a service:
+
+@SpringBootApplication
+@RestController
+@RequestMapping("/insurnace-service")
+public class InsuranceProviderApplication {
+
+	@GetMapping("/getUpdatePlans")
+	public List<String> getPlans() {
+		return Stream.of("Premium", "Gold", "Platinum").collect(Collectors.toList());
+
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(InsuranceProviderApplication.class, args);
+	}
+}
+
 
 2)Create insurance-config-server 
  -add cloud-config-server ,acuator,devTools in pom
  -annotate it with MainApllication with @SpringBootApplication and @EnableConfigServer 
  
+ @SpringBootApplication
+@EnableConfigServer
+public class InsuranceConfigServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(InsuranceConfigServerApplication.class, args);
+	}
+}
+
+ 
 3)Crteate a Git Repo with name insurance-config-server and in this create application.properties
+
 -In this mention : insurance.provider.url=http://localhost:8080/insurance-service/getAllPlans and then commit it to master
 
-4) in application.properties of insurance-config-server we should mention :
+4) in application.properties of insurance-config-server we should mention :'
+	
 spring.cloud.config.server.git.url=http://github.com/java-techi/insurance-config-server
 managment.endpoints.web.expousure.include=*
 server-port:8088
@@ -32,15 +61,35 @@ server-port:8088
 5) Create client server i.e MS insurance-client-service
 pom : config-client, devTools
 - In client we consume insurance-prvider
--annotate @Restcontroller, @SpringBootApplication and use RestTemplate in it and create a service that consume insurance provider
+-annotate @Restcontroller, @SpringBootApplication and use RestTemplate in it and create a service that consume insurance provider'
 
-@Value("$(insurance.provider.url}") //Read url from properties 
-private String url;
+@SpringBootApplication
+@RestController
+@RefreshScope
+public class InsuranceClientApplication {
 
-@GetMapping("/getPlan")
-public Lis<String> getPlans(){
+	@Autowired
+	@Lazy
+	private RestTemplate template;
 
-return template.getForObject(url, List.class)
+	@Value("${insurnace.provider.url}")
+	private String url;
+
+	@GetMapping("/getPlan")
+	public List<String> getPlans() {
+		List<String> plans = template.getForObject(url, List.class);
+		return plans;
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(InsuranceClientApplication.class, args);
+	}
+
+	@Bean
+	public RestTemplate template() {
+		return new RestTemplate();
+	}
+
 }
 
 - application.properties :-

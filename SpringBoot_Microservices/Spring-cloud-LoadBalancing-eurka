@@ -9,3 +9,128 @@ like Eureka server i.e main Srevice Registry application on port 8761
 - we can check on running eureka service we can see on service is up with three diffrent port
 
 -Create and run another service like Shopping service port 9999
+
+Steps :
+
+1) create project amazon-server
+
+-application.yml :
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+server:
+  port: 8761
+spring:
+  application:
+    name: AMAZON-SERVER
+	
+-
+@SpringBootApplication
+@EnableEurekaServer
+public class AmazonServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AmazonServerApplication.class, args);
+	}
+}
+
+
+2) Cretae project amazon-shopping
+
+-application.yml
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+server:
+  port: 9999
+spring:
+  application:
+    name: SHOPPING-SERVICE
+	
+- 
+@SpringBootApplication
+@EnableEurekaClient
+public class AmazonShoppingApplication {
+
+	@Bean
+	@LoadBalanced
+	public RestTemplate getTemplate() {
+		return new RestTemplate();
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(AmazonShoppingApplication.class, args);
+	}
+}
+
+- ShoopingController
+
+@RestController
+public class ShoppingController {
+	@Autowired
+	private RestTemplate template;
+
+	@GetMapping("/amazon-payment/{price}")
+	public String invokePaymentService(@PathVariable int price) {
+		return template.getForObject("http://PAYMENT-SERVICE/payment-provider/payNow/"+price, String.class);
+	}
+
+	@GetMapping("/test")
+	public String test() {
+		return "working....";
+	}
+
+}
+
+3) Create project called payment-service
+
+-application.yml
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+server:
+  port: 8083
+spring:
+  application:
+    name: PAYMENT-SERVICE
+
+-
+
+@SpringBootApplication
+@EnableEurekaClient
+public class PaymentServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PaymentServiceApplication.class, args);
+	}
+}
+
+- PaymentController
+
+@RestController
+@RequestMapping("/payment-provider")
+public class PaymentController {
+	@Value("${server.port}")
+	private int port;
+
+	@GetMapping("/payNow/{price}")
+	public String payNow(@PathVariable int price) {
+		return "payment with " + price + " is successfull & service port : " + port;
+	}
+
+}
+
+

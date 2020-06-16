@@ -1,0 +1,77 @@
+Spring cloud HashCrop consul tool
+
+-In distributed ms we use this consul tool it help us to create a cetralized configuration for all microservices.
+-Some of confidential data we can configure in it and all microservices can access it.
+
+Steps:-
+
+1)download consul tool and execute it in cmd prompt:
+consul agent -server -bootstrap-expect=1 -data-dir=consul-data -ui -bind=192.168.0.106(ur system ip-address)
+
+2) create an application  spring-boot-consul
+pom: web, lambook,dev-tool,consul configuration and configuration processor
+
+-application.yml:
+spring:
+  cloud:
+    consul:
+      config:
+        fail-fast: true
+      host: localhost
+      port: 8500
+  application:
+    name: javatechie
+
+
+-when we run the application  consul ui will be up at localhost:8500 consul ui dashboard will be up . Then we have to create key/value
+-config :
+config/javatechi/my.username  and add value: javatechi@gmail.com
+- here only we can create a password like my.password and add password:javatechi 
+we can have two properties my.username and my.passowrd 
+
+Create MyConfig.java class and declare prefix like "my"  
+and go to MainSpringbootApplication.java
+
+- SpringBootConsulApplication.java
+
+@SpringBootApplication
+@RestController
+@EnableConfigurationProperties(value = MyConfig.class)
+public class SpringBootConsulApplication {
+
+	@Autowired
+	private MyConfig config;
+
+	@GetMapping("/getConfigData")
+	public MyConfig getConfiguration() {
+		return config;
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootConsulApplication.class, args);
+	}
+	}
+
+
+-MyConfig.java
+
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
+
+@ConfigurationProperties(prefix="my")
+@Data
+public class MyConfig {
+	
+	
+	private String username;
+	private String password;
+
+}
+
+-when we run the services localhost:8080/getConfigData it will retrun username and password that is saved in consul ui
+
+- we change my passwoerd in consul ui and when we hit seervice again the password will get changed so we can dynamically change the data.
+
+
