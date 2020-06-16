@@ -1,0 +1,51 @@
+Docker ps command ?
+
+
+The command that we're going to look at is docker ps 
+This command will list all the different running containers that are currently on your machine.Let's try running it right now and just see what happens.
+I'll flip on over to my terminal and I'll run.
+docker ps
+when I run this command you're going to see some headers for a table.
+At present we have no containers running our machine.So we have no entries inside this table at this point.
+We've only been running images or creating containers that run very quickly and then immediately closed down.
+So for example when we were running docker run a busy box and Echo Hi there
+that container starts up and then almost immediately exits us back to the command line.
+So if we want to record ps to be meaningful at all we have to have some container that is running for some longer amount of time in order to get a container running a little bit longer.
+We could substitute the command that is executed when that container starts up.
+So rather than running echo Hi there I'll try.
+
+-  docker run busybox ping google.com
+This is a command that's going to attempt to ping Google servers and measure the amount of latency. It's a command that's going to continue running for a quite a long time. So here it is running right here. And as you can see it takes about two or three milliseconds for me to ping Google and get a response back.
+This command is going to continue running.
+So we can now run docker ps in a second window and we should see this container appear in the listing. I'm going to open up a second terminal window and then I'll execute:
+ docker ps
+and I do so I'll then see that running container. I'm going to get this on one line really quickly. There we go. So this is the print up for the container that is currently running that was issued the command of ping google.com.
+
+We also see the containers I.D. which we can use for a lot of other operations that will look into later on we'll see the image that was used for the container.
+We can see how long ago it was created.
+We get a status. Currently it's been up for 24 seconds.
+We'll see a listing of any ports that have been opened for outside access.
+And we're going to talk a lot about ports later on INSIDE this course.
+And then at the very end we'll also see a randomly generated name to identify this container.
+In my case the randomly generated name was epic.
+Cory if I now flip back over to that running ping process I can press control-C on my keyboard to stop it.
+So I'll press control-C right now and I get kicked back to my command line.
+As you might expect if I then run docker P.S. The second time I would not see that container anymore. So "docker ps" specifically shows running containers we can modify the doctor ps command just a little bit to show all containers that have ever been created on our machine to do so we can execute:
+"docker ps --all"
+
+When we execute that command we'll see a listing of all the containers that we have ever created.And we're going to zoom out again. Again here really quickly just so I can see this table.There we go.
+So for every one of these containers these have all been containers that we have started up and then have either been shut down on our behalf or shut down naturally.
+So for each one of them we'll see the container ID image command when it was created its current status in this case they're all exited any ports that have been opened up again we'll talk about those later. And the randomly generated name for each one.So in practice we're going to end up using the Dr. As command quite a bit to see what containers are currently running on our machine.
+One of the most common uses of Takhar pieces is not only to see what's running but also to get the idea of a running container.
+Because like I said we very frequently want to issue commands on a very specific container and for that we need its ID.
+
+docker ps --all  result :-
+
+
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+25f070ebf11b        busybox             "ping google.com"   8 minutes ago       Up 8 minutes                                    pedantic_merkle
+ee341166ea3b        busybox             "ls"                23 minutes ago      Exited (0) 23 minutes ago                       bold_spence
+196bd9cd7259        busybox             "echo hi there"     24 minutes ago      Exited (0) 24 minutes ago                       modest_napier
+153c58dfbded        busybox             "echo hi there"     24 minutes ago      Exited (0) 24 minutes ago                       amazing_blackburn
+3c8a609fa6fb        hello-world         "/hello"            37 minutes ago      Exited (0) 37 minutes ago                       jovial_darwin
+fe8ed7e6a5c4        hello-world         "/hello"            37 minutes ago      Exited (0) 37 minutes ago                       sharp_pare
