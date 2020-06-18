@@ -1,0 +1,228 @@
+Create flow of dig for development :
+
+1) Devlopment phase:
+- Create/change features
+- Make changes on a non-master branch
+-Push to github
+-Create Pull Request to merge with master
+
+2) Test phase:
+-Code pushed to Travis CI (To automaticaly pull and re upload the master)
+- Tests run
+
+-Merge PR()changes) with master
+
+3) Prod phase :
+
+- Code pushed to Travis CI
+- Test run
+- Deploy our application to AWS services like Elastic bean stalk
+
+Docker Role in above all flow :
+
+-Remember we dont have to use docker for all this but docker make our work easy 
+
+-We are creating react project using docker
+
+Steps :
+
+1) create a react project
+
+npm install -g create-react-app
+
+create-react-app frontend (it will create frontend app project)
+
+2)Now fo to frontend folder
+
+npm run start ===> start up a development server(run localhost:3000/)
+npm run test ====> Run test associate with project
+npm run build ===> build a production version of app
+
+3)create a docker file in project "Dockerfile.dev" it means we  use this docker file in development env
+for product we use simple docker file  "Dockerfile"
+ 
+Dockerfile.dev :-
+
+From node:alpine
+
+WORKDIR '/app'
+
+COPY package.json .
+RUN npm install
+
+COPY ..
+
+CMD ["npm", "run", "start"]
+
+- run command for dev docker file
+docker build -f Dockerfile.dev . (this f means we have to specify the particular docker file) it will create an image
+
+4) Starting the container
+
+- run cmd
+
+docker run -p 3000:3000 <image-id> run localhost:3000
+
+-changes in react prject inside src/app.js then we have to rebuild image or something else.
+
+So we have to make changes in src and it shuld be automaticalyy reflected with build it again
+
+Docker volume we set up a place holder so we didint copy whole src and public directory from local project file to docker container but insted we copy a refrence of it and this refrence point back to local machine and give us the access of that src and public folder. its just like a port that is when we communicate a port outside the container to the port inside the container.
+
+cmd :-
+
+docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app <image-id>
+
+-v $(pwd):/app ==>present working directory (pwd) it will map pwd into the '/app' folder
+
+-v /app/node_modules ==> it will put bookmark to node_modules folder
+
+So now if made changes in our code like "By there" and we will see its automatically refresed
+
+5) We make docker compose file to shortend the above long command inside the file we compose port settings and volume command to create the refrence
+
+- we create file docker-compose.yml
+
+version: '3'
+services:
+	web:
+	  build . ==>it will tell Dockerfile.dev inside the folder
+	  ports:
+	     - "3000:3000"
+	  volumens:
+	    - /app/node_modules
+		- .::/app ===>its for maopping current folder outside the container to current folder inside the container
+		
+now run command :
+
+docker-compose up 
+
+it will throw error like we can not loacate Dockerfile since we have "Dockerfile.dev"  in current directory
+
+so we change docker-copse.yml file
+
+updating :-
+build .
+insted we do :--
+build:
+	context:
+	dockerfile: Dockerfile.dev
+
+now if we run docker-compose up 
+
+now it will build
+
+6)Test the application :
+commad :
+
+docker build -f Dockerfile.dev .
+
+docker run <container-d> npm run test
+Now containerstart up and then execute the test command
+
+Now run commad again using -it
+
+docker run -it <container-d> npm run test
+
+now we have more options like :
+press enter to run test
+press w to menue
+press p that will run particular test
+press q to quit
+
+7)Live updating the test 
+In our src directory we have this App.test.js file this test file we was running now if we modify somthing in it. so in terminal we see our test dosnt re run automatically or while hiiiting enter its not run becoz 
+We've got a container that's been created specifically to run some tests when we created that container.We essentially took a snapshot of all of our working files and folders and put that inside the container.So this very temporary container that we've made just to run our tests does not have all that volume stuff set up.
+
+so to solve this :
+1) we can modify the docker-compose.yml and create an another service for test and put volume inside it.
+ we add a second service 
+ 
+ tests:
+	build:
+	  context:
+	  dockerfile: Dockerfile.dev
+	  volumes:
+		- /app/node_modules
+		- .:/app
+	  command:["npm", "run", "test"]
+	  
+So this we have two container one for building project and second for running test
+
+docker-compose up --build (since we change in docker-compose.yml)
+2) Second approch rather then creating second service inside docor compose file we will do command like 
+docker-compose up (Thats create a single container run our app) So insted we attach the acommand to existing container by using exec commad so we open our secnd terminal and run :-
+docker ps (to know our running container id)
+
+docker exec -it <container-id> npm run test so now it works now if we update it againg and now in second terminal we see the test get automatically updated. But its not a best solution
+ 
+-Now if we run docker-compose up we cant use the test option like p , q, w etc it becoz:-
+By usinng docker-compose.yml we have created the two seprate container
+-Test container :- npm run test and it has stdin(standard in), stdout(standard out) and stderr(standard err).
+
+-Web container :- npm run start and it also has stdin(standard in), stdout(standard out) and stderr(standard err).
+
+So every process has its own std/stdout/stderr so when we typing in terminal we want to send stdin to particular container that dosnt happend. So for doing so we need docker attach command using this we can forward input from terminal directly to the specific container
+
+new terminal use command like :
+ docker attach <Container id> it too dont work
+ now we use command like 
+ 
+ docker exec -it <container-id> sh ===> this creeate shell commnd prmpt
+ 
+ now we run ps inside it now it will show all pid and command
+ 
+ 7) Need for nginx
+ Now we have to build production version of application using npm run build this command will compile ur all java scrit file and put it in one specific env. 
+ So mainly it process all the javascript and run in browser. but in production env we dosnot make changes in code
+ So we need a server that take request and work with files so we use nginx 
+ 
+ 8)  Multistep docker file
+ So we create a new docker file So we have to do
+ - use node : alpine
+ -copy the package.json file
+ -install dependencies
+ - run npm run build
+ -start nginx
+ 
+ it has two problem one is how to install dependencies and how we install nginx.
+ 
+ so for nginx we have already have image in docker hub.
+ So we have two diffrent base images so we have to create a docker file which have multistep phases like
+ a) Build Phase :-
+ Use node:alpineCopy the package.json fileinstall dependencies
+ Run 'npm run build'
+ 
+ b) Run phase
+ -Use nginx as base image
+ -copy over result of 'npm run build' (so here we will copy the resulp of Buil phase)
+ -start nginx
+ 
+ So we create a docker file Dockerfile : 
+ 
+From node:alpine as builder
+
+WORKDIR '/app'
+
+COPY package.json .
+RUN npm install
+
+COPY ..
+
+RUN npm run build (it build in working directory)
+
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
+(It will say i want to copy from other phase here we have builder phase and it will copy from app/build to nginx folder)
+We dont have to write cmd for start nginx becox default command for running it will do our work.
+
+9) Running nginx
+ use terminal n write command :-
+ 
+ docker build .
+ docker run -p 8080:80 <image-id>
+
+when we run it on brwser localhost:8080
+
+
+ 
