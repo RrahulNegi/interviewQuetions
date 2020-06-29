@@ -1,0 +1,229 @@
+Q1) Various State of Object in Hibernate ?
+
+Transient state: An object is in transient state if it just has been instantiated using the new operator and there is no reference of it in the database i.e it does not represent any row in the database.
+
+Persistent state: An object is in the persistent state if it has some reference in the database i.e it represent some row in the database and identifier value is assigned to it. If any changes are made to the object then hibernate will detect those changes and effects will be there in the database that is why the name Persistent. These changes are made when session is closed. A persistent object is in the session scope.
+
+Detached state: An object that has been persistent and is no longer in the session scope. The hibernate will not detect any changes made to this object. It can be connected to the session again to make it persistent again.
+
+Q2) How can we make detached object to persistent ?
+
+In this state, hibernate doesn't track the object but you can re-attach a detached object to Hibernate session by calling the update() or saveOrUpdate(), or merge() method. Once reattached, the detached object will move to Persistent state.
+
+Q3)Autowiring in spring and types of autowiring ?
+In Spring framework, declaring bean dependencies in configuration files is a good practice to follow, so the Spring container is able to autowire relationships between collaborating beans. This means that it is possible to automatically let Spring resolve collaborators (other beans) for your beans by inspecting the contents of the BeanFactory. This is called spring bean autowiring.
+
+no
+This option is default for spring framework and it means that autowiring is OFF. You have to explicitly set the dependencies using <property> tags in bean definitions.
+
+byName
+This option enables the dependency injection based on bean names. When autowiring a property in bean, property name is used for searching a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, a error is raised.
+
+
+byType
+This option enables the dependency injection based on bean types. When autowiring a property in bean, property’s class type is used for searching a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, a error is raised.
+
+
+constructor
+Autowiring by constructor is similar to byType, but applies to constructor arguments. In autowire enabled bean, it will look for class type of constructor arguments, and then do a autowire bytype on all constructor arguments. Please note that if there isn’t exactly one bean of the constructor argument type in the container, a fatal error is raised.
+
+Q4)If two bean are of same type in case of autowiring, what will happen ?
+
+@Autowired
+@Qualifier("A1Unmarshaller")
+private Jaxb2Marshaller A1Unmarshaller;
+The default autowiring is by type, not by name, so when there is more than one bean of the same type, you have to use the @Qualifier annotation.
+
+Q5)How to make a class immutable ?
+
+To create an immutable class in Java, you have to do the following steps.
+
+Declare the class as final so it can’t be extended.
+Make all fields private so that direct access is not allowed.
+Don’t provide setter methods for variables.
+Make all mutable fields final so that its value can be assigned only once.
+Initialize all the fields via a constructor performing deep copy.
+Perform cloning of objects in the getter methods to return a copy rather than returning the actual object reference.
+
+public final class FinalClassExample {
+
+	private final int id;
+	
+	private final String name;
+	
+	private final HashMap<String,String> testMap;
+	
+	public int getId() {
+		return id;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Accessor function for mutable objects
+	 */
+	public HashMap<String, String> getTestMap() {
+		//return testMap;
+		return (HashMap<String, String>) testMap.clone();
+	}
+
+	/**
+	 * Constructor performing Deep Copy
+	 * @param i
+	 * @param n
+	 * @param hm
+	 */
+	
+	public FinalClassExample(int i, String n, HashMap<String,String> hm){
+		System.out.println("Performing Deep Copy for Object initialization");
+		this.id=i;
+		this.name=n;
+		HashMap<String,String> tempMap=new HashMap<String,String>();
+		String key;
+		Iterator<String> it = hm.keySet().iterator();
+		while(it.hasNext()){
+			key=it.next();
+			tempMap.put(key, hm.get(key));
+		}
+		this.testMap=tempMap;
+	}
+	
+	}
+
+Q6) Composition vs Aggregation ?
+In both aggregation and composition object of one class "owns" object of another class. But there is a subtle difference: Aggregation implies a relationship where the child can exist independently of the parent. ... Composition implies a relationship where the child cannot exist independent of the parent.
+
+
+Q7) Encapculation vs Abstraction ?
+Encapsulate hides variables or some implementation that may be changed so often in a class to prevent outsiders access it directly. They must access it via getter and setter methods.
+
+Abstraction is used to hiding something too but in a higher degree(class, interface). Clients use an abstract class(or interface) do not care about who or which it was, they just need to know what it can do.
+
+Abstraction solve problem in design level while encapsulation solve the problem in implementation level.
+
+Abstraction is used for hiding the unwanted data and giving relevant data. where as encapsulationmeans hiding the code and data into single unit to protect the data from outside world.
+
+Abstraction lets you focus on what the object does insted of how it does it.while encapsulation means hiding the internal details of how an object does something;
+
+	
+Q8) how GWT client intract with GWT Server ?
+
+Q9) Diffrence between factory and abstract factory design pattern ?
+
+Difference between Factory vs Abstract Factory pattern in JavaLet see another example of Abstract Factory and Factory design pattern in Java from JDK itself to get a better understanding. If you have done some XML work in Java e.g. reading XML files using DOM parser, you may be familiar with DocumentBuilderFactory  class which is an example abstract factory design pattern because it returns a factory called DocumentBuilder which then used to create Document.
+
+
+
+ 
+//Example of Abstract Factory and Factory design pattern  in Java
+DocumentBuilderFactory abstractFactory = DocumentBuilderFactory.newInstance();
+DocumentBuilder factory = abstractFactory.newDocumentBuilder();
+Document doc = factory.parse(stocks)
+
+In this example DocumentBuilderFactory (Abstract Factory) creates DocumentBuilder (Factory) which creates Documents (Products).
+
+Let's see some more difference between Abstract Factory and Factory design pattern in Java in point form :
+
+1) One more difference between Abstract Factory and Factory design pattern is that AbstractFactory pattern uses composition to delegate responsibility of creating object to another class while Factory design pattern uses inheritance and relies on derived class or sub class to create object.
+
+2) Abstract Factory may use Factory design pattern for creating objects but they are not just limited to that they can also use Builder design pattern to build object by doing series of steps or Prototype pattern to build object by copying or customizing prototype of that object. It completely depends upon your implementation whether to use Factory pattern or Builder pattern for creating products.
+
+
+When to use Abstract Factory and Factory method design pattern in Java
+Factory method design pattern are modern way of creating objects. It offers some notable advantages over new() operator to create Objects e.g. By using Factory method design pattern client is completely decoupled with object creation code, which enforces Encapsulation and result is loosely coupled and highly cohesive system. Any change e.g. a new product from Factory requires almost no change in existing clients. See When to use Factory method design pattern in Java for more scenarios. 
+
+On the other hand if you need an additional level of abstraction over your Factory pattern than Abstract Factory is the right design pattern to use. Abstract Factory allows you to use different Factory implementation for different purpose. 
+
+Abstract Factory pattern can be implemented using Factory method and Singleton design pattern in Java. One of the best example of Abstract Factory and Factory pattern in Java is DocumentBuilderFactory and DocumentBuilder javax.xml.parsers package.
+
+
+Q) What is singelton and factory design pattern?
+
+Q10) forward vs sendredirect ?
+
+When we use forward method request is transfer to other resources within the same server for further processing.
+In case of sendRedirect request is transfer to another resource to different domain or different server for futher processing.
+
+In case of forward Web container handle all process internally and client or browser is not involved.
+
+When you use SendRedirect container transfers the request to client or browser so url given inside the sendRedirect method is visible as a new request to the client.
+
+When forward is called on requestdispather object we pass request and response object so our old request object is present on new resource which is going to process our request
+
+In case of SendRedirect call old request and response object is lost because it’s treated as new request by the browser.
+Visually we are not able to see the forwarded address, its is transparent
+In address bar we are able to see the new redirected address it’s not transparent.
+
+Using forward () method is faster then send redirect.
+SendRedirect is slower because one extra round trip is required beasue completely new request is created and old request object is lost.Two browser request requird.
+
+When we redirect using forward and we want to use same data in new resource we can use request.setAttribute () as we have request object available.
+But in sendRedirect if we want to use we have to store the data in session or pass along with the URL.
+RequestDispatcher rd = request.getRequestDispatcher("pathToResource");
+  rd.forward(request, response);
+
+Or
+
+RequestDispatcher rd = servletContext.getRequestDispatcher("/pathToResource");
+  rd.forward(request, response);
+
+
+
+Q11) What is implisit object?
+
+These Objects are the Java objects that the JSP Container makes available to the developers in each page and the developer can call them directly without being explicitly declared. JSP Implicit Objects are also called pre-defined variables.
+
+1 request
+
+This is the HttpServletRequest object associated with the request.
+
+2	
+response
+
+This is the HttpServletResponse object associated with the response to the client.
+
+3	
+out
+
+This is the PrintWriter object used to send output to the client.
+
+4	
+session
+
+This is the HttpSession object associated with the request.
+
+5	
+application
+
+This is the ServletContext object associated with the application context.
+
+6	
+config
+
+This is the ServletConfig object associated with the page.
+
+7	
+pageContext
+
+This encapsulates use of server-specific features like higher performance JspWriters.
+
+8	
+page
+
+This is simply a synonym for this, and is used to call the methods defined by the translated servlet class.
+
+9	
+Exception
+The Exception object allow
+
+
+Q12) Servletcontext  vs servletconfig?
+
+The ServletConfig parameters are specified for a particular servlet and are unknown to other servlets. It is used for intializing purposes.
+
+The ServletContext parameters are specified for an entire application outside of any particular servlet and are available to all the servlets within that application. It is application scoped and thus globally accessible across the pages.
+
+
