@@ -214,6 +214,60 @@ Every application has at least one Angular module, the root module that you boot
 Q)What are observables?
 Observables are declarative which provide support for passing messages between publishers and subscribers in your application. They are mainly used for event handling, asynchronous programming, and handling multiple values. In this case, you define a function for publishing values, but it is not executed until a consumer subscribes to it. The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
 
+Angular uses observable which is implemented with RxJS library for work with asynchronous events. It is a new way of pushing data in JavaScript. An observable is a Producer of multiple values which pushing values to subscribers.
+Easiest way to create observable is using new Observable method.
+import { Injectable } from ‘@angular/core’; 
+import {Observable} from ‘rxjs’; 
+ 
+@Injectable({ 
+providedIn: ‘root’ 
+}) 
+export class ObservableDemoService { 
+ constructor() { } 
+public getNewObservable() { 
+return new Observable((observer) => observer.next(‘hello’) 
+); } }
+To be received values from observables. Consumers have to subscribe to the observable. As long as subscribe. Values will not be emitted.
+In angular there are two ways to subscribe observable.
+Using async pipe -> Angular deals with subscriptions during the lifecycle of a component. Angular maintain subscription and un-subscription by itself.
+public getApiData(): Observable<UserApiInterface[]> { 
+this.apiData = this.http.get<UserApiInterface[(‘https://jsonplaceholder.typicode.com/posts'); 
+}
+<section> 
+  <ul> 
+   <li *ngFor=”let item of apiData | async” > 
+    <p>{{item.title}}</p> 
+   </li> 
+  </ul> 
+ </section>
+2. subscribe to the observable ourselves using the actual subscribe()method. This is much better choice necessary to do something with the data before displaying it. The downside is that, have to manage the subscription by yourself.
+this.observableService.getApiData().subscribe( 
+ res => {console.log(res); 
+ this.apiData = res; }, 
+ );
+In angular there are sets of operations can be performed with Observable objects. map(), filter(), concat(), and flatMap() are examples for operators that can be performed with observables. Operators are functions that build on the observables foundation to enable sophisticated manipulation of collections.
+Map operator -> this operator allows to map response observable stream to another set of values.
+this.observableService.getApiData().pipe(map( 
+res => console.log(res[0].id + res[0].title) 
+));
+2. Filter operator -> filter lets to filter out observable stream and return result observable stream. Returned stream also elgible for operations.
+this.observableService.getApiData().pipe(filter( 
+res => res[0].id > 0), 
+map(r => console.log(r[0].title)) 
+);
+Angular observables offer two ways to handle possible errors occur in stream.
+Handling errors using subscribe call
+// handle error inside subscribe method 
+this.observableService.getApiData().subscribe( 
+res => {console.log(res); 
+this.apiData = res; }, 
+err => console.log(err) 
+);
+2. via the RxJs catchError Operator -> The catchError operator takes as input an Observable that might error out, and starts emitting the values of the input Observable in its output Observable.If no error occurs, the output Observable produced by catchError works exactly the same way as the input Observable.
+this.observableService.getApiData().pipe(catchError(err => of([err]))) 
+.subscribe( 
+res => console.log(res), 
+err => console.log(‘something went wrong’));
 
 What is HttpClient and its benefits?
 Most of the Front-end applications communicate with backend services over HTTP protocol using either XMLHttpRequest interface or the fetch() API. Angular provides a simplified client HTTP API known as HttpClient which is based on top of XMLHttpRequest interface. This client is avaialble from @angular/common/http package. You can import in your root module as below,
