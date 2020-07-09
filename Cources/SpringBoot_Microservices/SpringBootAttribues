@@ -1,0 +1,95 @@
+Controller class:-
+
+-use of ResponseEntity as return type of controller method
+Example :
+  @RequestMapping(value="/delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity delete(@PathVariable Integer id){
+        productService.deleteProduct(id);
+        return new ResponseEntity("Product deleted successfully", HttpStatus.OK);
+    }
+
+
+-Use of @ApiResponse :-Its use for swagger2 documentation :-
+
+@ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved list"),
+        @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+        @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+}
+)
+										
+										
+Service Layer :-
+
+-use ofannotation:-
+@Service
+@Transactional				
+
+1- Use of java8 Optional as a return type of method of repository so that we can use method like
+UserRepo.getById(Id).orElseThrow(()->Exception)
+
+2-  @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
+
+Since each service method calls other service method which conatins many db transcation so to handle the acid transaction and to maintain atomicity in each transaction we use @Transactional annotation and it will rollback all transaction in all services 
+if any exception occured
+
+-@Transactional(propagation=Propagation.REQUIRED) and @Transactional(rollbackFor = Exception.class) are roughly the same. As propagation=Propagation.REQUIRED is the default. So with that in mind they are equivalent to @Transactional(propagation=Propagation.REQUIRED) and @Transactional(propagation=Propagation.REQUIRED, rollbackFor = Exception.class).
+
+-What propagation and rollbackFor focus on are different, propagation cares the way how transaction needs or creates, rollbackFor cares whether the existed transaction roll back or not while the specified exception occurs.
+
+-The only difference is that without the rollbackFor = Exception.class it will rollback only for RuntimeExceptions and Error s not for other exceptions that occur. (This is the same for JEE when using EJB and the behavior has been translated to Spring as well).
+
+Dao Layer:-
+
+1-Basic query like findByNameAndAge(String name, Integer age);
+
+2-Use of annotation 
+@Query("SELECT d FROM User d WHERE d.name=:name and d.age:age)
+findByNameAndAge(@Param("name") String name, @Param("age") Integer age)
+3-For searching purose like we have to seacrh on basis of many filters and we have to set pagination too for this we have use Entity in methods to create a query on basis of filters
+
+Steps to create it
+
+- public interface BookRepository extends JpaRepository/CRUDRepositor, BookCustomRepository{
+
+List<User>findByName(String name);
+}
+
+- interface BookCustomRepository {
+ List<Book> findBooksByAuthorNameAndTitle(String authorName, String title);
+}
+
+- class BookCustomRepositoryImpl implements BookCustomRepository {
+@Override
+List<Book> findBooksByAuthorNameAndTitle(String authorName, String title) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Book> cq = cb.createQuery(Book.class);
+ 
+    Root<Book> book = cq.from(Book.class);
+    List<Predicate> predicates = new ArrayList<>();
+     
+    if (authorName != null) {
+        predicates.add(cb.equal(book.get("author"), authorName));
+    }
+    if (title != null) {
+        predicates.add(cb.like(book.get("title"), "%" + title + "%"));
+    }
+    cq.where(predicates.toArray(new Predicate[0]));
+ 
+    return em.createQuery(cq).getResultList();
+}
+}
+
+The code above follows a standard Criteria API workflow:
+
+1)First, we get a CriteriaBuilder reference, which we can use to create different parts of the query
+2)Using the CriteriaBuilder, we create a CriteriaQuery<Book>, which describes what we want to do in the query. Also, it declares the type of a row in the result
+3)With CriteriaQuery<Book> we declare the starting point of the query (Book entity), and we store it in the book variable for later use
+4)Next, with CriteriaBuilder we create predicates against our Book entity. Note, that these predicates don't have any effect yet
+5)We apply both predicates to our CriteriaQuery. CriteriaQuery.where(Predicate…) combines its arguments in a logical and. This is the point when we tie these predicates to the query
+6)After that, we create a TypedQuery<Book> instance from our CriteriaQuery
+Finally, we return all matching Book entities
+
+
+

@@ -1,0 +1,24 @@
+Junit Testing
+
+acpected vs actual value
+
+TestRun
+-Preperation
+-provide test input
+-Run test
+-Provide expected output
+-verify result
+-Do something if test failed
+
+ Q) why not Junit 4?
+ 
+ -its 10 year old 
+ -Not updated in new pattern
+ -Not up to date with java language features
+ -Monolithic as it has one jar file 
+ 
+ Q) Junit 5 Architecture
+ 
+ we have core platform that has lib for running the test.
+ -Junit api is called Juipiter(becoz its juoiter is 5th planet :))
+ -Vintaze=> its another type of api which we can use for older version of junit test case

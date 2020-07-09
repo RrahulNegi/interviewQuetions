@@ -1,0 +1,45 @@
+Single sign-On with Springboot okta and OAuth2
+
+-I log in to Facebook and i click on messanger so it wont ask me to sign on again
+-it means one time login into application
+-Like i have sign in in my gmailm account and when i try to run youtube so since its a part of gmail so it wont ask again to sign on. youtube will automatically sign on with my gmail account.
+
+
+Steps:
+
+1)Create spring projct spring-boot-okta-sso
+pom : web, spring-security,Okta,OAuth2 
+
+2)  Create SpringBootOktaSsoApplication.java
+
+@SpringBootApplication
+@RestController
+@EnableOAuth2Sso
+public class SpringBootOktaSsoApplication {
+	
+	//Once user login to my account i want to show some welocme msg..
+	/Principal object we can find the username from useraccount
+	@GetMapping("/")
+	public String welcome2User(Principal principal) {
+		return "Hi "+principal.getName()+" Welcome to javatechie";
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootOktaSsoApplication.class, args);
+	}
+
+}
+
+-application.properties
+
+okta.oauth2.issuer= https://dev-165093.okta.com/oauth2/default
+okta.oauth2.clientId=0oaz16emnjw4TZVZ0356
+okta.oauth2.clientSecret=zEeuINnfu36oNGCWTdmnadAjgT-BtbTu79XdFwe0
+server.port=9090
+spring.main.allow-bean-definition-overriding=true
+
+
+
+3) Create an account in okta and sign in 
+When we send request to apllication localhost:9090 it internaly goes to oka auth server as we assign username and password in application.prop it get validated from their and we get response and get username using principal. Here we didint load our username in db it is take care by okta server
+

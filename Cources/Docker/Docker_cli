@@ -1,0 +1,63 @@
+Docker cli or basic commands
+
+version :
+docker --version
+
+Run hello-world commands
+
+docker run <image name>
+docker run hello-world
+
+Q) What happend when we run this command?
+
+I want you to think about what probably just occurred when we ran that command.
+
+Chances are that somewhere on our hard disk is an image that has that file system snapshot(which has hello-world) with one single program inside of it.
+Hello world.
+Who knows what it's really cold.
+
+So when we executed docker run hello world we took that little snapshot of the hard drive.
+We stuck it into this little container thing or this kind of grouping of resources and then we executed the command run. Hello world.
+And so the running process up here was.
+Hello world. That thing ran. And then eventually executed.
+So that's what is happening behind the scenes.
+
+Q) How to change or oeverid the default command?
+
+like we have seen that any time that we execute docker run with an image we not only get that file system snapshot but we also get this default command that is supposed to be executed after the container is created. So the variation on docker run that we're going to look at is going to give you a way to override the default startup command.
+Here's how we do it.
+We'll execute docker run the image name just like we did before.
+And then after that we'll supply a alternate command to be executed inside the container after it starts up.
+
+docker run <image name>  <command(this is alternate command)>
+
+docker run busybox echo hi there
+
+We're going to use an image called a busy box and I'll tell you why in just a moment after that will list out the alternate command to execute inside the container after it is created. And so I'm going to say that I want to run a command echo. Hi there.
+So this right here is the override. This is a command that we executed inside that container the echo command is going to printout Hi there inside my terminal.
+
+- docker run busybox ls
+
+it will list the file folders in busybox container. So So over here we've got the busy box image. It has some default file system snapshot and some presumedly default command.
+You know who knows what it is off top of my head but it definitely has this default file system snapshot that busy box image has default folders of bin dev at the home proc route and so on all the ones you see listed right here.
+So when we create a new container out of that image we take this file system snapshot we stick it in as the folder for that container and then the command that we execute is.
+LS So we list out all the files and folders inside of our harddrive which then prints out bin dev at
+
+Well let's go back over to our terminal really quickly and we're going to try running hello world with the ls command  run:
+
+docker run Hello-world ls
+
+And you can very quickly see that we get a kind of nasty ear message.
+Well let's try doing the echo command and see what happens.
+
+I'll also do 
+docker run hello world echo Hi there.
+And we get a very similar error message here as well.So what's going on.
+Well here's the issue. When we run the alternate commands are those alternate echo and LS commands with busy box. Those commands work because ls and Echo are two programs that exist inside of the busy boxfile system image.
+Somewhere inside of this folder system right here is a ls command or an actual LS executable and a executable as well.
+And so we can safely execute those commands with busy box because those are programs that exist inside this file system.
+However with our hello world program over here the only thing that exists inside this file system snapshot is a single program like one single file and all that thing does is echo out or kind of printout that singular message that we saw when we ran that container.
+
+So these startup commands that we are executing are being based upon the file system include with the image.
+
+- docker ps command :- its shows running container

@@ -1,0 +1,160 @@
+DataStructure:
+
+1) Recursion :
+
+Like example we open a box inside it has smaller box and do until we get the ring.
+
+Properties:
+-we have a operation performed multiple times with diffrent input
+-In every step we try to make the problem smaller
+-And we have a base condition, which tells the system to stop the recursion like in example we have to stop opening box until we get the ring.
+
+Example Binary Search tree  we have to find node 4.
+      8
+     3  10
+	2  4   11
+		 6	  12	
+
+if value is we have to find is current node so return current node
+if value is less then current node we move left if value is greater then current node we move right. Once we reach the subTree we perform same operation . So their is a recursion i.e every time subtree changes but formula to find the value is same.
+
+Recursive Method:
+
+search(root, valueToSearch)
+{
+if(root is null) return null
+else if(root.value== valueToSearch) return root
+else if(valueToSearch < root.value) search(root.left, valueToSearch)
+else search(root.right, valueToSearch)
+}
+
+So it follows the same properties of recursion
+
+Q) Why we learn Recursion?
+-it makes code easy to write and read in compare to itterator. whenever a given problem can be broken down to similar sub problem.
+
+-If we use Tree or Graph recursion is mendatory thing.
+- Their r three technique to solve the given problem like 'Divide n conqure', 'Greedy' and 'Dynamic Programming' and recursion is used in all three.
+
+Q)Format of Recurcive Function ?
+
+Recurcive case : case where a function recur.
+Base Case : case where a function dosnt recur.
+
+Ex:
+sampleRecurcive(parameter){
+if(base case is satisfied)
+	return some base case values;
+else
+	sampleRecurcive(modified parameter);
+	
+}
+
+Q)How Recurcive method store in stack?
+
+->First how a normal method store in stack:-
+
+Main(){
+ Bar();
+ sysout('in Main')
+
+Bar(){
+	DoWork();
+	sysout('In Bar')
+}
+
+DoWork(){
+	DoMore();
+	sysout("In DoWork");
+}
+
+DoMore(){
+sysout("in DoMore")
+}
+}
+
+So in stack memory we have function like Push and Pop and it work in LIFO i.e Last in First Out.
+
+-Control start from Main method call Bar() so after compelting bar()it needs to come back to main() so system will store main() some where so that it remembers it has to comeback to main() so it will push main and  store it in stack.
+- After that from bar() it call DoWork() and similarly it store bar() in stack. similarly it store DoWork() in stack above bar() and since DoMore() dosnt call any method so it just print its statement so it wont get stored in Stack.
+
+-So after DoMore() is done system needs to know which method is called so it will go to stack it calls DoWork() and pop it out and print the statement. and same thing it will do till Main() is poped out and if stack is empty so it will tell system their is no more method in stack so it will stop priniting;
+
+
+For Recursive function :-
+foo(n){
+if(n<1)
+	return
+else{
+foo(n-1)
+print("Hello World"+n)
+}
+}
+Main(){
+foo(3)
+}
+
+- So main() push in stack since system know the main() when foo(3) is executed.
+- so now control goes to foo() and it check n<1 its not so its gowes to foo(3-1) fo foo(2) again called so before calling foo(2) system needs to store this method foo(3) becoz it has some pending method. Similrly it store(2) and foo(1) and once foo(0) is called it check n<1 yes so it will return and now foo(0) work is done. So now system will
+check their is some pending work so it will foo(2) and it will print Hello World 1 and after this foo(1) is removed then it call foo(2) and it will print Hello world 2 and sames way it pops foo(3) and Print Hello world 3 and after that it call Main() and pops out   and after fooo() it pops out as nothing is left.
+
+Q) Factorial Problems:
+  5!=5*4*3*2*1=>120
+  
+  Factoria(n)
+	if(n==0) return 1;
+	else
+	return (n*Factorial(n-1));
+	
+- So if we call Factorial(5) it goes to return (5* factorial(4)) since we dont know what is facorial(4) so it will be like
+5*? , 4*?, 3*?, 2*?, 1*? so it will call factorial(0) so it will say if n ==0 so  it will return 1 and controller never comes so then  system will do like :
+1*1=1 and then it will go to 2*1=2 and replace ? then 2 will go to 3*2 replace ? and then result i.e 6 will go to 4*6=24 then it will go to 5*24 insted of ? so will get 120 
+
+
+Q) Fibonacci series ?
+-Each no is sum of the preceding numbers
+Example: 0,1,1,2,3,5,8,13,21...
+
+fib(n)
+	if n < 1
+		error msg
+	else if n is equal to 1 or 2
+		return n-1
+	else
+		 return fib(n-1)+fib(n-2)
+		 
+like we have to find 4th no in fibonaci series so n=4 then fib(3)+fib(2)
+
+
+Q) Recursion vs itteration?
+
+Recursion : 
+-No space efficiency since it used stack
+-no time efficiency since it used stack
+-it is easy to code
+
+Iteration :
+- space efficient
+- time efficienct 
+- coding is lengthy
+
+
+Q) When to use/avoid recursion?
+
+when to use :
+	- when we can easily breakdown a problems into similar subprolems
+	- when we are ok with extra overhead (both time ans space) comes with it.
+	-When we need a quick working solution insted of efficient one
+
+When to avoid:
+
+-Where time is very critical
+- Space is very critical 
+
+Q) Pratical use of Recursion ?
+Stack
+Tree- Traversal/Searching
+Sorting- Quick sort Merge sort
+Divide n conqure
+Dynamic Programming : break down problem in smaller chunks sve it and reused it in bigger chunks
+

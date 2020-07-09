@@ -1,0 +1,143 @@
+Java 8 consumer/predicate function 
+
+1)Consumer Functional Interface
+
+-Fucntional interface is interface which has only one method.
+-Counsumer Functional Interface has a function that accept only one Object and perform some operation on it, and its return type is void.
+
+-In java 8 we have :
+
+@FunctionalInterface
+public interface Consumer<T>{
+
+void accept(T t);
+
+
+default Consumer<T> andThen(Consumer<? super t> after){
+	return (T t)->{accept(t)});
+}
+
+
+2) Prdeicate Functional Interface
+-It used for conditional check
+
+-when u think we can use true/false returning function so we can use it
+
+
+@FunctionalInterface
+public interface Predicate<T>{
+
+boolean test(T t);
+
+
+}
+
+3)Supplier Functional Interface
+
+-It can be used in all context where there is no input but an output is expected
+-
+
+@FunctionalInterface
+public interface Supplier<T>{
+
+T get();
+
+
+}
+
+1)Example ConsumerDemo
+
+public class ConsumerDemo {
+
+Consumer<Integer> cosumer = t ->sysout("Printing "+t);
+cousumer.accept(10);
+
+List<Integer> list = Arrays.asList(1,2,3,4,5);
+
+//Since forEach use this Consumer interface so we can directly send consumer object inside it
+
+list.stream().forEach(cosumer);
+
+or we can do it like
+
+lis.stream().forEach(t->Sysout("pricing :"+t));
+
+}
+
+
+2)Example PredicateDemo :
+
+class PredicateDemo implements Predicate<Integer>{
+
+	public boolean test(Integer t){
+		if(t%2==0){
+			return true
+			}else{
+				return false;
+			}
+		}
+psvm(){
+Predicate<Integer>	 pred =new PredicateDemo();
+sysout(pred.test(4));
+}
+}
+
+convert it to lambda :
+
+class PredicateDemo {
+psmv(){
+Prdeicate<Integer> pred =( t)->{
+if(t%2==0){
+			return true
+			}else{
+				return false;
+			}
+};
+
+sysout(pred.test(4));
+}
+}
+	
+we can make it more small :
+
+class PredicateDemo {
+psmv(){
+Prdeicate<Integer> pred = t->t%2==0;
+sysout(pred.test(4));
+
+List<Integer> list =Arrays.asList(1,2,3,4,5);
+list.stream().filter(predicate).foraeach(t->sysout("print :" +t));
+}
+}
+
+3)Example Supplier
+
+class SupplierDemo implements Supplier<String> {
+	@Ovveride
+	public String get() {
+		return "Hii";
+	}
+	
+	psvm(){
+	Supplier<String> supplier =new SupplierDemo();
+	sysout(supplier.get());
+	}
+}
+
+change to lambda :
+
+class SupplierDemo {
+	
+	psvm(){
+	Supplier<String> supplier =() ->{
+		return "Hii";
+	};
+	
+	List<String> list =Arrays.asList("a","b");
+	
+	sysout(list.stream().findAny().orElse(supplier))   ;
+}
+
+
+
+

@@ -1,0 +1,144 @@
+Creating custom images :
+
+busybox, hello-world,redis is the images which is already been created and loaded in docker hub
+each image contains two things 1)FS snapshot and startup command
+
+like 
+-Hello-world image contains
+1)hello-world (file system snapshot)
+2)Run hello-world (startup command )
+
+-Redis image
+ redis (FS snapshot)
+ run redis (startup command)
+ 
+ We can create our own image :
+ 
+ Dockerfile--->docker client-->docker server--->Usable Image
+ 
+ We're going to create something called a docker file it Dharker file is essentially a plain text file that is going to have a couple of lines of configuration placed inside of it.This configuration is going to define how our container behaves.Or more specifically what different programs it's going to contain and what it does when it starts up as a container.Once we create that docker file will then pass it off to the docker client which you will recall is the docker cli that we've been using at our terminal in turn.
+
+The docker client will provide the file to the doc or server the doc or server is what is doing the heavy lifting for us.
+It's good to take the doc file look at all the lines of configuration that we have inside of it and then build a useable image that can then be used to start up a new container.
+Now that docker file is where all the complexity is going to sit.
+In fact just about every docker file that you and I are going to put together is almost always going to look the same.
+Inside of every docker file We're always going to specify a base image
+
+It's got to it's going to be one of the first things we have to do.
+
+After that we'll add in some additional configuration to run commands to add in some dependencies or some more software soore programs that we need to successfully create and execute our container.And then finally we will specify a startup command for the image.So any time we take that image and create a container out of it it will be the command that is executed to essentially boot up or start the container.
+
+It's the same command that we've been talking about around all of these images all along.
+
+We will create an image that run redis-server
+1) mkdir rdis-image
+2) cd redis-image
+3) open a code editor we create Dockerfile withoutb any extension so edit it :
+
+# Use an existing docker image as a base
+FROM alpine
+
+#Download and install a dependency
+RUN apk add --update redis
+
+#Tell the image what to do when it start as container
+CMD ["redis-server"]
+
+4)so after creating file we write cmd :
+
+docker build . 
+
+Explanation :-
+
+FROM ,RUN ,CMD ===>is just an instruction telling docker server what to do
+
+FROM :- it is used to specify the docker image that we want to use as a base.
+RUN :- instruction is used to execute some command while we are preparing our custom image.
+CMD :- command instruction specifies what should be executed when our containers.
+
+We then provided an argument to the instruction that kind of customized how that instruction was executed.So as you might guess by putting from Alpine we are saying we want to use a base image of Alpine
+On the next one we said we want to run this command.
+This command was the argument that was provided to the instruction and then for CMD down here at the bottom.
+
+So we just made use of Alpine as a base image as kind of like an operating system of sorts because it includes a default set of programs that are very useful for what you and I are trying to accomplish.
+We are trying to install and run redis and the Alpine base image has a set of programs inside of it that are very useful for installing and running.
+
+apk  add update rediss.
+
+This is not a docker command right here.This line has nothing to do with docker whatsoever.
+APK is a program called Apache package something I think it is a package manager that comes pre-installed on the Alpine image and we can use that package manager that is built into Alpine to automatically download and install it for us.
+So we made use of Alpine because it had this package manager program automatically included inside it.And so it made it a very convenient thing to start with inside of our docker file.
+
+docker build . ==>
+When we create our docker file we then feed it into the docker client which turns around and gives your file off to the docker server.And that's what builds your usable image.
+So when we ran.
+Docker build . that was us giving our docker file off to the docker cli the build command is what we use to take a docker file and generate an image out of it.
+The "." right here is specifying what is called the build context that build context is essentially the set of files and folders that belong to our project.It's a set of files and folders that we want to kind of encapsulate or wrap in this container.
+
+So when we run docker build .
+So I see Step 1 of 3 corresponds to the first line of our docker file.
+
+Now with the very first step where we said from Alpine The first thing that occurred was the Dockers server looked at our local build cache and it checked to see if it has ever downloaded an image called Alpine before.In our case it probably hasn't.
+So the first thing that occurred was the docker server reached out to the docker hub which you recall is a repository of existing darker images that are free for public use and it downloaded that image the image called Alpine.
+So in step 2 and 3 we can see code like Runiing in container-id and then removing intermediate container so here they r creating some intermediate container and after that they r removing it. We dont used this container here.
+
+So here's exactly what happened behind the scenes when docker server saw this line of configuration It looked back at the last step.So look back at this step the from Alpine step it looked at the image that came out of that previous step the image that came out of the previous step was the Alpine image.Then on the one line right here it took that image and created a new container out of it.So in memory we very temporarily got a brand new container created at the very sort of step number two.And that's what this running in.
+it means that it created a temporary container out of the image that was sourced during the previous step.
+So we can kind of imagine that we took the entire file system snapshot from the Alpine image and we stuffed it into this very temporary container that was created just for the second step right here orthe second instruction after creating this temporary container this command right here the command that we just added on was executed inside that container as its primary running process.So we took that run command.
+We took that line or that full command right there and we executed it as a process inside of the container.
+So this is this container's primary running process.
+APK is a package manager that is built into the Alpine image.
+So this command executed inside the container and while it executed it went through the process of downloading rediss.
+That's what happened right here.
+
+It downloaded and installed rediss in a couple of dependencies for us so you can imagine that during that installation process we maybe got some like new folder on this container's hard drive right there.
+You mean after that package was installed We then stopped that container we took a file system snapshot of that container and then we stopped it entirely. And we have taken an temporarily id of that spapshot. 
+So the output of everything inside of Step number two is a new image that contains just the changes that we made during the step. So we can now kind of imagine that this id right here this is the id to a very temporary image.
+So now we can say that we have new image and inside that image we have a installed copy of redis and we delete that intermediate container.
+
+So in step 3  we execute CMD right here. We're going to look at the image that was generated during the previous step.So in this case the image that was taken from the previous step is this 3:08 E.S. image.We create a new very temporary container out of it and when we make that container we take the images file system snapshot and stuff it into this container and then with the cmd this is setting the primary command for the primary process of the container.
+So the container does not actually execute read server it doesn't execute this command.
+It just tells the container hey like just see you know if you were to ever run for real you should be running red a server as your primary command.
+So the container is told this is supposed to be your intermediate or something this is supposed to be your primary command and then it shuts down that container and takes a snapshot of its file system and its primary command. So the end result is successfully built the id which is the fimal image.
+ So bascically what we did is We essentially take the image that was generated during the previous step.We create a new container out of it.We execute a command in the container or make a change to its file system.We then look at that container.
+We take a snapshot of its file system and save it as an output for the next instruction along the chain. And then when there is no more instructions to execute the image that was generated during that last step is output from the entire process as the final image that we really care about.
+
+
+-Now if we have added a new command like apk add --update gcc below step 2 and when we run docker build . so at step 1 and 2 it didint create container but it use cache  from local machine.  So after step 3 we have added a new steps like apk update gcc so at 3 and 4 it will create a new container and run it command inside the container and its taking the snapshot.
+
+-Now if we addd run apk add --update gcc at step 2 and re run the docker build . command it will only So even though we're still taking the Alpine image and adding gcc to it and adding to it the series of steps have changed.
+
+And so docker are going to say OK well that this time or taking Alpine and first adding in GCC so it will use the cache version of Alpine but it's not going to have a cached version of the GCC add to use because the last time that it ran that it added GCC only after installing rattus. So order of statemanet is diffrent so it wont be using cache
+
+Q) How to tagging an image ?
+ 
+ - So after building a customer docker file and running docker build . command it will create an cunstom image id like 70978908989.
+ - So for runing the image we have run command like docker run <image-id> so its kind of odd as we have to remember that id so in oder to run cmd like docker run hello-world i.e we have to tag our image-id with a name
+ 
+ - For tagging a name we have to change our build cmd like
+ docker build -t stephegrid/redis:latest .
+ 
+ here "-t stephegrid/redis:latest" :
+ stephegrid==>docker id (any)
+ redis ===> Repo/project  name
+ latest ==> is latest version of project
+ 
+ so this create image and we can used it as 
+ docker run dockerId/redis
+ 
+ Q)Create images from container?
+ As we have seen we can cretae container from images and we can also create a container and then we run some command inside of it file system and then generate a usable images that we can use in future.
+ We can also do following thing like
+ 1) docker run -it appine sh :
+ It will create an image and run a shell command inside running container
+ 2)Inside this running container we can manually createn a redis like :
+ # apk add --update redis
+ So we have a running container and we kind to have modified file system.
+ 
+ 3)Now we open cmd prompt
+So we've got the running container I'm now going to open up a second terminal window and inside if you're going to run a command using the Dockers cli that's going to essentially take a snapshot of that running container and assign a default command to it and generate an image out of the entire thing.
+for this we use :-
+- docker ps ==> list of running container
+- docker commit  -c 'CMD["redis-server"]' <id of running container>
+- now we have got image-id
+3) docker run <image-id we can copy first few aplphabet>

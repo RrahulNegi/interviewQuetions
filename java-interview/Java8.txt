@@ -1,0 +1,351 @@
+Q) What is Spliterator in Java SE 8?Differences between Iterator and Spliterator in Java SE 8?
+
+Java Spliterator interface is an internal iterator that breaks the stream into the smaller parts. These smaller parts can be processed in parallel.
+In real life programming, we may never need to use Spliterator directly. Under normal operations, it will behave exactly same as Java Iterator.
+Spliterator Syntax
+Spliterator<T> spliterator = list.spliterator();
+he Java collection classes provide default stream() and parallelStream() methods which internally use the Spliterator through the call to the spliterator(). It helps in processing the collection data in parallel.
+Collection.java
+default Stream<E> stream() {
+    return StreamSupport.stream(spliterator(), false);
+}
+ 
+default Stream<E> parallelStream() {
+    return StreamSupport.stream(spliterator(), true);
+}
+Following is a list of features provided by Spliterator in Java.
+
+Spliterator has been introduced in Java 8.
+-It provides support for parallel processing of stream of elements for any collection.
+-It provides tryAdvance() method to iterate elements individually in different threads. It helps in parallel processing.
+-To iterate elements sequentially in a single Thread, use forEachRemaining() method.
+-The trySplit() method is used partition the spliterator, if it is possible.
+-It helps in combining the hasNext() and next() operations into one method.
+Java Spliterator Methods
+-int characteristics() : returns the list of characteristics of the spliterator. It can be any of ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED.
+-long estimateSize() : returns an estimate of the number of elements that would be encountered by a forEachRemaining() traversal, or returns Long.MAX_VALUE if infinite, unknown, or too expensive to compute.
+-default void forEachRemaining(Consumer action) : performs the given action for each remaining element, sequentially in the current thread, until all elements have been processed or the action throws an exception.
+-default Comparator getComparator() : if the spliterator’s source is SORTED by a Comparator, returns that Comparator.
+-default long getExactSizeIfKnown() : returns estimateSize() if this Spliterator is SIZED, else -1.
+-default boolean hasCharacteristics(int characteristics) : returns true if the dpliterator’s characteristics() contain all of the given characteristics.
+-boolean tryAdvance(Consumer action) : if a remaining element exists, performs the given action on it, returning true; else returns false.
+-Spliterator trySplit() : if the spliterator can be partitioned, returns a Spliterator covering elements, that will, upon return from this method, not be covered by this Spliterator.
+Q) Diffrence between sequential and parrallel stream?
+Streams in Java
+A stream in Java is a sequence of objects represented as a conduit of data. It usually has a source where the data is situated and a destination where it is transmitted. Note that a stream is not a repository; instead, it operates on a data source such as on an array or a collection. The in-between bits in the passage are actually called the stream. During the process of transmission, the stream usually goes through one or more possible transformations, such as filtering or sorting, or it can be any other process operating on the data. This customizes the original data into a different form, typically, according to the need of the programmer. Therefore, a new stream is created according to the operation applied on it. For example, when a stream is sorted, it results in a new stream that produces a result which then s sorted. This means the new data is a transformed copy of the original rather than being in the original form.
+
+Sequential Stream
+Any stream operation in Java, unless explicitly specified as parallel, is processed sequentially. They are basically non-parallel streams used a single thread to process their pipeline. Sequential streams never take advantage of the multicore system even if the underlying system may support parallel execution. What happens, for example, when we apply multithreading to process the stream? Even then, it operates on a single core at a time. However, it may hop from one core to another unless explicitly pinned to a specific core. For example, processing in four different threads versus four different cores is obviously different where the former is no match with the latter. It is quite possible to execute multiple threads in a single core environment but parallel processing is a different genre altogether. A program needs to be designed ground up for parallel programming apart from executing in an environment that supports it. This is the reason parallel programming is a complex arena.
+
+ List<Integer> list=Arrays.asList(1,2,3,4,5,6,7,8,9);
+      list.stream().forEach(System.out::println);
+      System.out.println();
+      list.parallelStream().forEach(System.out::println);
+o/p:
+123456789
+685973214
+
+This example is an illustration of q sequential stream as well as q parallel stream in operation. The list.stream() works in sequence on a single thread with the println() operation. list.parallelStream(), on the other hand, is processed in parallel, taking full advantage of the underlying multicore environment. The interesting aspect is in the output of the preceding program. In the case of a sequential stream, the content of the list is printed in an ordered sequence. The output of the parallel stream, on the other hand, is unordered and the sequence changes every time the program is run. This signifies at least one thing: that invocation of the list.parallelStream() method makes the println statement operate in multiple threads, something which list.stream() does in a single thread.
+
+Parallel Stream
+The primary motivation behind using a parallel stream is to make stream processing a part of the parallel programming, even if the whole program may not be parallelized. Parallel stream leverage multicore processors, resulting in a substantial increase in performance. Unlike any parallel programming, they are complex and error prone. However, the Java stream library provides the ability to do it easily, and in a reliable manner. The whole program may not be parallelized. but at least the part that handles the stream can be parallelized. They are actually quite simple in the sense that we can invoke a few methods and the rest is taken care of. There are a couple of ways to do it. One such way is to obtain a parallel stream by invoking the parallelStream() method defined by Collection. Another way is to invoke the parallel() method defined by BaseStream on a sequential stream. The sequential stream is parallelized by the invocation. Note that the underlying platform must support parallel programming, such as with a multicore system. Otherwise, there is no point in the invocation. The stream would be processed in sequence in such a case, even if we have made the invocation. If the invocation is made on an already parallel stream, it does nothing and simply returns the stream.
+
+In the previous code, note how we have applied sorting on a stream one by using sequential execution.
+
+List<Employee> sortedItems = employees.stream()
+               .sorted(Comparator
+               .comparing(Employee::getName))
+               .collect(Collectors.toList());
+and parallel execution is achieved by changing the code slightly.
+
+List<Employee> anotherSortedItems = employees
+               .parallelStream().sorted(Comparator
+               .comparing(Employee::getName))
+               .collect(Collectors.toList());
+We'll also compare the system time to get an idea which part of the code takes more time. Parallel operation begins once the parallel stream is explicitly obtained by the parallelStream() method. There is another interesting method, called reduce(). When we apply this method to a parallel stream, the operation can occur in different threads.
+
+However, we always can switch between parallel and sequential as per the need. If we want to change the parallel stream to sequential, we may do so by invoking the sequential() method specified by BaseStream. As we saw in our first program, the operation performed on the stream can be ordered or unordered according to the order of the elements. This means that the order depends upon the data source. This, however, is not the situation in the case of parallel streams. To boost performance, they are processed in parallel. Because this is done without any sequence, where each partition of the stream is processed independently of the other partitions without any coordination, the consequence is unpredictably unordered. But, if we want specifically to perform an operation on each element in the parallel stream to be ordered, we can consider the forEachOrdered() method, which is an alternative to the forEach() method.
+
+To ensure that the result of parallel processing applied on stream is same as is obtained through sequential processing, parallel streams must be stateless, non-interfering, and associative
+Q) How Java8's Collection.parallelStream works?
+Looking at the stream’s parallel method, you may wonder where the threads used by the parallel stream come from, how many there are, and how you can customize the process. Parallel streams internally use the default ForkJoinPool, which by default has as many threads as you have processors, as returned by Runtime.getRuntime().availableProcessors(). But you can change the size of this pool using the system property java.util.concurrent.ForkJoinPool.common.parallelism.
+
+The infrastructure used behind the scenes by parallel streams to execute operations in parallel is the fork/join framework introduced in Java 7. It’s vital to have a good understanding of the parallel stream internals in order to use them correctly. The fork/join framework was designed to recursively split a parallelizable task into smaller tasks and then combine the results of each subtask to produce the overall result. It’s an implementation of the ExecutorService interface, which distributes those subtasks to worker threads in a thread pool, called ForkJoinPool.
+
+The Spliterator stands for “splitable iterator.” Like Iterators, Spliterators are used to traverse the elements of a source, but they’re also designed to do this in parallel. Although you may not have to develop your own Spliterator in practice, understanding how to do so will give you a wider understanding about how parallel streams work.
+
+The algorithm that splits a Stream into multiple parts is a recursive process. In the first step, a method called trySplit is invoked on the first Spliterator and generates a second one. Then in step 2 it’s called again on these two Spliterators, which results in a total of four. The framework keeps invoking the method trySplit on a Spliterator until it returns null to signal that the data structure that it’s processing is no longer divisible. Finally, this recursive splitting process terminates when all Spliterators have returned null to a trySplit invocation.
+
+The last abstract method declared by the Spliterator interface is characteristics, which returns an int encoding the set of characteristics of the Spliterator itself. The Spliterator clients can use these characteristics to better control and optimize its usage. They are: ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED. Depending on the specific characteristics of a stream, it may in fact not run in parallel at all.
+Q)What are the major drawbacks of External Iteration?
+
+We need to write code in Imperative Style.
+There is no clear separation of Responsibilities. Tightly-Coupling between “What is to be done” and “How it is to be done” code.
+Less Readable Code.
+More Verbose and Boilerplate code.
+We have to iterate elements in Sequential order only.
+It does not support Concurrency and Parallelism properly.
+
+Q)What are the major advantages of Internal Iteration over External Iteration?
+Compare to External Iteration, Internal Iteration has the following advantages:
+
+As it follows Functional Programming style, we can write Declarative Code.
+More Readable and concise code.
+Avoids writing Verbose and Boilerplate code
+No need to iterate elements in Sequential order.
+It supports Concurrency and Parallelism properly.
+We can write Parallel code to improve application performance.
+Clear separation of Responsibilities. Loosely-Coupling between “What is to be done” and “How it is to be done” code.
+We need to write code only about “What is to be done” and Java API takes care about “How it is to be done” code.
+What is the major drawback of Internal Iteration over External Iteration?
+Compare to External Iteration, Internal Iteration has one major drawback:
+
+In Internal Iteration, as Java API takes care about Iterating elements internally, we do NOT have control over Iteration.
+
+Q)What is the major advantage of External Iteration over Internal Iteration?
+Compare to Internal Iteration, External Iteration has one major advantage:
+
+In External Iteration, as Java API does NOT take care about Iterating elements, we have much control over Iteration.
+When do we need to use Internal Iteration? When do we need to use External Iteration?
+We need to understand the situations to use either Internal Iteration or External Iteration.
+
+When we need more control over Iteration, we can use External Iteration.
+When we do NOT need more control over Iteration, we can use Internal Iteration.
+When we need to develop Highly Concurrency and Parallel applications and we , we should use Internal Iteration.
+
+Q)Is it possible to provide method implementations in Java Interfaces? If possible, how do we provide them?
+In Java 7 or earlier, It is not possible to provide method implementations in Interfaces. Java 8 on-wards, it is possible.
+
+In Java SE 8, We can provide method implementations in Interfaces by using the following two new concepts:
+
+Default Methods
+Static Methods
+
+Q)What is a Default Method? Why do we need Default methods in Java 8 Interfaces?
+A Default Method is a method which is implemented in an interface with “default” keyword. It’s new featured introduced in Java SE 8.
+
+We need Default Methods because of the following reasons:
+
+It allow us to provide method’s implementation in Interfaces.
+To add new Functionality to Interface without breaking the Classes which implement that Interface.
+To provide elegant Backwards Compatibility Feature.
+To ease of extend the existing Functionality.
+To ease of Maintain the existing Functionality.
+
+Q)What is a Static Method? Why do we need Static methods in Java 8 Interfaces?
+A Static Method is an Utility method or Helper method, which is associated to a class (or interface). It is not associated to any object.
+
+We need Static Methods because of the following reasons:
+
+We can keep Helper or Utility methods specific to an interface in the same interface rather than in a separate Utility class.
+We do not need separate Utility Classes like Collections, Arrays etc to keep Utility methods.
+Clear separation of Responsibilities. That is we do not need one Utility class to keep all Utility methods of Collection API like Collections etc.
+Easy to extend the API.
+Easy to Maintain the API.
+
+Q)CopyOnWriteArrayList in java?
+As the name indicates, CopyOnWriteArrayList creates a Cloned copy of underlying ArrayList, for every update operation at certain point both will be synchronized automatically ,which is taken care by JVM. Therefore there is no effect for threads which are performing read operation.
+It is costly to use because for every update operation a cloned copy will be created. Hence CopyOnWriteArrayList is the best choice if our frequent operation is read operation.
+It extends object and implements Serializable, Cloneable, Iterable<E>, Collection<E>, List<E> and RandomAccess
+The underlined data structure is grow-able array.
+It is thread-safe version of ArrayList.
+Insertion is preserved, duplicates are allowed and heterogeneous Objects are allowed.
+The main important point about CopyOnWriteArrayList is Iterator of CopyOnWriteArrayList can not perform remove operation otherwise we get Run-time exception saying UnsupportedOperationException.
+
+
+Q)Weak, Soft, and Phantom References in Java (and Why They Matter)?
+The Problem
+One common problem of all computer languages that allow for dynamic memory allocation is finding a way to “collect” the memory after is not used anymore.
+
+It is a bit like in a restaurant. In the beginning, you can accommodate customers with empty tables, but when you don’t have empty tables anymore, you need to check if some of the already-allocated tables have got free in the meanwhile.
+
+Some languages, like C, leave the responsibility to users: You have the memory and now it is your responsibility to free it. It’s a bit like in fast food, where you are (in theory) supposed to clean up your table after the meal.
+
+This is very efficient… if everybody behaves correctly. But if some customers forget to clean up, it will easily become a problem. Same with memory: It’s very easy to forget to free an area of memory.
+
+So Garbage Collectors (GC from here on) come to help. Some languages, namely Java, use a special algorithm to collect all the memory that is not used. That is very nice of them and very convenient for programmers. You may be forgiven if you think that GC is a relatively recent technique.
+
+Garbage collection was invented by John McCarthy around 1959 to simplify manual memory management in Lisp.
+Modern GCs are very sophisticated programs, and they use several combined techniques to quickly identify memory that can be reused. For the moment, let’s assume Java GC works flawlessly and that it will free all objects that are not reachable anymore.
+
+That introduces a new problem: What if we want to keep a reference to an object, but we don’t want to prevent GC from freeing it if there is no other reference? It’s a bit like sitting a while at a table at a restaurant after having finished, but also being ready to leave if a new customer needs the table.
+
+The Solution
+You may wonder why would I need such a thing. Actually, there are a few use cases. Let’s introduce our protagonists from the Java documentation:
+
+SoftReference: Soft reference objects are cleared at the discretion of the garbage collector in response to memory demand. Soft references are most often used to implement memory-sensitive caches. All soft references to softly reachable objects are guaranteed to have been cleared before the virtual machine throws an OutOfMemoryError.
+
+WeakReference: Weak reference objects do not prevent their referents from being made finalizable, finalized, and then reclaimed. Weak references are most often used to implement canonicalizing mappings. (Here, Canonicalizing mappings means mapping only reachable object instances.)
+
+PhantomReference: Phantom reference objects are enqueued after the collector determines that their referents may otherwise be reclaimed. Phantom references are most often used for scheduling pre-mortem cleanup actions in a more flexible way than is possible with the Java finalization mechanism. Unlike soft and weak references, phantom references are not automatically cleared by the garbage collector as they are enqueued. An object that is reachable via phantom references will remain so until all such references are cleared or themselves become unreachable.
+
+To reuse (and stretch) our restaurant metaphor one last time: A SoftReference is like a customer that says, "I’ll leave my table only when there are no other tables available." A WeakReference is like someone ready to leave as soon as a new customer arrives. A PhantomReference is like someone ready to leave as soon as a new customer arrives, but actually not leaving until the manager gives them permission.
+
+1)Counter counter = new Counter(); // strong reference - line 1 WeakReference<Counter> weakCounter = new WeakReference<Counter>(counter); //weak reference counter = null; // now Counter object is eligible for garbage collection
+
+2)Counter prime = new Counter(); // prime holds a strong reference - line 2 SoftReference<Counter> soft = new SoftReference<Counter>(prime) ; //soft reference variable has SoftReference to Counter Object created at line 2 prime = null; // now Counter object is eligible for garbage collection but only be collected when JVM absolutely needs memory
+
+3)DigitalCounter digit = new DigitalCounter(); // digit reference variable has strong reference - line 3
+PhantomReference<DigitalCounter> phantom = new PhantomReference<DigitalCounter>(digit); // phantom reference to object created at line 3
+
+digit = null;
+
+
+Q) Stream questions----------------------->
+https://stackify.com/streams-guide-java-8/
+
+Q)Java | BiFunction Interface methods – apply() and addThen()
+
+The BiFunction Interface is a part of the java.util.function package which has been introduced since Java 8, to implement functional programming in Java. It represents a function which takes in two arguments and produces a result.
+
+Hence this functional interface which takes in 3 parameters namely:-
+
+T: denotes the type of the first argument to the function
+U: denotes the type of the second argument to the function
+R: denotes the return type of the function
+The lambda expression assigned to an object of BiFunction type is used to define its apply() which eventually applies the given function on the arguments. The main advantage of using a BiFunction is that it allows us to use 2 input arguments while in function we can only have 1 input argument.
+
+The BiFunction interface consists of the following two functions:
+
+1. apply()
+This method applies the given function to the arguments.
+
+Syntax:
+
+R apply(T t, U u)
+Parameters: This method takes two parameters:
+
+t– the first function argument
+u– the second function argument
+Returns: This method returns the function result which is of type R.
+
+ BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b; 
+  
+        // Implement add using apply() 
+        System.out.println("Sum = " + add.apply(2, 3)); 
+  
+        // BiFunction to multiply 2 numbers 
+        BiFunction<Integer, Integer, Integer> multiply = (a, b) -> a * b; 
+  
+        // Implement add using apply() 
+        System.out.println("Product = " + multiply.apply(2, 3));
+		
+		
+2. addThen() :
+
+It returns a composed function wherein the parameterized function will be executed after the first one. If evaluation of either function throws an error, it is relayed to the caller of the composed function.
+
+Note: The function being passed as the argument should be of type Function and not BiFunction.
+
+
+ 
+
+Syntax:
+
+default <V> 
+    BiFunction<T, U, V> 
+        andThen(Function<? super R, ? extends V> after)
+where V is the type of output of the after function, and of the composed function
+
+Parameters: This method accepts a parameter after which is the function to be applied after this function is one.
+
+Return Value: This method returns a composed function that first applies the current function first and then the after function
+
+Exception: This method throws NullPointerException if the after function is null.
+
+Below is the code to illustrate addThen() method:
+
+Program 1:
+
+
+
+brightness_4
+// Java Program to demonstrate 
+// BiFunction's addThen() method 
+  
+import java.util.function.BiFunction; 
+  
+public class Main { 
+    public static void main(String args[]) 
+    { 
+        // BiFunction to demonstrate composite functions 
+        // Here it will find the sum of two integers 
+        // and then return twice their sum 
+        BiFunction<Integer, Integer, Integer> composite1 = (a, b) -> a + b; 
+  
+        // Using addThen() method 
+        composite1 = composite1.andThen(a -> 2 * a); 
+  
+        // Printing the results 
+        System.out.println("Composite1 = " + composite1.apply(2, 3)); 
+  
+        // BiFunction to demonstrate composite functions 
+        // Here it will find the sum of two integers 
+        // and then return twice their sum 
+        BiFunction<Integer, Integer, Integer> composite2 = (a, b) -> a * b; 
+  
+        // Using addThen() method 
+        composite2 = composite2.andThen(a -> 3 * a); 
+  
+        // Printing the result 
+        System.out.println("Composite2 = " + composite2.apply(2, 3)); 
+    } 
+} 
+
+
+Q)Java.util.function.BiPredicate interface in Java with Examples
+The BiPredicate<T, V> interface was introduced in JDK 8. This interface is packaged in java.util.function package. It operates on two objects and returns a predicate value based on that condition. It is a functional interface and thus can be used in lambda expression also.
+
+
+Methods
+
+test(): This function evaluates a conditional check on the two objects, and returns a boolean value denoting the outcome.
+
+boolean test(T obj, V obj1)
+1)and(): This function applies the AND operation on the current object and the object recieved as argument, and returns the newly formed predicate. This method has a default implementation.
+default BiPredicate<T, V> and(BiPredicate<? super T, ? super V> other)
+2)negate(): This function returns the inverse of the current predicate i.e reverses the test condition. This method has a default implementation.
+default BiPredicate<T, V> negate() 
+3)or(): This function applies the OR operation on the current object and the object recieved as argument, and returns the newly formed predicate. This method has a default implementation.
+default BiPredicate<T, V> or(BiPredicate<? super T, ? super V> other)
+
+
+// Java example to demonstrate BiPredicate interface 
+
+import java.util.function.BiPredicate; 
+
+public class BiPredicateDemo { 
+	public static void main(String[] args) 
+	{ 
+		// Simple predicate for checking equality 
+		BiPredicate<Integer, String> biPredicate = (n, s) -> 
+		{ 
+			if (n == Integer.parseInt(s)) 
+				return true; 
+			return false; 
+		}; 
+
+		System.out.println(biPredicate.test(2, "2")); 
+
+		// Predicate for checking greater than 
+		BiPredicate<Integer, String> biPredicate1 = (n, s) -> 
+		{ 
+			if (n > Integer.parseInt(s)) 
+				return true; 
+			return false; 
+		}; 
+
+		// ANDing the two predicates 
+		BiPredicate<Integer, String> biPredicate2 
+			= biPredicate.and(biPredicate1); 
+		System.out.println(biPredicate2.test(2, "3")); 
+
+		// ORing the two predicates 
+		biPredicate2 = biPredicate.or(biPredicate1); 
+		System.out.println(biPredicate2.test(3, "2")); 
+
+		// Negating the predicate 
+		biPredicate2 = biPredicate.negate(); 
+		System.out.println(biPredicate2.test(3, "2")); 
+	} 
+} 

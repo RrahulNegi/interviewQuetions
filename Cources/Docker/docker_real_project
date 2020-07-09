@@ -1,0 +1,136 @@
+Docker real Project :-
+
+1) Project outline :-
+to create nodejs web application and run  it in local machine.
+
+2)Steps :-
+- create Node js web application
+-create a docker file
+- Build image from dockerfile
+- run image as container
+- connect to web app from browser
+
+3) we have crated a project called simpleweb
+-package.kson :
+
+{
+    "dependencies": {
+        "express":"*"
+    },
+    "scripts":{
+        "start":"node index.js" // if some one run start.scripts so we will run node.js i.e it start our server running
+    }
+}
+
+-index.js
+
+const express = require('express');
+
+const app = express();
+
+app.get('/', (req, res) =>{
+  res.send('hi there'); // In browser we will se this running
+});
+
+app.listen(8080, () =>{
+    console.log('Listining on port 8080');
+})
+
+4) To start a nodeJs app 
+-first install all dependencies befre running app
+-install deps by 'npm install'
+-Have to run a command server using 'npm start'
+
+So we create Dockerfile :
+
+# Secify a base image
+FROM alpine
+
+# install some dependencies
+RUN npm install
+
+# Default command that will be run when container is first created
+CMD ["npm" ,"start"]
+
+the run command :- docker build .
+
+So it will throw error like "npm not found"
+
+We got an error message that said "npm not found" we're seeing this error message because during step number two right here where we tried to execute the command and install inside of a temporary container. There is no copy of npm available.We're seeing this because we are using Alpine as our base image.
+
+Since we had said that we select our base image based upon the collection of default programs that we need to successfully build our image by default.
+Alpine is a very small image.It's only about 5 megabytes large and so it has a rather limited set of default programs.
+You get a couple of very default Linux or Unix programs you get that package manager that we used just a little bit ago but that's pretty much it.You don't get a lot of other stuff for free.And so when you are using the Alpine image and you expect to run some fancy web application depending upon us or depending upon Ruby or Java chances are you're going to have to do some additional fixes or some additional setup to get this thing working.
+
+Now to solve this issue to solve the issue of npm not being available inside of our base image we have two options:-
+-the first option is to find a different base image we can try to find a base image that
+already has node and NPM pre-installed inside of it.
+
+-Alternatively we can continue using the Alpine image and run an additional command like right here to attempt to install nodeJs. in npm inside of our image.
+
+So we use someone else image and we find image that has already been to have npm pre-installed inisde of it. So we getting it from docker hub "hub.docker.com"
+
+so we can use images like node:<version>
+here we will use node:alpine so it will have node js and nothing else for basic program not any fansy stuff :
+so update Dockerfile 
+
+FROM node:alpine
+
+and run docker build .
+
+ but we are getting warning like file or directory no found '/package.json' 
+ However NPM itself very quickly throw a error message right here complaining that there is no file called package Jaison available.That is a file inside of our project directory right here. Its purpose is to list out all the different dependencies that are required to successfully run our project.So when we run install npm is going to try to find this file that's going to find all the dependencies that are listed and then it's going to try to install each of those. So clearly the issue here is that npm is not finding that file.
+ 
+ First off we specify node Alpine that download Alpin image or something the node image to be precise.And then the next step starts up and it says we're going to go back to the previous step and get the image from there and then create a temporary container out of it.So as soon as run and install starts to boot up we can imagine that we take this file system snapshotright here and we kind of put it into this very temporary container and then we execute NPM install.So we havnt seen any package.json file inside container.
+ Since we r working with a segment of hard drive for this specific purpose only and we have a rest of hard drive which is not connected inside the container and somewhere in this hard drive we have package.json and which is not communicated with container.
+ So we have to update the docker file so that it include both package.json and index.js file.
+   
+   copy ./(Path to folder to copy from on your machine relative to build conetxt) ./(Place to copy stuff to inside container)
+   
+   COPY ./ ./
+   
+   It run fine and now we will tag a docker file
+   docker build -t rahul/simpleweb .
+   
+ 4) Now we run the image : docker run rahul/simpleweb so it will start application on web
+ when we try to run localhost:8080 it shows site cant be reached
+ 
+ So the container essentially has its own isolated set of ports that can receive traffic but by default no incoming traffic to your computer is going to be directed into the container in order to make sure that any request from either your computer or some outside computer will be redirected into the container.We have to set up a explicit port mapping a port mapping essentially says any time that someone makes a request to a given port on your local network take that request in automatically forward it to some
+ port inside the container.
+   
+Docker container can by default make requests on its own behalf to the outside world.
+We've already seen that in action any time you've been installing a dependency.When we ran install during the docker build process just a moment ago npm reaches to the outside world.It reaches out across the Internet and so there's no limitation by default on your container's ability to reach out.
+Since docker has its on set of port for network so we have to map the port from outside world to docker container ports 
+
+So : docker run -p 8080(Route incoming request to this port on localhost) : 8080 (port inside contianer) <image-id>
+
+port may not be same : docker run -p 5000:8080 rahul/simpleweb 
+
+we can also change the port of docker application like :
+
+docker run -p 5000:6000 rahul/simpleweb so for this we have to make changes in index.js and set app.liste(6000, () ={});
+
+5) So Now we want to see whats in that file container so :
+docker run -it rahul/simpleweb sh and the do ls cmd so we can see file/folder like
+Dockerfile, package.json and index.js its all place in root directory.
+-If we have can overirde the file from existing file like in our project we have a lib folder and in container too they have a lib folder so my project will ovverride this root folder.
+So for this we have to copy our all project folder to nested folder in container. SO forthis we have to change the Dockerfile :
+WORKDIR /usr/app
+any following command add to our  docker file it will be executed relative to this path in container. So if we put this command above copy ./ ./ command so this copy command will execute relative to the path given in workdir so lets make changes in Dockerfile
+if the folder is not their in continer it will be automatically cvreated inside it.
+
+after changing and running the cmd we wana run our image :
+docker run -p 8080:8080 rahul/simpleweb
+ Now if we want to see the file dir in container we can open new cmd prompt and run
+ - docker ps (to obtain container-id)
+ - docker exec -t <container-id> sh (this will run a shell cmd inside container)
+ 
+6) Now if we made some changes in index.js file like "Hi there" to "H Rahul" and refresh the server it wont reflect the changes since that chnage will not automaticaly reflect to container.
+So to update the js file inside the container So we have to re run or rebuild the container.
+Now we want to minimize the cache busting and rebuilds :-
+For this we have to make changes in DockerFile like
+-COPY ./package.json ./
+Run npm installCOPY . /./
+
+So now we can make any no of changes in index.js file and it will not validate the cache. the only time npm install will going to work if we made changes in package.json file or any step above it.
+So we have to build docker once again and after building docker now if we made any changes in index.js file we dont have to rebuild it again and again

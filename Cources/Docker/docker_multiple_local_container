@@ -1,0 +1,213 @@
+Muliple local container 
+
+We are creating an application which will count number of visit. i.e page has been visted 10 times.
+We use Node Server and Redis(in memmory db)
+
+In this we can create a docker container and inside it we can have both Node and Redis. But later on as traffic increases so we have have to add additional server and we have to create diffrent instances of docker container.
+So issue is each redis server is disconnnected with each other so like one redis server thinks no of visit=99 or other redis server thinks no of visit=8 times.
+So we gona have seprate Docker container for Node and seprate for Redis server. So diffrent Docker container instances having nodes will be connected to single Redis docker container.
+
+Steps :
+
+1) package.json
+
+{
+    "dependencies": {
+        "express": "*",
+        "redis": "2.8.0"
+    },
+    "scripts": {
+        "start": "node index.js"
+    }
+}
+
+2)index.js
+const express = require('express');
+const redis = require('redis');
+
+const app = express();
+const client = redis.createClient();
+client.set('visits', 0);
+
+app.get('/', (req, res)=>{
+    client.get('visits', (err, visits)=>{ //as redis will return a string
+        res.send('Number of visits is :'+visits);
+        client.set('visits', parseInt(visits)+1)
+    });
+});
+
+app.listen(8081, ()=>{
+    console.log("Listening to port 8081");
+})
+
+3)Dockerfile
+
+FROM node:alpine
+
+WORKDIR '/app'
+
+COPY package.json .
+RUN npm install
+COPY . .
+
+CMD ["npm", "start"]
+
+4) run commands to build and tag docker file
+- docker build .
+
+- docker build -t rahul/visits:latest .
+
+- docker run rahul/visits as we run this cmd it will throw error like redis server is not connected.
+Listening to port 8081
+events.js:292
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: Redis connection to 127.0.0.1:6379 failed - connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+	
+So now I have to configure redis server in our local machine.
+
+- docker run redis (it will run redis server)
+-Now open second cmd  and run the docker visits app :
+docker run rahul/visits
+So we will get same error  this becoz :- we r running Node App in one docker container and running redis in second docker container and we dont have any communication betrween them, So to make networking connection so we have two options :
+1)Use Docker Cli Networking features its has a problem like we have to run commands when ever we have to run containers
+2) Use Docker Compose :-seprate cli tool it gets installed during docker installations. We can see what is installed using cmd :- docker-compose
+
+Docker Compose :-
+-Its a seperate cli that gets installed along with docker
+- Used to startup multiple Docker container at the same times
+- Automates some of the lonng-winded arguments we are passing to 'docker0-run'
+-It's the best thing I can tell you is that docker can pose really exists to keep you from having to write out a ton of different repetitive commands with the docker-cli e throughout this course we've been running stuff like docker  run and docker attach an exec and we've been specifying ports and tags and all this stuff to us all the time.
+
+So to make use of docker-compose we are essentially going to take some cpmmand like docker build or docker and encodded these command with docker-compose.yml file.
+In this file we will add containers we want to create. So we have two diffrent containers :
+a) redis-server :-Make it using redis image
+b) node-app: Make it using docker file in current directory and then map port 8081 to 8081
+
+docker-compose.yml
+
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+  node-app:
+    build: .
+    ports:
+      - "4001:8081"
+	  
+Here service denote the container type like here we are creating redis container
+And then inside if you're going to specify the image that we want or compose to use to create this service or this container so I'm going to say use the image redis to create this service or create this container.
+
+Now for node app service.
+
+So I'll say no dash out we want this container to be built using the docker file inside the current directory.So rather than just specifying an image like we did right there I'm going to say build . that means look in the current directory for a docker file and use that to build this image that's going to be used for this container.
+
+And then after that we're going to specify all the different ports that we want to have be opened up on this container.Now to specify the ports we're going to put a dash to the ports like so and then indent to put a dash like so.
+And the reason we're putting a dash right here is a dash a yellow file is how we specify an array so we can technically map many different ports inside of a single dock or compose file for a single service or a single container.But in our case we only want to map one set of ports.
+So we're going to connect 400 on our local machine to 80 81 inside the container.
+
+-Inside this file doc compose is going to automatically create both these containers on essentially the same network and they're going to have free access to communicate to each other in any way that they. And they have free access for each other and they can communicate and exchange information as they want.
+
+-How to access redis derver from node app so we have to make changes in index.js.
+and we have to specify the location where this redis server is running.
+
+const client = redis.createClient({
+	// host: 'localhost:9990/redisserver.com'
+	host: 'redis-server',
+	port:6379 //default port
+});
+
+
+Now usually if we were not using docker if we were this was just a traditional node application without any dockerv stuff whatsoever we would usually put in some type of address right here like "https://localhost:9909/redisserver.com"
+So usually we would put in some type of connection you are l right here but since we are making use of docker compose back over here.
+So here's our Docker compose file we can connect to this other container running the redis-server simply by referring to it by its name of radis-server.
+
+So rather than putting in some long form connection you are all like this right here.
+We're going to delete that and we will replace it with s dash server.
+
+Now one thing to be aware of here is that nodeJs expressJ which is the end of the framework we're using to actually render and respond to requests.
+And redis itself I have no idea what redis s server means.
+
+Read this is going to just take that string and it's going to kind of use it on good faith and say you know what I'm just going to assume that this is a meaningful url
+
+So now when our express application starts up or the node application starts up it's going to try to create a connection to a red server.
+It's going to reach out looking for a hostname of a redis-server docker is going to see that it's looking for registar server and it's going to redirect that connection over to this other running container.So that's what's going to automatically connect together.
+
+These two containers and get them to communicate together in some fashion.
+
+for running this docker-compose
+- docker run image ===> docker-compose up (after this command our application is up and we can check it in localhost:4001)
+- for focker build. and docker run myimage ===> docker-compose up --build (this command is used when we made changes in our code so to build we use this command)
+
+
+Q)How to stop docker-compose ?
+Cmd like :-
+-docker ps it will tell the id of container
+-docker stop <container-id> 
+ but if we are having multiple container and close it :-
+ docker-compose up -d (It will run multiple container instance)
+ docker-compose down (It will close all instances of that container)
+ 
+ 
+ Q)How to deal whean container get crashed due to some error in server or it gos hanged ?
+ 
+ for crashing our server we add cmmd index.js
+ 
+ const process = require('process')
+ server crashes if any time some one access the root route we put
+	process.exit(0);
+Commad:
+docker-compose up --build (since we have made changes in index.js file )
+
+when we try to run application it got error like :
+visits_node-app_1 exited with code 0
+
+now on new cmd prompt we run
+docker ps 
+
+it will only show redis container is running and node-server is not running becoz it has crached. So We have to automatic restart the crashed or stopped container :
+
+in index.js file we hae written 
+process.exit(0) SO here it means :-
+0 :-We exited and everything is OK
+1,2,3,etc :- We exited becoz some thing went wrong
+
+To restart the container we have some policies :
+
+"no" :- Its a default it says never attempt to restart this container if it stops or crashed.
+
+"always" :-If container styps for any reason always attempt to restart it
+"on-failuer" :- Only restart if container stops with an error code
+"unless-stopped" :- Always restart unless develpers forcibly stop it
+
+So in docker-compose.yml we have to add below node-app:
+restart: always (it for the node-app server)
+to run :- docker-compose up
+
+So when we hit the application localhost:4001 so we can see in cmd that it try to restart the server
+
+a- change in yml file restart: on-failuer and change index.js :- process.exit(1)
+
+
+Q) docker-compose ps 
+
+if we run this command from another directory it will say which container u r talking about. like  :
+
+
+ERROR:
+        Can't find a suitable configuration file in this directory or any
+        parent. Are you in the right directory?
+
+        Supported filenames: docker-compose.yml, docker-compose.yaml
+		
+		
+
+When we start running this cmd with same directory as in docker-compose.yml file is it will show all the container running inside it.
+
+
+        Name                       Command               State           Ports
+---------------------------------------------------------------------------------------
+visits_node-app_1       docker-entrypoint.sh npm start   Up      0.0.0.0:4001->8081/tcp
+visits_redis-server_1   docker-entrypoint.sh redis ...   Up      6379/tcp

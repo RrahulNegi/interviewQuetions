@@ -1,0 +1,162 @@
+Spring DroolRule Engine 
+
+What is Drool?
+
+-Its a rule engine through whichb we can create a set of rules for our busisness logic and we can seprate hardcode conditions from our business logics.
+-Rules are like on some condition occur then do some task.
+
+-its just if/else condition
+
+-Ex: like Flipkart giving discounts on based of diwali and Credit card like on diwali if we use:
+
+if card="HDFC" and order.price>5000 then discount=10%
+if card="ICICI" and order.price>8000 then discount =7%
+
+Steps :-
+
+1)Create spring drool apllication:
+pom: web, drool
+
+2)Create MainClass
+
+@SpringBootApplication
+public class SpringDroolsApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringDroolsApplication.class, args);
+	}
+
+}
+
+3) create a controller 
+
+@RestController
+public class MegaOfferController {
+	@Autowired
+	private KieSession session;
+
+	@PostMapping("/order")
+	public Order orderNow(@RequestBody Order order) {
+		session.insert(order); // For which object we want to add the rules
+		session.fireAllRules(); // we have three rules and we have to fire all rules for the particular object
+		return order;
+	}
+
+}
+
+4)Order Bean
+
+public class Order {
+
+	private String name;
+	private String cardType;
+	private int discount;
+	private int price;
+	
+	//getter and setter
+	}
+
+5)Drool config file 
+
+@Configuration
+public class DroolConfig {
+
+	private KieServices kieServices = KieServices.Factory.get();
+
+	private KieFileSystem getKieFileSystem() throws IOException {
+		KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+		kieFileSystem.write(ResourceFactory.newClassPathResource("offer.drl")); //We create rules here
+		
+		return kieFileSystem;
+
+	}
+
+	@Bean
+	public KieContainer getKieContainer() throws IOException {
+		System.out.println("Container created...");
+		getKieRepository();
+		KieBuilder kb = kieServices.newKieBuilder(getKieFileSystem());
+		kb.buildAll();
+		KieModule kieModule = kb.getKieModule();
+		KieContainer kContainer = kieServices.newKieContainer(kieModule.getReleaseId());
+		return kContainer;
+
+	}
+
+	private void getKieRepository() {
+		final KieRepository kieRepository = kieServices.getRepository();
+		kieRepository.addKieModule(new KieModule() {
+			public ReleaseId getReleaseId() {
+				return kieRepository.getDefaultReleaseId();
+			}
+		});
+	}
+
+	@Bean
+	public KieSession getKieSession() throws IOException {
+		System.out.println("session created...");
+		return getKieContainer().newKieSession();
+
+	}
+
+}	
+
+6) In resources folder create offer.drl
+
+package KieRule;
+import com.javatechie.spring.drools.api.Order;
+
+rule "HDFC"
+
+when
+orderObject : Order(cardType=="HDFC" && price>10000);
+then
+orderObject. (10);
+end;
+
+rule "ICICI"
+
+when
+orderObject : Order(cardType=="ICICI" && price>15000);
+then
+orderObject.setDiscount(8);
+end;
+
+rule "DBS"
+
+when
+orderObject : Order(cardType=="DBS" && price>15000);
+then
+orderObject.setDiscount(15);
+end;
+
+7) Run application:
+using postman we hit http://localhost:8080/order with body
+{
+ "name":"Mobile",
+ "cardType": "HDFC",
+ "price": 11000
+ }
+ 
+ and in response we will get:
+ 
+ {
+ "name":"Mobile",
+ "cardType": "HDFC",
+ "discount" : 10,----> it comes from drool engine
+ "price": 11000
+ }
+ 
+ 
+ ----------------------------------------------------------------------------------------------
+ 
+ Rule Engine Decisoin table :
+ 
+ If the rule is created by some no tech person in form of excel sheet then ?
+ 
+ -We just copy excel sheet in resource folder user dosnt care abt import or conditions logic in excel sheet, he just have to set or change card Name, type price and new discount offer. 
+ 
+ //In DroolConfig file where we r using :
+ kieFileSystem.write(ResourceFactory.newClassPathResource("offer.drl"));
+ 
+ just change offer.drl to offer.xls

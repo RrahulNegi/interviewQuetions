@@ -1,0 +1,33 @@
+Spring Cloud Eureka
+
+Suppose we have multiple Microservice  like MS1, MS2, MS3 etc and if client want intract with these microservice so we have to remember its network address and port as it is tightly coupled. Or suppose we have to see which MS is up and down.
+
+So for that we can create a container called service registry where each MS will add thier network address and all other MS will lookup this registry band get network od required MS's
+
+Step 1:-Create a Eureka Server
+-add @EnableEurekaServer at ServerApplicationMain class.
+
+-enable application.yml/application.properties:
+eureka.client.register-with-eureka :false //We mention its a server not a client
+eureka.client.fetch-registry :false
+server.port:8761
+spring.application.name :"Eureka-Server'
+
+Step 2:-Create a Microserver as a client
+-add @EnableEurekaClient at ClinetApplicationMain class
+
+-enable application.propertries/yml file to register it to eureka server:
+
+eureka.client.register-with-eureka :true //We mention its a client
+eureka.client.fetch-registry :true
+eureka.client.defaultUrl :http://localhost:8761/eureka/
+server.port:8080
+spring.application.name :"Eureka-Client'
+
+- we create RestTemplate at ClientApplicationMain and annotate with @Bean and @LoadBalance
+-in RestController we can DI the RestTemplate as
+Sting url="http://Eureka-Client/paymentProvider/";
+restTemplate.getForObject(url, String.class);
+
+
+

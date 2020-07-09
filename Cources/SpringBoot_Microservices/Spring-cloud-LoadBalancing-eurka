@@ -1,0 +1,11 @@
+LoadBalancing Spring cloud Eureka
+
+Steps:-
+1)Create simple Eureka Discovery and Register service
+like Eureka server i.e main Srevice Registry application on port 8761
+
+-Create n register two other service like PaymentService on port 8081 , 8082 and 8083 create other diffrent instance
+
+- we can check on running eureka service we can see on service is up with three diffrent port
+
+-Create and run another service like Shopping service port 9999

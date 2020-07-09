@@ -1,0 +1,189 @@
+Commands:
+
+1) To delete all containers :-
+docker system prune
+
+So above will remove
+-all stopped containers
+-all dangling images
+-all build cache
+-all networks not used by atleast one container
+
+So after this we have to redownload all images
+
+2)Retrive all logs :
+
+docker logs <Container id>
+
+the idea of the container that we want to get output from the logs command me use to look at
+a container and retrieve all the information that has been emitted from it.
+
+So I will do docker create busy box and I will echo Hi there.
+I'll then take that ID and run docker start and paste the ID that starts up the container it executes.
+Echo. Hi there. Inside of it.
+And then it immediately exits.
+And so now at this point I want to go back to that stopped container and get all the logs that have been emitted inside of it.
+
+So to do so I can run it docker logs and then paste that idea in and I'll see that when the container had been running it had printed out the string.
+Hi there.
+One thing to be really clear about is that by running docker logs I'm not rerunning or restarting the container to in any way shape or form.
+I'm just getting a record of all the logs that have been emitted from that container that are Luxx command
+
+is something that we're going to be using quite a bit as we are trying to debug or set up new containers
+
+because as you can see it's a really good way to kind of inspect a container and see what's going on inside of it
+
+- create a container :
+
+docker create busybox echo hi
+
+o/p is containerId : 35b8424522f4ef4aff2f14a435827f64d118d9ea1c8bf960b8ffa3579b24176e
+
+-start container using id :
+docker start 35b8424522f4ef4aff2f14a435827f64d118d9ea1c8bf960b8ffa3579b24176e
+ 
+this will start the container and stops it
+
+- doing logs will hel us to find what is emitted inside the container
+
+λ docker logs 35b8424522f4ef4aff2f14a435827f64d118d9ea1c8bf960b8ffa3579b24176e
+
+o/p ;- hi
+
+3) Stop the running container :-
+docker stop <container-d> :
+
+it will send a signal to terminate the command
+So the primary process inside that container in the case of docker stop we send a sig term message which is short for terminate signal it's a message that's going to be received by the process telling it essentially to shut down on its own time.
+Sick term is used any time that you want to stop a process inside of your container and shut the container down.And you want to give that process inside there a little bit of time to shut itself down and do a little bit of cleanup.
+A lot of different programming languages have the ability for you to listen for these signals inside of your codebase.
+And as soon as you get that signal you could attempt to do a little bit of cleanup or maybe save some file or emit some message or something like that.
+
+docker kill <container-id>:
+
+On the other hand the docker kill command issues a sig kill or kill signal to the primary running process inside the container.
+Sick kill essentially means you have to shut down right now and you do not get to do any additional work.
+So ideally we always stop a container with the Dockers stop command in order to get the running process inside of it a little bit of time to shut itself down.
+Otherwise if it feels like the container has locked up and it's not responding to the docker stop command then we could issue a dock or kill instead.
+Now one kind of little oddity or interesting thing about Dharker stop when you issued dock or stop to a container if the container does not automatically stop in 10 seconds then Dockers going to automatically fall back to issuing the docker kill command.
+
+4) Multi commands
+
+For running redis we need to start both like server and client cli so first we run redis server and in another command prompt we run redis client cli for interaction with server
+Like I run redis server using my container using docker :
+
+docker run redis 
+
+so it will load redis in container and start its server and if we try to run redis client in another cmd prompt it will not run becoz the redis server is running inside the docker container.
+
+So for this we have to try to run redis-cli inside the container. So we have to run multiple command inside the container So for this what we have to do is :-
+
+docker exec -it <container-id> command
+
+exec => it will tell we have to run another command
+-it =>it allow us to provide input direclty into the container
+then we provide container-id and the command to execute
+
+So in another cmd prompt we write
+docker exec -it 090908887 redis-cli 
+ 
+So by using the exec command we were able to start up a second running program inside of our container and the dash -it flag right here allowed us to enter in text on our keyboard and have it be sent into.
+
+So if we dont put -t in command 
+we got kicked directly back because red is Selye was started up but we did not get the ability to enter in any text.So when read a Selye was started up but it very quickly realized hey I don't have any possibility of getting any text input.it decided to just entirely closed down and kick us back to our terminal.
+
+when you're running doctor on your machine every single container you are running
+is running inside of a virtual machine running Linux. So these processes are really being executed inside of a Linux world.Even if you're on Mac or Windows.
+
+Every process that we create in the Linux environment has three communication channels attached to it that we refer to as:
+ STDIN: standard in 
+ STDOUT: standard out and 
+ STDERR: standard error
+
+These channels are used to communicate information either into the process or out of the process standard in as you might guess is used to communicate information into the process.
+
+So when you are at your terminal and you type stuff in the stuff you type is being directed into a running standard in channel attached to say the redis cli apply the standard out channel that is attached to any given process is going to convey information that is coming from the process.
+
+So the standard out might be redirected over to your running terminal and that's going to end up as being stuff that is going to show up on the screen.
+
+Standard error is very similar but it conveys information out of the process that is kind of like an error in nature.
+So if readis  has some error inside of it that's can be communicated to the outside world over the standard error channel and very similar to standard out.
+
+That's going to be redirected to show up on the screen of your terminal.
+
+So how does that relate to the -it flag.
+
+When we do the docker exec -it.
+
+Well the "it". right here is actually two separate little flaks.
+
+In reality it's a -i and -t like so but by convention we usually just kind of shorten it down
+
+to be simply -it which is 100 percent equivalent to that two separate flaks that -i on here means when we execute this new command inside the container we want to attach our terminal to the standard in channel of that new running process.
+So by adding on the -i flag we are saying make sure that any stuff that i type gets directed to standard in of redis cli the -i flag is what kind of makes all this text show up a little bit pretty.
+
+Now in reality it's doing a little bit more than that but at the end of the day the real effect that the "-t" you flag is to make sure that all that text that you are entering in and that is coming out shows up in a nicely formatted manner or on your screen.
+And again it's doing a little bit more behind the scenes than that but at the end of the day that's kind of its effect.
+Let's try attaching or doing our docker exec on the running container one more time and leaving off the -i  flag and just seeing what happens.
+So I'll do a docker piece to get my container's idea again.
+They'll do a docker exec and then we'll do only Dasch this time I'll put that idea in and they'll do redis cli
+
+And so now this time you'll notice how I have my cursor over here.
+It appears that this thing is waiting for input but I didn't do not see that kind of nicely formatted indentation I saw before and if I put it in like set my value 5 before I had a little bit of auto complete functionality but this time that auto complete is definitely not there. I can still run that command though and I still see OK and I can still do get my value and I still see the value come out.
+But again all this all this stuff is not nicely formatted. And so that's kind of the purpose.More or less kind of simplifying things here just a little bit of that Dashti flag.That's the purpose of I-T.It allows us to have stuff that we type into our terminal directed into that running process and allows us to get information out back over to our terminal.
+
+4) Getting command prompt in contaner
+
+In other words you are going to want to run commands inside of your container without having to rerun
+
+docker  exec doccker exact docket exec again and again all day.
+
+So in this section I'm going to show you how you can open up a shell or a terminal in the context of.
+
+so we write command :- 
+docker exec -it container-id sh
+
+I can now start to type out typical commands that I would expect to be able to run in a UNIX environment. So for example I could change my directory to my home directory.
+I can list out the files and folders inside there. Nothing there right now.
+
+
+So essentially when I make use of this  exec command with SH over here I get full terminal access inside the context of the container which is extremely powerful for debugging.
+
+Sh is the name of a program.It's a program that is being executed inside that container.
+SH is a command processor or a shell.It's something that allows us to type commands in and have them be executed inside that container.
+
+You are already making use of a program very much like sh on your own computer.
+Chances are if you were on Mac OS you are probably using something like bash.
+If you're on Windows you're probably using something like get bash or power shell.
+These are all programs that allow you to type commands into your terminal and have them be executed.And so when we start up sh inside of our container.
+That's just another command shell that we can use to execute commands.
+Traditionally a lot of the different containers that you're going to be working with are probably goingto have the SH command or me or sh program all ready included some more complete versions of containers or images are going to also have the bash command processor as well so in some cases you can make use of bash directly in vast majority.
+You're probably going to run the shell inside there to start up a command prompt and type in some commands
+
+5) Starting with shell only
+
+
+We've been talking about all this in the context of the Exec command which we can use to execute an additional command inside of a container.
+But if we wanted to we could also run docker run the original doc run command right here along with that -it  and start up a shell immediately when a container first starts up.
+Now of course if we start up a shell right when the container first starts that's going to displace or keep any other typical or default command from running.But sometimes it is quite useful to get a empty container with a shell inside of it and just be able to poke around and not have any other process running.So let's try that out right now at our command line.
+docker run -it busybox sh
+I will run that busy box image and then the pro-Mac program or the primary command that we're going to execute inside the container will be sh.
+So this means startup a new container out of the busy box image.
+Run the S.H. program which is a shell and attached to standard in of that program.
+run the ls command.
+I can ping google.com and hit Control C to stop it.
+I can echo a message whatever I want to do.
+Again this is a command that you might be using somewhat frequently.
+Any time that you want to poke around a container.
+
+The downside to using Daka run with I-T and SH is that chances are you're not going to be running any other process.It's a little bit more common that you're going to want to start up your container with a primary process of like maybe your web server or whatever it might be and then attach to it a running shell by using.
+
+6) Container isolation:
+
+lets in one cmd prompt we write command like
+docker run -t busybox sh
+in second cmd promt we again run same command
+so in first cmnd prmpt we create a file with commadn
+touch filename
+ls ==> we can see the file created
+in second cmd if we run again ls so we will found the file in dir this shows both container is isolated they dont share any data

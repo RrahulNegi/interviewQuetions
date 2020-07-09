@@ -1,0 +1,52 @@
+Spring cloud config server and configuration related changes will get changes without redepoyment of application 
+
+-
+-it provide server can client siede configuration in our distributed system so that we can get declare all properties in globally manner so that dpendent microservices can access it.
+
+Drawback without this configuration :-
+
+Lets we have a rest enpoint like localhost:8080/insurance-service/getAllPlans and all Microservices like MS1 MS2 etc is accessing it like /insurence-service/getAllPlans. so it is tightly coupled with it and if in future the path of rest end point get changed like :- localhost:8080/insurence-service/getAllPlans ===> localhost:8080/insurence-service/getUpdatedPlans  so in this situation we have to update all the Microservices end points from getALlPlans to getUpdatedPlans so how we can optimize ita n put it globally so that we dont have to configuer it all time when it get changed.
+
+- We create Insurance config Server and all Ms intract with this config server and this config server intract with github reposiutory and this git intract with insurance provider.
+If insurance provider needs to change its url so it will push changes to git and all microservices will get updated url from  Config server they no need to bother abt the changes. They are just invoking server config and its invoke github.
+-Config server is lossle coupled with all MS's and github
+
+Steps :-
+
+1) Create insurance-provider-service and create Restcontroller and a service
+
+2)Create insurance-config-server 
+ -add cloud-config-server ,acuator,devTools in pom
+ -annotate it with MainApllication with @SpringBootApplication and @EnableConfigServer 
+ 
+3)Crteate a Git Repo with name insurance-config-server and in this create application.properties
+-In this mention : insurance.provider.url=http://localhost:8080/insurance-service/getAllPlans and then commit it to master
+
+4) in application.properties of insurance-config-server we should mention :
+spring.cloud.config.server.git.url=http://github.com/java-techi/insurance-config-server
+managment.endpoints.web.expousure.include=*
+server-port:8088
+
+- Run server and check acuator like localhost:8088/acuator/defoult it then shows the git url configured
+
+5) Create client server i.e MS insurance-client-service
+pom : config-client, devTools
+- In client we consume insurance-prvider
+-annotate @Restcontroller, @SpringBootApplication and use RestTemplate in it and create a service that consume insurance provider
+
+@Value("$(insurance.provider.url}") //Read url from properties 
+private String url;
+
+@GetMapping("/getPlan")
+public Lis<String> getPlans(){
+
+return template.getForObject(url, List.class)
+}
+
+- application.properties :-
+
+spring.cloud.config.url=http:localhost:8088 // from here it will intract with config server and from config server it will get url from github
+
+server.port:9090 
+
+-in client to reflect every chnages we also have to anotate  @RefreshScope and this will instatnly changes the modification in client side and due to this we can get error circular dpendency  and to avoid eit we annotate RestTemplate with @Lazy

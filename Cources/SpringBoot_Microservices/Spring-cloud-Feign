@@ -1,0 +1,44 @@
+Feign client
+
+-It is a decelrative http client developed by netflix
+-Best Exapmple when we performing load balancing in spring cloud and when we integrating spring cloud eureka service we do not need to use rest Template.
+-Feign only has a declearative interface and which work on runtime
+
+
+Steps :-
+
+1) Create project like spring-cloud-feiign to consume external service using feign client.
+pom : web, lombook,devtool,cloud routing feign
+
+2)Consume fake resource  from site https://jsonplaceholder.typecode.com/users
+We can also create json to pojo using jsonschema2pojo.com
+
+- Create interface UserClient
+
+@FeignClient(url="https://jsonplaceholder.typecode.com/users", name="USER-CLIENT")
+public interface UserClient {
+	@GetMapping("/users)
+	public List<UserResponse> getUsers();
+}
+
+-in SpringMainApplication
+
+@SspringBootApplication
+@RestController
+@EnableFeignClient
+public class SpringCloudFeignApplication{
+
+@Autowired
+private UserClient client;
+
+
+@GetMapping("/findAllUsers")
+public List<UserResponse> getAllUser(){
+ return client.getUsers();
+}
+
+public static void main(String[] args){
+	SpringApplication.run(SpringCloudFeignApplication.class, args);
+}
+}
+

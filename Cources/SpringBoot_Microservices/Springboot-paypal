@@ -1,0 +1,432 @@
+Springboot intregation with paypal
+
+Steps :- 
+
+1)Create a springboot application SPring-paypal-example
+pom : web, devtool, lambook, and paypal dependency :
+<dependency>
+<groupId>com.paypal.sdk</groupId>
+<version>1.4.2</>
+</dependency>
+
+2)Create a paypal account  like paypal developer account in google
+-Create Sandbox Account
+-singup n sign in
+
+- Goto MyApps and credentiaal
+-Create App->put app name ex test88 -->choose ur default gmail account--> click on create App-
+-This generate one application with name test88 n it give clientId and secretId
+-This two thing we have to configure it on our application
+
+3)Application.properties :-Add this clientId and secret key
+
+server.port: 9090
+
+paypal.mode=sandbox
+paypal.client.id=AYSq3RDGsmBLJE-otTkBtM-jBRd1TCQwFf9RGfwddNXWz0uFU9ztymylOhRS
+paypal.client.secret=EGnHDxD_qRPdaLdZz8iCr8N7_MzF-YHPTkjs6NKYQvQSBngp4PTTVWkPZRbL
+
+4)Create a config class to configure this paypal properties :
+@Configuration
+public class PaypalConfig {
+
+	@Value("${paypal.client.id}")
+	private String clientId;
+	@Value("${paypal.client.secret}")
+	private String clientSecret;
+	@Value("${paypal.mode}")
+	private String mode;
+
+	@Bean
+	public Map<String, String> paypalSdkConfig() {
+		Map<String, String> configMap = new HashMap<>();
+		configMap.put("mode", mode);
+		return configMap;
+	}
+
+	@Bean
+	public OAuthTokenCredential oAuthTokenCredential() {
+		return new OAuthTokenCredential(clientId, clientSecret, paypalSdkConfig());
+	}
+
+	@Bean
+	public APIContext apiContext() throws PayPalRESTException {
+		APIContext context = new APIContext(oAuthTokenCredential().getAccessToken());
+		context.setConfigurationMap(paypalSdkConfig());
+		return context;
+	}
+
+}
+
+5)Create order bean class
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Order {
+
+	private double price;
+	private String currency;
+	private String method;
+	private String intent;
+	private String description;
+
+}
+
+6)MainApplication class
+@SpringBootApplication
+public class SpringPaypalExampleApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringPaypalExampleApplication.class, args);
+	}
+
+}
+
+
+7)Cteate a controller :
+
+
+@Controller
+public class PaypalController {
+
+	@Autowired
+	PaypalService service;
+
+	public static final String SUCCESS_URL = "pay/success";
+	public static final String CANCEL_URL = "pay/cancel";
+
+	@GetMapping("/")
+	public String home() {
+		return "home";
+	}
+
+	@PostMapping("/pay")
+	public String payment(@ModelAttribute("order") Order order) {
+		try {
+			Payment payment = service.createPayment(order.getPrice(), order.getCurrency(), order.getMethod(),
+					order.getIntent(), order.getDescription(), "http://localhost:9090/" + CANCEL_URL,
+					"http://localhost:9090/" + SUCCESS_URL);
+					
+					//we need a link to redirect to paypal so we get it from payment Object
+					
+			for(Links link:payment.getLinks()) {
+				if(link.getRel().equals("approval_url")) {
+					return "redirect:"+link.getHref();  // redirecting to paypal url
+				}
+			}
+			
+		} catch (PayPalRESTException e) {
+		
+			e.printStackTrace();
+		}
+		return "redirect:/"; // if it is cancel url its redirect to cancel.html n if it is success then execute payment method is called from Success_url
+	}
+	
+	 @GetMapping(value = CANCEL_URL)
+	    public String cancelPay() {
+	        return "cancel";
+	    }
+
+	    @GetMapping(value = SUCCESS_URL)
+	    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
+	        try {
+	            Payment payment = service.executePayment(paymentId, payerId);
+	            System.out.println(payment.toJSON());
+	            if (payment.getState().equals("approved")) {
+	                return "success";
+	            }
+	        } catch (PayPalRESTException e) {
+	         System.out.println(e.getMessage());
+	        }
+	        return "redirect:/";
+	    }
+
+}
+
+
+8) Create a service class;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.paypal.api.payments.Amount;
+import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentExecution;
+import com.paypal.api.payments.RedirectUrls;
+import com.paypal.api.payments.Transaction;
+import com.paypal.base.rest.APIContext;
+import com.paypal.base.rest.PayPalRESTException;
+
+
+@Service
+public class PaypalService {
+	
+	@Autowired
+	private APIContext apiContext;
+	
+	
+	public Payment createPayment(
+			Double total, 
+			String currency, 
+			String method,
+			String intent,
+			String description, 
+			String cancelUrl, 
+			String successUrl) throws PayPalRESTException{
+		Amount amount = new Amount();
+		amount.setCurrency(currency);
+		total = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP).doubleValue();
+		amount.setTotal(String.format("%.2f", total));
+
+		Transaction transaction = new Transaction();
+		transaction.setDescription(description);
+		transaction.setAmount(amount);
+
+		List<Transaction> transactions = new ArrayList<>();
+		transactions.add(transaction);
+
+		Payer payer = new Payer();
+		payer.setPaymentMethod(method.toString());
+
+		Payment payment = new Payment();
+		payment.setIntent(intent.toString());
+		payment.setPayer(payer);  
+		payment.setTransactions(transactions);
+		RedirectUrls redirectUrls = new RedirectUrls();
+		redirectUrls.setCancelUrl(cancelUrl);
+		redirectUrls.setReturnUrl(successUrl);
+		payment.setRedirectUrls(redirectUrls);
+
+		return payment.create(apiContext);
+	}
+	
+	public Payment executePayment(String paymentId, String payerId) throws PayPalRESTException{
+		Payment payment = new Payment();
+		payment.setId(paymentId);
+		PaymentExecution paymentExecute = new PaymentExecution();
+		paymentExecute.setPayerId(payerId);
+		return payment.execute(apiContext, paymentExecute);
+	}
+
+}
+
+8) Go to resources/templates and create html files
+-home.html
+
+Skip to content
+Why GitHub? 
+Team
+Enterprise
+Explore 
+Marketplace
+Pricing 
+Search
+
+Sign in
+Sign up
+Code Issues 0 Pull requests 0 Projects 0 Actions Security 0 Pulse
+Join GitHub today
+GitHub is home to over 50 million developers working together to host and review code, manage projects, and build software together.
+
+spring-boot-paypal-example/src/main/resources/templates/home.html
+@basahota basahota code
+8fe8b4e on Sep 6, 2019
+158 lines (138 sloc)  3.88 KB
+  
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+body {
+  font-family: Arial;
+  font-size: 17px;
+  padding: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+  margin: 0 -16px;
+}
+
+.col-25 {
+  -ms-flex: 25%; /* IE10 */
+  flex: 25%;
+}
+
+.col-50 {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+}
+
+.col-75 {
+  -ms-flex: 75%; /* IE10 */
+  flex: 75%;
+}
+
+.col-25,
+.col-50,
+.col-75 {
+  padding: 0 16px;
+}
+
+.container {
+  background-color: #f2f2f2;
+  padding: 5px 20px 15px 20px;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
+}
+
+input[type=text] {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+label {
+  margin-bottom: 10px;
+  display: block;
+}
+
+.icon-container {
+  margin-bottom: 20px;
+  padding: 7px 0;
+  font-size: 24px;
+}
+
+.btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  width: 100%;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+a {
+  color: #2196F3;
+}
+
+hr {
+  border: 1px solid lightgrey;
+}
+
+span.price {
+  float: right;
+  color: grey;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (also change the direction - make the "cart" column go on top) */
+@media (max-width: 800px) {
+  .row {
+    flex-direction: column-reverse;
+  }
+  .col-25 {
+    margin-bottom: 20px;
+  }
+}
+
+    </style>
+</head>
+<body>
+<div class="row">
+    <div class="col-75">
+        <div class="container">
+            <form method="post"  action="/pay">
+                <div class="col-50">
+                    <h3>Payment</h3>
+                    <label>Accepted Cards</label>
+                    <div class="icon-container">
+                        <i class="fa fa-cc-visa" style="color:navy;"></i>
+                        <i class="fa fa-cc-amex" style="color:blue;"></i>
+                        <i class="fa fa-cc-mastercard" style="color:red;"></i>
+                        <i class="fa fa-cc-discover" style="color:orange;"></i>
+                    </div>
+                    <label for="price">Total</label>
+                    <input type="text" id="price" name="price" value="10">
+                    <label for="currency">Currency</label>
+                    <input type="text" id="currency" name="currency" placeholder="Enter Currency">
+                    <label for="method">Payment Method</label>
+                    <input type="text" id="method" name="method" placeholder="Payment Method">
+                    <label for="intent">Intent</label>
+                    <input type="text" id="intent" name="intent" value="sale">
+                    <label for="description">Payment Description</label>
+                    <input type="text" id="description" name="description" placeholder="Payment Description">
+
+                </div>
+
+                <input type="submit" value="Continue to checkout" class="btn">
+            </form>
+        </div>
+    </div>
+    <div class="col-25">
+        <div class="container">
+            <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b>4</b></span></h4>
+            <p><a href="#">Product 1</a> <span class="price">$1</span></p>
+            <p><a href="#">Product 2</a> <span class="price">$4</span></p>
+            <p><a href="#">Product 3</a> <span class="price">$3</span></p>
+            <p><a href="#">Product 4</a> <span class="price">$2</span></p>
+            <hr>
+            <p>Total <span class="price" style="color:black"><b>$10</b></span></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+-success.html :-
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Payment Success</h1>
+</body>
+</html>
+
+-cancel.html :-
+
+!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Payment Failure</h1>
+</body>
+</html>
+
+
+10) Now run the application : localhost:9090
+
+home page will display after filling information on home when we click proceed to pay it will redirect to paypal account with credintial we mention in application.properties if payment is success we redirected to success page.
+And in conole we get aall paypal related information in form of json

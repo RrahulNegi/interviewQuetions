@@ -1,0 +1,58 @@
+Docker life cycle:-
+
+Now before first investigating or just jumping to the end like figuring out what happens when a container
+gets shut down I want to kind of go all the way to the start and really figure out what happens when a container is first created.Now we've learned at this point that to start up a new container from an image we use the dock or run command.
+creating a container and actually starting it up or actually two separate processes.
+So there's actually two additional commands in addition to docker run that we can use to start up a new
+container or run running that your command line is identical to running two other commands together.
+
+Docker run = docker create + docker start
+
+First docker create and then docker start as you might guess the dock or recreate commands is used
+to create a container out of an image and then store is used to actually start an image.
+
+But at this point you might be a bit curious of hey what's the distinction between creating a container
+and actually starting a container.
+Let's look at a diagram that's gonna help you understand the differences between the two.
+So we've looked at a diagram like this several times before.
+Remember on our image over here we've got that kind of file system snapshot of sorts.
+And we've also got a startup command the process of creating a container is where we kind of take the file system in here and kind of prep it for use in this new container when we create the container.
+We're just talking about kind of prepping or setting up this file system snapshot to be used to createthe container to actually start the container.That's when we actually execute the startup command that might start up the process of like hello world or in the case of that busy box one that we used the echo "hi there" or whatever process is supposed to be executed inside the container.
+So again creating a container is about the file system starting it is about actually executing the startup command.
+So with that in mind let's try flipping over to our command line really quickly and we're going to start
+to investigate the differences between creating a container and starting a container over at my command line.
+I'm going to first try running the docker create and start commands with the hello world image.
+
+So I will first do : docker creates Hello-world
+When I run that command I get this long string of characters printed out like "7e538c7c53fc159bcbf49a3340b6e4935f88b544b991c76591c88fc7a61d4a32"
+
+This is the ID of the container that was just created.
+I can now actually execute the hello world command inside of this container by running docker start
+And then I'm going to paste the ID that was just emitted right here.
+ 
+I'm going to paste in that really long series of characters and then when I run this command we'll see
+
+Now we can run : docker start -a 7e538c7c53fc159bcbf49a3340b6e4935f88b544b991c76591c88fc7a61d4a32
+that familiar welcome message appearr So what happened here.
+Well again first off we kind of prepped the container by getting that file system ready. Then after that we actually executed the primary startup command in there with docker start.
+Now what was with the cache right there.
+Well to show you what's going on with that let's try running Dockers start again but without the "- a"
+so I'm going to run at Docker star and then I'm going to again paste in my apps I lost the thing I got
+to do the create again very quickly.
+So there's my ID and I'll do talker's start.
+
+But without the "- a" this time.
+So when I run docker start you'll notice that I just see the ID that "- a" a command is what's going
+to make docker actually watch for output from the container and print it out to your terminal.
+So the cache specifically means hey kind of attached to the container so to speak and watch for output
+coming from it and printed out at my terminal.
+
+So when I put on docker star cache that means give me any output that is coming from that thing.
+And when I run that boom there it is.
+So you'll notice that's a very small difference between docker run and docker start by default.
+
+docker run is going to show you all the logs or all the information coming out of the container by default
+
+Dockers start is the opposite.
+
+Docker star is not going to show you information coming out of the terminal.

@@ -1,0 +1,306 @@
+Spring boot  Security_JWT
+
+-it stands for JSON Web Token (JWT)
+-its a secure way to talk to client to server
+-It follows stateless authentication mechanisim  as all the user credential never save in server state or cookies.
+
+-In our treaditional approch like if client want to intract with any api in server side we always need to provide user name and password.
+Say client want access API-1 so we need to provide /v1/api1 along with that we need to pass hardcode username and password with this request . So similarly for hitting Api-2 we have to again provide username and passoword with request. So its seems not a good way.
+
+So to over come this issue we used diffrent approch like if client want to talk with api since we configure security in spring application. So first time we will pass the hardcode username and password with request to spring application in return a json token. 
+This Json token comprises with username and password in encrepted format, So suppose if client want to call v1/Api2 so we dont need to pass username and password but insted of it we pass token which he recive from first api call.
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+JWT from jwt.io site consit of three part seprated by '.':-
+1) Header : in this we specify type of algo and token we use :-
+{
+  "alg": "HS256", ---->algo we use
+  "typ": "JWT" -------> type of token we use
+}
+
+2) payload: --> set the user details
+
+
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+
+3)VERIFY SIGNATURE -it convert  header and payload to base64UrlEncode
+
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  
+your-256-bit-secret
+
+)
+
+Steps :-
+
+1)Create an application spring-security-jwt-example
+
+pom: web, spring-seurity, h2db, lombok and jwt dependency
+<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		
+		
+2)Create a main application
+@SpringBootApplication
+public class SpringSecurityJwtExampleApplication {
+    @Autowired
+    private UserRepository repository;
+
+    @PostConstruct
+    public void initUsers() {
+        List<User> users = Stream.of(
+                new User(101, "javatechie", "password", "javatechie@gmail.com"),
+                new User(102, "user1", "pwd1", "user1@gmail.com"),
+                new User(103, "user2", "pwd2", "user2@gmail.com"),
+                new User(104, "user3", "pwd3", "user3@gmail.com")
+        ).collect(Collectors.toList());
+        repository.saveAll(users);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringSecurityJwtExampleApplication.class, args);
+    }
+
+}
+
+3) Create entity class:
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "USER_TBL")
+public class User {
+    @Id
+    private int id;
+    private String userName;
+    private String password;
+    private String email;
+}
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthRequest {
+
+    private String userName;
+    private String password;
+}
+
+4)Create Repository
+
+public interface UserRepository extends JpaRepository<User,Integer> {
+    User findByUserName(String username);
+}
+
+5)Create Service class
+
+import com.javatechie.jwt.api.entity.User;
+import com.javatechie.jwt.api.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+//Here we r just getting user from repository and then pass this user object to spring security to validate if username and password is valid or not.
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+    @Autowired
+    private UserRepository repository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = repository.findByUserName(username);
+        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), new ArrayList<>());
+    }
+}
+
+6)Create a filter class
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private CustomUserDetailsService service;
+
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+
+        String authorizationHeader = httpServletRequest.getHeader("Authorization");
+
+        String token = null;
+        String userName = null;
+//Since we have string Bearer in start with token so we want to extract only token 
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7);
+			
+			//So now we want to extract the username from token
+            userName = jwtUtil.extractUsername(token);
+        }
+// Now we have to validate username and sec context
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            UserDetails userDetails = service.loadUserByUsername(userName);
+
+            if (jwtUtil.validateToken(token, userDetails)) {
+
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }
+        }
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+}
+
+8) create an util class
+
+
+@Service
+public class JwtUtil {
+
+    private String secret = "javatechie";
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+	//return false if token is expired
+    private Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public String generateToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+// this token is valid for 10 hr and we use HS256 algo
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+}
+
+
+9) Cretae a config class
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+	
+	//we just want to disable the security for specific url becoz spring security will aplly to all the url specify in controller since this "/authenticate" url is for creating token so we have to disable security protoclol in it. 
+	//Here we also enable session creation policy and registe our filter i.e jwtFilter
+	
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable().authorizeRequests().antMatchers("/authenticate")
+                .permitAll().anyRequest().authenticated()
+                .and().exceptionHandling().and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);;
+    }
+}
+
+
+10) Create a controller class 
+
+@RestController
+public class WelcomeController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @GetMapping("/")
+    public String welcome() {
+        return "Welcome to javatechie !!";
+    }
+
+    @PostMapping("/authenticate")
+    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+        try {
+		//It will validate if username and password is valid or not if not it will throw exception
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+            );
+        } catch (Exception ex) {
+            throw new Exception("inavalid username/password");
+        }
+		
+		//if no exception so this line will generate the token if no exception occured
+        return jwtUtil.generateToken(authRequest.getUserName());
+    }
+}
+
+
+-If we have generated any token and we need to extract information from it just use site www.jwt.io and paste the token and it will decode it in header,payload and signature.
+
+Now we get the token by hitting post url http://localhost:9090/authenticate 
+{
+"username":"aaaa",
+"password": "90909"
+}
+
+we get one encrpted string this is a jwt token
+
+Now we going to hit a normal get url localhos:9090/ and we have to provide Authentication  like Bearer +token and hit the url it will throw 403 i.e access denied
+
+So I want to validate this token i need a filter which will authenticate the user and validate the token so i.e we create JwtFilter.java class
