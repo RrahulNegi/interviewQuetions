@@ -1,0 +1,615 @@
+Q1) When to use Srraylist and linkedlist ?
+ArrayList provides constant time for search operation, so it is better to use ArrayList if searching is more frequent operation than add and remove operation. The LinkedList provides constant time for add and remove operations. So it is better to use LinkedList for manipulation.
+
+ArrayList has O(1) time complexity to access elements via the get and set methods.
+
+LinkedList has O(n/2) time complexity to access the elements.
+
+Q2) Sort a collections?
+
+The Comparable interface has a method compareTo(), which returns a negative, 0, a positive if the current value is less than, equal to, or greater than the value we are comparing with, respectively.
+
+Let’s enhance the Fruit class to implement Comparable interface. We are defining that the natural order of sorting is based on the “id” field of Fruit:
+
+
+package com.journaldev.collections;
+public class Fruit implements Comparable<Object>{
+    private int id;
+    private String name;
+    private String taste;
+
+    Fruit(int id, String name, String taste){
+        this.id=id;
+        this.name=name;
+        this.taste=taste;
+    }
+    @Override 
+    public int compareTo(Object o) {
+        Fruit f = (Fruit) o; 
+        return this.id - f.id ;
+    }
+}
+Now that we have implemented Comparable, we can sort the list without any errors:
+
+
+Collections.sort(fruitList);
+fruitList.forEach(fruit -> {
+    System.out.println(fruit.getId() + " " + fruit.getName() + " " + 
+      fruit.getTaste());
+});
+The output will be as below:
+
+
+1 Apple Sweet
+2 Orange Sour
+3 Grape Sweet and Sour
+4 Banana Sweet
+Java Collections sort(List list, Comparator c)
+In order to define a custom logic for sorting, which is different from the natural ordering of the elements, we can implement the java.util.Comparator interface and pass an instance of it as the second argument of sort().
+
+Let’s consider that we want to define the ordering based on the “name” field of the Fruit. We implement the Comparator, and in its compare() method, we need to write the logic for comparison:
+
+
+package com.journaldev.collections;
+
+class SortByName implements Comparator<Fruit> {
+    @Override
+    public int compare(Fruit a, Fruit b) {
+        return a.getName().compareTo(b.getName());
+    }
+}
+Now, we can sort it using this comparator:
+
+
+Collections.sort(fruitList, new SortByName());
+The output will be as below:
+
+
+1 Apple Sweet
+4 Banana Sweet
+3 Grape Sweet and Sour
+2 Orange Sour
+Instead of writing new class for Comparator, using lambda function, we can provide sorting logic at runtime as well:
+
+
+Collections.sort(fruitList, (a, b) -> {
+    return a.getName().compareTo(b.getName());
+});
+
+Q3)set vs sortedset vs treeset ?
+
+1. Performance and Speed
+First difference between them comes in terms of  speed.  HashSet is fastest, LinkedHashSet is second on performance or almost similar to HashSet but TreeSet is bit slower because of sorting operation it needs to perform on each insertion. TreeSet provides guaranteed O(log(n)) time for common operations like add, remove and contains, while HashSet and LinkedHashSet offer constant time performance e.g. O(1) for add, contains and remove given hash function uniformly distribute elements in bucket.
+
+2. Ordering
+HashSet does not maintain any order while LinkedHashSet maintains insertion order of elements much like List interface and TreeSet maintains sorting order or elements.
+
+
+3. Internal Implementation
+HashSet is backed by an HashMap instance, LinkedHashSet is implemented using HashSet and LinkedList while TreeSet is backed up by NavigableMap in Java and by default it uses TreeMap.
+
+4. null
+Both HashSet and LinkedHashSet allows null but TreeSet doesn't allow null but TreeSet doesn't allow null and throw java.lang.NullPointerException when you will insert null into TreeSet. Since TreeSet uses compareTo() method of respective elements to compare them  which throws NullPointerException while comparing with null, here is an example:
+
+
+Q4) How to create a composite key ?
+
+In JPA, we have two options to define the composite keys: The @IdClass and @EmbeddedId annotations.
+
+The IdClass Annotation
+Let's say we have a table called Account and it has two columns – accountNumber, accountType – that form the composite key. Now we have to map it in JPA.
+
+As per the JPA specification, let's create an AccountId class with these primary key fields:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+public class AccountId implements Serializable {
+    private String accountNumber;
+ 
+    private String accountType;
+ 
+    // default constructor
+ 
+    public AccountId(String accountNumber, String accountType) {
+        this.accountNumber = accountNumber;
+        this.accountType = accountType;
+    }
+ 
+    // equals() and hashCode()
+}
+Next, let's associate the AccountId class with the entity Account.
+
+In order to do that, we need to annotate the entity with the @IdClass annotation. We must also declare the fields from the AccountId class in the entity Account and annotate them with @Id:
+
+@Entity
+@IdClass(AccountId.class)
+public class Account {
+    @Id
+    private String accountNumber;
+ 
+    @Id
+    private String accountType;
+ 
+    // other fields, getters and setters
+}
+4. The EmbeddedId Annotation
+@EmbeddedId is an alternative to the @IdClass annotation.
+
+Let's consider another example where we have to persist some information of a Book with title and language as the primary key fields.
+
+In this case, the primary key class, BookId, must be annotated with @Embeddable:
+
+@Embeddable
+public class BookId implements Serializable {
+    private String title;
+    private String language;
+ 
+    // default constructor
+ 
+    public BookId(String title, String language) {
+        this.title = title;
+        this.language = language;
+    }
+ 
+    // getters, equals() and hashCode() methods
+}
+Then, we need to embed this class in the Book entity using @EmbeddedId:
+
+@Entity
+public class Book {
+    @EmbeddedId
+    private BookId bookId;
+ 
+    // constructors, other fields, getters and setters
+}
+5. @IdClass vs @EmbeddedId
+As we just saw, the difference on the surface between these two is that with @IdClass, we had to specify the columns twice – once in AccountId and again in Account. But, with @EmbeddedId we didn't.
+
+There are some other tradeoffs, though.
+
+For example, these different structures affect the JPQL queries that we write.
+
+For example, with @IdClass, the query is a bit simpler:
+
+1
+SELECT account.accountNumber FROM Account account
+With @EmbeddedId, we have to do one extra traversal:
+
+1
+SELECT book.bookId.title FROM Book book
+Also, @IdClass can be quite useful in places where we are using a composite key class that we can't modify.
+
+Finally, if we're going to access parts of the composite key individually, we can make use of @IdClass, but in places where we frequently use the complete identifier as an object, @EmbeddedId is preferred.
+
+Q5) Hibernate Projection ?
+
+Projection interface in the org.hibernate.criterion package is used in Hibernate framework to query the particular columns from the database. In the same package, Projections class is responsible for producing the projection objects. In this class, each method is static in nature and returns the projection interface object. Following points support the Projection interface in the Hibernate framework,
+
+Projection is applied to the Criteria query object
+The projection class provides some inbuilt functions like sum, max, min, rowCount etc to perform the aggregation operations in hibernate
+If a developer wants to add a projection object to the criteria object, then he or she needs to call the criteria.setProjection(projection_obj) method
+If a developer wants to read multiple columns from the database, then he or she needs to add the ProjectionList object to the setProjection() method i.e. criteria.setProjection(projection_list_obj)
+
+
+// creating the criteria object.
+Criteria myCriteria = session.createCriteria(Employee.class);
+ 
+// creating the projection object.
+Projection myProjection = Projections.property("employee_name");
+ 
+// adding the projection object to the criteria object.
+myCriteria.setProjection(myProjection);
+ 
+List list = myCriteria.list();
+
+Q6) Hibernate criteria ?
+
+Hibernate Criteria
+Hibernate Criteria Query language allow the developers to fetch the data from the relational database. The Criteria interface define several methods to specify the criteria and the object can be obtained by calling the createCriteria() method of the Session interface. The syntax for this method is.
+
+1
+public Criteria createCriteria(Class c)
+
+
+Q7) jvn 32bit vs 64bit ?
+
+64-bit requires 30-50% more heap than 32-bit. The reason is memory layout of 64-bit architecture. In 32-bit JVM object headers are of 8 bytes and references are of 4 bytes, whereas in 64-bit headers are of 12 bytes and references can be of 4 to 8 bytes.
+
+Do I need to understand the difference between 32-bit JVM and 64-bit JVM?
+If you aren’t building a performance-critical application, you don’t have to understand the difference. The subtle difference between 32-bit JVM and 64-bit JVM wouldn’t make much difference to your application. You can skip reading further.
+
+Does 64-bit JVM perform better than 32-bit JVM?
+Most of us think 64-bit is bigger than 32-bit, and that 64-bit JVM performance will be better than 32-bit JVM performance. Unfortunately, it’s not the case. 64-bit JVM can have a small performance degradation compared to 32-bit JVM. Below is the excerpt from Oracle JDK documentation regarding 64-bit JVM performance:
+
+“Generally, the benefits of being able to address larger amounts of memory come with a small performance loss in 64-bit VMs versus running the same application on a 32-bit VM.
+
+The performance difference comparing an application running on a 64-bit platform versus a 32-bit platform on SPARC is on the order of 10-20% degradation when you move to a 64-bit VM. On AMD64 and EM64T platforms this difference ranges from 0-15% depending on the amount of pointer accessing your application performs.”
+
+If there is a performance hit, why would anyone use 64-bit JVM?
+In 32-bit JVM maximum, addressable memory space is only 2^32 (i.e.~4gb). It means the maximum memory size of your Java process can’t be more than 4GB. Due to various additional constraints (such as available swap, kernel address space usage, memory fragmentation, and VM overhead), in practice, the limit is much lower. This table summarizes maximum heap size that you can set on 32-bit JVM:
+
+OS
+
+Max heap
+
+Linux
+
+2-3 GB
+
+AIX
+
+3.25GB
+
+Windows
+
+1.5GB
+
+Solaris
+
+2 – 4GB
+
+Mac OS X
+
+3.8 GB
+
+
+If you are running your application on a 64-bit JVM, maximum addressable memory space is 2^64 (i.e. 16 Exabytes). It means your application’s maximum addressable memory size is close to infinite.
+
+How can 64-bit JVM performance be slower than 32-bit JVM?
+This is due to the fact that every native pointer in the system takes up 8 bytes instead of 4. The loading of this extra data has an impact on memory usage which translates to slightly slower execution depending on how many pointers get loaded during the execution of your Java program. The good news is that with AMD64 and EM64T platforms running in 64-bit mode, the Java VM gets some additional registers which it can use to generate more efficient native instruction sequences. These extra registers increase performance to the point where there is often no performance loss at all when comparing 32 to 64-bit execution speed.
+
+What are the things to consider when migrating from 32-bit JVM to 64-bit JVM?
+a. GC Pause times
+
+The primary reason to migrate from 32-bit JVM to 64-bit JVM is to attain large heap size (i.e. -Xmx). When you increase heap size, your GC pause times will start to go high automatically, because now there is more garbage in the memory to clear up. You need to do proper GC tuning before doing the migration, otherwise, your application can experience several seconds to few minutes pause time. You can use the tools like GCeasy to come up with right GC settings for newly increased heap size.
+
+b. Native Library
+
+If your application is using Java Native Interface (JNI) to access native libraries, then you need to upgrade the native libraries as well. Because 32-bit JVM can use only 32-bit native library. Similarly, 64-bit JVM can use only 64-bit native library.
+
+What is CompressedOops? Is it related to 32-bit or 64-bit JVM?
+Image title
+
+
+
+Yes, CompressedOOps is related to 32-bit and 64-bit JVM.
+
+We define objects with data fields. When this object is created in memory, along with data fields, an object header is also created. Object Header is needed by the JVM to do housekeeping, virtual method invocation, garbage collection and locking. This object header occupies 8 bytes in 32-bit JVM and 16 bytes in 64-bit JVM. An 8-byte increase might not sound to be much, but given that your application creates millions of objects during its runtime, 8 bytes multiplied by millions of objects can add considerable overhead.
+
+You can mitigate this problem by passing  -XX:+UseCompressedOops  JVM argument. When you pass this argument JVM makes a clever trick and optimizes the object header size to use only 12 bytes even in 64-bit JVM. This clever trick will work as long as your JVM heap size is less than 32GB. If it goes beyond 32 GB, then the object header size will once again become 16 bytes.
+
+Note: -XX:+UseCompressedOops has been the default since Java SE 6u23 and later. Only if you are running on JDK 6u23 or an earlier release should you pass the -XX:+UseCompressedOops argument.
+
+When should I use 32-bit vs 64-bit JVM?
+< 2GB memory: If your application’s heap size (i.e. -Xmx) is less than 2GB, then it’s no-brainer. Go with 32-bit JVM.
+
+> 2GB memory: If your application needs more than 2GB, then also it’s no brainer decision. Go with 64-bit JVM. However, do proper performance tests to measure and mitigate the impact.
+
+How can I determine whether my application is running on 32-bit or 64-bit JVM?
+There are a few options. Let me show a couple of options:
+
+Option 1: From the command prompt issue the command:
+
+java -version
+
+
+If it’s a 64-bit JVM, you will see the output to contain word: “64-Bit.” Example:
+
+java version "1.8.0_181"
+Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+
+
+If it’s a 32-bit JVM, you will *not* see the word: “64-Bit”. Example:
+Option 2: You issue the following statement from your Java program:
+
+ System.out.println(System.getProperty("sun.arch.data.model") + "-bit JVM");
+Based on the JVM type, the appropriate version will be printed on the console.
+
+Can I run 32-bit JVM on a 64-bit Operating System?
+There is a 32-bit OS and 64-bit OS. If you are running on 32-bit operating system (which is rare to find these days), you can run only 32-bit JVM. On the other hand, if you are running on 64-bit operating system, you can run your application either on 32-bit JVM or on a 64-bit JVM.
+
+How do you download 32-bit or 64-bit JVM?
+When you go to Oracle JDK download page, you will see options to download the JDK specific to your operating system:
+
+
+Here if you choose x86, you will be downloading 32-bit JVM. If you choose x64, you will be downloading 64-bit JVM. Things would have been a lot simpler if they could have named them “Windows 32-bit JVM” and “Windows 64-bit JVM.”
+
+Can the code compiled on 32-bit JVM, run on 64-bit JVM?
+We use Java compiler to compile the Java code to byte code (i.e. *.class files). Generated bytecode is the same regardless of whether you're on 32-bit or 64-bit JVM. It can run on both JVMs. Remember the age-old promise, “Write once, run anywhere.”
+
+
+Q8)Diffrence between service and componnet?
+
+@Component:
+We can use @Component annotation to mark a bean as a Spring-managed component. In other words, it’s a generic stereotype for any Spring-managed component.
+
+We can enable an auto-scan using <context:component-scan> tag. During auto-scan, Spring will scan and register all beans marked with a @Component annotation:
+
+@Component
+public class Employee {
+   ...
+  
+}
+@Repository:
+@Repository annotation is a specialization over @Component annotation:
+
+@Component
+public @interface Repository {
+}
+Since @Repository is a type of @Component, Spring also auto-scans and registers them.
+
+@Repository is a stereotype for the persistence layer. Its job is to catch all persistence related exceptions and rethrow them as a Spring DataAccessException.
+
+For this, we should configure PersistenceExceptionTranslationPostProcessor in our application context:
+
+<bean class=
+  "org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+This bean post processor adds an advisor to all beans marked with @Repository. The advisor’s responsibility is to translate the platform-specific exceptions to the Spring’s unified unchecked exceptions.
+
+@Service:
+Just like @Repository, @Service is another specialization of @Component:
+
+@Component
+public @interface Service {
+}
+Just like @Repository, @Service is also a type of @Component. That means Spring will also automatically detect such beans.
+
+The @Service annotation represents that our bean holds some business logic. Till date, it doesn’t provide any specific behavior over @Component.
+
+Still, we should annotate the service-layer beans with the @Service annotation to make our intent clear. Additionally, we never know if someday Spring chooses to add some specific functionality to it.
+
+Differences in NutShell:
+Let’s quickly sum up the differences between @Component, @Repository and, @Service:
+
+@Component is the most generic stereotype and marks a bean as a Spring-managed component
+Both @Service and @Repository annotations are the specializations over the @Component annotation
+@Repository is a stereotype used for persistence layer. It translates any persistence related exceptions into a Spring’s DataAccessException
+@Service is used for the beans at the service layer. Currently, it doesn’t offer any additional functionality over @Component
+It’s always preferable to use @Repository and @Service annotations over @Component, wherever applicable. It communicates the bean’s intent more clearly
+
+Q9)@Qualifier in spring ?
+
+The @Autowired annotation is a great way of making the need to inject a dependency in Spring explicit. And although it's useful, there are use cases for which this annotation alone isn't enough for Spring to understand which bean to inject.
+
+By default, Spring resolves autowired entries by type.
+
+If more than one bean of the same type is available in the container, the framework will throw NoUniqueBeanDefinitionException, indicating that more than one bean is available for autowiring.
+
+Let's imagine a situation in which two possible candidates exist for Spring to inject as bean collaborators in a given instance:
+
+@Component("fooFormatter")
+public class FooFormatter implements Formatter {
+  
+    public String format() {
+        return "foo";
+    }
+}
+ 
+@Component("barFormatter")
+public class BarFormatter implements Formatter {
+  
+    public String format() {
+        return "bar";
+    }
+}
+ 
+@Component
+public class FooService {
+      
+    @Autowired
+    private Formatter formatter;
+}
+If we try to load FooService into our context, the Spring framework will throw a NoUniqueBeanDefinitionException. This is because Spring doesn't know which bean to inject. To avoid this problem, there are several solutions. The @Qualifier annotation is one of them.
+
+3. @Qualifier Annotation
+By using the @Qualifier annotation, we can eliminate the issue of which bean needs to be injected.
+
+Let's revisit our previous example and see how we solve the problem by including the @Qualifier annotation to indicate which bean we want to use:
+
+public class FooService {
+      
+    @Autowired
+    @Qualifier("fooFormatter")
+    private Formatter formatter;
+}
+By including the @Qualifier annotation together with the name of the specific implementation we want to use – in this example, Foo – we can avoid ambiguity when Spring finds multiple beans of the same type.
+
+We need to take into consideration that the qualifier name to be used is the one declared in the @Component annotation.
+
+Note that we could've also used the @Qualifier annotation on the Formatter implementing classes, instead of specifying the names in their @Component annotations, to obtain the same effect:
+
+@Component
+@Qualifier("fooFormatter")
+public class FooFormatter implements Formatter {
+    //...
+}
+ 
+@Component
+@Qualifier("barFormatter")
+public class BarFormatter implements Formatter {
+    //...
+}
+4. @Qualifier vs @Primary
+There's another annotation called @Primary that we can use to decide which bean to inject when ambiguity is present regarding dependency injection.
+
+This annotation defines a preference when multiple beans of the same type are present. The bean associated with the @Primary annotation will be used unless otherwise indicated.
+
+
+
+
+Let's see an example:
+
+@Configuration
+public class Config {
+  
+    @Bean
+    public Employee johnEmployee() {
+        return new Employee("John");
+    }
+  
+    @Bean
+    @Primary
+    public Employee tonyEmployee() {
+        return new Employee("Tony");
+    }
+}
+In this example, both methods return the same Employee type. The bean that Spring will inject is the one returned by the method tonyEmployee. This is because it contains the @Primary annotation. This annotation is useful when we want to specify which bean of a certain type should be injected by default.
+
+And in case we require the other bean at some injection point, we would need to specifically indicate it. We can do that via the @Qualifier annotation. For instance, we could specify that we want to use the bean returned by the johnEmployee method by using the @Qualifier annotation.
+
+It's worth noting that if both the @Qualifier and @Primary annotations are present, then the @Qualifier annotation will have precedence. Basically, @Primary defines a default, while @Qualifier is very specific.
+
+Let's see another way of using the @Primary annotation, this time using the initial example:
+
+@Component
+@Primary
+public class FooFormatter implements Formatter {
+    //...
+}
+ 
+@Component
+public class BarFormatter implements Formatter {
+    //...
+}
+In this case, the @Primary annotation is placed in one of the implementing classes and will disambiguate the scenario.
+
+5. @Qualifier vs Autowiring by Name
+Another way to decide between multiple beans when autowiring is by using the name of the field to inject. This is the default in case there are no other hints for Spring. Let's see some code based on our initial example:
+
+public class FooService {
+      
+    @Autowired
+    private Formatter fooFormatter;
+}
+In this case, Spring will determine that the bean to inject is the FooFormatter one since the field name is matched to the value that we used in the @Component annotation for that bean.
+
+
+Q10) Proxy object in spring?
+
+Q11) calling spring controller from javascript ?
+
+Here's an example that you are looking for.
+
+@RequestParam will help you out.
+
+First, JSON object.
+
+var loginData = { 
+       memberId : "test1",
+       memberPw : "test2"
+}
+Second, Ajax.
+
+ $.ajax({
+        type: "POST",
+        url: "YouActionName",
+        data: loginData,
+        success: function (result) {
+            // do something.
+        },
+        error: function (result) {
+            // do something.
+        }
+    });
+And finally, your controller. Remember the RequestParam's key names must be matched with the JSON's member key names. It's case sensitive, so be careful.
+
+@RequestMapping("/YourActionName")
+public String YourActionName(@RequestParam("memberId") String id, @RequestParam("memberPw") String pw ){
+  return new ModelAndView("ExpectedReturnView");
+} 
+attaching event listner is really simple.
+
+if you have html like this...
+
+<div id="exampleDiv"></div>
+Then using basic id selector, you can attach an event like this below...
+
+$('#exampleDiv').click(function(e) {
+    // do what you want when click this element.
+});
+
+Q12)When we get illegal monitor state exception ?
+As we have already described, the IllegalMonitorStateException indicates that the calling thread does not own the specified monitor. A thread can wait on a monitor after invoking the wait method. ... By executing a synchronized instance method of that object.
+
+
+Q13)How to achieve race condition in hashmap?
+
+The answer is yes, there are potential race conditions:
+
+when resizing an HashMap by two threads at the same time
+when collisions happens. Collision can happen when two elements map to the same cell even if they have a different hashcode. During the conflict resolution, there can be a race condition and one added key/value pair could be overwritten by another pair inserted by another thread.
+
+Q14) What is rehasshing in hashmao ?
+
+Rehashing of a hash map is done when the number of elements in the map reaches the maximum threshold value.
+
+Usually the load factor value is 0.75 and the default initial capacity value is 16. Once the number of elements reaches or crosses 0.75 times the capacity, then rehashing of map takes place. In this case when the number of elements are 12, then rehashing occurs. (0.75 * 16 = 12)
+
+When rehashing occurs a new hash function or even the same hash function could be used but the buckets at which the values are present could change. Basically when rehashing occurs the number of buckets are approximately doubled and hence the new index at which the value has to be put changes.
+
+While rehashing, the linked list for each bucket gets reversed in order. This happens because HashMap doesn't append the new element at the tail instead it appends the new element at the head. So when rehashing occurs, it reads each element and inserts it in the new bucket at the head and then keeps on adding next elements from the old map at the head of the new map resulting in reversal of linked list.
+
+If there are multiple threads handling the same hash map it could result in infinite loop.
+
+Q15) What is classloader in java ?
+
+ClassLoader in Java is a class that is used to load class files in Java. Java code is compiled into a class file by javac compiler and JVM executes Java program, by executing byte codes written in the class file. ClassLoader is responsible for loading class files from file systems, networks, or any other source. 
+
+There is three default class loader used in Java, Bootstrap, Extension, and System or Application class loader. 
+
+
+
+
+ 
+Every class loader has a predefined location, from where they load class files. The bootstrap class loader is responsible for loading standard JDK class files from rt.jar and it is the parent of all class loaders in Java. 
+
+The bootstrap class loader doesn't have any parents if you call String.class.getClassLoader() it will return null and any code based on that may throw NullPointerException in Java. The bootstrap class loader is also known as Primordial ClassLoader in Java.  
+
+
+Extension ClassLoader delegates class loading request to its parent, Bootstrap, and if unsuccessful, loads class form jre/lib/ext directory or any other directory pointed by java.ext.dirs system property. Extension ClassLoader in JVM is implemented by  sun.misc.Launcher$ExtClassLoader. 
+
+The third default class loader used by JVM to load Java classes is called System or Application class loader and it is responsible for loading application specific classes from CLASSPATH environment variable, -classpath or -cp command line option, Class-Path attribute of Manifest file inside JAR. 
+
+Application class loader is a child of Extension ClassLoader and its implemented by sun.misc.Launcher$AppClassLoader class. Also, except for the Bootstrap class loader, which is implemented in the native language mostly in C,  all  Java class loaders are implemented using java.lang.ClassLoader.
+
+In short here is the location from which Bootstrap, Extension, and Application ClassLoader load Class files.
+
+1) Bootstrap ClassLoader - JRE/lib/rt.jar
+
+2) Extension ClassLoader - JRE/lib/ext or any directory denoted by java.ext.dirs
+
+3) Application ClassLoader - CLASSPATH environment variable, -classpath or -cp option, Class-Path attribute of Manifest inside JAR file.
+
+
+How ClassLoader works in Java?
+What is ClassLoader in Java, How classloader works in JavaAs I explained earlier Java ClassLoader works in three principles: delegation, visibility, and uniqueness. In this section, we will see those rules in detail and understand the working of Java ClassLoader with example. By the way here is a diagram that explains How ClassLoader to load class in Java using delegation.
+How class loader works in Java - class loading
+
+1. Delegation principles
+As discussed on when a class is loaded and initialized in Java, a class is loaded in Java, when it's needed. Suppose you have an application-specific class called Abc.class, the first request of loading this class will come to Application ClassLoader which will delegate to its parent Extension ClassLoader which further delegates to Primordial or Bootstrap class loader. 
+
+Primordial will look for that class in rt.jar and since that class is not there, a request comes to Extension class loader which looks on jre/lib/ext directory and tries to locate this class there, if the class is found there than Extension class loader will load that class and Application class loader will never load that class but if it's not loaded by extension class-loader than Application class loader loads it from Classpath in Java. Remember Classpath is used to load class files while PATH is used to locate executables like javac or java command.
+
+
+
+2. Visibility Principle
+According to the visibility principle, Child ClassLoader can see class loaded by Parent ClassLoader but vice-versa is not true. This means if class Abc is loaded by Application class loader than trying to load class ABC explicitly using extension ClassLoader will throw either java.lang.ClassNotFoundException.
+
+3. Uniqueness Principle
+According to this principle, a class loaded by Parent should not be loaded by Child ClassLoader again. Though it's completely possible to write a class loader which violates Delegation and Uniqueness principles and loads class by itself, it's not something which is beneficial. You should follow all class loader principles while writing your own ClassLoader.
+
+
+Read more: https://javarevisited.blogspot.com/2012/12/how-classloader-works-in-java.html#ixzz6QqmXNxtf

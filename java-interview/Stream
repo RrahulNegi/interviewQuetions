@@ -1,0 +1,11 @@
+STream :-
+
+Stream API used to process collections of objext
+Stream is not a datastructure insted it takes input from the COllection, Arrays or I/O channels
+Stream do not changed the original data structure they only provide the result as per pipelined method
+
+why ?
+
+-to acchive Functional Programming
+-Code is reduced
+-Bulk operation 

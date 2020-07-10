@@ -1,0 +1,62 @@
+Java 8 Map() :
+Java 8 map() operation takes Stream of type T as input and produces a result Stream of type R. It applies given mapper function to each element of input Stream<T> and results are stored in an output Stream<R>.
+
+map() operation produces a single value for each value of input Stream and hence it is also called One-To-One mapping.
+
+For example, suppose we have a instituteList where each Institute consists of two fields. One is its name and another one is its different locations wrapped in another List as below.
+
+1
+2
+3
+4
+5
+List<Institute> instituteList = new ArrayList<>();
+         
+instituteList.add(new Institute("IIM", Arrays.asList("Bangalore", "Ahmedabad", "Kozhikode", "Lucknow")));
+instituteList.add(new Institute("IIT", Arrays.asList("Delhi", "Mumbai", "Kharagpur")));
+instituteList.add(new Institute("NIFT", Arrays.asList("Hyderabad", "Mumbai", "Patna", "Bangalore")));
+Suppose we have to extract name of each Institute, that can be done using map() method as shown below.
+
+1
+2
+3
+//Java 8 Map() : Get names of all institutes
+         
+List<String> namesOfInstitutes = instituteList.stream().map(Institute::getName).collect(Collectors.toList());
+In the above code snippet, Stream<Institute> is an input stream for map() and Institute::getName is the mapper function which is applied to each Institute and outcome is collected in a List<String> called namesOfInstitutes.
+
+namesOfInstitutes will be,
+
+1
+[IIM, IIT, NIFT]
+If we suppose to extract unique locations of all institutes, using map() will throw an error. Because, locations are itself wrapped in another List<String> i.e list within a list. Using flatMap() in such scenarios will give correct result. Let’s see flatMap() in detail.
+
+Java 8 flatMap() :
+map() does only mapping, but flatMap() performs mapping as well as flattening. Flattening means transforming data from Stream<Stream<T>> to Stream<T>. This is the main difference between map() and flatMap().
+
+flatMap() operation takes Stream<Stream<T> as input and produces a result Stream of type R. It’s mapper function produces multiple values for each value of input stream and those multiple values are flattened into a result Stream<R>.
+
+For example, as explained earlier, flatMap() can be used to extract unique locations of all institutes as below.
+
+1
+2
+3
+//Java 8 FlatMap() : Get unique locations of all institutes
+         
+Set<String> locationsOfInstitutes = instituteList.stream().flatMap(institute -> institute.getLocations().stream()).collect(Collectors.toSet());
+In the above code, institute -> institute.getLocations() is a mapper function which is producing multiple values for each single input. i.e there are multiple locations for each single Institute. flatMap() is flattening those multiple values into a single stream. As we are collecting that stream into Set, we are getting only unique locations of all institutes.
+
+locationsOfInstitutes will be,
+
+1
+[Ahmedabad, Lucknow, Delhi, Patna, Kozhikode, Kharagpur, Mumbai, Hyderabad, Bangalore]
+Let’s summarize the differences between Java 8 map() and flatMap().
+
+Differences between Java 8 Map() Vs flatMap() :
+Map()	flatMap()
+It processes stream of values.	It processes stream of stream of values.
+It does only mapping.	It performs mapping as well as flattening.
+It’s mapper function produces single value for each input value.	It’s mapper function produces multiple values for each input value.
+It is a One-To-One mapping.	It is a One-To-Many mapping.
+Data Transformation : From Stream<T> to Stream<R>	Data Transformation : From Stream<Stream<T> to Stream<R>
+Use this method when the mapper function is producing a single value for each input value.	Use this method when the mapper function is producing multiple values for each input value.

@@ -1,0 +1,108 @@
+Java SE 9: Factory Methods for Immutable Set,List,Map
+
+1) List :
+
+Java SE 8: Empty Immutable List
+In Java SE 8 and earlier Versions, if we want to create an empty Immutable or Unmodifiable List, we should use Collections class utility method: unmodifiableList as shown below:
+
+Example:-
+
+
+ List<String> emptyList = new ArrayList<>();
+ List<String> immutableList = Collections.unmodifiableList(emptyList);
+
+
+Java SE 9: Empty Immutable List
+To overcome those shortcomings, Java SE 9 has introduced a couple of useful methods in List interface so that we do not need to use all these tedious steps to create Immutable Empty List.
+
+If we go through the Java SE 9 List API, we can find the below method signature in List interface.
+
+
+ static <E> List<E> of()
+It is used to create an empty Immutable List (a List with zero elements).
+
+Example:-
+
+
+ List<String> immutableList = List.of();
+
+Characteristics of Immutable List
+
+They are Immutable.
+We cannot add, modify and delete their elements.
+If we try to perform Add/Delete/Update operations on them, we will get UnsupportedOperationException as shown below:
+
+jshell> immutableList.add("four")
+|  java.lang.UnsupportedOperationException thrown: 
+|        at ImmutableCollections.uoe (ImmutableCollections.java:68)
+|        at ImmutableCollections$AbstractImmutableList.add (ImmutableCollections.java:74)
+|        at (#2:1)
+They don’t allow null elements.
+If we try to create them with null elements, we will get NullPointerException as shown below:
+
+jshell> List>String> immutableList = List.of("one","two","three", null)
+|  java.lang.NullPointerException thrown: 
+|        at Objects.requireNonNull (Objects.java:221)
+|        at ImmutableCollections$ListN. (ImmutableCollections.java:179)
+|        at List.of (List.java:859)
+|        at (#4:1)
+If we try add null elements, we will get UnsupportedOperationException as shown below:
+
+jshell> immutableList.add(null)
+|  java.lang.UnsupportedOperationException thrown: 
+|        at ImmutableCollections.uoe (ImmutableCollections.java:68)
+|        at ImmutableCollections$AbstractImmutableList.add (ImmutableCollections.java:74)
+|        at (#3:1)
+They are serializable if all elements are serializable.
+
+================================================================================================================
+
+Set
+
+Java SE 9: Immutable Empty Set
+To overcome those shortcomings, Java SE 9 has introduced a couple of useful methods in Set interface so that we do not need to use all these tedious steps to create Immutable Empty Set.
+
+If we go through the Java SE 9 Set API, we can find the below method signature in Set interface.
+Empty Set API Utility
+
+
+ static <E> Set<E> of()
+It is used to create an empty Immutable Set (a Set with zero elements).
+
+Empty Set Example:-
+
+
+ Set<String> immutableSet = Set.of();
+Here we can observe that it is very easy to create an empty Immutable Set in Java SE 9.
+
+Java SE 8: Immutable Non-Empty Set
+In this section, we will see how to create Immutable Non-Empty Set in Java SE 8 and earlier Versions. We use same unmodifiableSet method from Collections class to create an Immutable Non-Empty Set as shown below:
+
+Non-Empty Set Example:-
+
+
+ Set<String> nonemptySet = new HashSet<>();
+ nonemptySet.add("one");
+ nonemptySet.add("two");
+ nonemptySet.add("three");
+ Set<String> immutableSet = Collections.unmodifiableSet(nonemptySet);
+NOTE:- Diamond Operator does NOT work in Java SE 6 and earlier versions. Rest of the code is same for all Java versions.
+
+Here we can observe that it is very tedious and verbose process. Let us see the same thing in Java SE 9 now.
+
+Java SE 9: Immutable Non-Empty Set
+In this section, we will see how to create Immutable Non-Empty Set in Java SE 9 Version. If we go through the Java SE 9 Set Interface API, we will see a set of overloaded methods as shown below:
+
+Non-Empty Set Example:-
+
+
+ Set<String> immutableSet = Set.of("one","two","three");
+It is very simple and no-verbosity in this code right. Very nice stuff!
+
+Test the above code in Java SE 9 REPL:
+
+
+jshell> Set<String> immutableSet = Set.of("one","two","three")
+immutableSet ==> [one, two, three]
+
+

@@ -1,0 +1,329 @@
+Java 8 consumer/predicate function 
+
+1)Consumer Functional Interface
+
+-Fucntional interface is interface which has only one method.
+-Counsumer Functional Interface has a function that accept only one Object and perform some operation on it, and its return type is void.
+
+-In java 8 we have :
+
+@FunctionalInterface
+public interface Consumer<T>{
+
+void accept(T t);
+
+
+default Consumer<T> andThen(Consumer<? super t> after){
+	return (T t)->{accept(t)});
+}
+
+
+2) Prdeicate Functional Interface
+-It used for conditional check
+
+-when u think we can use true/false returning function so we can use it
+
+
+@FunctionalInterface
+public interface Predicate<T>{
+
+boolean test(T t);
+
+
+}
+
+3)Supplier Functional Interface
+
+-It can be used in all context where there is no input but an output is expected
+-
+
+@FunctionalInterface
+public interface Supplier<T>{
+
+T get();
+
+
+}
+
+1)Example ConsumerDemo
+
+public class ConsumerDemo {
+
+Consumer<Integer> cosumer = t ->sysout("Printing "+t);
+cousumer.accept(10);
+
+List<Integer> list = Arrays.asList(1,2,3,4,5);
+
+//Since forEach use this Consumer interface so we can directly send consumer object inside it
+
+list.stream().forEach(cosumer);
+
+or we can do it like
+
+lis.stream().forEach(t->Sysout("pricing :"+t));
+
+}
+
+
+2)Example PredicateDemo :
+
+class PredicateDemo implements Predicate<Integer>{
+
+	public boolean test(Integer t){
+		if(t%2==0){
+			return true
+			}else{
+				return false;
+			}
+		}
+psvm(){
+Predicate<Integer>	 pred =new PredicateDemo();
+sysout(pred.test(4));
+}
+}
+
+convert it to lambda :
+
+class PredicateDemo {
+psmv(){
+Prdeicate<Integer> pred =( t)->{
+if(t%2==0){
+			return true
+			}else{
+				return false;
+			}
+};
+
+sysout(pred.test(4));
+}
+}
+	
+we can make it more small :
+
+class PredicateDemo {
+psmv(){
+Prdeicate<Integer> pred = t->t%2==0;
+sysout(pred.test(4));
+
+List<Integer> list =Arrays.asList(1,2,3,4,5);
+list.stream().filter(predicate).foraeach(t->sysout("print :" +t));
+}
+}
+
+3)Example Supplier
+
+class SupplierDemo implements Supplier<String> {
+	@Ovveride
+	public String get() {
+		return "Hii";
+	}
+	
+	psvm(){
+	Supplier<String> supplier =new SupplierDemo();
+	sysout(supplier.get());
+	}
+}
+
+change to lambda :
+
+class SupplierDemo {
+	
+	psvm(){
+	Supplier<String> supplier =() ->{
+		return "Hii";
+	};
+	
+	List<String> list =Arrays.asList("a","b");
+	
+	sysout(list.stream().findAny().orElse(supplier))   ;
+}
+
+
+----------------------------------------------
+
+
+1) @FunctionalInterface Annotation :-
+@FunctionalInterface annotation is introduced in Java 8 to represent functional interfaces. Although, it is not compulsory to write functional interface using this annotation. But, if you are using @FunctionalInterface annotation then your interface should contain only one abstract method. If you try to write more than one abstract method, compiler will show the error.
+
+2) java.util.function package
+All Java 8 functional interfaces are organised in java.util.function package. Each functional interface in this package represents an operation that can be performed by the lambda expression.
+
+Below table shows the list of all Java 8 functional interfaces along with their abstract method, which operation they represent and when to use them?
+
+- Predicate => boolean Test(T t) :-
+Represents an operation which takes one arg and return boolean
+Use this interface when yiu want to evaluate a boolean expression which takes an arg T 
+
+ex:- IntPredicate, LomgPredicate, DoublePredicate
+
+-Consumer ===> Void accept(T t) :-
+Represents oprration that takes one arg and return void
+Use when we want to perform some operation on object
+Ex :- IntConsumer, LongConsumer
+
+- Function ===> R apply(T t) :-
+Represents an operation that accept an arg of type T and return result of type R 
+Use when u want to extract a data from existing data
+Ex:- IntFunction, LongFunction etc
+
+- Supplier ====> T get() :-
+Represent an operration that takes nothing but return a result of type T 
+Use this interface when u want to create a new object
+ex:- BooleanSupplier, IntSupplier etc
+
+- BiPredicate ===> Boolean test(T t, u) :-
+Represents  an operation which takes two arg and return boolean
+
+- Biconsumer ===> void accept(T t , U u)
+
+Represents  an operation which takes two arg and return void
+
+-UnaryOperator (extends Function) :-
+
+Same as Function but arg and result wolud be of same type
+
+-BinaryOperator (Extends BiFunction) :
+
+Same as BiFunction but arg and return type should be of same type
+
+
+
+3) How To Use Java 8 Functional Interfaces In Real Time?
+
+class Student
+{
+    int id;
+     
+    String name;
+     
+    double percentage;
+     
+    String specialization;
+     
+    public Student(int id, String name, double percentage, String specialization) 
+    {
+        this.id = id;
+         
+        this.name = name;
+         
+        this.percentage = percentage;
+         
+        this.specialization = specialization;
+    }
+     
+    public int getId() {
+        return id;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public double getPercentage() {
+        return percentage;
+    }
+ 
+    public String getSpecialization() {
+        return specialization;
+    }
+ 
+    @Override
+    public String toString()
+    {
+        return id+"-"+name+"-"+percentage+"-"+specialization;
+    }
+}
+
+Let listOfStudents be the list of 10 students.
+
+List<Student> listOfStudents = new ArrayList<Student>();
+         
+listOfStudents.add(new Student(111, "John", 81.0, "Mathematics"));
+         
+listOfStudents.add(new Student(222, "Harsha", 79.5, "History"));
+         
+listOfStudents.add(new Student(333, "Ruth", 87.2, "Computers"));
+         
+listOfStudents.add(new Student(444, "Aroma", 63.2, "Mathematics"));
+         
+listOfStudents.add(new Student(555, "Zade", 83.5, "Computers"));
+         
+listOfStudents.add(new Student(666, "Xing", 58.5, "Geography"));
+         
+listOfStudents.add(new Student(777, "Richards", 72.6, "Banking"));
+         
+listOfStudents.add(new Student(888, "Sunil", 86.7, "History"));
+         
+listOfStudents.add(new Student(999, "Jordan", 58.6, "Finance"));
+         
+listOfStudents.add(new Student(101010, "Chris", 89.8, "Computers"));
+
+
+a) Predicate – Tests an object
+
+a) Predicate – Tests an object
+
+Predicate represents an operation which takes an argument T and returns a boolean. Use this functional interface, if you want to define a lambda expression which performs some test on an argument and returns true or false depending upon outcome of the test.
+
+For example,
+
+Imagine an operation where you want only a list of “Mathematics” students from the above listOfStudents. Let’s see how to do it using Predicate.
+
+Lambda expression implementing Predicate : Checking specialization of a Student
+
+Predicate<Student> mathematicsPredicate = (Student student) -> student.getSpecialization().equals("Mathematics");
+         
+List<Student> mathematicsStudents = new ArrayList<Student>();
+         
+for (Student student : listOfStudents) 
+{
+    if (mathematicsPredicate.test(student)) 
+    {
+        mathematicsStudents.add(student);
+    }
+}
+b) Consumer – Consumes an object
+
+Consumer represents an operation which takes an argument and returns nothing. Use this functional interface If you want to compose a lambda expression which performs some operations on an object.
+
+For example, displaying all students with their percentage.
+
+Lambda expression implementing Consumer : Displaying all students with their percentage
+
+Consumer<Student> percentageConsumer = (Student student) -> {
+        System.out.println(student.getName()+" : "+student.getPercentage());
+    };
+         
+for (Student student : listOfStudents) 
+{
+    percentageConsumer.accept(student);
+}
+
+
+c) Function – Applies to an object
+
+Function represents an operation which takes an argument of type T and returns a result of type R. Use this functional interface if you want to extract some data from an existing data.
+
+For example, extracting only the names from listOfStudents.
+
+Lambda expression implementing Function : Extracting only the names of all students
+
+Function<Student, String> nameFunction = (Student Student) -> Student.getName();
+         
+List<String> studentNames = new ArrayList<String>();
+         
+for (Student student : listOfStudents) 
+{
+    studentNames.add(nameFunction.apply(student));
+}
+
+d) Supplier – Supplies the objects
+
+Supplier represents an operation which takes no argument and returns the results of type R. Use this functional interface when you want to create new objects.
+
+Lambda expression implementing Supplier : Creating a new Student
+
+Supplier<Student> studentSupplier = () -> new Student(111111, "New Student", 92.9, "Java 8");
+         
+listOfStudents.add(studentSupplier.get());
+

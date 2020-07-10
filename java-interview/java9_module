@@ -1,0 +1,499 @@
+Java 9 Modules
+
+Java SE 9: Jigsaw Project
+Jigsaw project is going to introduce completely new concept of Java SE 9: Java Module System.
+
+It is very big and prestigious project from Oracle Corp in Java SE 9 release. Initially, they have started this project as part of Java SE 7 Release. However, with huge changes, it’s postponed to Java SE 8 then again postponed. Now it is about to release with Java SE 9 in September 2017.
+
+Main Goals of Jigsaw Project:
+
+The Modular JDK
+As we know, Current JDK system is too big. So they have decided to divide JDK itself into small modules to get a number of benefits (We will discuss them soon in the coming sections).
+
+Modular Source Code
+Current source code jar files are too big, especially rt.jar is too big right. So they are going to divide Java Source code into smaller modules.
+
+Modular Run-Time Images
+The main goal of this Feature is “Restructure the JDK and JRE run-time images to accommodate modules”.
+
+Encapsulate Most Internal APIs
+The main goal of this feature is “Make most of the JDK’s internal APIs inaccessible by default but leave a few critical, widely-used internal APIs accessible”.
+
+Java Platform Module System
+The main goal of this Feature is “Allowing the user to create their modules to develop their applications”.
+
+jlink: The Java Linker
+The main goal of this jlink Tool is “Allowing the user to create executable to their applications”.
+
+If you don’t understand these things clearly, do NOT worry. We will discuss these concepts in-depth with some useful examples in the coming sections and also in my coming posts.
+
+Problems of Current Java System?
+In this section, we will discuss “Why we need Java SE 9 Module System” that means the problems of Current Java System.
+
+Java SE 8 or earlier systems have following problems in developing or delivering Java Based applications.
+
+As JDK is too big, it is a bit tough to scale down to small devices. Java SE 8 has introduced 3 types of compact profiles to solve this problem: compact1, compact2, and compact3. But it does not solve this problem.
+JAR files like rt.jar etc are too big to use in small devices and applications.
+As JDK is too big, our applications or devices are not able to support better Performance.
+There is no Strong Encapsulation in the current Java System because “public” access modifier is too open. Everyone can access it.
+As JDK, JRE is too big, it is hard to Test and Maintain applications.
+As the public is too open, They are not to avoid the accessing of some Internal Non-Critical APIs like sun.*, *.internal.* etc.
+As User can access Internal APIs too, Security is also big issue.
+Application is too big.
+Its a bit tough to support Less Coupling between components.
+To solve all these problems, Oracle Corp is going to release Java Module system in Java SE 9 Release.
+
+Advantages of Java SE 9 Module System
+Java SE 9 Module System is going to provide the following benefits
+
+As Java SE 9 is going to divide JDK, JRE, JARs etc, into smaller modules, we can use whatever modules we want. So it is very easy to scale down the Java Application to Small devices.
+Ease of Testing and Maintainability.
+Supports better Performance.
+As public is not just public, it supports very Strong Encapsulation. (Don’t worry its a big concept. we will explore it with some useful examples soon).
+We cannot access Internal Non-Critical APIs anymore.
+Modules can hide unwanted and internal details very safely, we can get better Security.
+Application is too small because we can use only what ever modules we want.
+Its easy to support Less Coupling between components.
+Its easy to support Single Responsibility Principle (SRP).
+We will explore all these concepts one by one soon.
+
+Compare JDK 8 and JDK 9 :
+
+We know what a JDK software contains. After installing JDK 8 software, we can see a couple of directories like bin, jre, lib etc in Java Home folder.
+
+However, Oracle Corp has changed this folder structure a bit differently as shown below.
+ in jdk9 in place of jre folder we have jmods folder.
+ 
+
+JDK 8 Folder Structure:
+
+jdk8
+	- bin
+	-jre
+		-bin
+		lib/rt.jar
+	-lib/tools.jar
+
+
+JDK 9 Folder Structure:
+
+jdk9
+	-bin
+	-conf
+	-jmods
+	-lib
+
+java module system
+
+Here JDK 9 does NOT contain JRE. In JDK 9, JRE is separated into a separate distribution folder. JDK 9 software contains a new folder “jmods”. It contains a set of Java 9 Modules as shown below.
+
+In JDK 9, No rt.jar and No tools.jar
+
+jmods folder, java modules
+
+NOTE:-
+As of today, “jmods” contains 95 modules. It may increase in the final release.
+“jmods” folder is available at ${JAVA_HOME}/jmods. These are known as JDK Modules.
+
+Q) What is Java 9 Module?
+
+A Module is a self-describing collection of Code, Data, and some Resources. It is a set of related Packages, Types (classes, abstract classes, interfaces etc) with Code & Data and Resources.
+
+Each Module contains only a set of related code and data to support Single Responsibility (Functionality) Principle (SRP).
+
+java 9 modules system
+
+The main goal of Java 9 Module System is to support Modular Programming in Java.
+
+We will discuss on “What is a Module Descriptor” and “How to develop Java Modules” in my coming posts.
+
+Mother of Java 9 Module System :
+
+As of now, Java 9 Module System has 95 modules in Early Access JDK. Oracle Corp has separated JDK jars and Java SE Specifications into two set of Modules.
+
+All JDK Modules starts with “jdk.*”
+All Java SE Specifications Modules starts with “java.*”
+Java 9 Module System has a “java.base” Module. It’s known as Base Module. It’s an Independent module and does NOT dependent on any other modules. By default, all other Modules dependent on this module.
+
+That’s why “java.base” Module is also known as The Mother of Java 9 Modules.
+
+It’s default module for all JDK Modules and User-Defined Modules.
+
+Compare Java 8 and Java 9 Applications :
+
+We have already developed many Java applications using Java 5, 6,7, or 8. We know how a Java 8 or earlier applications looks like and what it contains.
+
+In brief, I have depicted a Java 8 applications in a diagram as shown below:
+
+java 8 application module
+packages
+	-Type(Classes, Iterfacesetc)
+	-Code/Data/Resources
+
+In a Java 8 or earlier applications, Top level component a Package. It groups a set related to types into a group. It also contains a set of resources.
+
+Java 9 Applications does not have much difference with this. It just introduced a new component called “Module”, which is used to group a set of related Packages into a group. And one more new component that Module Descriptor (“module-info.java”). That’s it.
+
+Rest of the application is same as earlier versions of applications as shown below.
+
+java 9 application module system
+
+Modules
+	-packages
+	-Types(Classes,Interface etc)
+	-code/data/resources
+	
+
+Like Java 8 applications have Packages as a Top level components, Java 9 applications have Module as Top Level components.
+
+NOTE:-
+Each Java 9 Module have one and only one Module and one Module Descriptor. Unlike Java 8 Packages, We cannot create multiple modules into a single Module.
+
+In brief I can say a Java 9 Module contains the following main components:
+
+One Module
+Module Name
+Module Descriptor
+Set of Packages
+Set of Types and Resources
+Here Resources may be module-info.java (Module Descriptor) or any other properties or XML.
+
+We have discussed too much theory in this post. I think that is enough to understand the basics of Java 9 Module system. We will start some basic Module development in my coming post. I will discuss some more Theory concepts or Java 9 Module System terminology as and when required.
+
+Introduction to Java 9 Module :
+
+A Java 9 Module is a named, self-describing collection of Code and Data. It’s Code is organized as a set of Packages containing types (classes, abstract classes, interfaces, enums etc). It’s Data includes resources and other kinds of static information.
+
+
+In Simple Terms,
+
+  A Module = Code + Data
+ 
+ Java 9 Module :
+	Code + (Data +resources+ module-descriptor) 
+	
+Java 9 Module Basics :
+
+We should remember the following important points about Java 9 Module:
+
+Each module has a unique Name.
+Each module has some description in a source file.
+A Module description is expressed in a source file called “module-info.java”.
+As “module-info.java” file describes a Module, it is also known as “Module Descriptor”.
+A Module Descriptor is a Java file. It is not an XML, Text file or Properties file.
+By convention, we should use same name “module-info.java” for Module Descriptor.
+By convention, Module Descriptor file is placed in the top level directory of a Module.
+Each Module can have any number of Packages and Types.
+As of now, JDK 9 EA (Early Access) have 95 modules.
+We can create our own modules.
+One Module can dependent on any number of modules.
+Each Module should have one and only one Module Descriptor (“module-info.java”).
+
+Java 9 Module Rules :
+
+We should follow these rules to develop Java 9 Modules:
+
+-Each module have a unique name
+As Modules live in a global space in JVM, each module should have a unique name. Like package names and JAR file names, we can use Reverse Domain Name pattern to define a module name.
+
+For example:-
+We are going to develop modules for www.journaldev.com, then you can use “com.journaldev.mod1” as your first module name, then “com.journaldev.mod2” and so on.
+
+-Each module should have one and only one Module Descriptor
+By convention, Java 9 Module system allows “module-info.java” as Module Descriptor. It should be placed at root folder of the Module.
+
+For example:-
+If We are going to develop “com.journaldev.mod1” module, then we should place our Module Descriptor under “com.journaldev.mod1” name.
+
+-A Module can have any number of packages.
+One Module cannot have multiple sub-module code and description.
+
+
+Java 9 Module Descriptor :
+
+In a Java 9 Module, Module Descriptor is a resource, which contains Module Meta Data. It is NOT an XML or a properties file, a plain Java file.
+
+We must name this file as “module-info.java”. By convention, we mush place it at the root folder of the module. It is used to provide Module Description.
+
+Like other Java source files, a Module file is compiled into “module-info.class” using javac command. We will see it in my next post.
+
+A Module Descriptor is created using “module” keyword as shown below:
+
+
+module  {
+  // Module Meta Data goes here.
+}
+Example:-
+
+
+module com.journaldev {
+ 
+}
+
+It is a simple and minimal Module Descriptor example. Now Let us discuss what is a Module Meta Data?
+
+What is Module Meta Data?
+As we discussed in the previous section, we can use Module Descriptor to provide Module Meta Data. A Module has the following Meta Data:
+
+A unique name.
+exports clause.
+requires clause.
+Let us discuss these points in-depth with some useful examples here.
+
+Module has a unique name.
+We use “module” keyword to define module name as shown below:
+Example:-
+
+
+module com.journaldev {
+ 
+}
+
+A Module can exports it’s packages to outside world so that other Modules can use them.
+In Module Descriptor, we use “exports” clause to export a package(s) to outside world or to other Modules.
+
+Example:-
+
+
+module com.journaldev.mod1 {
+   exports com.journaldev.services;
+}
+NOTE:-
+It is not mandatory to export all packages. It’s up-to the Module Owner to decide which one to export and which one not.
+
+A Module can import or use other modules packages.
+In Module Descriptor, we use “requires” clause to import other Module’s packages.
+
+Example:-
+
+
+module com.journaldev.mod2 {
+   requires com.journaldev.services;
+}
+In the previous point, “com.journaldev.mod1” has exported “com.journaldev.services” package so that here “com.journaldev.mod2” is importing and using them.
+
+A Module can have more than this Meta Data. As a Beginner to Java 9 Module System, it is enough to start Modular Programming. We will discuss those few more Meta Data in my coming posts.
+
+
+Important points to remember about a Module Descriptor :
+
+A Module Descriptor just have a Module name and nothing that means no exports clause and no requires clause.
+A Module Descriptor can have only exports clause, no requires clause. That means it is exports it’s packages to other Modules and NOT depending on any other modules. It’s an Independent module.
+A Module Descriptor can have both exports clause and requires clause. That means it is exports it’s packages to other Modules and also using other Module’s packages. It is depending on any other modules. It’s NOT an Independent module.
+A Module Descriptor can have zero, one or more exports clause.
+A Module Descriptor can have zero, one or more requires clause
+
+
+module com.hello{
+   exports  com.hello;
+   requires java.sql;
+}
+
+
+Java 8 Jars Vs Java 9 Modules:
+
+
+As we know in Java 8 or earlier versions, we use create JARs (Of course WARS or EARs) to deploy them into servers or use them in other applications.
+
+When we create Java 8 or earlier versions project in Eclipse IDE or any IDE, IDE adds lots of JDK JARs into our Project CLASSPATH as shown below:
+
+
+
+When we create Java 9 Module project in Eclipse IDE or any IDE, IDE adds lots of JDK Modules into our Project MODULEPATH as shown below:
+
+
+
+From Java 9 on-wards, We refer MODULEPATH instead of CLASSPATH. Of course, Java 9 supports both MODULEPATH and CLASSPATH.
+
+We will see about “When we use MODULEPATH?” and “When we use CLASSPATH?” in my coming posts in depth.
+
+In Java 9, we can develop both Public API and Private API in a Module as shown below.
+
+
+
+ClassPath Vs ModulePath
+As a Java Developer, we know what is CLASSPATH right. So far we are in CLASSPATH Hell or JAR Hell. From Java 9 on-wards, we are going to jump into another Hell: That is MODULEPATH Hell.
+
+A ClassPath is a sequence of classes and packages (or JARs) which are user-defined classes and built-in classes. JVM or Java Compiler requires this to compile the application or classes.
+
+A ModulePath is a sequence of Modules (which are provided in a Folder format or JAR format). If a Module is in folder format, that means its in Exploded Module format. If its in a JAR format, that jar is know as “Modular JAR“.
+
+Don’t worry if you don’t understand these concepts. As we are going to learn new concept, it takes time to understand the new terminology. Move on to the next post.
+
+I will explain all these concepts in-detail in my coming posts. ModulePath is one of the new concept or terminology in Java 9 Module System. We should understand it in-detail.
+
+Steps to Develop a Java 9 Module :
+
+We will follow these steps one by one to develop and test our “HelloWorld” Module.
+
+Create Module name folder, for example “com.hello”.
+Create Module Packages, for example “com.hello”.
+Create our Java component, for example “HelloWorld.java”.
+Create Module Descriptor, for example “module-info.java”.
+Define Module Description in Module Descriptor, for example “exports com.hello;” of “module-info.java” in “com.hello” module.
+Create Module Jars if required.
+Test our modules.
+
+
+Develop “HelloWorld” Module
+We first start with “HelloWorld” Module development. Please refer our Problem statement diagram for more details.
+
+Create “HelloWorld” Module name folder: com.hello
+
+
+mkdir com.hello
+Create “HelloWorld” Module package name folder: com\hello
+
+
+mkdir com.hello\com\hello
+Please refer the following diagram for the above two steps:
+
+
+
+Develop “HelloWorld.java” component under package name “com.hello\com\hello”.
+
+HelloWorld.java
+
+
+package com.hello;
+
+public class HelloWorld {
+
+  public String sayHelloWorld() {
+
+      return "Hello World!";
+  }
+
+}
+Develop Module Descriptor at Module root folder “com.hello”.
+
+module-info.java
+
+
+module com.hello {
+
+  exports com.hello;
+ 
+}
+If we observe this Module Descriptor, we can say that “com.hello” is exporting “com.hello” package to outside world so that our HelloWorldClient program can use it.
+
+“com.hello” Module full tree structure as shown below:
+
+
+
+Develop “HelloWorldClient” Module
+Like “HelloWorld” Module, We need to follow the same steps to develop this module. Please refer our Problem statement diagram for more details.
+
+Create “HelloWorldClient” Module name folder: com.hello.client
+
+
+mkdir com.hello.client
+Create “HelloWorldClient” Module package name folder: com\hello\client
+
+
+mkdir com.hello\com\hello\client
+Develop “HelloWorldClient.java” component under package name “com.hello\com\hello\client”.
+
+HelloWorldClient.java
+
+
+package com.hello.client;
+
+import com.hello.HelloWorld;
+
+public class HelloWorldClient {
+
+  public static void main (String arg[]) {
+
+    HelloWorld hello = new HelloWorld();
+    System.out.println(hello.sayHelloWorld());
+	
+  }
+
+}
+Develop Module Descriptor at Module root folder “com.hello”.
+
+module-info.java
+
+
+module com.hello.client {
+
+  requires com.hello;
+  
+}
+If we observe above Module Descriptor, we can say that “com.hello.client” module is using types which are available in “com.hello” package name. It is not exporting anything to the outside world. So other modules cannot access types defined under “com.hello.client” package name.
+
+Both “com.hello” and “com.hello.client” Modules full tree structure as shown below:
+
+
+
+We have developed our two modules successfully. It’s time to compile them for testing purpose.
+
+Set Java SE 9 Environment
+Almost everyone knows, after installing Java SE 9 EA(Early Access) software we need to set two Environment variables.
+
+JAVA_HOME
+PATH
+As I’m using Java SE 8 for other projects, I’m setting these two variables only at Command Prompt. Please set these variables as System Variables.
+
+
+
+NOTE:- If you are new to Java Tools (java,javac and jar) updates to support Java 9 Module System, please go through my post to learn them in-detail:
+
+Java SE 9 Tools Changes (Link to be updated soon)
+
+Compile “HelloWorld” Module
+In this section, we will compile our “HelloWorld” first Module.
+
+Please use the following javac command to compile this module:
+
+
+F:\Java9ModuleExamples>javac -d output com.hello\com\hello\HelloWorld.java com.hello\module-info.java
+
+Or
+
+F:\Java9ModuleExamples>javac -d output com.hello\com\hello\HelloWorld.java 
+
+F:\Java9ModuleExamples>javac -d output com.hello\module-info.java
+Now, “com.hello” module output folder looks like as shown below:
+
+
+
+As our “HelloWorldClient” Module uses this “HelloWorld” Module, we should have com.hello Module Jar file to refer it in Client module. Let us create this using the following jar command.
+
+
+jar -c -f mlib\com.hello.jar -C output .
+Now our “HelloWorld” Module archieved into a jar file: com.hello.jar which is located at mlib folder as shown below:
+
+
+
+If we observe our “com.hello” module jar file content as shown above, we can see our Module Descriptor is compiled to “module-info.class” file.
+
+Before moving to next step, please remove output directory.
+
+
+F:\Java9ModuleExamples>rmdir /s output
+output, Are you sure (Y/N)? Y
+
+F:\Java9ModuleExamples>mkdir output
+Compile “HelloWorldClient” Module
+In this section, we will compile our “HelloWorldClient” second Module. Java SE 9 “javac” command supports “module-path” option to refer other modules.
+
+Please use the following javac command to compile this module:
+
+
+F:\Java9ModuleExamples>javac --module-path mlib -d output com.hello.client\module-info.java
+
+F:\Java9ModuleExamples>javac --module-path mlib -d output com.hello.client\com\hello\client\HelloWorldClient.java
+We know our “com.hello.jar” file is located at “mlib” and “com.hello.client” is depending on “com.hello” module.
+
+In order to refer “com.hello” module in “com.hello.client” compilation process, we should use “module-path” to refer “mlib” folder as shown above. Without this path, we cannot compile “com.hello.client” module components.
+
+Test “HelloWorldClient” Module
+Now, We have compiled both modules successfully. It’s time to test “com.hello.client” module component in this section.
+
+“com.hello.client” module have a Java component: “HelloWorldClient.java” which contain a main() method so we can run this program as usual using “java” command.
+
+
+F:\Java9ModuleExamples>java --module-path mlib -m com.hello.client
+Hello World!

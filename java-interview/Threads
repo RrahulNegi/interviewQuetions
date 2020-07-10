@@ -1,0 +1,2084 @@
+Q) Different Ways Of Defining Threads In Java ?
+
+1) Thread As A Separate Concrete Class
+Threads class can be defined as a separate concrete class. This method of defining thread class is useful when more than one classes need that task to be performed.
+
+
+//Thread as a separate concrete class
+class MyThread extends Thread
+{
+    @Override
+    public void run()
+    {
+        System.out.println("Keep Some task here......");
+    }
+}
+ 
+//Usage Class
+class UsageClassOne
+{
+    void method()
+    {
+        //Using the thread and it's task
+ 
+        MyThread t = new MyThread();
+        t.start();
+    }
+}
+ 
+//Usage Class
+class UsageClassTwo
+{
+    void method()
+    {
+        //Using the thread and it's task
+ 
+        MyThread t = new MyThread();
+        t.start();
+    }
+}
+
+2) Thread As A Nested Class or Static Inner Class :
+Thread class can be defined as a nested class or static inner class of the usage class. This method is useful when only one class uses the thread and it’s task more oftenly.
+
+public class UsageClass
+{
+    //Thread class as a nested class or Static Inner Class of the usage class
+    static class MyThread1 extends Thread
+    {
+        @Override
+        public void run()
+        {
+            System.out.println("Keep some task here.....");
+        }
+    }
+ 
+    //Another thread class as a nested class or Static Inner Class of the usage class
+    static class MyThread2 implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            System.out.println("Keep some task here......");
+        }
+    }
+ 
+    public static void main(String[] args)
+    {
+        //Using the MyThread1 and it's task
+ 
+        MyThread1 thread1 = new MyThread1();
+        thread1.start();
+ 
+        //Using MyThread2 and it's task
+ 
+        MyThread2 thread2 = new MyThread2();
+        Thread t = new Thread(thread2);
+        t.start();
+    }
+}
+3) Thread As A Member Inner Class or Non-static Inner Class:
+This method is also useful when one class uses thread and it’s task more excessively.
+
+public class UsageClass
+{
+    //Thread class as a member inner class or Non-static Inner Class of the usage class
+    class MyThread1 extends Thread
+    {
+        @Override
+        public void run()
+        {
+            System.out.println("Keep Some task here.....");
+        }
+    }
+ 
+    //Another thread class as a member inner class or Non-Static Inner Class of the usage class
+    class MyThread2 implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            System.out.println("Keep some task here.....");
+        }
+    }
+ 
+    public static void main(String[] args)
+    {
+        //Using MyThread1 and it's task
+ 
+        MyThread1 thread1 = new UsageClass().new MyThread1();
+        thread1.start();
+ 
+        //Using MyThread2 and it's task
+ 
+        MyThread2 thread2 = new UsageClass().new MyThread2();
+        Thread t = new Thread(thread2);
+        t.start();
+    }
+}
+
+4) Thread As A Local Inner Class :
+The thread class can be defined as a local inner class of the method of the usage class. If declared so, only that method can use the functionality of that thread.
+
+
+public class UsageClass
+{
+    public static void main(String[] args)
+    {
+        //Thread as a Local Inner Class
+        class MyThread1 extends Thread
+        {
+            @Override
+            public void run()
+            {
+                System.out.println("Keep some task here.....");
+            }
+        }
+ 
+        //Another thread as a Local Inner Class
+        class MyThread2 implements Runnable
+        {
+            @Override
+            public void run()
+            {
+                System.out.println("Keep some task here.....");
+            }
+        }
+ 
+        //Using MyThread1 and it's task
+ 
+        MyThread1 thread1 = new MyThread1();
+        thread1.start();
+ 
+        //Using MyThread2 and it's task
+ 
+        MyThread2 thread2 = new MyThread2();
+        Thread t = new Thread(thread2);
+        t.start();
+    }
+}
+5) Thread As An Anonymous Inner Class :
+
+Threads can be declared as anonymous inner class. This method is useful when some task is needed only once. You can’t use the thread which is declared as anonymous inner class multiple times. You can use it only once.
+
+
+public class UsageClass
+{
+    public static void main(String[] args)
+    {
+        //Thread as an anonymous inner class
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                System.out.println("Keep some task here.....");
+            }
+        }.start();
+ 
+        //Thread as an anonymous inner class
+        new Thread(new Runnable() {
+ 
+            @Override
+            public void run()
+            {
+                System.out.println("Keep some task here.....");
+ 
+            }
+        }).start();
+    }
+}
+6) Usage class itself as a thread class.
+You can declare usage class itself as a thread class. If declared so, other classes can also use the thread and it’s task.
+
+class UsageClass extends Thread
+{
+    @Override
+    public void run()
+    {
+        System.out.println("Keep some task here.....");
+    }
+ 
+    public static void main(String[] args)
+    {
+        //Using thread and it's task
+ 
+        UsageClass t = new UsageClass();
+        t.start();
+    }
+}
+ 
+//Another Usage Class
+class AnotherUsageClass
+{
+    void method()
+    {
+        //Using the thread and it's task
+ 
+        UsageClass t = new UsageClass();
+        t.start();
+    }
+}
+
+
+Q) Types Of Threads In Java ?
+
+1) User Thread
+
+2) Daemon Thread
+
+1) User Thread :
+
+User threads are threads which are created by the application or user. They are high priority threads. JVM (Java Virtual Machine) will not exit until all user threads finish their execution. JVM wait for these threads to finish their task. These threads are foreground threads.
+
+2)Daemon Thread :
+Daemon threads are threads which are mostly created by the JVM. These threads always run in background. These threads are used to perform some background tasks like garbage collection and house-keeping tasks. These threads are less priority threads. JVM will not wait for these threads to finish their execution. JVM will exit as soon as all user threads finish their execution. JVM doesn’t wait for daemon threads to finish their task.
+
+Some Things-To-Remember about user threads and daemon threads In Java :
+
+- You can convert user thread into daemon thread explicitly by calling setDaemon() method of the thread.
+
+class UserThread extends Thread
+{
+    @Override
+    public void run()
+    {
+        for(int i = 0; i < 1000; i++)
+        {
+            System.out.println("This is an user thread....");
+        }
+    }
+}
+ 
+public class ThreadsInJava
+{
+    //Main Thread
+    public static void main(String[] args)
+    {
+        UserThread userThread = new UserThread();   //Creating the UserThread
+ 
+        userThread.setDaemon(true);        //Changing the thread as Daemon
+ 
+        userThread.start();               //Starting the thread
+    }
+}
+
+- You can’t set a daemon property after starting the thread. If you try to set the daemon property when the thread is active, It will throw a IllegalThreadStateException at run time.
+
+UserThread userThread = new UserThread();   //Creating the UserThread
+ 
+        userThread.start();               //Starting the thread
+ 
+        userThread.setDaemon(true);        //This statement will throw IllegalThreadStateException
+		
+- You can check whether the thread is user thread or a daemon thread by using isDaemon() method of Thread class. This method returns “true” for a daemon thread and “false” for a user thread.
+
+
+-Daemon property of a thread is inherited from it’s parent thread. i.e The thread created by user thread will be user thread and the thread created by daemon thread will be a daemon thread.
+
+- The main thread or primary thread created by JVM is an user thread.
+
+Q) Naming A Thread In Java ?
+
+1)  public final void setName(String name)   —-> It changes the name of the thread to “name”.
+
+2)  public final String getName()   —-> Returns the name of the thread.
+
+Some Things-To-Remember about Naming a thread in java :
+- setName() method may throw a SecurityException at run time if the current thread can not modify the name of the specified thread.
+You can change the name of a thread at any state of the thread.
+
+- Default Name Of The Thread :
+In Java, All threads have names. If you are not providing the name to a thread, thread will get default name. Default name of the thread will be consist of a word “Thread”, followed by hyphen (-) and followed by an integer number starting with 0.
+
+Thread t = new Thread();
+ 
+        System.out.println(t.getName());    //Output : Thread-0
+ 
+ - How to retrieve a name of the primary thread or main thread?
+First, get the reference of the main thread by using currentThread() method of Thread class. currentThread() method returns the reference of currently executing thread. After, getting the reference of the main thread, use the getName() method to retrieve the name of the thread.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = Thread.currentThread();
+ 
+        System.out.println(t.getName());    //Output : main
+    }
+}
+
+- Another method of naming a thread in java :
+public MyThread(String name)
+    {
+        super(name);
+    }
+ 
+ Q) How to identify a thread in java?
+ 
+ In a multithreaded application, It is very important to know which thread is currently executing it’s task. But the question is, How to identify a thread?. The answer which effortlessly comes to our mind is “through it’s name”. Of course, you can identify a thread by it’s name.  But, more than one threads can have the same name. This makes identifying a thread more difficult. There is a solution for this problem from JDK 1.5 onward. JVM assigns one unique long number for every thread created. This remains unchanged for the whole life term of a thread. This number can be used to identify a thread.
+
+From JDK 1.5 onward, One more method added to java.lang.Thread class. That is getID() method. This method returns the unique long number associated with a thread. That can be used as an identifier of a thread. Below is the method signature of getID() method.
+
+public long getID()
+
+class MyThread extends Thread
+{
+    @Override
+    public void run()
+    {
+        System.out.println(getId()+" is running");   //Output : 8 is running
+    }
+}
+ 
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        MyThread t = new MyThread();    
+ 
+        t.start();      
+ 
+        System.out.println(t.getId());     //Output : 8
+    }
+}
+
+Some Things-To-Remember about Identifying a Thread In Java :
+1) Thread ID is a unique positive long number. It remains the same for a thread during its whole life term. Thread ID may be reused when the thread is terminated.
+
+2) Can we use the thread ID before a thread is started?
+
+Thread ID is generated as soon as the thread is created. So, you can use the thread ID before starting the thread.
+
+3) Does thread ID changes when the thread name is changed?.
+
+Thread ID doesn’t change when the name of a thread is changed. Therefore, if the thread name is changed, still thread can be identified by it’s ID.
+
+4) How to get ID of the main thread?
+
+First, get the reference of main thread using currentThread() method of Thread class. After getting the reference of main thread, call the getId() method on it.
+
+5) Can we give our own ID to the thread?
+
+No, we can’t assign our own ID to the thread. But, we can change the way getID() returns the thread ID as it is not a final method.
+
+
+
+Q) Priority Of A Thread In Java?
+
+As we know, Java allows multithreaded programming. i.e Java application can have more than one threads running simultaneously. When an application has multiple threads they are choosen to execute on priority basis. A thread with highest priority is choosen first for execution than the thread with lowest priority.
+
+public final void setPriority(int newPriority)  —> Changes the priority of a thread to newPriority.
+
+public final int getPriority()  —>  Returns the priority of a thread.
+
+Some Things-To-Remember about priority of a thread in java :
+There are three constant fields in java.lang.Thread class related to priority of a thread. They are,
+MIN_PRIORITY   —> It defines the lowest priority that a thread can have and It’s value is 1.
+
+NORM_PRIORITY  —> It defines the normal priority that a thread can have and it’s value is 5.
+
+MAX_PRIORITY  —> It defines the highest priority that a thread can have and it’s value is 10.
+
+- setPriority() method may throw two exceptions. One is IllegelArgumentException if supplied priority is not in the range of MIN_PRIORITY and MAX_PRIORITY and another one is SecurityException if current thread can not modify the priority of a specified thread.
+
+- How to retrieve the priority of a main thread?
+First, get the reference to a main thread using currentThread() method of Thread class. After getting the reference of main thread, call getPriority() method on it.
+
+Can we change the priority of a main thread?.
+Yes, we can change the priority of a main thread. First, get the reference of main thread using CurrentThread() method. Then call setPriority() method on it.
+
+public static void main(String[] args)
+    {
+        Thread t = Thread.currentThread();
+ 
+        t.setPriority(8);
+ 
+        System.out.println(t.getPriority());    //Output : 8
+    }
+
+
+Q) Thread.sleep() Method In Java?
+
+Thread.sleep() method makes the currently executing thread to pause it’s execution for a specified period of time. There are two overloaded forms of sleep() method available in java.lang.Thread class. They are,
+
+1) public static void sleep(long millis) throws InterruptedException
+
+—> It causes the currently executing thread to sleep for specified number of milliseconds.
+
+2) public static void sleep(long millis, int nanos) throws InterruptedException
+
+—> It makes the currently executing thread to sleep for specified number of milliseconds plus specified number of nanoseconds.
+
+Thread.sleep() method throws InterruptedException if a thread in sleep is interrupted by other threads. InterruptedException is a checked type of exception. That means, “Thread.sleep()” statement must be enclosed within try-catch blocks or it must be specified with throws clause.
+
+When the thread is going for sleep, it does not release the synchronized locks it holds.
+
+Q) Joining The Threads In Java?
+
+join() method of java.lang.Thread class is used to mantain the order of execution of threads. Using join() method, you can make the currently executing thread to wait for the some other threads to finish their task. For example, Let’s us assume that there are two threads namely, thread1 and thread2. You can make thread1 to hold it’s execution for some time so that thread2 can finish it’s task. After, thread2 finishes it’s task, thread1 resumes it’s execution.For this to happen, you should call join() method on thread2 within thread1.
+
+1) public final void join() throws InterruptedException
+
+—> Currently executing thread waits for a thread to finish it’s task on which it is called.
+
+2) public final void join(long millis) throws InterruptedException
+
+—> currently executing thread waits at most millis milliseconds for a thread to finish it’s task on which it is called.
+
+3) public final void join(long millis, int nanos) throws InterruptedException
+
+—> Currently executing thread waits at most millis milliseconds plus nanos nanoseconds for a thread to finish it’s task on which it is called.
+
+Like sleep() method, join() method also throws InterruptedException. Therefore, you have to keep calling statement to join() method in try-catch blocks or else propagate the exception with throws clause.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args) throws InterruptedException
+    {
+        System.out.println("main thread started : Task is to print numbers from 0 to 3000");
+ 
+        final Thread t1 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                //Thread t1 started : Task is to print numbers from 0 to 1000"
+ 
+                for(int i = 0; i <= 1000; i++)
+                {
+                    System.out.println(i);
+                }
+ 
+                System.out.println("Numbers from 0 to 1000 are printed");
+            }
+        };
+ 
+        final Thread t2 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                //Thread t2 started : Task is to print numbers from 1001 to 2000
+ 
+                try
+                {
+                    t1.join(5000, 500000);   //waits at most 5.5 seconds for thread t1 to finish it's task
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+ 
+                for(int i = 1001; i <= 2000; i++)
+                {
+                    System.out.println(i);
+                }
+ 
+                System.out.println("Numbers from 1001 to 2000 are printed");
+            }
+        };
+ 
+        Thread t3 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                //Thread t3 started : Task is to print numbers from 2001 to 3000
+ 
+                try
+                {
+                    t2.join(5000);   //waits at most 5 seconds for thread t2 to finish it's task
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+ 
+                for(int i = 2001; i <= 3000; i++)
+                {
+                    System.out.println(i);
+                }
+ 
+                System.out.println("Numbers from 2001 to 3000 are printed");
+            }
+        };
+ 
+        t3.start();
+ 
+        t2.start();
+ 
+        t1.start();
+ 
+        t3.join();     //Waits for t3 thread to finish it's task
+ 
+        //No need enclose this join statement in try-catch blocks as we have already specified the exception with throws clause.
+ 
+        System.out.println("Task is finished");
+    }
+}
+
+The main task of above example is to print the numbers from 0 to 3000. This task is devided into three parts and each part is assigned to one thread. i.e The task of printing the numbers from 0 to 1000 is assigned to thread t1, printing the numbers from 1001 to 2000 is assigned to thread t2 and printing the numbers from 2001 to 3000 is assigned to thread t3.The main thread creates and starts these three threads. main thread also calls join method on thread t3 (Line 79). So main thread waits until thread t3 finishes it’s task. Before starting it’s task, thread t3 calls join method on thread t2 (Line 57). So, thread t3 waits at most 5 seconds for thread t2 to finish it’s task. Thread t2 also calls join method on thread t1 (Line 32). So, thread t2 waits at most 5.5 seconds for thread t1 to finish it’s task. So, first t1 finishes it’s task and then t2 finishes it’s task and after that t3 finishes it’s task. After all these three threads finish their task, main threads completes the task.
+
+Q) Thread Interference In Java ?
+
+Multithreading has it’s own pros and cons. The main advantage of multithreading is that we can perform multiple tasks simultaneously. At the same time it is a challenge for software developers to protect the memory into which thread are reading or writing. There is no problem when multiple threads have their own memory. Each thread will be reading or writing into their own memory. There is a challenge when multiple threads share same memory. Every thread will be reading or writing into same memory. This creates inconsistent data in the memory.
+In the above example, There are two threads namely t1 and t2, and they are using same Shared class object s1. Both t1 and t2 are calling sharedMethod() of s1 object from their run() method. As we are starting thread t1 first, let’s assume that thread t1 is executing the last statement of sharedMethod() (Line 12) and thread t2 has finished executing the first statement of sharedMethod() (Line 7). While executing last statement, thread t1 will be expecting value of “i” as 30 as it has assigned 30 to it in the previous statement (Line 11), but t2 has changed value of “i” to 10 while executing the first statement. So, t1 will read value of “i” as 10 not 30 as it is expecting.
+
+How To Avoid Thread Interference or How To Acheive Thread Safeness?
+Following are some methods which are used to avoid thread interference in java.(These methods will be discussed in detail in subsequent articles).
+
+By declaring the method as synchronized.
+By declaring the variables as final.
+By declaring the variable as volatile.
+By creating the immutable objects.
+By using Atomic operations.
+By restricting the access to same object by multiple threads.
+
+Q) 10 Points-To-Remember About Synchronization In Java ?
+
+Synchronization in java is a strategy or a method to avoid thread interference and hence protecting the data from inconsistency. synchronization is also one of the way to make code thread safe. Through synchronization, we can make the threads to execute particular method or block in sync not simultaneously.
+
+
+ 
+Synchronization in java is implemented using synchronized keyword. synchronized keyword can be used with methods or blocks but not with the variables.
+
+When a method or block is declared as synchronized, only one thread can enter into that method or block. When one thread is executing synchronized method or block, the other threads which wants to execute that method or block wait or suspend their execution until first thread is done with that method or block. Thus avoiding the thread interference and achieving thread safeness
+
+class Shared
+{
+    int i;
+ 
+    synchronized void SharedMethod()
+    {
+        Thread t = Thread.currentThread();
+ 
+        for(i = 0; i <= 1000; i++)
+        {
+            System.out.println(t.getName()+" : "+i);
+        }
+    }
+}
+ 
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        final Shared s1 = new Shared();
+ 
+        Thread t1 = new Thread("Thread - 1")
+        {
+            @Override
+            public void run()
+            {
+                s1.SharedMethod();
+            }
+        };
+ 
+        Thread t2 = new Thread("Thread - 2")
+        {
+            @Override
+            public void run()
+            {
+                s1.SharedMethod();
+            }
+        };
+ 
+        t1.start();
+ 
+        t2.start();
+    }
+}
+
+In the above example, both threads t1 and t2 wants to execute sharedMethod() of s1 object. But, sharedMethod() is declared as synchronized. So, whichever thread enters first into sharedMethod(), it continues to execute that method. The other thread waits for first thread to finish it’s execution of sharedMethod(). It never enters into sharedMethod() until first thread is done with that method. That means, both threads are executing sharedMethod() one by one not simultaneously. This protects the value of “i” in the memory for a particular thread.
+
+The Logic Behind The Synchronization In Java :
+The synchronization in java is built around an entity called object lock or monitor. Here is the brief description about lock or monitor.
+
+Whenever an object is created to any class, an object lock is created and is stored inside the object.
+One object will have only one object lock associated with it.
+Any thread wants to enter into synchronized methods or blocks of any object, they must acquire object lock associated with that object and release the lock after they are done with the execution.
+The other threads which wants to enter into synchronized methods of that object have to wait until the currently executing thread releases the object lock.
+To enter into static synchronized methods or blocks, threads have to acquire class lock associated with that class as static members are stored inside the class memory.
+Synchronized Blocks :
+Some times, you need only some part of the method to be synchronized not the whole method. This can be achieved with synchronized blocks. Synchronized blocks must be defined inside a definition blocks like methods, constructors, static initializer or instance initializer.
+
+synchronized block takes one argument and it is called mutex. if synchronized block is defined inside non-static definition blocks like non-static methods, instance initializer or constructors, then this mutex must be an instance of that class. If synchronized block is defined inside static definition blocks like static methods or static initializer, then this mutex must be like ClassName.class.
+
+Here is an example of static and non-static synchronized blocks.
+
+class Shared
+{
+    static void staticMethod()
+    {
+        synchronized (Shared.class)
+        {
+            //static synchronized block
+        }
+    }
+ 
+    void NonStaticMethod()
+    {
+        synchronized (this)
+        {
+            //Non-static synchronized block
+        }
+    }
+ 
+    void anotherNonStaticMethod()
+    {
+        synchronized (new Shared())
+        {
+            //Non-static synchronized block
+        }
+    }
+}
+10 Points-To-Remember About Synchronization In Java :
+1) You can use synchronized keyword only with methods but not with variables, constructors, static initializer and instance initializers.
+
+
+class Shared
+{
+    synchronized int i;    //compile time error, can't use synchronized keyword with variables
+ 
+    synchronized public Shared()
+    {
+        //compile time error, constructors can not be synchronized
+    }
+ 
+    synchronized static
+    {
+        //Compile time error, Static initializer can not be synchronized
+    }
+ 
+    synchronized
+    {
+        //Compile time error, Instance initializer can not be synchronized
+    }
+}
+2) Constructors, Static initializer and instance initializer can’t be declared with synchronized keyword, but they can contain synchronized blocks.
+
+class Shared
+{
+    public Shared()
+    {
+        synchronized (this)
+        {
+            //synchronized block inside a constructor
+        }
+    }
+ 
+    static
+    {
+        synchronized (Shared.class)
+        {
+            //synchronized block inside a static initializer
+        }
+    }
+ 
+    {
+        synchronized (this)
+        {
+            //synchronized block inside a instance initializer
+        }
+    }
+}
+3) Both static and non-static methods can use synchronized keyword. For static methods, thread need class level lock and for non-static methods, thread need object level lock.
+
+
+class Shared
+{
+    synchronized static void staticMethod()
+    {
+        //static synchronized method
+    }
+ 
+    synchronized void NonStaticMethod()
+    {
+        //Non-static Synchronized method
+    }
+}
+4) It is possible that both static synchronized and non-static synchronized methods can run simultaneously. Because, static methods need class level lock and non-static methods need object level lock.
+
+5) A method can contain any number of synchronized blocks. This is like synchronizing multiple parts of a method.
+
+class Shared
+{
+    static void staticMethod()
+    {
+        synchronized (Shared.class)
+        {
+            //static synchronized block - 1
+        }
+ 
+        synchronized (Shared.class)
+        {
+            //static synchronized block - 2
+        }
+    }
+ 
+    void NonStaticMethod()
+    {
+        synchronized (this)
+		
+        {
+            //Non-static Synchronized block - 1
+        }
+ 
+        synchronized (this)
+        {
+            //Non-static Synchronized block - 2
+        }
+    }
+}
+6) Synchronization blocks can be nested.
+
+synchronized (this)
+{
+    synchronized (this)
+    {
+        //Nested synchronized blocks
+    }
+}
+7) Lock acquired by the thread before executing a synchronized method or block must be released after the completion of execution, no matter whether execution is completed normally or abnormally (due to exceptions).
+
+8) Synchronization in java is Re-entrant in nature. A thread can not acquire a lock that is owned by another thread. But, a thread can acquire a lock that it already owns. That means if a synchronized method gives a call to another synchronized method which needs same lock, then currently executing thread can directly enter into that method or block without acquiring the lock.
+
+9) synchronized method or block is very slow. They decrease the performance of an application. So, special care need to be taken while using synchronization. Use synchronization only when you needed it the most.
+
+10) Use synchronized blocks instead of synchronized methods. Because, synchronizing some part of a method improves the performance than synchronizing the whole method.
+
+Q)What Is Deadlock In Java?
+
+Deadlock in java is a condition which occurs when two or more threads get blocked waiting for each other for an infinite period of time to release the resources(Locks) they hold. Deadlock is the common problem in multi threaded programming which can completely stops the execution of an application. So, extra care need to be taken while writing the multi threaded programs so that deadlock never occurs.
+
+
+ 
+Let’s look at one simple example of deadlock condition.
+
+
+class Shared
+{
+    synchronized void methodOne(Shared s)
+    {
+        Thread t = Thread.currentThread();
+ 
+        System.out.println(t.getName()+"is executing methodOne...");
+ 
+        System.out.println(t.getName()+"is calling methodTwo...");
+ 
+        s.methodTwo(this);
+ 
+        System.out.println(t.getName()+"is finished executing methodOne...");
+    }
+ 
+    synchronized void methodTwo(Shared s)
+    {
+        Thread t = Thread.currentThread();
+ 
+        System.out.println(t.getName()+"is executing methodTwo...");
+ 
+        System.out.println(t.getName()+"is calling methodOne...");
+ 
+        s.methodOne(this);
+ 
+        System.out.println(t.getName()+"is finished executing methodTwo...");
+    }
+}
+ 
+public class DeadLockInJava
+{
+    public static void main(String[] args)
+    {
+        final Shared s1 = new Shared();
+ 
+        final Shared s2 = new Shared();
+ 
+        Thread t1 = new Thread()
+        {
+            public void run()
+            {
+                s1.methodOne(s2);
+            }
+        };
+ 
+        Thread t2 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                s2.methodTwo(s1);
+            }
+        };
+ 
+        t1.start();
+ 
+        t2.start();
+    }
+}
+In the above multithreaded program, thread t1 and t2 are concurrent threads i.e they are executing their task simultaneously. There are two Shared class objects, s1 and s2, which are shared by both the threads. Shared class has two synchronized methods, methodOne() and methodTwo(). That means, only one thread can execute these methods at a given time.
+
+First, thread t1 enters the methodOne() of s1 object by acquiring the object lock of s1. At the same time, thread t2 also enters the methodTwo() of s2 object by acquiring the object lock of s2. methodOne() of s1 object, currently executing by thread t1, calls methodTwo() of s2 object from it’s body. So, thead t1 tries to acquire the object lock of s2 object. But object lock of s2 object is already acquired by thread t2. So, thread t1 waits for thread t2 to release the object lock of s2 object.
+
+At the same time, thread t2 is also executing methodTwo() of s2 object. methodTwo() of s2 object also makes a call to methodOne() of s1 object. So, thread t2 tries to acquire the object lock of s1 object. But, it is already acquired by thread t1. So, thread t2 also waits for thread t1 to release the object lock of s1 object.
+
+Thus, both the threads wait for each other to release the object locks they own. They wait for infinite period of time to get the object locks owned by opposite threads. This condition of threads waiting forever is called Deadlock.
+
+Q) How To Avoid The Deadlock In Java ?
+
+Try to avoid nested synchronized blocks. Nested synchronized blocks makes a thread to acquire another lock while it is already holding one lock. This may create the deadlock if another thread wants the same lock which is currently held by this thread.
+
+synchronized (Lock A)
+{
+    //Some statements
+ 
+    synchronized (Lock B)
+    {
+        //Try to avoid this block
+    }
+}
+Lock Ordering :
+If you needed nested synchronized blocks at any cost, then make sure that threads acquire the needed locks in some predefined order. For example, If there are three threads t1, t2 and t3 running concurrently and they needed locks A, B and C in the following manner,
+
+
+Thread t1 :
+        Lock A
+        Lock B
+Thread t2 :
+        Lock A
+        Lock C
+Thread t3 :
+        Lock A
+        Lock B
+        Lock C
+In the above scenario, t1 needs A and B locks, t2 needs A and C locks and t3 needs A, B and C locks. If you define an order to acquire the locks like, Lock A must be acquired before Lock B and Lock B must be acquired before Lock c, then deadlock never occurs in the above case.
+
+If you define such lock ordering, then thread t2 never acquire lock C and t3 never acquire lock B and lock C until they got lock A. They will wait for lock A until it is released by t1. After lock A is released by t1, any one of these threads will acquire lock A on the priority basis and finishes their task. Other thread which is waiting for lock A, will never try to acquire remaining locks.
+
+By defining such lock ordering, you can avoid the deadlock.
+
+Lock Timeout :
+Another deadlock preventive tip is to specify the time for a thread to acquire the lock. If it fails to acquire the specified lock in the given time, then it should give up trying for a lock and retry after some time. Such method of specifying time to acquire the lock is called lock timeout.
+
+Lock the code where it is actually needed. For example,If you want only some part of the method to be thread safety, then lock only that part not the whole method.
+
+void method()
+{
+    //Some statements
+ 
+    synchronized (this)
+    {
+        //Locking only some part of the method
+    }
+ 
+    //Some statements
+}
+
+
+Q)Interthread Communication Using wait(), notify() and notifyAll()?
+
+Threads can communicate with each other using wait(), notify() and notifyAll() methods. These methods are final methods of java.lang.Object class. That means every class in java will have these methods. Below is the method signatures of these methods.
+
+
+ 
+1) public final void wait() throws InterruptedException
+
+This method tells the currently executing thread to release the lock of this object and wait until some other thread acquires the same lock and notify it using either notify() or notifyAll() methods. This method throws InterruptedException if waiting thread is interrupted.
+
+2)public final void notify()
+
+This method wakes up one thread randomly that called wait() method on this object.
+
+3) public final void notifyAll()
+
+This method wakes up all the threads that called wait() method on this object. But, only one thread will acquire lock of this object depending upon the priority.
+
+Important Note : These three methods must be called within synchronized method or block. Any thread which calls these methods must have lock of that object.
+
+Below is an example for using wait() and notify() methods.
+
+class Shared
+{
+    synchronized void methodOne()
+    {
+        Thread t = Thread.currentThread();
+ 
+        System.out.println(t.getName()+" is relasing the lock and going to wait");
+ 
+        try
+        {
+            wait();        //releases the lock of this object and waits
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        System.out.println(t.getName()+" got the object lock back and can continue with it's execution");
+    }
+ 
+    synchronized void methodTwo()
+    {
+        Thread t = Thread.currentThread();
+ 
+        try
+        {
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        notify();     //wakes up one thread randomly which is waiting for lock of this object
+ 
+        System.out.println("A thread which is waiting for lock of this object is notified by "+t.getName());
+    }
+}
+ 
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        final Shared s = new Shared();
+ 
+        Thread t1 = new Thread()
+        {
+            public void run()
+            {
+                s.methodOne();   //t1 calling methodOne() of 's' object
+            }
+        };
+ 
+        Thread t2 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                s.methodTwo();   //t2 calling methodTwo() of 's' object
+            }
+        };
+ 
+        t1.start();
+ 
+        t2.start();
+    }
+}
+In this example, Thread t1 and t2 are sharing shared class object ‘s’. Thread t1 is calling methodOne() and thread t2 is calling methodTwo() of ‘s’ object. Both the methods are synchronized. That means, for any thread to enter these methods, they must acquire lock of ‘s’ object.
+
+First, thread t1 acquires the object lock and enters methodOne(). Thread t2 waits for thread t1 to release the object lock. Thread t1 calls wait() method within methodOne(). As soon as, it calls wait() method, It releases the lock of ‘s’ object and goes for wait. Thread t2 acquires this lock and enters methodTwo(). After entering methodTwo(), thread t2 sleeps for 5 seconds and calls notify() method on this object. It wakes up thread t1 which is waiting for this object lock. As soon as, thread t2 releases the object lock after finishing it’s execution of methodTwo(), thread t1 acquires this lock and executes remaining statements of methodOne(). In this manner, both threads t1 and t2 communicate with each other and share the lock.
+
+For more clarification, see the below picture.
+
+wait(), notify() and notifyAll()
+Some Things-To-Remember About wait(), notify() and notifyAll() :
+If a thread calls notify() method and more than one threads are waiting for the object lock, then only one thread will be notified randomly.
+When a thread calls notifyAll() method on an object, it notifies all the threads which are waiting for this object lock. But, only one thread will acquire this object lock depending upon priority.
+When you call sleep() method on a thread, thread goes to sleep with holding the object lock with it. But, if you call wait() method, thread releases the object lock and goes for sleep. This is the main difference between wait() and sleep() methods.
+wait(), notify() and notifyAll() are final methods of java.lang.Object class not java.lang.Thread class.
+wait(), notify() and notifyAll() – all these three methods throw IllegalMonitorStateException if the calling thread does not owns the object lock.
+wait() method is overloaded in Object class. There are two more wait() methods available in Object class. They are,
+public final void wait(long timeOut)  —>  This makes current thread to wait until any other thread calls notify() or notifyAll() on this object or specified time(milli seconds) has elapsed.
+
+public final void wait(long timeOut, int nanos)  —>  This makes current thread to wait until any other thread calls notify() or notifyAll() on this object or specified time(milli seconds + nano seconds) has elapsed.
+
+
+Q) Thread Intruption in java ?
+
+Thread interruption in java is a mechanism in which a thread which is either sleeping or waiting can be made to stop sleeping or waiting. Thread interruption is like telling the thread that it should stop waiting or sleeping and return to running status. Thread interruption is programmatically implemented using interrupt() method of java.lang.Thread class. interrupt() method is a non-static public method of Thread class. Here is the method signature of interrupt() method.
+
+
+ 
+public void interrupt()
+
+The whole thread interruption mechanism depends on an internal flag called interrupt status. The initial value of this flag for any thread is false. When you call interrupt() method on a thread, interrupt status of that thread will be set to true. When a thread throws InterruptedException, this status will be set to false again. Remember, InterruptedException is thrown when a thread is interrupted while it is sleeping or waiting. Many methods of Thread class like sleep(), wait(), join() throw InterruptedException.
+
+Here is an example for interrupting a sleeping thread using interrupt() method.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(10000);        //Thread is sleeping for 10 seconds
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread is interrupted");
+                }
+            }
+        };
+ 
+        t.start();
+ 
+        try
+        {
+            Thread.sleep(3000);      //Main thread is sleeping for 3 seconds
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        t.interrupt();         //main thread is interrupting thread t
+    }
+}
+In the above example, main thread is creating and starting thread t. Thread t is going to sleep for 10 seconds as soon as it started. main thread, after starting thread t, is also going to sleep for 3 seconds. After sleeping for 3 seconds, main thread calls interrupt() method on thread t. It interrupts sleeping thread t. It causes the InterruptedException.
+
+Some Things-To-Remember About Thread Interruption In Java :
+
+-) You can check whether a particular thread is interrupted or not using isInterrupted() method of Thread class. This method returns current interrupt status of a thread.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                System.out.println(isInterrupted());         //Output : true
+ 
+                try
+                {
+                    Thread.sleep(10000);        //Thread is going to sleep for 10 seconds
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread is interrupted");
+                }
+ 
+                System.out.println(isInterrupted());       //Output : false
+            }
+        };
+ 
+        t.start();
+ 
+        t.interrupt();         //main thread is interrupting thread t
+    }
+}
+
+-)Interrupted thread will not be eligible to go for sleep. i.e If you call interrupt() method on a thread which is not yet slept but running, such thread will throw InterruptedException while going to sleep. Look at the below example. In this example, thread t is interrupted by main thread as soon as it is started. But thread t will not throw InterruptedException as soon as it is interrupted. Instead it will continue to print 1000 numbers. While going to sleep after printing the numbers it will raise InterruptedException.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                for(int i = 0; i <= 1000; i++)
+                {
+                    System.out.println(i);
+                }
+ 
+                try
+                {
+                    Thread.sleep(10000);        //Thread is going to sleep for 10 seconds
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread is interrupted");
+                }
+            }
+        };
+ 
+        t.start();
+ 
+        t.interrupt();         //main thread is interrupting thread t
+    }
+}
+
+-)A thread can interrupt itself. i.e a thread can call interrupt() method on it’s own.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                System.out.println(isInterrupted());         //Output : false
+ 
+                interrupt();              //Thread interrupting itself
+ 
+                System.out.println(isInterrupted());        //Output : true
+ 
+                try
+                {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread interrupted");
+                }
+ 
+                System.out.println(isInterrupted());       //Output : false
+            }
+        };
+ 
+        t.start();
+    }
+}
+
+-)There is one more method to check interrupt status of a thread, called interrupted() method. It is a static method of Thread class. It also returns the current interrupt status of a thread like isInterrupted() method. But, it clears interrupt status of a thread. i.e if interrupt status of a thread is true, then it will set the status to false.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                System.out.println(interrupted());         //Output : false
+ 
+                interrupt();
+ 
+                System.out.println(interrupted());        //Output : true
+ 
+                System.out.println(interrupted());       //Output : false
+            }
+        };
+ 
+        t.start();
+    }
+}
+interrupt() method will throw SecurityException if current thread can not interrupt a calling thread.
+
+
+Q) Thread Life Cycle OR Thread States In Java ?
+
+There are six thread states. They are NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING and TERMINATED. At any point of time, thread will be in any one of these states.
+
+
+ 
+java.lang.Thread class has one member of enum type called State. All states of a thread are stored in this enum as constants. Let’s extract these thread states programmatically. Execute the below program, it prints all states of a thread.
+
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread.State[] states = Thread.State.values();
+ 
+        for (Thread.State state : states)
+        {
+            System.out.println(state);
+        }
+    }
+}
+The output of this program will be,
+NEW
+RUNNABLE
+BLOCKED
+WAITING
+TIMED_WAITING
+TERMINATED
+
+These are the states of a thread in Java . let’s discuss these thread states one by one.
+
+1) NEW
+A thread will be in this state before calling start() method.
+
+public class JavaThreadLifeCycle
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread();
+ 
+        //Checking the state before starting the thread
+ 
+        System.out.println(t.getState());     //Output : NEW
+    }
+}
+
+
+
+2) RUNNABLE
+A thread will be in this state after calling the start() method.
+
+public class JavaThreadLifeCycle
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread();
+ 
+        t.start();
+ 
+        //Checking the state after starting the thread
+ 
+        System.out.println(t.getState());     //Output : RUNNABLE
+    }
+}
+3) BLOCKED
+A thread will be in this state when a thread is waiting for object lock to enter into synchronized method/block or a thread will be in this state if deadlock occurs. Below example shows the states of two threads when deadlock occurs.
+
+class Shared
+{
+    synchronized void methodOne(Shared s)
+    {
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        s.methodTwo(this);
+    }
+ 
+    synchronized void methodTwo(Shared s)
+    {
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        s.methodOne(this);
+    }
+}
+ 
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        final Shared s1 = new Shared();
+ 
+        final Shared s2 = new Shared();
+ 
+        Thread t1 = new Thread()
+        {
+            public void run()
+            {
+                s1.methodOne(s2);
+            }
+        };
+ 
+        Thread t2 = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                s2.methodTwo(s1);
+            }
+        };
+ 
+        t1.start();
+ 
+        t2.start();
+ 
+        try
+        {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        //Checking states of both the threads
+ 
+        System.out.println(t1.getState());     //Output : BLOCKED
+ 
+        System.out.println(t2.getState());     //Output : BLOCKED
+    }
+}
+4)  WAITING
+A thread will be in this state when wait() or join() method is called. Below example shows the thread state when join() method is called.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        final Thread t1 = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        Thread t2 = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    t1.join();
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t2.start();
+ 
+        t1.start();
+ 
+        try
+        {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        //Checking the state of t2 after it calls join() on t1
+ 
+        System.out.println(t2.getState());     //Output : WAITING
+    }
+}
+5) TIMED_WAITING
+A thread will be in this state when thread is sleeping. i.e A thread will be in this state when sleep() or wait() with timeOut or join() with timeOut is called.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t.start();
+ 
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        //Checking the state when thread is sleeping
+ 
+        System.out.println(t.getState());     //Output : TIMED_WAITING
+    }
+}
+
+6) TERMINATED
+A thread will be in this state once it finishes it’s execution.
+
+31
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                for(int i = 0; i <= 25; i++)
+                {
+                    System.out.println(i);
+                }
+            }
+        };
+ 
+        t.start();
+ 
+        try
+        {
+            Thread.sleep(2000);      //Main thread is sleeping for 2 sec
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        //Checking the state when thread t is finished it's execution
+ 
+        System.out.println(t.getState());     //Output : TERMINATED
+    }
+}
+
+Q) Thread Group in Java ?
+
+Thread group in java is used to group similar threads into one unit. A thread group can also contain other thread groups. Thread groups are constructed using java.lang.ThreadGroup class. The main use of thread groups is that you can handle multiple threads simultaneously.
+
+How To Add Threads To Thread Group :
+While creating the threads itself, you can specify it’s group using constructor which takes ThreadGroup and name of a thread as arguments. Below example shows how to add threads and child thread group to a parent thread group.
+
+
+public class ThreadGroupInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Parent Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Thread Group");
+ 
+        //Adding threads to ThreadGroup while creating threads itself
+ 
+        Thread t1 = new Thread(parentGroup, "Thread 1");
+ 
+        Thread t2 = new Thread(parentGroup, "Thread 2");
+ 
+        //Creating child thread group
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Thread Group");
+ 
+        //Adding a thread to child thread group
+ 
+        Thread t3 = new Thread(childGroup, "Thread 3");
+    }
+}
+
+
+Some Useful Methods Of ThreadGroup :
+1) getParent() Method :
+
+It returns the parent of the thread group in the form ClassName[name=name of the parent, maxpri=Maximum priority].
+
+public class ThreadGroupsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Parent Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Thread Group ");
+ 
+        //Creating Child Thread Group
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Thread Group");
+ 
+        //Printing parent of Child Thread Group
+ 
+        System.out.println(childGroup.getParent());   //Output : java.lang.ThreadGroup[name=Parent Thread Group ,maxpri=10]
+    }
+}
+
+
+2) setDaemon() And isDaemon() Methods :
+
+setDaemon() method is used to set the daemon property of a thread group. isDaemon() is used to check whether a thread group is daemon or not.
+
+public class ThreadGroupsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Thread Group 
+ 
+        ThreadGroup threadGroup = new ThreadGroup("Thread Group ");
+ 
+        //Setting the daemon property of thread group
+ 
+        threadGroup.setDaemon(true);
+ 
+        //Checking the daemon property of thread group
+ 
+        System.out.println(threadGroup.isDaemon());   //Output : true
+    }
+}
+3) setMaxPriority() And getMaxPriority() Methods :
+
+setMaxPriority() is used to set the maximum priority of a thread group. getMaxPriority() method is used to retrieve the maximum priority of a thread group.
+
+
+public class ThreadGroupsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Thread Group 
+ 
+        ThreadGroup threadGroup = new ThreadGroup("Parent Thread Group ");
+ 
+        //Setting the maximum priority of thread group
+ 
+        threadGroup.setMaxPriority(8);
+ 
+        //getting the maximum priority of thread group
+ 
+        System.out.println(threadGroup.getMaxPriority());   //Output : 8
+    }
+}
+4) activeCount() and activeGroupCount() Methods
+
+activeCount() returns the number of active threads in a specified group and it’s subgroups. activeGroupCount() returns the numbers of active thread groups in a specified group and it’s subgroups.
+
+
+public class ThreadGroupsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating parent Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Thread Group ");
+ 
+        Thread t1 = new Thread(parentGroup, "Thread 1")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t1.start();
+ 
+        Thread t2 = new Thread(parentGroup, "Thread 2")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t2.start();
+ 
+        //Creating Child Thread Group
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Group");
+ 
+        Thread t3 = new Thread(childGroup, "Thread 3")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t3.start();
+ 
+        //Checking Active thread count
+ 
+        System.out.println(parentGroup.activeCount());     //Output : 3
+ 
+        //Checking Active thread group count
+ 
+        System.out.println(parentGroup.activeGroupCount());   //Output : 1
+    }
+}
+
+5) interrupt() Method :
+
+This method is used to interrupt all threads in a group.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Group ");
+ 
+        Thread t1 = new Thread(parentGroup, "Thread 1")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread interrupted");
+                }
+            }
+        };
+ 
+        t1.start();
+ 
+        Thread t2 = new Thread(parentGroup, "Thread 2")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread interrupted");
+                }
+            }
+        };
+ 
+        t2.start();
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Group");
+ 
+        Thread t3 = new Thread(childGroup, "Thread 3")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Thread interrupted");
+                }
+            }
+        };
+ 
+        t3.start();
+ 
+        //Interrupting whole group
+ 
+        parentGroup.interrupt();
+    }
+}
+6) destroy() Method :
+
+This method is used to destroy the whole thread group and it’s subgroups. Before calling this method, thread group must be empty i.e all threads in a group must be exited. Otherwise this method will throw IllegalThreadStateException.
+
+
+public class ThreadGroupsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Group ");
+ 
+        Thread t1 = new Thread(parentGroup, "Thread 1");
+ 
+        t1.start();
+ 
+        Thread t2 = new Thread(parentGroup, "Thread 2");
+ 
+        t2.start();
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Group");
+ 
+        Thread t3 = new Thread(childGroup, "Thread 3");
+ 
+        t3.start();
+ 
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+ 
+        //Destroying the whole group
+ 
+        parentGroup.destroy();
+    }
+}
+
+7)enumerate() Method :
+
+There exist four versions of enumerate() method in ThreadGroup class. They are,
+
+public int enumerate(Thread[] list) —> It copies all active threads of a group into specified array of threads.
+
+public int enumerate(Thread[] list, boolean recurse) —> It copies all active threads of a group into specified array of threads. If recurse is true, subgroups are also enumerated.
+
+public int enumerate(ThreadGroup[] list) —> It copies all active subgroups of a thread group into specified array of ThreadGroup.
+
+public int enumerate(ThreadGroup[] list, boolean recurse) —> It copies all active subgroups of a thread group into specified array of ThreadGroup. If recurse is true, subgroups of subgroups are also enumerated.
+
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        //Creating Thread Group 
+ 
+        ThreadGroup parentGroup = new ThreadGroup("Parent Group ");
+ 
+        Thread t1 = new Thread(parentGroup, "Thread 1")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t1.start();
+ 
+        Thread t2 = new Thread(parentGroup, "Thread 2")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t2.start();
+ 
+        ThreadGroup childGroup = new ThreadGroup(parentGroup, "Child Group");
+ 
+        Thread t3 = new Thread(childGroup, "Thread 3")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        };
+ 
+        t3.start();
+ 
+        //Enumerating all active threads
+ 
+        Thread[] threads = new Thread[parentGroup.activeCount()];
+ 
+        int No_Of_Active_Threads = parentGroup.enumerate(threads);
+ 
+        System.out.println(No_Of_Active_Threads);
+ 
+        for (Thread thread : threads)
+        {
+            System.out.println(thread.getName());
+        }
+    }
+}
+
+
+Q) 7 Things Every Java Programmer Should Know About Threads In Java
+ 
+1) If you start a thread that is already started, you will get java.lang.IllegalThreadStateException at run time. There will be no compilation errors.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread();
+ 
+        t.start();
+ 
+        t.start();    //This statement will throw java.lang.IllegalThreadStateException
+    }
+}
+
+2) Exception is thread wise not execution wise. i.e exception effects the thread in which it occurs. Other threads will execute normally. In the below example, exception occurs in thread t1. only this thread will be terminated abruptly. Thread t2 will continue to execute it’s task.
+
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t1 = new Thread()
+        {
+            public void run()
+            {
+                String s = null;
+ 
+                System.out.println(s.length());  //This statement will throw NullPointerException
+ 
+                System.out.println("This statement will not be executed");
+            }
+        };
+ 
+        Thread t2 = new Thread()
+        {
+            public void run()
+            {
+                for(int i = 0; i <= 1000; i++)
+                {
+                    System.out.println(i);
+                }
+            }
+        };
+ 
+        t1.start();
+ 
+        t2.start();
+    }
+}
+
+3) As we all know that start() method internally calls run() method. What happens when you call run() method directly?. When you call run() method of a thread directly, calling thread will execute the task defined in the run() method. For example, in the below program main thread is calling run() method of thread t. In this case, main thread will execute run() method not thread t.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = new Thread()
+        {
+            public void run()
+            {
+                System.out.println(Thread.currentThread().getName());    //Output : main
+            }
+        };
+ 
+        t.run();
+    }
+}
+
+4) Which one is better way to implement threads in java. Is it using Thread class or using Runnable interface?. It is the most confusing question for a java developer. I am of opinion that when multiple threads need to execute same task, then use Runnable interface. If multiple threads need to execute different tasks, then go for Thread class.
+
+5) Setting the priority to a thread is not effective as we thought. Setting Priority of a thread is just an advice to OS not an instruction. It is up to OS to consider this advice.
+
+6) Every thread in java is a member of a thread group. When a java application first starts up, Java runtime system creates a thread group called main. main thread is also member of this group.
+
+public class ThreadsInJava
+{
+    public static void main(String[] args)
+    {
+        Thread t = Thread.currentThread();
+ 
+        System.out.println(t.getThreadGroup());    
+ 
+        //Output : java.lang.ThreadGroup[name=main,maxpri=10]
+    }
+}
+7) A thread is a permanent member of a thread group to which it joins during creation. You can’t move a thread to a new group after creating 
+
+
+Q) Difference between Runnable vs Thread ?
+
+There has been a good amount of debate on which is better way. Well, I also tried to find out and below is my learning.
+
+Implementing Runnable is the preferred way to do it. Here, you’re not really specializing or modifying the thread’s behavior. You’re just giving the thread something to run. That means composition is the better way to go.
+Java only supports single inheritance, so you can only extend one class.
+Instantiating an interface gives a cleaner separation between your code and the implementation of threads.
+Implementing Runnable makes your class more flexible. If you extend Thread then the action you’re doing is always going to be in a thread. However, if you implement Runnable it doesn’t have to be. You can run it in a thread, or pass it to some kind of executor service, or just pass it around as a task within a single threaded application.
+If you are working on JDK 4 or lesser, then there is bug :
+http://bugs.java.com/bugdatabase/view_bug.do;jsessionid=5869e03fee226ffffffffc40d4fa881a86e3:WuuT?bug_id=4533087
+
+
+Q) Difference between lock and monitor – Java Concurrency
+
+Locks :
+
+A lock is kind of data which is logically part of an object’s header on the heap memory. Each object in a JVM has this lock (or mutex) that any program can use to coordinate multi-threaded access to the object. If any thread want to access instance variables of that object; then thread must “own” the object’s lock (set some flag in lock memory area). All other threads that attempt to access the object’s variables have to wait until the owning thread releases the object’s lock (unset the flag).
+
+Once a thread owns a lock, it can request the same lock again multiple times, but then has to release the lock the same number of times before it is made available to other threads. If a thread requests a lock three times, for example, that thread will continue to own the lock until it has “released” it three times.
+
+Please note that lock is acquired by a thread, when it explicitly ask for it. In Java, this is done with the synchronized keyword, or with wait and notify.
+
+Monitors :
+
+Monitor is a synchronization construct that allows threads to have both mutual exclusion (using locks) and cooperation i.e. the ability to make threads wait for certain condition to be true (using wait-set).
+
+In other words, along with data that implements a lock, every Java object is logically associated with data that implements a wait-set. Whereas locks help threads to work independently on shared data without interfering with one another, wait-sets help threads to cooperate with one another to work together towards a common goal e.g. all waiting threads will be moved to this wait-set and all will be notified once lock is released. This wait-set helps in building monitors with additional help of lock (mutex).
+
+Mutual exclusion
+Putting in very simple words, a monitor is like a building that contains one special room (object instance) that can be occupied by only one thread at a time. The room usually contains some data which needs to be protected from concurrent access. From the time a thread enters this room to the time it leaves, it has exclusive access to any data in the room. Entering the monitor building is called “entering the monitor.” Entering the special room inside the building is called “acquiring the monitor.” Occupying the room is called “owning the monitor,” and leaving the room is called “releasing the monitor.” Leaving the entire building is called “exiting the monitor.”
+
+When a thread arrives to access protected data (enter the special room), it is first put in queue in building reception (entry-set). If no other thread is waiting (own the monitor), the thread acquires the lock and continues executing the protected code. When the thread finishes execution, it release the lock and exits the building (exiting the monitor).
+
+If when a thread arrives and another thread is already owning the monitor, it must wait in reception queue (entry-set). When the current owner exits the monitor, the newly arrived thread must compete with any other threads also waiting in the entry-set. Only one thread will win the competition and own the lock.
+
+There is no role of wait-set feature.
+
+Cooperation
+In general, mutual exclusion is important only when multiple threads are sharing data or some other resource. If two threads are not working with any common data or resource, they usually can’t interfere with each other and needn’t execute in a mutually exclusive way. Whereas mutual exclusion helps keep threads from interfering with one another while sharing data, cooperation helps threads to work together towards some common goal.
+
+Cooperation is important when one thread needs some data to be in a particular state and another thread is responsible for getting the data into that state e.g. producer/consumer problem where read thread needs the buffer to be in a “not empty” state before it can read any data out of the buffer. If the read thread discovers that the buffer is empty, it must wait. The write thread is responsible for filling the buffer with data. Once the write thread has done some more writing, the read thread can do some more reading. It is also sometimes called a “Wait and Notify” OR “Signal and Continue” monitor because it retains ownership of the monitor and continues executing the monitor region (the continue) if needed. At some later time, the notifying thread releases the monitor and a waiting thread is resurrected to own the lock.
+
+This cooperation requires both i.e. entry-set and wait-set. Below given diagram will help you in understand this cooperation.
+
+java-monitor
+
+Above figure shows the monitor as three rectangles. In the center, a large rectangle contains a single thread, the monitor’s owner. On the left, a small rectangle contains the entry set. On the right, another small rectangle contains the 
+
+It’s fixed in Java 1.5 but Sun doesn’t intend to fix it in 1.4.
+
+The issue is that at construction time, a Thread is added to a list of references in an internal thread table. It won’t get removed from that list until its start() method has completed. As long as that reference is there, it won’t get garbage collected.
+
+
+
+Q) Java Concurrency – Difference between yield() and join() ?
+
+yield() method
+Theoretically, to ‘yield’ means to let go, to give up, to surrender. A yielding thread tells the virtual machine that it’s willing to let other threads be scheduled in its place. This indicates that it’s not doing something too critical. Note that it’s only a hint, though, and not guaranteed to have any effect at all.
+
+Let’s list down important points from above definition:
+
+Yield is a Static method and Native too.
+Yield tells the currently executing thread to give a chance to the threads that have equal priority in the Thread Pool.
+There is no guarantee that Yield will make the currently executing thread to runnable state immediately.
+It can only make a thread from Running State to Runnable State, not in wait or blocked state.
+
+yield() method example usage
+In below example program, I have created two threads named producer and consumer for no specific reason. Producer is set to minimum priority and consumer is set to maximum priority. I will run below code with/without commenting the line Thread.yield(). Without yield(), though the output changes sometimes, but usually first all consumer lines are printed and then all producer lines.
+
+With using yield() method, both prints one line at a time and pass the chance to another thread, almost all the time.
+
+package test.core.threads;
+ 
+public class YieldExample
+{
+   public static void main(String[] args)
+   {
+      Thread producer = new Producer();
+      Thread consumer = new Consumer();
+       
+      producer.setPriority(Thread.MIN_PRIORITY); //Min Priority
+      consumer.setPriority(Thread.MAX_PRIORITY); //Max Priority
+       
+      producer.start();
+      consumer.start();
+   }
+}
+ 
+class Producer extends Thread
+{
+   public void run()
+   {
+      for (int i = 0; i < 5; i++)
+      {
+         System.out.println("I am Producer : Produced Item " + i);
+         Thread.yield();
+      }
+   }
+}
+ 
+class Consumer extends Thread
+{
+   public void run()
+   {
+      for (int i = 0; i < 5; i++)
+      {
+         System.out.println("I am Consumer : Consumed Item " + i);
+         Thread.yield();
+      }
+   }
+}
+Output of above program “without” yield() method
+I am Consumer : Consumed Item 0
+ I am Consumer : Consumed Item 1
+ I am Consumer : Consumed Item 2
+ I am Consumer : Consumed Item 3
+ I am Consumer : Consumed Item 4
+ I am Producer : Produced Item 0
+ I am Producer : Produced Item 1
+ I am Producer : Produced Item 2
+ I am Producer : Produced Item 3
+ I am Producer : Produced Item 4
+Output of above program “with” yield() method added
+I am Producer : Produced Item 0
+ I am Consumer : Consumed Item 0
+ I am Producer : Produced Item 1
+ I am Consumer : Consumed Item 1
+ I am Producer : Produced Item 2
+ I am Consumer : Consumed Item 2
+ I am Producer : Produced Item 3
+ I am Consumer : Consumed Item 3
+ I am Producer : Produced Item 4
+ I am Consumer : Consumed Item 4
+join() method
+The join() method of a Thread instance can be used to “join” the start of a thread’s execution to the end of another thread’s execution so that a thread will not start running until another thread has ended. If join() is called on a Thread instance, the currently running thread will block until the Thread instance has finished executing.
+
+//Waits for this thread to die. 
+ 
+public final void join() throws InterruptedException
+Giving a timeout within join(), will make the join() effect to be nullified after the specific timeout. When the timeout is reached, the main thread and taskThread are equally probable candidates to execute. However, as with sleep, join is dependent on the OS for timing, so you should not assume that join will wait exactly as long as you specify.
+
+Like sleep, join responds to an interrupt by exiting with an InterruptedException.
+
+join() method example usage
+package test.core.threads;
+ 
+public class JoinExample
+{
+   public static void main(String[] args) throws InterruptedException
+   {
+      Thread t = new Thread(new Runnable()
+         {
+            public void run()
+            {
+               System.out.println("First task started");
+               System.out.println("Sleeping for 2 seconds");
+               try
+               {
+                  Thread.sleep(2000);
+               } catch (InterruptedException e)
+               {
+                  e.printStackTrace();
+               }
+               System.out.println("First task completed");
+            }
+         });
+      Thread t1 = new Thread(new Runnable()
+         {
+            public void run()
+            {
+               System.out.println("Second task completed");
+            }
+         });
+      t.start(); // Line 15
+      t.join(); // Line 16
+      t1.start();
+   }
+}
+ 
+Output:
+ 
+First task started
+Sleeping for 2 seconds
+First task completed
+Second task completed

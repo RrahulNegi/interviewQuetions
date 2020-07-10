@@ -1,0 +1,560 @@
+1) What is java.util.concurrent.locks.Lock in java?
+The java.util.concurrent.locks.Locks is a  interface and its implementations provide more extensive locking operations than can be obtained using synchronized methods and statements.
+A lock helps in controlling access to a shared resource by multiple threads. Only one thread at a time can acquire the lock and access the shared resource. 
+If a second thread attempts to acquire the lock on shared resource when it is acquired by another thread, the second thread will wait until the lock is released. In this way we can achieve synchronization and race conditions can be avoided.
+In next post we will learn Implementation of custom/own Lock and ReEntrantLock in java.
+Read lock of a ReadWriteLock may allow concurrent access to a shared resource.
+
+
+2) Example of using Locks in java>
+Let's say there is only 1 ticket available in train, and two passengers are trying to book that ticket at same time without any synchronization. Both passengers might end up booking same ticket, which will create some synchronization problems .If synchronization was there only of them would have been able to book ticket. Here, locks can be used as an alternate for synchronization.
+
+
+3) Lock interface important methods in java >
+
+void lock()
+Acquires the lock if it is not held by another thread. And sets lock hold count to 1.
+If current thread already holds lock then lock hold count is increased by 1.
+If the lock is held by another thread then the current thread waits for another thread to release lock.
+
+void unlock()
+ If the current thread is the holding the lock then the lock hold count is decremented by 1. If the lock hold count has reached 0, then the lock is released.
+If lock hold count is still greater than 0 then lock is not released.
+If the current thread is not holding the lock then IllegalMonitorStateException is thrown.
+
+boolean tryLock()
+Acquires the lock if it is not held by another thread and returns true. And sets lock hold count to 1.
+If current thread already holds lock then method returns true. And increments lock hold count by 1.
+If lock is held by another thread then method return false.
+
+boolean tryLock(long timeout, TimeUnit unit)
+            throws InterruptedException 
+Acquires the lock if it is not held by another thread and returns true.  And sets lock hold count to 1.
+If current thread already holds lock then method returns true. And increments lock hold count by 1.
+If lock is held by another thread then current thread will wait until one of the following things happen -
+Another thread releases lock and the lock is acquired by the current thread, or
+Some other thread interrupts the current thread, or
+The specified timeout elapses .
+
+If the lock is acquired then method returns true. And sets lock hold count to 1.
+If specified timeout elapses then method return false.
+
+
+
+Condition newCondition()
+Method returns a Condition instance to be used with this Lock instance. 
+Condition instance are similar to using Wait(), notify() and notifyAll() methods.
+
+IllegalMonitorStateException is thrown if this lock is not held when any of the Condition waiting or signalling methods are called.
+
+Lock is released when the condition waiting methods are called and before they return, the lock is reacquired and the lock hold count restored to what it was when the method was called.
+
+If a thread is interrupted while waiting then InterruptedException will be thrown and following things will happen -
+ the wait will be over, and 
+thread's interrupted status will be cleared.
+
+Waiting threads are signalled in FIFO (first in first out order) order.
+When lock is  fair, first lock is obtained by longest-waiting thread.
+If lock is not  fair, any waiting thread could get lock, at discretion of implementation.
+
+
+4) About Condition interface in java.
+Condition interface is found in java.util.concurrent.locks package.
+Condition instance are similar to using Wait(), notify() and notifyAll() methods on object.
+
+ Condition important methods in java >
+ void await() 
+  method is similar to wait() method of object class.
+boolean await(long time, TimeUnit unit) 
+ method is similar to wait(long timeout) method of object class.
+ void signal() 
+  method is similar to notify() method of object class.
+ void signalAll() 
+  method is similar to notifyAll() method of object class.
+
+Program/ Example to demonstrate usage of newCondition() method  - solving Producer consumer problem >
+
+More detailed description of Condition interface with program, see -
+ReentrantLock class provides  implementation of Lock’s newCondition() method - description and solving producer consumer program using this method.
+
+
+
+5) ReentrantLock class in java >
+java.util.concurrent.locks.ReentrantLock is a class which implements Lock interface. It provides some additional capabilities as defined in Lock interface.
+
+5.1) ReentrantLock constructor in java >
+ReentrantLock()
+Creates an instance of ReentrantLock. 
+This is equivalent to using constructor ReentrantLock(false).
+
+ReentrantLock(boolean fair)
+Creates an instance of ReentrantLock. 
+When fair is set true, first lock is obtained by longest-waiting thread.
+If  fair is set false, any waiting thread could get lock, at discretion of implementation.
+
+
+
+5.2) ReentrantLock class important methods  in java>
+
+ReentrantLock class provides implementation of all Lock interface methods
+void lock()
+void unlock()
+boolean tryLock()
+boolean tryLock(long timeout, TimeUnit unit)
+Condition newCondition()
+
+
+5.3) Additional methods provided by ReentrantLock class in java are >
+  
+void lockInterruptibly() throws InterruptedException 
+If current thread already holds lock then method returns true. And increments lock hold count by 1.
+If the lock is held by another thread then the current thread waits until one of the following thing happens -
+The lock is acquired by the current thread, or
+Some other thread interrupts the current thread.
+As soon as current thread acquires the lock it sets lock hold count to 1.
+
+
+int getQueueLength()
+ Method returns number of threads that may be waiting to acquire this lock.
+ Method is used just for monitoring purposes and not for any kind of synchronization purposes.
+
+
+boolean isHeldByCurrentThread()
+Method returns true if lock is held by current thread. Its similar to Thread.holdsLock() method.
+
+
+6) Program/ Example to demonstrate usage of ReentrantLock in java >
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+ 
+/** Copyright (c), AnkitMittal JavaMadeSoEasy.com */
+public class ReentrantLockTest {
+    public static void main(String[] args) {
+ 
+           Lock lock=new ReentrantLock();
+           MyRunnable myRunnable=new MyRunnable(lock);
+           new Thread(myRunnable,"Thread-1").start();
+           new Thread(myRunnable,"Thread-2").start();
+           
+    }
+}
+ 
+
+
+ 
+class MyRunnable implements Runnable{
+    
+    Lock lock;
+    public MyRunnable(Lock lock) { 
+           this.lock=lock;
+    }
+    
+    public void run(){
+           
+           System.out.println(Thread.currentThread().getName()
+                        +" is Waiting to acquire lock");
+           
+           lock.lock();
+ 
+           System.out.println(Thread.currentThread().getName()
+                        +" has acquired lock.");
+           
+           try {
+                  Thread.sleep(5000);
+                  System.out.println(Thread.currentThread().getName()
+                               +" is sleeping.");
+           } catch (InterruptedException e) {
+                  e.printStackTrace();
+           }
+ 
+           System.out.println(Thread.currentThread().getName()
+                        +" has released lock.");
+           
+           
+           lock.unlock();    
+    }
+}
+ 
+/*OUTPUT
+ 
+Thread-1 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+Thread-1 has acquired lock.
+Thread-1 is sleeping.
+Thread-1 has released lock.
+Thread-2 has acquired lock.
+Thread-2 is sleeping.
+Thread-2 has released lock.
+ 
+*/
+
+
+
+6.1) Let’s discuss output in detail, to get better understanding of ReentrantLock usage in program in java >
+Note : I have mentioned output in green text.
+
+
+Thread-1 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+Thread-1 and Thread-2 are waiting to acquire lock.
+
+Thread-1 has acquired lock.
+Thread-1 has acquired lock by calling lock() method. (Now lock hold count=1)
+Thread-2 has also called lock() method, but it will have to wait until lock hold count becomes 0. (lock hold count will become 0 when Thread-1 will call unlock() method)
+
+Thread-1 is sleeping.
+Thread-1 has released lock.
+Thread-1 has released lock by calling unlock() method. (Now lock hold count=0)
+
+Thread-2 has acquired lock.
+Thread-2 has acquired lock by calling lock() method. (Now lock hold count=1)
+
+Thread-2 is sleeping.
+Thread-2 has released lock.
+Thread-2 has released lock by calling unlock() method. (Now lock hold count=0)
+ 
+
+
+
+7) Program/ Example to demonstrate usage of ReentrantLock’s tryLock() method in java  >
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+ 
+public class ReentrantLockTryLockTest {
+    public static void main(String[] args) {
+ 
+           Lock lock=new ReentrantLock();
+           MyRunnable myRunnable=new MyRunnable(lock);
+           new Thread(myRunnable,"Thread-1").start();
+           new Thread(myRunnable,"Thread-2").start();
+           
+    }
+}
+ 
+
+
+ 
+class MyRunnable implements Runnable{
+    
+    Lock lock;
+    public MyRunnable(Lock lock) { 
+           this.lock=lock;
+    }
+    
+    public void run(){
+           
+           System.out.println(Thread.currentThread().getName()
+                        +" is Waiting to acquire lock");
+           
+           if(lock.tryLock()){
+                  System.out.println(Thread.currentThread().getName()
+                               +" has acquired lock.");
+                  try {
+                        Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                        e.printStackTrace();
+                  }
+                  
+           }
+           else{
+                  System.out.println(Thread.currentThread().getName()
+                               +" didn't got lock.");
+                  
+           }
+ 
+    }
+}
+ 
+/*OUTPUT
+ 
+Thread-1 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+Thread-1 has acquired lock.
+Thread-2 didn't got lock.
+ 
+*/
+
+
+7.1) Let’s discuss output in detail, to get better understanding of ReentrantLock’s tryLock() method usage in program in java >
+Note : I have mentioned output in green text.
+
+
+
+Thread-1 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+
+Thread-1 has acquired lock.
+thread-1 called lock.tryLock(), lock was available. So, thread-1 acquired lock, method returned true and entered if block.
+
+Thread-2 didn't got lock.
+thread-1 called lock.tryLock(), lock wasn’t available. So, method returned false and entered else block.
+
+
+
+
+
+8) Program/ Example to demonstrate usage of ReentrantLock’s getQueueLength() method in java  >
+
+import java.util.concurrent.locks.ReentrantLock;
+ 
+public class ReentrantLockGetQueuedThreadTest {
+    public static void main(String[] args) {
+ 
+           ReentrantLock lock=new ReentrantLock();
+           MyRunnable myRunnable=new MyRunnable(lock);
+           new Thread(myRunnable,"Thread-1").start();
+           new Thread(myRunnable,"Thread-2").start();
+           new Thread(myRunnable,"Thread-3").start();
+           
+    }
+}
+ 
+
+
+ 
+class MyRunnable implements Runnable{
+    
+    ReentrantLock lock;
+    public MyRunnable(ReentrantLock lock) { 
+           this.lock=lock;
+    }
+    
+    public void run(){
+           
+           System.out.println(Thread.currentThread().getName()
+                        +" is Waiting to acquire lock");
+           
+           lock.lock();
+ 
+           System.out.println(Thread.currentThread().getName()
+                        +" has acquired lock.");
+           
+           try {
+                  Thread.sleep(2000);
+           } catch (InterruptedException e) {
+                  e.printStackTrace();
+           }
+ 
+ 
+           System.out.println(">>>>--- getQueueLength = "+lock.getQueueLength()+"---<<<<");
+           
+           System.out.println(Thread.currentThread().getName()
+                        +" has released lock.");
+           
+           lock.unlock();    //read explanation for 5sec
+    }
+}
+ 
+/*OUTPUT
+ 
+ 
+Thread-1 is Waiting to acquire lock
+Thread-3 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+Thread-1 has acquired lock.
+>>>>--- getQueueLength = 2---<<<<
+Thread-1 has released lock.
+Thread-3 has acquired lock.
+>>>>--- getQueueLength = 1---<<<<
+Thread-3 has released lock.
+Thread-2 has acquired lock.
+>>>>--- getQueueLength = 0---<<<<
+Thread-2 has released lock.
+ 
+*/
+
+
+8.1) Let’s discuss output in detail, to get better understanding of ReentrantLock’s getQueueLength() method usage in program in java >
+ 
+Thread-1 is Waiting to acquire lock
+Thread-3 is Waiting to acquire lock
+Thread-2 is Waiting to acquire lock
+Thread-1 has acquired lock.
+>>>>--- getQueueLength = 2---<<<<
+At this moment Thread-2 and Thread-3 were waiting for lock.
+Thread-1 has released lock.
+Thread-3 has acquired lock.
+>>>>--- getQueueLength = 1---<<<<
+At this moment Thread-2 was waiting for lock.
+Thread-3 has released lock.
+Thread-2 has acquired lock.
+>>>>--- getQueueLength = 0---<<<<
+At this moment no thread was waiting for lock.
+Thread-2 has released lock.
+
+
+
+9) Application of using ReentrantLock with program in java >
+
+Reentrantlocks can be used to solve Train-passenger problem when 2 passengers try to book train ticket, dat too when only 1 ticket is available.
+
+Program to show that with Reentrantlocks no problems will happen when  2 passengers try to book train ticket, when only 1 ticket was available >
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+ 
+public class ReentrantLockTest {
+    public static void main(String[] args) {
+ 
+           Lock lock=new ReentrantLock();
+           MyRunnable myRunnable=new MyRunnable(lock);
+           new Thread(myRunnable,"Passenger1 Thread").start();
+           new Thread(myRunnable,"Passenger2 Thread").start();
+           
+    }
+}
+ 
+ 
+
+
+class MyRunnable implements Runnable{
+    
+    int ticketsAvailable=1;
+    Lock lock;
+    public MyRunnable(Lock lock) { 
+           this.lock=lock;
+    }
+    
+    public void run(){
+           
+           System.out.println("Waiting to book ticket for : "+
+                               Thread.currentThread().getName());
+           
+           lock.lock();
+ 
+           
+           if(ticketsAvailable>0){
+                  System.out.println("Booking ticket for : "+
+                                      Thread.currentThread().getName());
+                  
+                  //Let's say system takes some time in booking ticket
+                  //(here we have taken 1 second time)
+                  try{
+                        Thread.sleep(1000); 
+                  }catch(Exception e){}
+                    
+                  ticketsAvailable--;
+                  System.out.println("Ticket BOOKED for : "+
+                                      Thread.currentThread().getName());
+                  System.out.println("currently ticketsAvailable = "+ticketsAvailable);
+           }
+           else{
+                  System.out.println("Ticket NOT BOOKED for : "+
+                                      Thread.currentThread().getName());
+           }
+           
+           
+           lock.unlock();    //read explanation for 5sec
+    }
+}
+ 
+/*OUTPUT
+ 
+Waiting to book ticket for : Passenger1 Thread
+Waiting to book ticket for : Passenger2 Thread
+Booking ticket for : Passenger1 Thread
+Ticket BOOKED for : Passenger1 Thread
+currently ticketsAvailable = 0
+Ticket NOT BOOKED for : Passenger2 Thread
+ 
+*/
+
+
+9.1) OUTPUT ANALYZATION of above program  in java>
+Waiting to book ticket for : Passenger1 Thread
+Waiting to book ticket for : Passenger2 Thread
+first Passenger1 Thread and Passenger2 Thread waited to book tickets.
+
+Booking ticket for : Passenger1 Thread
+Than, Passenger1 Thread acquired lock [by calling lock.lock() ], but Passenger2 Thread wasn’t able to acquire lock and was waiting for Passenger1 Thread to release lock. 
+
+Ticket BOOKED for : Passenger1 Thread
+Passenger1 Thread was successfully able to book ticket and reduce the available ticket count to 0. Than it released object lock  [by calling lock.unlock() ]
+currently ticketsAvailable = 0
+
+Ticket NOT BOOKED for : Passenger2 Thread
+Than, Passenger1 Thread acquired lock [by calling lock.lock() ], but available ticket count at that time was 0 so it wasn’t able to book ticket.
+
+
+
+ 
+10) What will happen if thread that holds lock again calls lock() method in java?
+Initially lock hold count = 0. When thread calls lock() method lock hold count is set to one (Now, lock hold count =1). If same thread again calls lock() method lock hold count is incremented by one (Now, lock hold count =2).
+
+Now some other thread will be able to acquire lock only when lock hold count is 0. Thread will have to wait until lock hold count becomes 0.
+
+When same thread calls unlock() method lock hold count is decremented by one (Now, lock hold count =1) and thread won’t release lock. If same thread again calls unlock() method lock hold count is decremented by one (Now, lock hold count =0), thread will release lock and some other thread can acquire lock.
+
+
+10.1) Program/ Example to show will happen if thread that holds lock again calls lock() method in java >
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+ 
+public class ReentrantLockTest {
+    public static void main(String[] args) {
+ 
+        Lock lock=new ReentrantLock();
+        MyRunnable myRunnable=new MyRunnable(lock);
+        new Thread(myRunnable,"Thread-1").start();
+        new Thread(myRunnable,"Thread-2").start();
+        
+    }
+}
+ 
+ 
+
+
+class MyRunnable implements Runnable{
+    
+    Lock lock;
+    public MyRunnable(Lock lock) { 
+        this.lock=lock;
+    }
+    
+    public void run(){
+        
+                  System.out.println(Thread.currentThread().getName()
+               +" is Waiting to acquire lock");
+ 
+        
+        lock.lock();
+        System.out.println();
+        System.out.println(Thread.currentThread().getName()
+                     +" has called lock(), lockHoldCount=1 ");
+        
+        
+        lock.lock();         
+        System.out.println(Thread.currentThread().getName()
+                     +" has called lock(), lockHoldCount=2 ");
+        
+        System.out.println(Thread.currentThread().getName()
+                  +" is about to call unlock(), lockHoldCount will become 1 ");
+           lock.unlock();    
+        
+        System.out.println(Thread.currentThread().getName()
+                  +" is about to call unlock(), lockHoldCount will become 0 ");
+           lock.unlock();    
+        
+        
+        
+    }
+}
+ 
+/*OUTPUT
+ 
+Thread-2 is Waiting to acquire lock
+Thread-1 is Waiting to acquire lock
+ 
+Thread-2 has called lock(), lockHoldCount=1
+Thread-2 has called lock(), lockHoldCount=2
+Thread-2 is about to call unlock(), lockHoldCount will become 1
+Thread-2 is about to call unlock(), lockHoldCount will become 0
+ 
+Thread-1 has called lock(), lockHoldCount=1
+Thread-1 has called lock(), lockHoldCount=2
+Thread-1 is about to call unlock(), lockHoldCount will become 1
+Thread-1 is about to call unlock(), lockHoldCount will become 0
+ 
+*/
+ 
