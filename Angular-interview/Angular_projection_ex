@@ -1,0 +1,245 @@
+Simplifying Content Projection in Angular
+In Angular, content projection is used to project content in a component. Let’s take a closer look at how it works:
+
+Content projection allows you to insert a shadow DOM in your component. To put it simply, if you want to insert HTML elements or other components in a component, then you do that using the concept of content projection. In Angular, you achieve content projection using < ng-content >< /ng-content >.  You can make reusable components and scalable applications by properly using content projection.
+
+To understand content projection, let us consider GreetComponent as shown in the code listing below: 
+
+import { Component } from '@angular/core';
+@Component({
+    selector: 'greet',
+    template: `{{message}}`
+})
+export class GreetComponent {
+    message: string = "Hello There !"
+}
+Now if you use GreetComponent in another component, and want to pass a greeting message from the parent component, then you should use the @Input() decorator. This way, a modified GreetComponnet will look like the listing below:
+
+import { Component, Input } from '@angular/core';
+@Component({
+    selector: 'greet',
+    template: `{{message}}`
+})
+export class GreetComponent {
+    @Input() message: string;
+}
+Using the @Input() decorator, you can pass a simple string to the GreetComponnet, but what if you need to pass different types of data to the GreetComponent such as:
+
+Inner HTML
+HTML Elements
+Styled HTML
+Another Component, etc.
+To pass or project styled HTML or another component, content projection is used. Let us modify the GreetComponent to use content projection in this code: 
+
+
+@Component({
+	selector: 'greet',
+	template:`
+	<div class ='container'>
+		<ng-connect></ng-connect>
+	</div>
+	`
+})
+export class GreetComponent { }
+
+We are using this to project content in the GreetComponent. When you use the GreetComponent, you’ll pass content as shown below:
+
+
+@Component({
+	selector: 'app-root',
+	template:`
+	<div>
+	<greet>
+		<h1> Hello World </h1>
+	</greet>
+	</div>
+	`
+})
+export class AppComponent { }
+
+
+In the listing above, you are projecting styled HTML to the GreetComponent and you’ll get the following output:
+
+Hello World 
+
+This is an example of Single Slot Content Projection. Whatever you pass to the GreetComponent will be projected. So, let us pass more than one HTML element to the GreetComponent as shown in the listing below:
+
+@Component({
+	selector: 'app-root',
+	template:`
+	<div>
+	<greet>
+		<h1> Hello World </h1>
+		<button class="btn btn-default">Say Hello </button>
+		<p>This is my introduction ! </p>
+	</greet>
+	</div>
+	`
+})
+export class AppComponent { }
+
+
+
+
+Here we are passing three HTML elements to the GreetComponent, and all of them will be projected. You will get the output as shown in the image below in html:
+
+Hello World
+<button >Say Hello</button>
+This is my introduction!
+
+
+In the DOM, you can see that inside the GreetComponent, all HTML elements are projected. 
+
+<app-root ng-version="4.3.4">
+<div>
+	<greet>
+		<div class="container">
+			::\before
+			<h1>Hello World </h1>
+			<button class="btn btn-default">Say Hello</button>
+			<p>This is my intyroduction ! </p>
+			::after
+			</div>
+			</greet>
+			</div>
+		</app-root>
+
+You may have a requirement to project elements in multiple slots of the component. In this next example, let’s say you want to create a greeting card like this:
+
+Hello name (in H1 tag)
+Welcome to our Resturon
+<button >name  click Hwere for More</button>
+
+This can be created using the component as shown below:
+
+@Component({
+	selector: 'greet',
+	template:`
+	<div class ='container' text-center>
+		<h1>Hello name </h1>
+		<p>{{greetTest}}</p>
+		<button class="btn btn-warning">name click here for More</button>
+	</div>
+	`
+})
+export class GreetComponent { 
+	greetText = "Welcome to our Resturon";
+
+}
+
+
+Let us say we have a requirement to pass the header element and a button element so the name and button can be dynamically passed to the GreetComponent.  This time, we need two slots:
+
+A slot for the header element
+A slot for the button element
+Let’s modify the GreetComponent to cater to the above requirement as shown in the image below:
+
+@Component({
+	selector: 'greet',
+	template:`
+	<div class ='container' text-center>
+		<ng-connect></ng-connect>
+		<p>{{greetTest}}</p>
+		<ng-connect></ng-connect>
+	</div>
+	`
+})
+export class GreetComponent { 
+	greetText = "Welcome to our Resturon";
+
+}
+
+
+Here we’re using ng-content two times. Now, the question is, do we select a particular ng-content to project the h1 element and another ng-content to project a button element?
+
+You can select a particular slot for projection using the <ng-content> selector. There are four types of selectors:
+
+Project using tag selector.
+Project using class selector.
+Project using id selector.
+Project using attribute selector. 
+You can use the tag selector for multi-slot projection as shown in the listing below:
+
+@Component({
+	selector: 'greet',
+	template:`
+	<div class ='container' text-center>
+		<ng-connectselect="h1"></ng-connect>
+		<p>{{greetTest}}</p>
+		<ng-connect select="button"></ng-connect>
+	</div>
+	`
+})
+export class GreetComponent { 
+	greetText = "Welcome to our Resturon";
+
+}
+
+
+
+Next, you can project content to the GreetComponent as shown in the listing below:
+
+<div>
+	<greet>
+		<h1>Jason </h1>
+		<button class="btn btn-warning"> Click here Jason</button>
+	</greet>
+	<greet>
+		<h1>Adam</h1>
+		<button class="btn btn-info">Click here Adam</button>
+	</greet>
+</div>
+
+
+As you can see, we are using the GreetComponent twice and projecting different h1 and button elements. You’ll get the output as shown in the image below in thtml:
+
+Json
+Welcome to our Resturon
+<button>Click here json </button>
+
+Adam
+Welcome to our Resturon
+<button>Click here Adam </button>
+
+The problem with using tag selectors is that all h1 elements will get projected to the GreetComponent. In many scenarios, you may not want that and can use other selectors such as a class selector or an attribute selector, as shown in the listing below:
+
+@Component({
+	selector: 'greet',
+	template:`
+	<div class ='container' text-center>
+		<ng-connect select=".headertext"></ng-connect>
+		<p>{{greetTest}}</p>
+		<ng-connect select="[btnp]"></ng-connect>
+	</div>
+	`
+})
+export class GreetComponent { 
+	greetText = "Welcome to our Resturon";
+
+}
+
+
+
+Next, you can project content to the GreetComponent as shown in the listing below:
+
+<div>
+	<greet>
+	<h1>DJ</h1>
+		<h1 class="headertext">Jason </h1>
+		<button btnp class="btn btn-warning"> Click here Jason</button>
+	</greet>
+	<greet>
+		<h1 class="headertext">Adam</h1>
+		<button btnp class="btn btn-info">Click here Adam</button>
+	</greet>
+</div>
+
+
+You’ll get the same output as above, however this time you are using the class name and attribute to project the content. When you inspect an element on the DOM, you will find the attribute name and the class name of the projected element as shown in the image below: 
+
+
+
+Content projection is very useful to insert shadow DOM in your components. To insert HTML elements or other components in a component, you need to use content projection. In AngularJS 1.X, content projection was achieved using Transclusion, however, in Angular, it is achieved using <ng-content>.
+
+url :-https://dzone.com/articles/simplifying-content-projection-in-angular
+https://codecraft.tv/courses/angular/components/content-projection/

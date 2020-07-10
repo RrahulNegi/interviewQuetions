@@ -1,0 +1,155 @@
+Reactive Model Form
+
+
+1) Setting Up a Reactive Form
+
+Both FormControls and FormGroups expose an observable called valuesChanged. By subscribing to this observable we can react in real-time to changing values of an individual form control, or a group of form controls.
+
+One use case could be implementing a search field in an application, as the user types into the search field we may want to call an API.
+
+Since calling an API is relatively expensive we want to limit the number of API calls to only when absolutely necessary.
+
+
+<input type="search"
+       class="form-control"
+       placeholder="Please enter search term">
+<hr/>
+<ul>
+  <li *ngFor="let search of searches">{{ search }}</li>
+</ul>
+
+Just a single search input field and then underneath that we render out a list of search terms from an array called searches.
+
+The initial component class for the above template looks like so:
+
+class ReactiveModelFormComponent implements OnInit {
+
+  searchField: FormControl; (1)
+  searches: string[] = []; (2)
+
+  ngOnInit() {
+    this.searchField = new FormControl();
+  }
+}
+
+-(1) We declare a searchField property which is a FormControl, we initialise this later in our ngOnInit function.
+- (2) We declare an array of searches, as we perform searches we’ll push the individual search terms onto this array so we can see them printed out on the page.
+
+
+To link our searchField FormControl to our template form control we use another directive called formControl, like so:
+
+
+<input type="search"
+       class="form-control"
+       placeholder="Please enter search term"
+       [formControl]="searchField"> (1)
+<hr/>
+<ul>
+  <li *ngFor="let search of searches">{{ search }}</li>
+</ul>
+
+-(1) We use the formControl directive to link the searchField FormControl to the template form control.
+
+
+2) React to Changes in Our Form :
+
+To react to changes on this form we need to subscribe to the valueChanges observable on our searchField, like so:
+
+ngOnInit() {
+    this.searchField = new FormControl();
+    this.searchField.valueChanges
+        .subscribe(term => {
+          this.searches.push(term);
+        });
+  }
+  
+  
+ As we type into the search control, each search term is pushed onto the searches array and through data binding we see the array printed on the screen
+ 
+ 
+ We can see a search term printed for every keypress, if we were making API calls in response to this observable chain we would be making quite a few unnecessary API calls.
+
+Ideally we want to only make a request when the user has stopped typing. This is a common use case with RxJS so there is an operator that implements it called debounceTime and we use it like so:
+
+ngOnInit() {
+  this.searchField = new FormControl();
+  this.searchField.valueChanges
+      .debounceTime(400) (1)
+      .subscribe(term => {
+        this.searches.push(term);
+      });
+}
+
+-(1) debounceTime takes as a first parameter a number of milliseconds, it will then only publish to the output stream if there has been no more input for that number of milliseconds.
+Now it will only print to the console if the user has stopped typing for 400ms. If this was connected to an API then we would only be sending in one API request instead of one for every character the user typed into the search field.
+
+But looking at the above we get Foo2 printed twice in a row, this would trigger a second unnecessary API request. That’s because the user typed Foo2, then deleted 2 and added 2 again very quickly to get back to Foo2.
+
+Ideally we only want to make the API call if the search term has changed. Like before there is an operator with RxJS we can use called distinctUntilChanged which only publishes to its output stream if the value being published is different from before. We can use it like so:
+
+ngOnInit() {
+  this.searchField = new FormControl();
+  this.searchField.valueChanges
+      .debounceTime(400)
+      .distinctUntilChanged()
+      .subscribe(term => {
+        this.searches.push(term);
+      });
+}
+
+
+
+Final Code :
+
+
+import { NgModule, Component, OnInit } from "@angular/core";
+import { ReactiveFormsModule, FormControl } from "@angular/forms";
+import { BrowserModule } from "@angular/platform-browser";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+
+@Component({
+  selector: "reactive-model-form",
+  template: `<input type="search"
+       class="form-control"
+       placeholder="Please enter search term"
+       [formControl]="searchField">
+<hr/>
+<ul>
+  <li *ngFor="let search of searches">{{ search }}</li>
+</ul>
+`
+})
+class ReactiveModelFormComponent implements OnInit {
+  searchField: FormControl;
+  searches: string[] = [];
+
+  ngOnInit() {
+    this.searchField = new FormControl();
+    this.searchField.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
+      .subscribe(term => {
+        this.searches.push(term);
+      });
+  }
+}
+
+@Component({
+  selector: "app",
+  template: `<div class="container">
+  <reactive-model-form></reactive-model-form>
+  </div>`
+})
+class AppComponent {}
+
+@NgModule({
+  imports: [BrowserModule, ReactiveFormsModule],
+  declarations: [AppComponent, ReactiveModelFormComponent],
+  bootstrap: [AppComponent]
+})
+class AppModule {}
+
+platformBrowserDynamic().bootstrapModule(AppModule);

@@ -1,0 +1,430 @@
+HTTP Example with Promises
+
+
+1)Creating the App Component :
+
+First let’s create a simple app component with our search field:
+
+
+@Component({
+  selector: 'app',
+  template: `
+<form class="form-inline">
+  <div class="form-group">
+    <input type="search"
+           class="form-control"
+           placeholder="Enter search string"
+           #search> (1)
+  </div>
+  <button class="btn btn-primary"
+          (click)="doSearch(search.value)"> (2)
+          Search
+  </button>
+</form>
+ `
+})
+class AppComponent {
+  constructor() { }
+
+  doSearch(term:string) {
+  }
+}
+This input control has a template reference variable called search.
+Pressing the Search button calls the doSearch() function and passes it the search term.
+We have a form input control with a search button. When someone presses the search button it calls the doSearch function with the search term we want to search the iTunes database with.
+
+
+2)Creating a Search Service :
+
+So we are going to create our own intermediate service which I am going to call SearchService.
+
+@Injectable() (1)
+class SearchService {
+  apiRoot:string = 'https://itunes.apple.com/search';
+  results:Object[];
+  loading:boolean;
+
+  constructor(private http:Http) { (2)
+    this.results = [];
+    this.loading = false;
+  }
+
+  search(term:string) {
+  }
+}
+1-We decorate the class with @Injectable so Angular knows it should inject the Http service into the constructor.
+2-The Http client is injected into our SearchService in the constructor.
+
+3)Using Promises :
+
+The search function is going to make an asynchronous call using the Http client lib to the iTunes API.
+
+There are two ways we like to handle asynchronous functions in Angular one is via Promises and the other via Observables.
+
+In this lecture we will use Promises and in the next we’ll solve the same problem using Observables.
+
+Since we are using promises we need the search function to return a promise, like so:
+
+
+search(term:string) {
+  let promise = new Promise((resolve, reject) => {
+    //TODO
+  });
+  return promise;
+}
+
+When the HTTP response arrives from the iTunes API, we finish our processing and call the resolve() function. This let’s any interested parties know the asynchronous task is complete and let them perform any follow on tasks.
+
+If the HTTP response returned an error we call the reject() function which again let’s any interested parties know there was an error.
+
+So now let’s flesh out this function with our HTTP get request, like so:
+
+
+search(term:string) {
+  let promise = new Promise((resolve, reject) => {
+    let apiURL = `${this.apiRoot}?term=${term}&media=music&limit=20`;
+    this.http.get(apiURL)
+      .toPromise()
+      .then(
+        res => { // Success
+          console.log(res.json());
+          resolve();
+        }
+      );
+  });
+  return promise;
+}
+First we construct a URL which will instruct iTunes to perform a search for us, like so:
+
+
+let apiURL = `${this.apiRoot}?term=${term}&media=music&limit=20`;
+Then we make a GET request to that URL with:
+
+this.http.get(apiURL)
+It return an Observable, we are working with Promises in this example so let’s convert it to a Promise with:
+
+.toPromise()
+
+
+When the API responds it calls the function we pass to then with a Response object and we are just printing out the JSON for now.
+
+
+.then(
+  res => { // Success
+  console.log(res.json());
+  }
+);
+
+
+4)Consuming Our Search Service :
+
+To use the SearchService we need to configure it as a provider on our NgModule
+
+We also need to inject it into our AppComponent and call the itunes.search() function when the user presses the Search button
+
+
+class AppComponent {
+  constructor(private itunes:SearchService) { }
+
+  doSearch(term:string) {
+    this.itunes.search(term)
+  }
+}
+Now when we type in Moo into the input control and press Search this calls the API with https://itunes.apple.com/search?term=moo&media=music&limit=20 and prints the results to the console, like so:
+
+JSON
+Object {resultCount: 20, results: Array[20]}
+We are interested only in the results property, this is the list of search results.
+
+Rather than return the search results to the component, let’s instead store the results on the SearchService to make it easier to share the results between components and at the same time let’s add an error handler, like so:
+
+
+search(term:string) {
+  let promise = new Promise((resolve, reject) => {
+    let apiURL = `${this.apiRoot}?term=${term}&media=music&limit=20`;
+    this.http.get(apiURL)
+      .toPromise()
+      .then(
+        res => { // Success
+        this.results = res.json().results;
+        resolve();
+        },
+        msg => { // Error
+        reject(msg);
+        }
+      );
+  });
+  return promise;
+}
+}
+We also call the resolve() and reject() functions above after we have finished processing the callback from iTunes so the calling function gets notified and can perform any post processing.
+
+Let’s now render these results in our app component.
+
+We are keeping the data on the iTunes service and to loop over them we use an NgFor directive like so:
+
+HTML
+<ul>
+  <li *ngFor="let track of itunes.results">
+    {{track.trackName}}
+  </li>
+</ul>
+Now when we run the app and type in Moo we get a set of track returned and for each one we print out the track name.
+
+That’s great but we can do better, let’s use the Twitter Bootstrap list UI style and also show the track image and link to the track on iTunes.
+
+Note
+The HTML below might look complex but it’s just standard Twitter Bootstrap layout.
+HTML
+<ul class="list-group">
+  <li class="list-group-item"
+      *ngFor="let track of itunes.results">
+    <img src="{{track.artworkUrl30}}">
+    <a target="_blank"
+       href="{{track.trackViewUrl}}">{{ track.trackName }}
+    </a>
+  </li>
+</ul>
+That’s it now when we run the application and search for Moo we get something that looks like this:
+
+http promise app
+Figure 1. iTunes Track Search App
+
+
+5)Adding a Loading Indicator :
+
+So now it’s all working but there is one feature which is important when doing any asynchronous work and that’s to show a loading indicator to the end user, so they know the application is working and not broken.
+
+Let’s show the text "Loading…​" when we are still waiting for iTunes to return a response.
+
+We create a boolean called loading on our AppComponent and then conditionally show a p tag if loading is true, like so:
+
+HTML
+<div class="text-center">
+  <p class="lead" *ngIf="loading">Loading...</p>
+</div>
+We initialise loading to false so it doesn’t show when we first load the page, then we set it to true when we call the doSearch() function so it does show.
+
+
+class AppComponent {
+  private loading: boolean = false;
+
+  constructor(private itunes:SearchService) { }
+
+  doSearch(term:string) {
+    this.loading = true;
+    this.itunes.search(term)
+  }
+}
+The above logic would show the "Loading…​" message but we have no way of setting the loading boolean to false again, we have no way to remove the "Loading…​" message.
+
+We need to call some code when all the data has been returned by the iTunes API.
+
+The SearchService already returns a promise and calls resolve on that promise when this happens. To hook into that we add a then handler onto the returned promise and set the loading boolean to false there, like so:
+
+
+doSearch(term:string) {
+  this.loading = true;
+  this.itunes.search(term).then( () => this.loading = false)
+}
+Now when the itunes.search() function completes we set loading to false and the "Loading…​" message disappears.
+
+6) Using a Domain Model :
+
+We now have a functioning app.
+
+However the format we are storing data in is just a plain JSON object, it’s far better to parse our raw JSON data into instances of classes, a domain model.
+
+First let’s create a class called SearchItem which can encapsulate the fields we are interested in.
+
+
+class SearchItem {
+  constructor(public name: string,
+              public artist: string,
+              public link: string,
+              public thumbnail: string,
+              public artistId: string) {
+  }
+}
+And then in our SearchService let’s parse the JSON and store instances of SearchItems instead.
+
+A good method of achieving this is to use the map array function, this transforms each element in the array by passing it through a function like so:
+
+
+this.results = res.json().results.map(item => { (1)
+  return new SearchItem(
+      item.trackName,
+      item.artistName,
+      item.trackViewUrl,
+      item.artworkUrl30,
+      item.artistId
+  );
+});
+We loop through the results array, calling the function passed into map on each item. This function converts the raw JSON item into an instance of a SearchItem instead.
+At the same time let’s be explicit and set the type of the results property on our SearchService to SearchItem[].
+
+The full listing for our SearchService now looks like:
+
+
+@Injectable()
+export class SearchService {
+  apiRoot: string = 'https://itunes.apple.com/search';
+  results: SearchItem[];
+  loading: boolean;
+
+  constructor(private http: Http) {
+    this.results = [];
+    this.loading = false;
+  }
+
+  search(term: string) {
+    let promise = new Promise((resolve, reject) => {
+      let apiURL = `${this.apiRoot}?term=${term}&media=music&limit=20`;
+      this.http.get(apiURL)
+          .toPromise()
+          .then(
+              res => { // Success
+                this.results = res.json().results.map(item => {
+                  return new SearchItem(
+                      item.trackName,
+                      item.artistName,
+                      item.trackViewUrl,
+                      item.artworkUrl30,
+                      item.artistId
+                  );
+                });
+                // this.results = res.json().results;
+                resolve();
+              },
+              msg => { // Error
+                reject(msg);
+              }
+          );
+    });
+    return promise;
+  }
+}
+The results property is now an array of SearchItems.
+
+The names of the properties on our model have also changed, for instance trackName in the raw JSON returned from iTunes is now track on our SearchItem so we need to change our template bindings to match, like so:
+
+HTML
+<ul class="list-group">
+  <li class="list-group-item"
+      *ngFor="let track of itunes.results">
+    <img src="{{track.thumbnail}}">
+    <a target="_blank"
+       href="{{track.link}}">{{ track.name }}
+    </a>
+  </li>
+</ul>
+
+=====================================Final Code===========================================================================
+
+import { NgModule, Component, Injectable } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { HttpClientModule, HttpClient } from "@angular/common/http";
+
+class SearchItem {
+  constructor(
+    public track: string,
+    public artist: string,
+    public link: string,
+    public thumbnail: string,
+    public artistId: string
+  ) {}
+}
+
+@Injectable()
+export class SearchService {
+  apiRoot: string = "https://itunes.apple.com/search";
+  results: SearchItem[];
+  loading: boolean;
+
+  constructor(private http: HttpClient) {
+    this.results = [];
+    this.loading = false;
+  }
+
+  search(term: string) {
+    let promise = new Promise((resolve, reject) => {
+      let apiURL = `${this.apiRoot}?term=${term}&media=music&limit=20`;
+      this.http
+        .get(apiURL)
+        .toPromise()
+        .then(
+          res => {
+            // Success
+            this.results = res.results.map(item => {
+              return new SearchItem(
+                item.trackName,
+                item.artistName,
+                item.trackViewUrl,
+                item.artworkUrl30,
+                item.artistId
+              );
+            });
+            resolve();
+          },
+          msg => {
+            // Error
+            reject(msg);
+          }
+        );
+    });
+    return promise;
+  }
+}
+
+@Component({
+  selector: "app",
+  template: `
+<form class="form-inline">
+	<div class="form-group">
+		<input type="search"
+		       class="form-control"
+		       placeholder="Enter search string"
+		       #search>
+	</div>
+	<button type="button" class="btn btn-primary" (click)="doSearch(search.value)">Search</button>
+</form>
+
+<hr/>
+
+<div class="text-center">
+  <p class="lead" *ngIf="loading">Loading...</p>
+</div>
+
+<ul class="list-group">
+	<li class="list-group-item"
+	    *ngFor="let track of itunes.results">
+		<img src="{{track.thumbnail}}">
+		<a target="_blank"
+		   href="{{track.link}}">{{ track.track }}
+		</a>
+	</li>
+</ul>
+ `
+})
+class AppComponent {
+  private loading: boolean = false;
+
+  constructor(private itunes: SearchService) {}
+
+  doSearch(term: string) {
+    this.loading = true;
+    this.itunes.search(term).then(_ => (this.loading = false));
+  }
+}
+
+@NgModule({
+  imports: [BrowserModule, HttpClientModule],
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
+  providers: [SearchService]
+})
+class AppModule {}
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+

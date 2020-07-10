@@ -1,0 +1,49 @@
+Submitting & Resetting
+
+1)Submitting
+
+To submit a form in Angular we need a button with a type of submit in our form markup in between the <form> …​ </form> tags, like so:
+
+<form>
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+When we press this submit button this triggers the normal HTML5 form submission mechanism, so it tries to POST the form to the current URL.
+
+However instead of issuing a standard POST we want to call a function on our component instead, to do that we use the ngSubmit directive and add it to the form element, like so:
+
+<form (ngSubmit)="onSubmit()">
+  .
+  .
+  .
+  <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+This hijacks the normal form submission mechanism and instead calls the function onSubmit() on our component. Let’s implement onSubmit() with a simple console.log line like so:
+
+onSubmit() {
+  if (this.myform.valid) {
+    console.log("Form Submitted!");
+  }
+}
+
+
+2) Resetting :
+
+In a model-driven form to reset the form we just need to call the function reset() on our myform model.
+
+For our sample form let’s reset the form in the onSubmit() function, like so:
+
+onSubmit() {
+  if (this.myform.valid) {
+    console.log("Form Submitted!");
+    this.myform.reset();
+  }
+}
+
+The form now resets, all the input fields go back to their initial state and any valid, touched or dirty properties are also reset to their starting values.
+
+
