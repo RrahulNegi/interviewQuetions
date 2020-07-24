@@ -92,3 +92,89 @@ diffrence from list :-
 - paython shell :- 
 
 clear shell : ctrl +l
+
+
+4)append
+
+temp = [1.2,3.4,5.6]
+temp.append(10.10)
+o/p=> [1.2,3.4,5.6,10.10]
+
+4.1) clear
+
+temp.clear()
+
+o/p =>[]
+
+4.3) index
+
+temp.index(3.4)
+
+o/p=> 1 
+
+5)Accessing item from list
+
+temp = [1.2,3.4,5.6]
+
+temp._getitem_(1)
+
+o/p => 3.4
+
+we can also use [] insted of_getitem_()
+
+temp[1]
+==> 3.4
+
+6)Accessing list slices
+
+temp =[1.2,3.4,5.6,10.10,11.11]
+
+temp[1:4]
+
+=o/p ===> [3.4,5.6,10.10,11.11] ==>it will return list of item from 1 to 4
+
+temp[0:2] or temp[:2]
+o/p=>>[1.2,3.4,5.6]
+
+temp[3:4] or temp[3:]
+
+o/p ==> [10.10,11.11]
+
+7) negetive value 
+
+temp[-1] ==> 11.11
+
+temp[-2] ==>10.10
+
+temp[-3] ==>5.6
+
+we can also use slicing with negetive value :
+
+temp[-2:] ===>[10.10,11.11]
+
+8) Accessing characters and slice in string :
+
+mystring = 'hello'
+
+mystring[1] ===> e
+
+mystring[-1] => l
+
+mystring[:3] ===> hel
+
+
+we can also have list of diffrent data types like
+
+temp = ['hello', 1, 2 3]
+
+temp[0]====> hello
+
+temp[0][2] ===>l
+
+
+9) Accessing dectionary :==>
+in dectionary we use keys insted of integeres
+
+grades = {'xxx':20, ''yyy':33, 'zzz':40]
+
+grades[yyy]===>33

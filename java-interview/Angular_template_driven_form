@@ -1,0 +1,586 @@
+Template-Driven Forms
+
+
+The key in understanding the template-driven approach is that it still uses the same models as the model-driven approach. In the template-driven approach Angular creates the models, the FormGroups and FormControls, for us via directives we add to the template.
+
+- Tip :
+Template-driven forms are just model-driven forms but driven by directives in the the template versus code in the component.
+In template-driven we use directives to create the model.
+In model-driven we create a model on the component and then use directives to map elements in the template to our form model.
+
+- Form Setup
+
+We create a basic form component, exactly the same as the model form component we started with in this section, with a basic form template, a dynamic select box and a simple component like so:
+
+@Component({
+    selector: 'template-form',
+    template: `
+<form novalidate>
+  <fieldset>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text"
+             class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text"
+             class="form-control">
+    </div>
+  </fieldset>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email"
+           class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password"
+           class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label>Language</label>
+    <select class="form-control">
+      <option value="">Please select a language</option>
+      <option *ngFor="let lang of langs"
+              [value]="lang">
+              {{lang}}
+      </option>
+    </select>
+  </div>
+</form>
+`
+})
+class TemplateFormComponent implements OnInit {
+
+    langs:string[] = [
+        'English',
+        'French',
+        'German',
+    ];
+
+    ngOnInit() {
+    }
+}
+
+-Important :
+Remove all the formGroup, formGroupName, formControl and formControlName directives from our template, these are from the ReactiveFormsModule and used for model-driven forms.
+
+
+1) Directives :
+
+The directives we need to build template-driven forms are in the FormsModule not the ReactiveFormsModule, so let’s import that and add it to our NgModule as an import and remove the ReactiveFormsModule
+
+import {FormsModule} from '@angular/forms';
+
+One of the directives pulled in via the FormsModule is called NgForm.
+
+This directive has a selector which matches the <form> tag.
+
+So just by adding FormsModule to our NgModule imports, our template form is already associated with an instance of the NgForm directive.
+
+This instance of ngForm is hidden but we can expose it with a local template reference variable attached to the form element, like so:
+
+<form #f="ngForm"> ... </form>
+
+Now we can use the variable f in our template and it will point to our instance of the ngForm directive.
+
+One of the things the ngForm directive does is create a top-level FormGroup and lets us call functions as if it was an instance of a FormGroup.
+
+If you remember one of the properties on a FormGroup was value, this is an object representation of all the forms controls.
+
+So just like model-driven forms we can output that to screen simply with a pre tag and the json pipe, like so:
+
+<pre>{{f.value | json}}</pre>
+If you ran this code now all that would get printed out is {}. The forms value is an empty object, even if you started typing into the input fields the value would not update.
+
+This is because the ngForm directive doesn’t automatically detect all the controls that exist inside the <form> tag it’s linked to. So although it’s created a top-level FormGroup, it’s empty.
+
+We need go through and explicitly register each template control with the ngForm directive. ngForm will then create a FormControl instance and map that to the FormGroup.
+
+In model-driven forms we added formControlName directives to map template form controls to existing model form controls on the component.
+
+In template-driven forms we need Angular to create the model form controls for us for each template form control. To do that we need to do two things to each template form control:
+
+- Add the NgModel directive
+
+- Add the name attribute.
+
+The NgModel directive creates the FormControl instance to manage the template form control and the name attribute tells the NgModel directive what key to store that FormControl under in the parent FormGroup, like so:
+
+<input name="foo" ngModel>
+
+is equivalent to:
+
+let model = new FormGroup({
+  "foo": new FormControl()
+});
+
+
+After adding ngModel to our template email input control, like so:
+
+<div class="form-group">
+  <label>Email</label>
+  <input type="email"
+         class="form-control"
+         name="email"
+         ngModel>
+</div>
+We can also see that f.value now shows the value of the email field, like so:
+
+{
+  "email": "asim@codecraft.tv"
+}
+
+If we now added the name attribute and ngModel directive to all of our template form controls we would see f.value print out:
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "",
+  "password": "",
+  "language": ""
+}
+
+
+This isn’t exactly the same as before, in our model-driven form we wanted to group firstName and lastName into a nested FormGroup called name.
+
+We can do the same in template-driven forms with the ngModelGroup directive, let’s add that to the parent fieldset element of our firstName and lastName template form controls, like so:
+
+<fieldset ngModelGroup="name"> ... </fieldset>
+
+We can now see that the output of f.value matches what we have before
+
+{
+  "name": {
+    "firstName": "",
+    "lastName": ""
+  },
+  "email": "",
+  "password": "",
+  "language": ""
+}
+
+We have now mirrored the model we created in the model-driven form using template-driven forms, with FormControls and a nested FormGroup.
+
+
+2) Two-Way Data Binding :
+Another feature of the ngModel directive is that it lets us setup two-way data binding between a template form control and a variable on our component.
+
+So when the user changes the value in the template form control the value of the variable on the component automatically updates and when we change the variable on the component the template form control automatically updates.
+
+The syntax for using the ngModel directive in this way is a little bit different, let’s set this up for our email field. First we add a string property called email on our component so we have somewhere to store the email, like so:
+
+class TemplateFormComponent implements OnInit {
+    email: string; (1)
+    langs:string[] = [
+        'English',
+        'French',
+        'German',
+    ];
+
+    ngOnInit() {
+    }
+}
+-(1) We add an email property so we can store the email the user enters on the component.
+Then we setup two-way data binding by changing our email ngModel directive to:
+
+
+3) Domain Model :
+
+In Angular we typically won’t data bind to a simple string or object on our component but a domain model we’ve defined via a class, let’s create one for our Signup form called Signup.
+
+class Signup {
+  constructor(public firstName:string = '',
+              public lastName:string = '',
+              public email:string = '',
+              public password:string = '',
+              public language:string = '') {
+  }
+}
+
+Then on our component we replace our email property with:
+
+model: Signup = new Signup();
+
+Now let’s bind all our input controls to our model directly, like so:
+
+<input ... [(ngModel)]="model.email" >
+
+
+
+4) Validation :
+
+In the model-driven approach we defined the validators via code in the component.
+
+In the template-driven approach we define the validators via directives and HTML5 attributes in our template itself, let’s add validators to our form template.
+
+All the fields apart from the language were required, so we’ll just add the required attribute to those input fields, like so:
+
+<input type="email"
+           class="form-control"
+           name="email"
+           [(ngModel)]="model.email"
+           required>
+
+
+The email field also had a pattern validator, we can add that via an attribute as well, like so:
+
+<input type="email"
+     class="form-control"
+     name="email"
+     [(ngModel)]="model.email"
+     required
+     pattern="[^ @]*@[^ @]*">
+	 
+The password field also had a min length validator, we can add that via an attribute also, like so:
+
+<input type="password"
+       class="form-control"
+       name="password"
+       [(ngModel)]="model.password"
+       required
+       minlength="8">
+	   
+
+5) Validation Styling :
+
+Similar to model-driven forms we can access each model form controls state by going through the top-level form group.
+
+The ngForm directive makes the top-level FormGroup available to us via its form property, so we can show the valid, dirty or touched state of our email field like so:
+
+
+<pre>Valid? {{f.form.controls.email?.valid}}</pre>
+<pre>Dirty? {{f.form.controls.email?.dirty}}</pre>
+<pre>Touched? {{f.form.controls.email?.touched}}</pre>
+
+Important :
+
+The ? is called the elvis operator, it means:
+
+"Only try to call the property on the right of ? if the property on the left of ? is not null."
+
+So if form.controls.email was null or undefined it would not try to call form.controls.email.valid (which would throw an error).
+
+In template-driven forms the controls can sometimes be null when Angular is building the page, so to be safe we use the elvis operator. We don’t need to use this in model-driven forms since the models are created already in our component by the time the HTML form is shown on the page.
+
+So again similar to model-driven forms we can use this in conjunction with the ngClass directive and the validation classes from Twitter Bootstrap to style our form to give visual feedback to the user when it’s invalid.
+
+Let’s add validation styling to our email field, like so:
+
+<div class="form-group"
+     [ngClass]="{
+      'has-danger': f.form.controls.email?.invalid && (f.form.controls.email?.dirty || f.form.controls.email?.touched),
+      'has-success': f.form.controls.email?.valid && (f.form.controls.email?.dirty || f.form.controls.email?.touched)
+ }">
+  <label>Email</label>
+  <input type="email"
+         class="form-control"
+         name="email"
+         [(ngModel)]="model.email"
+         required
+         pattern="[^ @]*@[^ @]*">
+</div>
+
+The above code displays a red border round the input control when it’s invalid and a green border when it’s valid.
+
+
+6) Writing Shorter Validation Expressions:
+
+The NgForm directive does provide us with a shortcut to the controls property so we can write f.controls.email?.valid instead of f.form.controls.email?.valid.
+
+But both are still pretty wordy, and if we wanted to get access to a nested form control like firstName it can become even more cumbersome, f.controls.name.firstName?.valid.
+
+Using the ngModel directive however provides us with a much shorter alternative.
+
+We can get access to the instance of our ngModel directive by using a local template reference variable, like so:
+
+<input ... [(ngModel)]="model.email" #email="ngModel"> </input>
+
+
+Then in our template we can use our local variable email.
+
+
+Since NgModel created the FormControl instance to manage the template form control in the first place, it stored a reference to that FormControl in its control property which we can now access in the template like so email.control.touched. This is such a common use case that the ngModel directive provides us a shortcut to the control property, so we can just type email.touched instead.
+
+We can then shorten our validation class expression and re-write the template for our email control like so:
+
+<div class="form-group"
+     [ngClass]="{
+      'has-danger': email.invalid && (email.dirty || email.touched), (1)
+      'has-success': email.valid && (email.dirty || email.touched)
+ }">
+  <label>Email</label>
+  <input type="email"
+         class="form-control"
+         name="email"
+         [(ngModel)]="model.email"
+         required
+         pattern="[^ @]*@[^ @]*"
+         #email="ngModel"> (2)
+</div>
+
+
+
+
+-(1) We can now access the form control directly through the template local variable called email.
+-(2) We create a template local variable pointing to the instance of the ngModel directive on this input control.
+
+Important
+As long as we named our local reference variables the same name we named our form controls in the model-driven version of this form we can just re-use the same ngClass syntax, like so:
+
+
+
+<div class="form-group"
+       [ngClass]="{
+        'has-danger': email.invalid && (email.dirty || email.touched),
+        'has-success': email.valid && (email.dirty || email.touched)
+   }">
+   
+   
+7) Validation Messages :
+
+As for form validation messages, we can use exactly the same method that we used in model-driven forms. As long as we named the local reference variables the same as the form controls in the model-driven approach we can use exactly the same HTML in our template-driven forms, like so:
+
+<div class="form-control-feedback"
+     *ngIf="email.errors && (email.dirty || email.touched)">
+  <p *ngIf="email.errors.required">Email is required</p>
+  <p *ngIf="email.errors.minlength">Email must contain at least the @ character</p>
+</div>
+
+8) Resetting the Form :
+
+In the model-driven approach we reset the form by calling the function reset() on our myform model.
+
+We need to do the same in our template-driven approach but we don’t have access to the underlying form model in our component. We only have access to it in our template via our local reference variable f.form
+
+However, we can get a reference to the ngForm instance in our component code by using a ViewChild decorator which we covered in the section on components earlier on in this course.
+
+This decorator gives us a reference in our component to something in our template.
+
+First we create a property on our component to hold an instance of NgForm, like so:
+
+
+form: any;
+Then we import the ViewChild decorator from @angular/core, like so:
+
+import { ViewChild } from '@angular/core';
+
+Finally, we decorate our property with the ViewChild decorator. We pass to ViewChild the name of the local reference variable we want to link to, like so:
+
+
+@ViewChild('f') form: any;
+
+
+And then in our onSubmit() function we can just call form.reset() like we did in the model-driven approach.
+
+The full listing for our component is now:
+
+TypeScript
+
+class TemplateFormComponent {
+
+  model: Signup = new Signup();
+  @ViewChild('f') form: any;
+
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ];
+
+  onSubmit() {
+    if (this.form.valid) {
+      console.log("Form Submitted!");
+      this.form.reset();
+    }
+  }
+}
+
+
+Final Code:
+
+import {
+    NgModule,
+    Component,
+    OnInit,
+    ViewChild
+} from '@angular/core';
+import {
+    FormsModule,
+    FormGroup,
+    FormControl
+} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
+class Signup {
+  constructor(public firstName: string = '',
+              public lastName: string = '',
+              public email: string = '',
+              public password: string = '',
+              public language: string = '') {
+  }
+}
+
+
+@Component({
+  selector: 'template-form',
+  template: `<!--suppress ALL -->
+  <div class="container">
+<form novalidate
+      (ngSubmit)="onSubmit()"
+      #f="ngForm">
+
+	<fieldset ngModelGroup="name">
+		<div class="form-group"
+		     [ngClass]="{
+        'has-danger': firstName.invalid && (firstName.dirty || firstName.touched),
+        'has-success': firstName.valid && (firstName.dirty || firstName.touched)
+   }">
+			<label>First Name</label>
+			<input type="text"
+			       class="form-control"
+			       name="firstName"
+			       [(ngModel)]="model.firstName"
+			       required
+			       #firstName="ngModel">
+			<div class="form-control-feedback"
+			     *ngIf="firstName.errors && (firstName.dirty || firstName.touched)">
+				<p *ngIf="firstName.errors.required">First name is required</p>
+			</div>
+		</div>
+
+		<div class="form-group"
+		     [ngClass]="{
+        'has-danger': lastName.invalid && (lastName.dirty || lastName.touched),
+        'has-success': lastName.valid && (lastName.dirty || lastName.touched)
+   }">
+			<label>Last Name</label>
+			<input type="text"
+			       class="form-control"
+			       name="lastName"
+			       [(ngModel)]="model.lastName"
+			       required
+			       #lastName="ngModel">
+			<div class="form-control-feedback"
+			     *ngIf="lastName.errors && (lastName.dirty || lastName.touched)">
+				<p *ngIf="lastName.errors.required">Last name is required</p>
+			</div>
+		</div>
+	</fieldset>
+
+
+	<div class="form-group"
+	     [ngClass]="{
+        'has-danger': email.invalid && (email.dirty || email.touched),
+        'has-success': email.valid && (email.dirty || email.touched)
+   }">
+		<label>Email</label>
+		<input type="email"
+		       class="form-control"
+		       name="email"
+		       [(ngModel)]="model.email"
+		       required
+		       pattern="[^ @]*@[^ @]*"
+		       #email="ngModel">
+		<div class="form-control-feedback"
+		     *ngIf="email.errors && (email.dirty || email.touched)">
+			<p *ngIf="email.errors.required">Email is required</p>
+			<p *ngIf="email.errors.pattern">Email must contain at least the @ character</p>
+		</div>
+	</div>
+
+
+	<div class="form-group"
+	     [ngClass]="{
+        'has-danger': password.invalid && (password.dirty || password.touched),
+        'has-success': password.valid && (password.dirty || password.touched)
+  }">
+		<label>Password</label>
+		<input type="password"
+		       class="form-control"
+		       name="password"
+		       [(ngModel)]="model.password"
+		       required
+		       minlength="8"
+		       #password="ngModel">
+		<div class="form-control-feedback"
+		     *ngIf="password.errors && (password.dirty || password.touched)">
+			<p *ngIf="password.errors.required">Password is required</p>
+			<p *ngIf="password.errors.minlength">Password must be at least 8 characters long</p>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>Language</label>
+		<select class="form-control"
+		        name="language"
+		        [(ngModel)]="model.language">
+			<option value="">Please select a language</option>
+			<option *ngFor="let lang of langs"
+			        [value]="lang">{{lang}}
+			</option>
+		</select>
+	</div>
+
+	<button type="submit"
+	        class="btn btn-primary"
+	        [disabled]="f.invalid">Submit
+	</button>
+
+	<pre>{{f.value | json}}</pre>
+</form>
+</div>
+`
+})
+class TemplateFormComponent {
+
+  model: Signup = new Signup();
+  @ViewChild('f') form: any;
+
+  langs: string[] = [
+    'English',
+    'French',
+    'German',
+  ];
+
+  onSubmit() {
+    if (this.form.valid) {
+      console.log("Form Submitted!");
+      this.form.reset();
+    }
+  }
+}
+
+@Component({
+  selector: 'app',
+  template: `<template-form></template-form>`
+})
+class AppComponent {
+}
+
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    FormsModule
+  ],
+  declarations: [
+    AppComponent,
+    TemplateFormComponent
+  ],
+  bootstrap: [
+    AppComponent
+  ],
+})
+class AppModule {
+}
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+
+

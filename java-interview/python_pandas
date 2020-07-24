@@ -1,0 +1,49 @@
+python with pandas
+
+- its a python lib
+-Well pandas is a library of providing data structures and data analysis tools within Python or if the word tools confuses you, than you can say pandas is a library providing data structures and data analysis code.
+
+-So basically pandas allows you to load data from different sources into python and then use python code to analyze those data and produce results which can be in the form of tables, text, and also visualization with the help of visualization libraries such as a Bokeh, Bokeh which is covered later in the course.
+So for now we'll focus on data without visualizing them and Pandas is great for that.
+
+
+- But what if you want to load text files with data constructed on rows and columns?
+So things get a bit complicated but here is where Pandas comes into play so you can probably do that using building Python methods that we have learned the course.
+But to be more efficient and to be much more efficient.
+
+-You need to have a high level library is not just pandas which is able to recognize such data structures automatically. So I use pandas for loading data from data mining activities such as web scrapping.So you scrap data from a Web site with Python and then store those data in pandas data frames so you use pandas to provide data structures for you in Python. I use pandas for loading data from Excel files and also use pandas for analyzing those data instead of using Excel. Excel can be good for analyzing
+
+
+Make sure you have pandas installed. You can install it with pip:
+
+pip install pandas
+
+or
+
+pip3 install pandas
+
+Also, in the next lecture, we will use an enhanced Python interactive shell called IPython. 
+
+IPython is just like the normal shell you get when you run python, but IPython provides better printing for large text. This ability makes IPython suitable for data analysis because the program prints data in a well-structured format. You can install IPython with pip:
+
+pip install ipython 
+
+
+or
+
+pip3 install ipython
+
+
+
+=============================================================
+
+Now we use ipython for pandas
+
+import pandas
+
+##Here i m creating a data structure 
+
+df1 = pandas.DataFrame([[2,3,4],[10,20,30]], columns =["Price", "Age","Value"])
+df1
+
+o/p it will create a columns Price Age and Value and below that it will print values of frame i.e araays val

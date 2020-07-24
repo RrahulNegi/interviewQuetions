@@ -1,0 +1,230 @@
+File processsing :
+
+1) Reading text file 
+
+myfile = open("fruits.txt")
+
+print(myfile.read())
+
+if we try read again so it will only read once becoz when we start reading the cursure will be ant end and then when we called read() again it wont call read as cursor is at the end
+
+
+- close file ==> so that it is removed from ram
+
+myfile.close()
+
+
+- operning file using with :
+
+
+with open("fruits.txt") as myfile:
+    content = myfile.read()
+
+print("content===>"+content)
+
+==> it will close file automaticaly
+
+
+2) write in files:
+
+with open("vegetables.txt" ,"w") as myfile:
+    myfile.write("Tomato")
+
+then it will create a new file naming vegetable.txt and it will write Tomato in it
+
+- if file already it will ovevride the file with new content
+
+3) Append the conetnt in file
+
+"x" mode will not create the file if it alreadyexist
+
+"a" mode will aapend the content in the file
+
+
+with open("file.txt" , "a") as myfile:
+    myfile.write("\nHelloo")
+
+
+summery :
+
+
+Summary: File Processing
+In this section you learned that:
+
+You can read an existing file with Python:
+
+with open("file.txt") as file:
+    content = file.read()
+You can create a new file with Python and write some text on it:
+
+with open("file.txt", "w") as file:
+    content = file.write("Sample text")
+You can append text to an existing file without overwriting it:
+
+with open("file.txt", "a") as file:
+    content = file.write("More sample text")
+You can both append and read a file with:
+
+with open("file.txt", "a+") as file:
+    content = file.write("Even more sample text")
+    file.seek(0)
+    content = file.read()
+	
+=====================================================================================================================================================================================================================
+
+
+Build in moduke :
+
+For example let's say you wanted the number of characters of this string.
+
+So you have methods and you have functions that you can use.
+
+So for methods you can search with dir str you'd see a bunch of methods here that could be applied
+
+to strings and then you could see
+
+functions, built in functions.
+
+For example the len method would be handy here.
+
+It would return the number of characters for the pypypy string which is six.
+
+Now all these here.
+
+So these functions and the string methods they are all built in.
+
+So these are methods and functions that are written inside the python software that you download and
+
+install from Python
+
+Dot org.
+
+So that software is written in C language.
+
+Therefore these methods and functions are also written in C language.
+
+And as you see these names here are available immediately in your Python interpreter.
+
+That means they are built in.
+
+They are inside that interpreter, and you can just call them without importing them.
+
+Now what if we had some other problems like let's say, you see this script here.
+
+What this script is doing is...
+
+It's a loop.
+
+It's a while loop.
+
+So while true which means it will run forever.
+
+So what it does is it's reading this file vegetable.txt in the files directory which happens
+
+to be in the same directory with basics.py.
+
+So that is the path of the file and this text file contains this string, so I'm reading it under this variable,
+
+and I'm printing all the content in here.
+
+So if I execute this file you're going to get the content printed out every split of a second and which
+
+depends on your processor speed, on your computer processor speed.
+
+Now what if we don't want this to happen every split of a second.
+
+What if you want to read the content every 10 seconds.
+
+
+So to knw python built in modules we have to import sys
+
+import sys
+
+sys.builtin_module_names
+
+so if we want to use sleep so first we have to import time and then use time function like sleep :
+
+import time
+
+time.sleep(3)
+
+
+example :
+
+## we have to fetch the data from file in every 10 sec 
+import time
+
+while True:
+    with open("vegetable.txt") as file:
+        print(file.read())
+        time.sleep(10)
+
+
+2) Standard python modules :
+
+So imagine you had this program running on a server 24/7.
+And for some reason the software that was generating these files at some point it doesn't generate the file. So your script execution will end and maybe in a minute your software will start to generate the files again, but your python script will not resume because it's got an error here.So what we want to do? We want to keep executing the python script even when the file is not in the directory there.
+To do that we want to make use of the OS module. Import os and you're going to notice that os is not among the built in Python modules. Indeed OS is a module written in Python.
+All these modules are built in which means they are written in C language inside the Python software implementation, OS is not one of them. To find out where OS is staying you can use sys.prefix. You're going to get a directory path there which could be different depending on what operating system you are using.
+
+
+So in our previous example before opening the file we have to check wether file exist or not so for this we have to import os modules
+
+
+3) Third party module
+
+like if we want to load csv files and read it so we have to use third part modules called pandas.
+
+Let me show you how. The library name I know is Pandas, and Pandas doesn't come by default with Python. So when you install Python, Pandas will not be there, but you can install it with Pip. Pip is another library that comes installed by default in Python and it's used to install other third party libraries.So Pip.
+Now if you were using python3 commands to run your programs then use pip3. If you're using Python without three there,then just use Pip, so I'm going to use pip3 and then do install pandas.
+Pandas is the name of the library we want to install. So the bars are filling in.That means a Pandas library is being installed. Successfully installed.
+cmd :==>
+
+pip3 install pandas
+
+example of using pandas :
+
+## we have to fetch the data from file in every 10 sec 
+import time ## build in lib written in c language
+import os ## its not standard paython lib but its written in python
+import pandas ## third party lib
+
+while True:
+    if os.path.exists("temp_data.csv"):
+            data = pandas.read_csv("temp_data.csv")
+            print(data.mean())
+    else:
+        print("file not exist")
+    time.sleep(10)
+	
+
+
+
+Summary: Imported Modules
+In this section you learned that:
+
+Builtin objects are all objects that are written inside the Python interpreter in C language.
+
+Builtin modules contain builtins objects.
+
+Some builtin objects are not immediately available in the global namespace. They are parts of a builtin module. To use those objects the module needs to be imported first. E.g.:
+
+import time
+time.sleep(5)
+A list of all builtin modules can be printed out with:
+
+import sys
+sys.builtin_module_names
+Standard libraries is a jargon that includes both builtin modules written in C and also modules written in Python.
+
+Standard libraries written in Python reside in the Python installation directory as .py files. You can find their directory path with sys.prefix.
+
+Packages are a collection of .py modules.
+
+Third-party libraries are packages or modules written by third-party persons (not the Python core development team).
+
+Third-party libraries can be installed from the terminal/command line:
+
+Windows:
+
+pip install pandas or use python -m pip install 
