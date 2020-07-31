@@ -13,6 +13,47 @@ get() : Returns the value in the current thread’s copy of this thread-local va
 initialValue() : Returns the current thread’s “initial value” for this thread-local variable.
 remove() : Removes the current thread’s value for this thread-local variable.
 set(T value) : Sets the current thread’s copy of this thread-local variable to the specified value.
+private ThreadLocal threadLocal = new ThreadLocal();
+
+threadLocal.set("A thread local value");
+
+String threadLocalValue = (String) threadLocal.get();
+
+threadLocal.remove();
+
+public class ThreadLocalExample {
+
+    public static void main(String[] args) {
+        MyRunnable sharedRunnableInstance = new MyRunnable();
+
+        Thread thread1 = new Thread(sharedRunnableInstance);
+        Thread thread2 = new Thread(sharedRunnableInstance);
+
+        thread1.start();
+        thread2.start();
+
+        thread1.join(); //wait for thread 1 to terminate
+        thread2.join(); //wait for thread 2 to terminate
+    }
+
+}
+
+public class MyRunnable implements Runnable {
+
+    private ThreadLocal<Integer> threadLocal = new ThreadLocal<Integer>();
+
+    @Override
+    public void run() {
+        threadLocal.set( (int) (Math.random() * 100D) );
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+
+        System.out.println(threadLocal.get());
+    }
+}
 
 
 2) ThreadPoolExecutor 
