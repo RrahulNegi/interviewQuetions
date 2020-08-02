@@ -1,0 +1,89 @@
+pythn Tkinter
+
+It use to create GUI interface 
+
+
+from tkinter import *
+
+window = Tk() ## create an wmpty window
+
+
+
+window.mainloop()  ## this is an exist button
+
+
+So all code must lies between Tk() and mainloop
+
+Button in a grid
+
+b1=Button(window, text ="Execute")
+
+b1.grid(column=0, row =0) ## whole window is divided into no of grids and it is divided into rows and column 
+
+
+1) To create an input text 
+
+e1_val = StringVar()
+e1=Entry(window, textvariable=e1_val)
+
+to get vaue from input text we use :- e1_val.get()
+
+2) To call a function on click of a button we use command n km_to_miles is a function we have to calll :
+
+b1=Button(window,text="Execute",command=km_to_miles)
+
+
+3) To create a normal text box and insert value in it we use :
+
+t1 = Text(window,height=1, width=20)
+    t1.insert(END,miles)  ===> insert value in text box
+
+Example of tkinter to convert km to miles:
+
+
+from tkinter import *
+
+window = Tk() ## create an wmpty window
+
+def km_to_miles():
+    miles = float(e1_val.get())*1.6
+    t1.insert(END,miles)
+
+b1=Button(window,text="Execute",command=km_to_miles)
+b1.grid(row=0,column=0,rowspan=2)
+
+e1_val = StringVar()
+e1=Entry(window, textvariable=e1_val)
+e1.grid(row=0,column=1)
+
+t1 = Text(window,height=1, width=20)
+t1.grid(row=0,column=2)
+
+
+window.mainloop()  ## this is an exist button
+
+
+
+##################################################3
+
+To make excutable file :
+
+- install pyinstaller
+
+pip3 install pyinstaller
+
+- cmd  pyinstaller <file-name> we get exec file
+
+- to create a single executable file :
+pyinstaller --onefile frontend.py   By this command we will get a command window too.
+
+So if we dont want a command window we have to write command :
+
+pyinstaller --onefile --windowed frontend.py
+
+- we can find the the exe file in "dist" folder
+
+So we get the fresh database 
+
+- So if we want to get existing database so we can copy exixting database in "dist" folder
+

@@ -1,0 +1,140 @@
+Spring Cloud- Netflix Eureka + Ribbon + Hystrix Simple Example
+
+
+In this post we make use of Netflix Hystrix for fault tolerance.
+
+What is Netflix Hystrix? Need for it?
+
+Hystrix is a latency and fault tolerance library designed to isolate points of access to remote systems, services and 3rd party libraries, stop cascading failure and enable resilience in complex distributed systems where failure is inevitable.
+Usually for systems developed using Microservices architecture, there are many microservices involved. These microservices collaborate with each other.
+Consider the following microservices-
+
+Suppose if the microservice 9 in the above diagram failed, then using the traditional approach we will propagate an exception. But this will still cause the whole system to crash anyways.
+This problem gets more complex as the number of microservices increase. The number of microservices can be as high as 1000. This is where hystrix comes into picture-
+We will be using two features of Hystrix-
+Fallback method
+Circuit Breaker
+In this post we will have a look at Hsytrix Fallback method. In next post we will have implement the Hystrix Circuit Breaker
+
+Suppose if the microservice 9 in the above diagram failed, then using the traditional approach we will propagate an exception. But this will still cause the whole system to crash anyways.
+This problem gets more complex as the number of microservices increase. The number of microservices can be as high as 1000. This is where hystrix comes into picture-
+We will be using two features of Hystrix-
+Fallback method
+Circuit Breaker
+In this post we will have a look at Hsytrix Fallback method. In next post we will have implement the Hystrix Circuit Breaker
+Modify the employee-producer pom.xml to include the spring cloud hystrix starter dependency
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.javainuse</groupId>
+	<artifactId>employee-consumer</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.1.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-hystrix</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Camden.SR6</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+
+</project>
+
+   
+
+
+@SpringBootApplication
+@EnableCircuitBreaker
+@EnableDiscoveryClient
+public class SpringBootHelloWorldApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootHelloWorldApplication.class, args);
+	}
+}
+
+
+Next we modify the TestController.java to add the fallback method.
+
+@RestController
+public class TestController {
+
+	@RequestMapping(value = "/employee", method = RequestMethod.GET)
+	@HystrixCommand(fallbackMethod = "getDataFallBack")
+	public Employee firstPage() {
+
+		Employee emp = new Employee();
+		emp.setName("emp1");
+		emp.setDesignation("manager");
+		emp.setEmpId("1");
+		emp.setSalary(3000);
+		
+		if(emp.getName().equalsIgnoreCase("emp1"))
+			throw new RuntimeException();
+
+		return emp;
+	}
+
+	public Employee getDataFallBack() {
+		
+		Employee emp = new Employee();
+		emp.setName("fallback-emp1");
+		emp.setDesignation("fallback-manager");
+		emp.setEmpId("fallback-1");
+		emp.setSalary(3000);
+
+		return emp;
+		
+	}
+	
+}
+
+
+Next start the Eureka server, employee-producer, employee-consumer modules. When we start the employee-consumer, the service exposed by the employee-producer gets called.
+
+

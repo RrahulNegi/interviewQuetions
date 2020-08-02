@@ -1,0 +1,114 @@
+python with database
+
+sqlite3 is built in python lib so we dont need to install it
+
+python with database
+
+sqlite3 is built in python lib so we dont need to install it
+
+import sqlite3
+
+def create_table():
+    conn =sqlite3.connect("lite.db") ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("CREATE TABLE store (item TEXT, quantity INTEGR, price REAL)")
+    cur.execute("INSERT INTO store values('Wine Glass',10,10.5)")
+    conn.commit()
+    conn.close()
+
+def insert(item,quantity,price):
+    conn =sqlite3.connect("lite.db") ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("INSERT INTO store values(?,?,?)",(item,quantity,price))   
+    conn.commit()
+    conn.close()
+
+def select():
+    conn =sqlite3.connect("lite.db") ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("SELECT * FROM store")   
+    rows=cur.fetchall()
+    conn.commit()
+    conn.close()
+    return rows
+
+def delete(item_name):
+    conn =sqlite3.connect("lite.db") ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("DELETE FROM store where item=?",(item_name,))   ## 
+    conn.commit()
+    conn.close()
+
+def update(item_name,quantity):
+    conn =sqlite3.connect("lite.db") ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("UPDATE store SET quantity=? where item=?",(quantity,item_name,))   ## 
+    conn.commit()
+    conn.close()
+
+## insert('Coffee Glass',100,10.5)
+##delete('Wine Glass')
+update("Wine Glass",6)
+print(select())
+
+
+=========================================================================
+
+Psycopg2 and postgres db
+
+pip3 install pycopg2
+
+install postgres sql file
+
+create db_crdentiaL.txt file :- it hold all user credentials and port
+
+user: postgres
+password: postres123
+port: 5432
+
+
+
+import pycopg2
+
+def create_table():
+    conn =sqlite3.connect("dabname='database1' user='postgres' password='postgres123' host='localhost' port=5432) ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXIST store (item TEXT, quantity INTEGR, price REAL)")
+    cur.execute("INSERT INTO store values('Wine Glass',10,10.5)")
+    conn.commit()
+    conn.close()
+
+def insert(item,quantity,price):
+    conn =sqlite3.connect("dabname='database1' user='postgres' password='postgres123' host='localhost' port=5432) ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("INSERT INTO store values('%s','%s','%s')",(item,quantity,price))   
+    conn.commit()
+    conn.close()
+
+def select():
+    conn =sqlite3.connect("dabname='database1' user='postgres' password='postgres123' host='localhost' port=5432) ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("SELECT * FROM store")   
+    rows=cur.fetchall()
+    conn.commit()
+    conn.close()
+    return rows
+
+def delete(item_name):
+    conn =sqlite3.connect("dabname='database1' user='postgres' password='postgres123' host='localhost' port=5432) ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("DELETE FROM store where item=?",(item_name,))   ## 
+    conn.commit()
+    conn.close()
+
+def update(item_name,quantity):
+    conn =sqlite3.connect("dabname='database1' user='postgres' password='postgres123' host='localhost' port=5432)  ## if we have db it will connect to it otherwise it will create one
+    cur= conn.cursor()
+    cur.execute("UPDATE store SET quantity=? where item=?",(quantity,item_name,))   ## 
+    conn.commit()
+    conn.close()
+
+## insert('Coffee Glass',100,10.5)
+##delete('Wine Glass')
+update("Wine Glass",6)
+print(select())

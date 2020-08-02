@@ -152,7 +152,7 @@ It is thread-safe version of ArrayList.
 Insertion is preserved, duplicates are allowed and heterogeneous Objects are allowed.
 The main important point about CopyOnWriteArrayList is Iterator of CopyOnWriteArrayList can not perform remove operation otherwise we get Run-time exception saying UnsupportedOperationException.
 
-
+.
 Q)Weak, Soft, and Phantom References in Java (and Why They Matter)?
 The Problem
 One common problem of all computer languages that allow for dynamic memory allocation is finding a way to “collect” the memory after is not used anymore.
@@ -189,6 +189,15 @@ To reuse (and stretch) our restaurant metaphor one last time: A SoftReference is
 PhantomReference<DigitalCounter> phantom = new PhantomReference<DigitalCounter>(digit); // phantom reference to object created at line 3
 
 digit = null;
+
+If you have a strong reference to an object, then the object can never be collected/reclaimed by GC (Garbage Collector).
+
+If you only have weak references to an object (with no strong references), then the object will be reclaimed by GC in the very next GC cycle.
+
+If you only have soft references to an object (with no strong references), then the object will be reclaimed by GC only when JVM runs out of memory.
+
+We create phantom references to an object to keep track of when the object gets enqueued into the ReferenceQueue. Once you know that you can perform fine-grained finalization. (This would save you from accidentally resurrecting the object as phantom-reference don't give you the referrant). I'd suggest you reading this article to get in-depth detail about this.
+
 
 
 Q) Stream questions----------------------->

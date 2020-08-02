@@ -1,0 +1,18 @@
+jupyter
+
+- for working with datalike data analysis 
+-   install jupyter
+
+pip3 install jupyter
+
+jupyter notebook  ===> it will open in localhost:8888/tree
+
+
+create new shell ==> Alt + enter
+
+execute cmd ===> ctrl + enter
+
+
+1) Loading CSV files :
+
+ 

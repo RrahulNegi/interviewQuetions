@@ -1,0 +1,64 @@
+SELECT * FROM sys.sys_config;
+
+create table employee
+(id int, firstname varchar(255),
+lastname varchar(255),employeenumber varchar(255));
+
+select * from employee;
+
+select * from course;
+
+drop table employee;
+
+create table course (id int ,name varchar(100), courseNumber varchar(100));
+
+
+create table courseresult ( id int, employeeid int , courseid int , result varchar(2), courseDate Date);
+
+insert into employee  values (1,'Addison','Marshal','ABC123');
+
+insert into employee  values (2,'Rile','Lee','DEF456');
+
+insert into employee  values (3,'Shannon','Calbourne','GHI789');
+
+insert into employee  values (4,'Simi','Peyton','JKL012');
+
+
+insert into employee  values (5,'Morgan','Windrum','MN0345');
+
+
+insert into course values(1,'First Aid,Standard','FA-Std');
+insert into course values(2,'Information Security,INtroduction','IS-1');
+
+insert into course values(3,'Labour Relation, INtroduction','LR-1');
+
+insert into course values(4,'Supply Management,INtroduction','PM-1');
+
+
+insert into course values(5,'Project Management,INtroduction','SM-1');
+
+
+insert into courseresult values (1,2,1,'P','2017-08-31');
+
+insert into courseresult values (2,3,1,'P','2016-09-15');
+
+
+insert into courseresult values (3,4,1,'F','2017-08-31');
+
+insert into courseresult values (4,4,1,'P','2016-09-15');
+
+
+insert into courseresult values (5,5,4,'P','2017-08-31');
+
+insert into courseresult values (6,5,1,'F','2017-08-31');
+
+
+
+select * from courseresult;
+
+select * from course;
+
+
+
+
+

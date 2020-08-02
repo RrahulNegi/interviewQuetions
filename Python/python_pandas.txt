@@ -1,0 +1,26 @@
+python pandas 
+
+import pandas
+
+df1 = pandas.DataFrame([[23,4,55],[22,5,66]],columns={"Age", "Roll No", "Marks"))
+df1
+
+o/p ==>
+
+Age  Roll No  Marks
+23    4			55
+22	   5		66
+
+
+df1.mean() ==>
+
+Age        23.0
+Roll No     4.5
+Marks      61.0
+
+df1.max() ===>
+
+Age        23
+Roll No     5
+Marks      67
+dtype: int64

@@ -1,0 +1,97 @@
+Spring Cloud- Circuit Breaker using Hystrix
+
+What is the Netflix Hystrix Circuit Breaker Feature? Need for it?
+
+In previous posts we had two services- employee-consumer consuming the service exposed by the employee-producer.
+Due to some reason the employee-producer exposed service throws an exception. In this case using Hystrix we defined a fallback method. In case of exception in the exposed service the fallback method returned some default value.
+cloud7_1
+
+If the exceptions keep on occuring in the firstPage method() then the Hystrix circuit will break and the employee consumer will skip the firtsPage method all together and directly call the fallback method.
+The purpose of circuit breaker is to give time to the first page method or other methods that the firstpage method might be calling and is causing the exception to recover. It might happen that on less load the issue causing the exceptions have better chance of recovering
+
+
+The employee-producer had the following firstpage method annotated with the hystrix annotation.
+
+@RestController
+public class TestController {
+
+	@RequestMapping(value = "/employee", method = RequestMethod.GET)
+	@HystrixCommand(fallbackMethod = "getDataFallBack")
+	public Employee firstPage() {
+
+		System.out.println("Inside firstPage");
+		
+		Employee emp = new Employee();
+		emp.setName("emp1");
+		emp.setDesignation("manager");
+		emp.setEmpId("1");
+		emp.setSalary(3000);
+		
+		if(emp.getName().equalsIgnoreCase("emp1"))
+			throw new RuntimeException();
+
+		return emp;
+	}
+
+	public Employee getDataFallBack() {
+		
+		System.out.println("Inside fallback");
+
+		
+		Employee emp = new Employee();
+		emp.setName("fallback-emp1");
+		emp.setDesignation("fallback-manager");
+		emp.setEmpId("fallback-1");
+		emp.setSalary(3000);
+
+		return emp;
+		
+	}
+	
+}
+   
+
+
+
+
+
+
+
+Previously using employee-consumer we were calling the employee producer only once. Now using for loop we will call it multiple times and check if the circuit trips and the fallback method gets called directly.
+package com.javainuse;
+
+import java.io.IOException;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestClientException;
+
+import com.javainuse.controllers.ConsumerControllerClient;
+
+@SpringBootApplication
+public class SpringBootHelloWorldApplication {
+
+	public static void main(String[] args) throws RestClientException, IOException {
+		ApplicationContext ctx = SpringApplication.run(
+				SpringBootHelloWorldApplication.class, args);
+		
+		ConsumerControllerClient consumerControllerClient=ctx.getBean(ConsumerControllerClient.class);
+		System.out.println(consumerControllerClient);
+		for(int i=0;i<100;i++)		
+		consumerControllerClient.getEmployee();
+		
+	}
+	
+	@Bean
+	public  ConsumerControllerClient  consumerControllerClient()
+	{
+		return  new ConsumerControllerClient();
+	}
+}
+
+As we had done in previous posts- Start the following Spring Boot Applications-
+eureka-server
+employee-producer
+employee-consumer

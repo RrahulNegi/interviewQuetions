@@ -1,0 +1,102 @@
+Map application
+
+For creating Map application :
+
+1)install folium
+
+pip3 install folium
+
+2) Create a basic web map
+
+import folium
+
+map = folium.Map(location=[80,-100]) 
+## location consist of coordinate i.e longitude (-80 to 80) and lattitude(-180 to 180)
+map.save("Map1.html")
+## it will create an html of location
+
+so what folium do is like we write a python code and it converted into javascript and css code
+
+
+So what folium does is it actually produces, you use Python, so you write Python code and that Python code will convert automatically to JavaScript, and HTML code, and CSS code because you need JavaScript, CSS, and HTML to create web maps. You cannot do that with Python code directly so the browser reads HTML, CSS, and JavaScript, and then renders those, the code of these three programming languages to elements so like text, and lines, and points, and pictures. So that's what Folium does and that's a wonderful thing
+that you can do that with Python through Python
+
+we can also add zoom parameter in map
+
+map= folium.Map(location=[80,-100], zoom_start=6)
+map.save("map1.html")
+
+3)Adding points to map
+
+map= folium.Map(location=[28,77], zoom_start=10, tiles="Stamen Terrain")
+
+tiles ==> its change the background of map
+
+
+map.add_child(folium.Marker(location=[28.2,77.0], popup="Hi I am here!"))
+
+Marker ===>  it allow to add popups that show info 
+
+
+fg = folium.FeatureGroup(name="My Map")
+
+fg.add_child(folium.Marker(location=[28.6,77.3], popup="Hi I am here!", icon=folium.Icon(color='green')))
+
+map.add_child(fg)
+
+FeatureGroup===> used to make code more oraganised
+
+
+4) Adding Multiple Markers
+
+- one way :
+
+adding multiple child and change the location
+
+fg.add_child(folium.Marker(location=[28.4,77.3], popup="Hi I am here Marker!", icon=folium.Icon(color='green')))
+
+fg.add_child(folium.Marker(location=[28.0,77.3], popup="Hi I am here Marker1!", icon=folium.Icon(color='green')))
+
+fg.add_child(folium.Marker(location=[27.6,77.3], popup="Hi I am here Marker 2!", icon=folium.Icon(color='green')))
+
+- another way is for loop :
+
+ for coordinates in [[28.4,77.3],[28.0,77.3],[27.6,77.3]]:
+	fg.add_child(folium.Marker(location=coordinates, popup="Hi I am here Marker 2!", icon=folium.Icon(color='green')))
+
+
+- Coordinates comes in form of txt file or csv file := so here we have to load the files and read the coordinates and display them
+
+5) HTML on Popups
+Note that if you want to have stylized text (bold, different fonts, etc) in the popup window you can use HTML. Here's an example:
+
+import pandas
+import folium
+
+data=pandas.read_csv("Volcanoes.txt")
+lat = list(data["LAT"])
+lon = list(data["LON"])
+elev = list(data["ELEV"])
+
+html = """<h4>Volcano information:</h4>
+Height: %s m
+"""
+ 
+map= folium.Map(location=[38.58,-99.09], zoom_start=6, tiles="Stamen Terrain")
+fg = folium.FeatureGroup(name="My Map")
+
+
+for lt,ln, el in zip(lat, lon, elev):
+        iframe = folium.IFrame(html=html % str(el), width=200, height=100)
+        fg.add_child(folium.Marker(location=[lt,ln], popup=folium.Popup(iframe) , icon=folium.Icon(color='green')))
+
+map.add_child(fg)
+map.save("Map1.html")
+
+
+6) Color points
+
+we can make map more functional that shows more information.like we can put more colors to point on elevation  basis
+
+we are using a default icon color to green but i wana to make it more dynanic
+

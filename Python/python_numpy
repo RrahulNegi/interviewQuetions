@@ -1,0 +1,248 @@
+Python Numpy :
+
+lets consider a picture of grey and white color each each picture is made fro pixcel these pixcel define the shades of color and each pixcel consist of values in form of numbers.
+
+so we can store the arrays of numbers and when we display it it will form a pictures.
+
+And Python stores and reads images using arrays of numbers.
+For instance this image could be represented as you know a list of three other lists.So three lists because we have 3 rows in there with pixels and than in each of these you would have like five numbers and so on and so one and the fifth and the same for the other two lists. We've got five numbers because we have five columns so five pixels for each row. That's an image for Python. And here is where Numpy comes in handy.
+
+So while you can represent images with lists as we did here this is not very efficient because for big images lists occupy a lot of memory and therefore they slow down operations on them.So this is solved by Numpy which is a library, a Python library that provides a multi dimensional array object.
+So let me go ahead and create this array object. First of all you what you need to do is you need to import Numpy. And if you have installed Pandas, Numpy should have been installed with Pandas because Pandas is based on Numpy.
+If you haven't installed Numpy just yet just yet, just go had and pip install Numpy. Ad if for some reason you have some problems on Windows then just go
+ahead as I've showed you and find the precompiled Python libraries.
+
+numpy is stored with pandas
+
+
+Let it be numpy.arange and let's say 27.
+
+import numpy
+
+n=numpy.arange(27)
+n 
+
+o/p==>one dim array
+array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+       17, 18, 19, 20, 21, 22, 23, 24, 25, 26])
+	   
+	  
+two -dimensional array
+
+n.reshape(3,9)
+
+array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8],
+       [ 9, 10, 11, 12, 13, 14, 15, 16, 17],
+       [18, 19, 20, 21, 22, 23, 24, 25, 26]])
+	   
+	   
+image has two day array i.e verticle and horizontal
+
+
+================================================================================================================================================================================
+
+OpenCV
+
+
+Installing OpenCV
+In the next lecture and in Section 17 we will use the OpenCV image processing library. Let us first make sure you have installed the OpenCV library. OpenCV is also referred to as cv2 in Python.
+
+
+
+Install OpenCV:
+1. Open the command line and type:
+
+pip install opencv-python 
+
+2. Open a Python session and try:
+
+import cv2 
+
+3. If you get no errors, you installed OpenCV successfully. If you get an error, see the FAQs below:
+
+
+
+FAQs
+
+1. My OpenCV installation didn't work on Windows
+
+Solution:
+
+1. Uninstall OpenCV with:
+
+pip uninstall opencv-python
+
+2. Download a wheel (.whl) file from this link and install the file with pip. Make sure you download the correct file for your Windows and your Python versions. For example, for Python 3.6 on Windows 64-bit you would do this:
+
+pip install opencv_python‑3.2.0‑cp36‑cp36m‑win_amd64.whl 
+
+3. Try to import cv2 in Python again. If there's still an error, type the following again in the command line:
+
+pip install opencv-python 
+4. Try importing cv2 again. It should work at this point.
+
+
+
+2. My OpenCV installation didn't work on Mac
+
+Solution:
+
+If pip install opencv-python didn't work, install OpenCV for Python 2 and use Python 2 to run the programs that contains cv2 code. Because Python 2 is installed by default on Mac, you don't need to install Python 2.
+
+Here are the steps to correctly install OpenCV:
+
+1. Install brew.
+
+To install brew, open your terminal and execute the following:
+
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+2. OpenCV depends on GTK+, so install that dependency first with brew (always from the terminal):
+
+brew install gtk+ 
+
+3. Install OpenCV with brew:
+
+brew install opencv 
+
+4. Open Python 2 by typing:
+
+python 
+
+5. Import cv2 in Python:
+
+import cv2 
+
+If you get no errors, you installed OpenCV successfully.
+
+
+
+3. My OpenCV installation didn't work on Linux
+
+1. Open your terminal and execute the following commands one by one:
+
+sudo apt-get install libqt4-dev
+cmake -D WITH_QT=ON ..
+make
+sudo make install
+2. 2. If the above commands don't work, execute this:
+
+sudo apt-get install libopencv-*
+3. Then, install OpenCV with pip:
+
+pip install opencv-python 
+
+4. Import cv2 in Python. If you get no errors, you installed OpenCV successfully.
+
+
+
+import cv2
+
+im_g=cv2.imread("smallgray.png",0) ## 0 means we wasnt to read img in grey and 1 means we wana read img in bgr
+
+im_g
+
+o/p==> 
+array([[187, 158, 104, 121, 143],
+       [198, 125, 255, 255, 147],
+       [209, 134, 255,  97, 182]], dtype=uint8)
+	   
+
+
+
+im_g=cv2.imread("smallgray.png",1)
+o/p===>
+
+3 d array one is of blue, green and red
+array([[[187, 187, 187],
+        [158, 158, 158],
+        [104, 104, 104],
+        [121, 121, 121],
+        [143, 143, 143]],
+
+       [[198, 198, 198],
+        [125, 125, 125],
+        [255, 255, 255],
+        [255, 255, 255],
+        [147, 147, 147]],
+
+       [[209, 209, 209],
+        [134, 134, 134],
+        [255, 255, 255],
+        [ 97,  97,  97],
+        [182, 182, 182]]], dtype=uint8)
+		
+		
+- to create a new image
+cv2.imwrite("newsmallgray.png",im_g)
+
+o/p==> True
+
+ie new image is created
+
+
+1) Slicing using numpy
+
+im_g[0:2]
+
+array([[187, 158, 104, 121, 143],
+       [198, 125, 255, 255, 147]], dtype=uint8)
+	   
+	   
+	   
+im_g[0:2,2:4]
+
+array([[104, 121],
+       [255, 255]], dtype=uint8)
+	   
+
+im_g.shape
+
+==>(3,4)
+
+shape of image i.e 3,4
+
+
+2) Itterating numpy
+
+for i in im_g:
+	print(i)
+
+o/p==> itterating row wise
+[187 158 104 121 143]
+[198 125 255 255 147]
+[209 134 255  97 182]	
+
+
+for i in im_g.T
+	print(i)
+
+o/p==> itterating column wise
+[187 198 209]
+[158 125 134]
+[104 255 255]
+[121 255  97]
+[143 147 182]
+
+
+3) Concating and splitting numpy array
+
+ims=numpy.hstack((im_g,im_g))
+
+ims
+
+o/p==>
+
+array([[187, 158, 104, 121, 143, 187, 158, 104, 121, 143],
+       [198, 125, 255, 255, 147, 198, 125, 255, 255, 147],
+       [209, 134, 255,  97, 182, 209, 134, 255,  97, 182]], dtype=uint8)
+	   
+	   
+lst=numpy.vsplit(ims,3)
+lst
+
+o/p====>
+
+[array([[187, 158, 104, 121, 143, 187, 158, 104, 121, 143]], dtype=uint8),
+ array([[198, 125, 255, 255, 147, 198, 125, 255, 255, 147]], dtype=uint8),
+ array([[209, 134, 255,  97, 182, 209, 134, 255,  97, 182]], dtype=uint8)]
