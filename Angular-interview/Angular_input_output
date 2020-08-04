@@ -1,0 +1,188 @@
+Angular @input and @output example :
+
+
+Complete Example using TypeScript
+We will provide a complete example of @Input and @Output decorator using TypeScript. In our example we will create a parent component and two child component. Both child will use @Input and @Output decorator.
+student.ts
+export class Student {
+   constructor(public fname?: string, public lname?: string) { 
+   }
+} In the above code we will observe that we are using question mark ? in constructor parameter. By using question mark ? in constructor parameter, we achieve that while creating instance of Student class, passing arguments are optional. And it is possible to create instance of our Student class as new Student() without passing any argument. If we do not use question mark ? in constructor parameters, new Student() will through error and requires arguments.
+parent.component.ts
+import {Component} from '@angular/core';
+import {Student} from './student';
+@Component({
+    selector: 'input-output',
+    template: `
+			<h1>{{parentTitle}}</h1>
+			<child-one
+				[ctMsg]="cityMsg" 				
+				[ctArray]="cityArray"	
+				[studentAddMsg]="stdAddMsg" 						
+				(addStudentEvent) = "saveData($event)"
+				(sendMsgEvent) = "printMsg($event)" >
+			</child-one>
+			<p>Name: {{stdFullName}}</p>				
+			<p>Message: {{msg}}</p>	
+			<child-two
+				[studentMsg] = "stdMsg"				
+				[stdLeader] = "stdLeaderObj" 
+				(addNumberEvent) = "printSum($event)" >
+			</child-two>
+			<p>Sum: {{sum}}</p>							
+	       `
+})
+export class ParentComponent {
+        parentTitle = 'Parent Component';
+
+	//Property for child component one
+	cityMsg = 'Indian City Names';
+	cityArray = ['Varanasi', 'Delhi', 'Mumbai'];
+        stdAddMsg = 'Add Student';	
+	
+	//Property for child component two
+	stdMsg = 'Student Leader Detail';
+	stdLeaderObj = new Student('Narendra', 'Modi');
+	
+	//Property used in parent
+	stdFullName = '';
+	sum = '';
+	msg = '';
+	
+	saveData(std) {
+	    this.stdFullName = std.fname + ' ' + std.lname ;
+        }		
+	printSum(res) {
+	    this.sum = res;
+        }			
+	printMsg(msg) {
+	    this.msg = msg;
+        }			
+}  childone.component.ts
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Student} from './student';
+@Component({
+    selector: 'child-one',
+    template: `
+			<h3>{{childTitle}}</h3>
+			<b> {{ctMsg}}</b>
+			<ul>
+			 <li *ngFor = "let cname of myctArray">
+				{{cname}}
+			 </li>
+			</ul>
+			
+			<b>{{addMsg}}</b><br/>
+			<div>
+				First Name:<input (input)="student.fname=$event.target.value" /> <br/>
+				Last Name:<input (input)="student.lname=$event.target.value" />
+				<br/> <button (click)="addStudent()">Add Student</button>
+			</div>
+			
+			<br/><b>{{message}}</b><br/>
+			<div>
+				Message :<input (input)="msg=$event.target.value" />
+				<br/> <button (click)="sendMsg()">Send</button>
+			</div>		
+	     `
+})
+export class ChildOneComponent {
+
+	@Input() 
+	ctMsg : string; 
+	
+	@Input('ctArray')
+	myctArray : Array<string>
+
+        @Input('studentAddMsg') 
+	addMsg : string; 	
+	
+  	@Output('addStudentEvent') 
+	addStdEvent = new EventEmitter<Student>();
+
+  	@Output() 
+	sendMsgEvent = new EventEmitter<string>();	
+	
+	student = new Student();
+	childTitle = '---Child One---';
+	message = 'Send Message'
+	msg : string;
+	
+	addStudent() {
+	      this.addStdEvent.emit(this.student);
+        }	
+	sendMsg() {
+	      this.sendMsgEvent.emit(this.msg);
+        }		
+} childtwo.component.ts
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Student} from './student';
+@Component({
+    selector: 'child-two',
+    template: `
+			<h3>{{childTitle}}</h3>
+			<p> {{studentMsg}} : {{myStdLeader.fname +' '+ myStdLeader.lname}}  </p>
+
+			<b>{{addNumMsg}}</b><br/>
+			<div>
+				First Number :<input (input)="num1=$event.target.value" /> <br/>
+				Second Number:<input (input)="num2=$event.target.value" /> <br/>
+				<br/> <button (click)="addNumber()">Add Number</button>
+			</div>		
+	      `
+})
+export class ChildTwoComponent {
+        @Input() 
+	studentMsg : string; 
+
+        @Input('stdLeader')
+	myStdLeader : Student;	
+
+	@Output('addNumberEvent') 
+	addNumEvent = new EventEmitter<number>();	
+	
+	childTitle = '---Child Two---';
+	addNumMsg ='Add Number'
+        num1 : '';
+	num2 : '';
+	
+	addNumber() {
+	      this.addNumEvent.emit(parseInt(this.num1) + parseInt(this.num2));
+        }		
+}   module.ts
+import {NgModule}           from '@angular/core';
+import {BrowserModule}      from '@angular/platform-browser';
+import {ParentComponent}    from './parent.component';
+import {ChildOneComponent}  from './childone.component';
+import {ChildTwoComponent}  from './childtwo.component';
+@NgModule({
+  imports:      [BrowserModule],
+  declarations: [ParentComponent, 
+                 ChildOneComponent,
+		 ChildTwoComponent],
+  bootstrap:    [ParentComponent]
+})
+export class AppModule { } main.ts
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {AppModule} from './module';
+const platform = platformBrowserDynamic();
+platform.bootstrapModule(AppModule);  index.html
+<html>
+  <head>
+    <title>Angular 2 Demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <!-- Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('myApp').catch(function(err){ console.error(err); });
+    </script>
+  </head>
+  <body>
+    <input-output>Please Wait...</input-output>
+  </body>
+</html> 

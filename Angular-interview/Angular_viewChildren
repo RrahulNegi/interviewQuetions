@@ -1,0 +1,164 @@
+@ViewChildren with Component
+viewChildren exapmle
+
+To use @ViewChildren with Component, we need to pass Component name or template reference variable as selector to @ViewChildren. Suppose we have a component WriterComponent. We can use QueryList of WriterComponent in any other component using @ViewChildren.
+@ViewChildren(WriterComponent) 
+writers1: QueryList<WriterComponent>;	Find the code to use read metadata. Here we will read ElementRef from the queried elements.
+@ViewChildren(WriterComponent, {read: ElementRef}) 
+writers2: QueryList<ElementRef>; Here we will read ViewContainerRef from the queried elements.
+@ViewChildren(WriterComponent, {read: ViewContainerRef}) 
+writers3: QueryList<ViewContainerRef>; We can access QueryList inside ngAfterViewInit method because @ViewChildren sets the data before AfterViewInit. Now find the complete code.
+vc-demo1.component.ts
+import { Component, ViewChildren, AfterViewInit, ViewContainerRef, QueryList, ElementRef } from '@angular/core';
+import { WriterComponent } from './writer.component';
+
+@Component({
+	selector: 'app-vc-demo1',
+	template: `
+        <h3>@ViewChildren + Component</h3>
+	<div>
+	  <writer name="Krishna" book="Angular Tutorials"></writer> <br/>
+	  <writer name="Mahesh" book="Java Tutorials"></writer> <br/>
+	  <writer name="Krishna" book="jQuery Tutorials"></writer> <br/>
+	  <writer name="Bramha" book="Hibernate Tutorials" *ngIf="allWritersVisible"></writer> <br/>   
+	  <writer name="Vishnu" book="Spring Tutorials" *ngIf="allWritersVisible"></writer>  
+	</div>
+	<button (click)="onShowAllWriters()" >
+	  <label *ngIf="!allWritersVisible">Show More</label>
+	  <label *ngIf="allWritersVisible">Show Less</label>
+	</button>	
+  `
+})
+export class VCOneDemoComponent implements AfterViewInit {
+	@ViewChildren(WriterComponent)
+	writers1: QueryList<WriterComponent>;
+
+	@ViewChildren(WriterComponent, { read: ElementRef })
+	writers2: QueryList<ElementRef>;
+
+	@ViewChildren(WriterComponent, { read: ViewContainerRef })
+	writers3: QueryList<ViewContainerRef>;
+
+	allWritersVisible = false;
+
+	ngAfterViewInit() {
+		console.log('--- @ViewChildren + Component ---');
+		this.writers1.changes.subscribe(list => {
+			list.forEach(writer => console.log(writer.writerName + ' - ' + writer.bookName));
+		});
+		console.log(this.writers1.length);
+		console.log("Result with ElementRef:");
+		this.writers2.forEach(el => console.log(el));
+
+		console.log("Result with ViewContainerRef:");
+		this.writers3.forEach(vref => console.log(vref));
+	}
+	onShowAllWriters() {
+		this.allWritersVisible = (this.allWritersVisible === true) ? false : true;
+	}
+} writer.component.ts
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'writer',
+  template: `
+       {{writerName}} - {{bookName}}
+  `
+})
+export class WriterComponent {
+  @Input('name') writerName: string;
+  @Input('book') bookName: string;
+} On click of button, the size of QueryList will be changed and this change can be observed using QueryList.changes.
+We can also use template reference variable with @ViewChildren to obtain QueryList of Component. Suppose we have following HTML code.
+<writer name="Krishna" book="Angular Tutorials" #bkWriter></writer> <br/>
+<writer name="Mahesh" book="Java Tutorials" #bkWriter></writer> <br/>
+<writer name="Krishna" book="jQuery Tutorials" #bkWriter></writer> <br/> In the above code we have used bkWriter as template reference variable for WriterComponent. Now we will query data as following.
+@ViewChildren('bkWriter') 
+writers1: QueryList<WriterComponent>; 
+@ViewChildren with Directive
+We will query Directive using @ViewChildren and embed a message using createEmbeddedView of ViewContainerRef class.
+vc-demo2.component.ts
+import { Component, ViewChild, ViewChildren, AfterViewInit, ViewContainerRef, TemplateRef, QueryList } from '@angular/core';
+import { MessageDirective } from './message.directive';
+
+@Component({
+	selector: 'app-vc-demo2',
+	template: `
+	<h3>@ViewChildren + Directive</h3>
+	<div cpMsg></div>
+	<div cpMsg></div>
+	<div cpMsg></div>	
+		
+	<ng-template #msgTemp>
+          Hello World!
+	</ng-template>
+   `
+})
+export class VCTwoDemoComponent implements AfterViewInit {
+	@ViewChildren(MessageDirective)
+	private msgList: QueryList<MessageDirective>;
+
+	@ViewChild('msgTemp')
+	private msgTempRef: TemplateRef<any>;
+
+	ngAfterViewInit() {
+		console.log('--- @ViewChildren + Directive ---');
+		console.log("this.msgList.length: " + this.msgList.length);
+		this.msgList.forEach(messageDirective =>
+			messageDirective.viewContainerRef.createEmbeddedView(this.msgTempRef));
+	}
+} We can also use read metadata to read ViewContainerRef directly from the directive.
+@ViewChildren(MessageDirective, {read: ViewContainerRef})
+private msgList: QueryList<ViewContainerRef>; 
+
+ngAfterViewInit() {
+   this.msgList.forEach(vcRef => vcRef.createEmbeddedView(this.msgTempRef));
+} Find the Directive used in the example.
+message.directive.ts
+import { Directive, ViewContainerRef } from '@angular/core';
+
+@Directive({
+    selector: '[cpMsg]'
+})
+export class MessageDirective {
+    constructor(public viewContainerRef: ViewContainerRef) { }
+} 
+@ViewChildren with ElementRef
+We will use @ViewChildren with ElementRef here.
+vc-demo3.component.ts
+import { Component, ViewChildren, AfterViewInit, QueryList, ElementRef } from '@angular/core';
+
+@Component({
+	selector: 'app-vc-demo3',
+	template: `
+         <h3>@ViewChildren + ElementRef</h3>
+         <div>
+	   <div #pname>Mohit</div>
+	   <div #pname>Anup</div>
+	   <div #pname>Nilesh</div>
+         </div>
+   `
+})
+export class VCThreeDemoComponent implements AfterViewInit {
+	@ViewChildren('pname')
+	persons: QueryList<ElementRef>;
+
+	ngAfterViewInit() {
+		console.log('--- @ViewChildren + ElementRef ---');
+		this.persons.forEach(el => console.log(el.nativeElement.innerHTML));
+	}
+} In the above code we have some <div> and we have assigned template reference variable to it and we are querying ElementRef.
+Now find the other files used in the demo.
+app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+    selector: 'app-root',
+    template: `
+       <app-vc-demo1></app-vc-demo1>
+       <app-vc-demo2></app-vc-demo2>       
+       <app-vc-demo3></app-vc-demo3>        
+   `
+})
+export class AppComponent {
+} 
