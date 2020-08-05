@@ -153,3 +153,138 @@ class AppComponent {}
 class AppModule {}
 
 platformBrowserDynamic().bootstrapModule(AppModule);
+
+
+
+=====================================================
+
+
+Let's modify a bit the template from the previous post:
+
+<form [formGroup]="userForm" (ngSubmit)="onFormSubmitted(userForm)">
+  <label>
+    <span>Name</span>
+    <input type="text" formControlName="name" placeholder="Name">
+      <p *ngIf="userForm.controls.name.errors">
+        This field is bad!
+      </p>
+  </label>
+  <div>
+    <label>
+      <span>Email</span>
+      <input type="email" formControlName="email" placeholder="Email" required>
+    </label>
+  </div>
+  <div formGroupName="address">
+    <label>
+      <span>Country</span>
+      <input type="text" formControlName="country" placeholder="Country" required>
+    </label>
+    <div>
+      <label>
+        <span>City</span>
+        <input type="text" formControlName="city" placeholder="City" required>
+      </label>
+    </div>
+  </div>
+  <input type="submit" [disabled]="userForm.invalid">
+</form>
+We only add a field that will be displayed if we have an error in our userForm.
+
+The Observable Way
+Back to our Component's code.
+Angular 2 is Observable-Friendly, we can subscribe and listen to many changes now!
+
+import { Component } from "@angular/core";
+import { FormGroup, FormBuilder } from "@angular/forms";
+
+@Component({
+  selector: "my-home",
+  templateUrl: "./home.component.html"
+})
+export class HomeComponent {
+  userForm: FormGroup;
+
+  constructor(formBuilder: FormBuilder) {
+    this.userForm = formBuilder.group({
+      name: "",
+      email: "",
+      address: formBuilder.group({
+        country: "",
+        city: ""
+      })
+    });
+  }
+
+  ngOnInit() {
+    const nameControl = this.userForm.controls["name"];
+    nameControl.valueChanges.subscribe(value => {
+      if (value.trim() === "") {
+        nameControl.setErrors({
+          required: true
+        });
+      }
+    });
+  }
+
+  onFormSubmitted(form) {
+    console.log("form value:", form);
+    // Rest of the logic here
+  }
+}
+To keep it simple, we are only going to use the input name.
+We stock the name Controls into a new const named nameControl.
+Then we subscribe to the value changes.
+Every time the input changes, we make a very basic check, if the input is empty we set a new error that will be named required.
+
+And that's it, the name input can't be empty anymore!
+
+The Control Way
+Now let's do the same work by only adding one import, two words and two brackets:
+
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+
+export class HomeComponent {
+  userForm: FormGroup;
+
+  constructor(formBuilder: FormBuilder) {
+    this.userForm = formBuilder.group({
+      name: ["", Validators.required],
+      email: "",
+      address: formBuilder.group({
+        country: "",
+        city: ""
+      })
+    });
+  }
+}
+Ahah yes it's faster isn't it?
+Angular 2 provides basic Validators that we can import and use when creating our form's Controls (here the name Control).
+
+So how can we create a custom Validator?
+Very simple, just pass it a function!
+
+export class HomeComponent {
+  userForm: FormGroup;
+
+  constructor(formBuilder: FormBuilder) {
+    this.userForm = formBuilder.group({
+      name: ["", this.validateName],
+      email: "",
+      address: formBuilder.group({
+        country: "",
+        city: ""
+      })
+    });
+  }
+
+  validateName(form) {
+    return form.value.trim() !== ""
+      ? null
+      : {
+          validateName: {
+            errors: true
+          }
+        };
+  }
+}

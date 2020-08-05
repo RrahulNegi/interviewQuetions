@@ -584,3 +584,129 @@ class AppModule {
 platformBrowserDynamic().bootstrapModule(AppModule);
 
 
+
+=======================================================================================================================================================================
+
+
+Import FormsModule
+After that, you need to import FormsModule to your app.module.ts
+import { FormsModule } from '@angular/forms';
+...
+@NgModule({
+  declarations: [...],
+  imports: [
+    ...
+    FormsModule
+  ],
+})
+2. Add your form
+Then you should have a form in your template:
+<form>
+ First name: 
+ <input 
+   type="text"
+   name="firstName"><br>
+Last name: 
+ <input 
+   type="text" 
+   name="lastName"><br>
+Age:
+ <input 
+   type="number" 
+   name="age"><br>
+ <input type="submit" value="Submit">
+</form>
+This is just a simple form that collects your first name, last name and age.
+You can style it however you want, or you can use this temporary CSS
+input[type=text], input[type=number], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+input[disabled][type=submit] {
+    background:grey;
+}
+div {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+3. Apply Template Driven Approach
+From now, we will take advantage of ngForm, ngModel to control our form.
+<form (ngSubmit)="onSubmit(f)" #f="ngForm">
+ First name: 
+ <input 
+   type="text"
+   name="firstName"
+   ngModel><br>
+Last name: 
+ <input 
+   type="text" 
+   name="lastName"
+   ngModel><br>
+Age:
+ <input 
+   type="number" 
+   name="age" 
+   ngModel><br>
+ <input type="submit" value="Submit">
+</form>
+#f is the exported form Object and we will use it to retrieve the form submit values. Each input will have ngModel directive in it. I also bind the form submit action to onSubmit() function by using ngSubmit.
+4. Control your submission
+In your component, we will create onSubmit() function to control the behaviour of your form.
+export class App {
+
+  formValue: any;
+  onSubmit(form: NgForm) {
+    this.formValue = form.value;
+    console.log(this.formValue);
+    // Do whatever you want with form value
+    // Could be a POST request or else
+  }
+}
+5. Adding some validations
+Before finishing your form, you can have more control over your form by adding some validations. For example, first name, last name and age are required. Age should be a positive number.
+<form (ngSubmit)="onSubmit(f)" #f="ngForm">
+ First name: 
+ <input 
+   type="text" 
+   name="firstName"
+   ngModel
+   required><br>
+Last name: 
+ <input 
+   type="text" 
+   name="lastName"
+   ngModel
+   required><br>
+Age:
+ <input 
+   type="number" 
+   name="age" 
+   ngModel
+   required
+   pattern="^[1-9]+[0-9]*$"><br>
+ <input 
+   type="submit" 
+   value="Submit" 
+   [disabled]="!f.valid">
+</form>
+As you can see, I add required directive to each input to make sure that the input is required. And the pattern will use regular expression to check for only positive number.
+I also disable the submit button if the form is not valid: [disabled]=”!f.valid”

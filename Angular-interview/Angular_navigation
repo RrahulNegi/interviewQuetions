@@ -1,0 +1,142 @@
+Angular Navigation
+
+
+1) Navigating by Hardcoded URLs
+
+We could simply hardcode the URLs in the href anchor attributes on our navigation header, like so:
+
+HTML
+<nav class="navbar navbar-light bg-faded">
+  <a class="navbar-brand" href="/#/">iTunes Search App</a>
+  <ul class="nav navbar-nav">
+    <li class="nav-item active">
+      <a class="nav-link" href="/#/">Home</a> (1)
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/#/search">Search</a>
+    </li>
+  </ul>
+</nav>
+We simply add a standard href with a value of /#/
+
+2)Navigating Programmatically via the Router
+
+In Angular we can also programmatically navigate via a Router service we inject into our component, like so:
+
+TypeScript
+import {Router} from "@angular/router";
+.
+.
+.
+@Component({
+  selector: 'app-header',
+  template: `
+<nav class="navbar navbar-light bg-faded">
+  <a class="navbar-brand" (click)="goHome()">iTunes Search App</a> (1)
+  <ul class="nav navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" (click)="goHome()">Home</a> (1)
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" (click)="goSearch()">Search</a> (1)
+    </li>
+  </ul>
+</nav>
+ `
+})
+class HeaderComponent {
+  constructor(private router: Router) {} (2)
+
+  goHome() {
+    this.router.navigate(['']); (3)
+  }
+
+  goSearch() {
+    this.router.navigate(['search']); (3)
+  }
+}
+We added click handlers to each anchor tag to call functions on our HeaderComponent.
+We inject and store a reference to the Router into our HeaderComponent.
+We then call the navigate function on the router to navigate between the different URLs.
+Link Parameters Array
+The value we pass into the navigate function might look a bit strange, we call it a link params array and it’s equivalent to the URL split by the / character into an array.
+
+
+3)Navigating via a routerLink Directive
+
+We can also control navigation by using the routerLink directive in the template itself, like so:
+
+HTML
+<nav class="navbar navbar-light bg-faded">
+  <a class="navbar-brand" [routerLink]="['home']">iTunes Search App</a>
+  <ul class="nav navbar-nav">
+    <li class="nav-item active">
+      <a class="nav-link"  [routerLink]="['home']">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link"  [routerLink]="['search']">Search</a>
+    </li>
+  </ul>
+</nav>
+The routerLink directive takes as input the same link params array format that the router.navigate(…​) function takes.
+
+routerLinkActive
+An important feature of any navigation component is giving the user feedback about which menu item they are currently viewing. Another way to describe this is giving the user feedback about which route is currently active.
+
+With the Twitter Bootstrap navigation styles we give this feedback by adding a class of active to the parent element to the anchor tag, like so:
+
+TypeScript
+<li class="nav-item active"> (1)
+  <a class="nav-link" [routerLink]="['home']">Home</a>
+</li>
+Adding active to the parent element highlights the anchor tag.
+To help in adding and removing classes depending on the currently active route Angular provides another directive called routerLinkActive.
+
+A routerLinkActive directive is associated with a route through a routerLink directive.
+
+It takes as input an array of classes which it will add to the element it’s attached to if it’s route is currently active, like so:
+
+HTML
+<a class="nav-link"
+   [routerLink]="['home']"
+   [routerLinkActive]="['active']">
+   Home
+</a>
+The above will add a class of active to the anchor tag if we are currently viewing the home route.
+
+However this isn’t so useful for us in Twitter Bootstrap since we need the active class set on the parent li element.
+
+But that’s fine, the routerLinkActive directive can be set on a parent element of the routerLink directive and it will still associate itself with the route, like so:
+
+HTML
+<nav class="navbar navbar-light bg-faded">
+  <a class="navbar-brand"
+     [routerLink]="['home']">iTunes Search App
+  </a>
+  <ul class="nav navbar-nav">
+    <li class="nav-item"
+        [routerLinkActive]="['active']">
+      <a class="nav-link"
+         [routerLink]="['home']">Home
+      </a>
+    </li>
+    <li class="nav-item"
+        [routerLinkActive]="['active']">
+      <a class="nav-link"
+         [routerLink]="['search']">Search
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+
+
+
+const routes: Routes = [
+  { path: "", redirectTo: "home", pathMatch: "full" },
+  { path: "find", redirectTo: "search" },
+  { path: "home", component: HomeComponent },
+  { path: "search", component: SearchComponent },
+  { path: "**", component: HomeComponent }
+];

@@ -476,3 +476,48 @@ RouterLinkActive is a directive that toggles css classes for active RouterLink b
   <a routerLink="/completed" routerLinkActive="active">Completed todos</a>
 </nav>
 <router-outlet></router-outlet>
+
+
+Q) Observer vs promise ?
+
+The differences between observable and promises are:
+
+Observable is a more powerful way of handling HTTP asynchronous requests. Whereas, A promise handles a single event when an asynchronous operation completes or fails.
+An observable is like a stream which allows passing zero or more events where the callback is called for each event. Whereas, A promise eventually calls the success or failed callback even when you don’t need the notification or the result it provides anymore.
+Observable works with multiple values for a particular time. Whereas, Promises works with and even returns a single value at a time.
+Observables can be canceled. Whereas, Promises cannot be canceled.
+Observable supports map, filter, reduce and similar operators. Whereas, Promises have more readable codes with try/catch and async/await.
+In observable, one operator ‘retry’ can be used to retry whenever needed. Whereas, Promises cannot be retried. A promise should have access to the original function that returned the promise in order to have a retry capability.
+
+
+Q) List the differences between Angular 2 components vs. directives.?
+
+Apart from components, directives are also used in Angular 2 which allows us to attach behavior to elements in DOM. There are certain differences between the components and directives in Angular 2. They are:
+
+In Angular 2, a component is a directive with a view whereas a directive is a decorator with no view. Components are the specific type of directive that allows us to utilize web component functionality throughout our application. Whereas, Directive is the mechanism by which we attach behavior to elements.
+A component is used to break up the application into smaller components. Whereas, Directive is used to design the re-usable components.
+Components can be used to define pipes. Whereas, We cannot define pipes using directives.
+Components can be present per DOM element. Whereas, Directive is used to add behavior to an existing DOM element.
+
+
+Q) 26) What is the meaning of component lifecycle in Angular 2 ?
+
+
+The component lifecycle hooks overview the life cycle sequence and the interfaces. Angular manages the life cycle of a component. Angular creates it, renders it. It can also create and render its children. It also checks when its data-bound properties change. It can even destroy it before removing it from the DOM. The life cycle hook offered by angular provides the visibility into these key life moments and the ability to act when they occur. The components go through an entire set of processes or life cycle right from its initiation to the end of the application.
+
+There are a number of lifecycle hooks which are listed below:–
+
+ngOnChanges
+ngOnInit
+ngDoCheck
+ngAfterContentInit
+ngAfterContentChecked
+ngAfterViewInit
+ngAfterViewChecked
+ngOnDestroy
+
+
+Q) 29) What is AOT compilation?
+
+AOT stands for Ahead of Time. It is the compilation in which Angular compiles the components and templates to JavaScript and HTML while developing.
+
