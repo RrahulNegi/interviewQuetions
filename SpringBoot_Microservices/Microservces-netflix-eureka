@@ -1,0 +1,314 @@
+Spring Cloud Service Discovery with Netflix Eureka
+
+
+We will create three microservices for this Netflix Eureka example.
+
+Eureka Service Registry Server – This microservice will provide the service registry and discovery server.
+Student Microservice – Which will give some functionality based on Student entity. It will be a rest based service and most importantly it will be a eureka client service, which will talk with eureka service to register itself in the service registry.
+School Microservice – Same type as of Student service – only added feature is that it will invoke Student service with service look up mechanism. We will not use absolute URL of student service to interact with that service.
+Here is the interaction diagram between above listed three services.
+
+
+1 Eureka Service Registry Server
+
+Follow these steps to create and run Eureka server.
+
+Create Eureka Server
+Create a Spring boot project from Spring Boot initializer portal with two dependencies i.e. Eureka server and Actuator. Give other maven GAV coordinates and download the project.
+
+Now open SpringEurekaServerApplication class that spring already has generated in the downloaded project and add the @EnableEurekaServerannotation on the class.
+
+package com.example.howtodoinjava.springeurekaserver;
+  
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+  
+@EnableEurekaServer
+@SpringBootApplication
+public class SpringEurekaServerApplication {
+  
+    public static void main(String[] args) {
+        SpringApplication.run(SpringEurekaServerApplication.class, args);
+    }
+}
+
+Build the project once again. With this annotation, this artifact will act like microservice registry and discovery server.
+
+2 Server Configuration
+
+Create one file called application.yml in the src\main\resources directory. Add these properties –
+
+server:
+  port: ${PORT:8761} # Indicate the default PORT where this service will be started
+ 
+eureka:
+  client:
+    registerWithEureka: false   #telling the server not to register himself in the service registry
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0    #wait time for subsequent sync
+	
+Create another file called bootstrap.yml in the src\main\resources directory. Add these properties –
+
+spring:
+  application:
+    name: eureka
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
+Test Eureka Server
+Start the application as spring boot application. Open browser and go to http://localhost:8761/, you should see the eureka server home page
+
+
+3) Eureka Client – Student Service
+
+Follow these steps to create and run Eureka client running student service.
+
+Create Eureka Client Project
+
+Create a Spring boot project from initializer portal with four dependencies i.e. Actuator, Web, Rest Repositories, Eureka Discovery. Give other maven GAV coordinates and download the project.
+
+
+Now add the @EnableEurekaClient annotation on Spring boot application class present in src folder. With this annotation, this artifact will act like a spring discovery client and will register itself in the eureka server attached to this service.
+
+package com.example.howtodoinjava.springeurekaclientstudentservice;
+  
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+  
+@SpringBootApplication
+@EnableEurekaClient
+public class SpringEurekaClientStudentServiceApplication {
+  
+    public static void main(String[] args) {
+        SpringApplication.run(SpringEurekaClientStudentServiceApplication.class, args);
+    }
+}
+
+
+Client Configuration
+
+Create one file called application.yml in the src\main\resources directory and add below lines.
+
+server:
+  port: 8098    #default port where the service will be started
+ 
+eureka:         #tells about the Eureka server details and its refresh time
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+ 
+spring:     
+  application:
+    name: student-service   #current service name to be used by the eureka server
+     
+management:
+  security:
+    enabled: false  #disable the spring security on the management endpoints like /env, /refresh etc. 
+ 
+logging:
+  level:
+    com.example.howtodoinjava: DEBUG
+
+
+
+Add REST API
+
+Now add one RestController and expose one rest endpoint for getting all the student details for a particular school. Here we are exposing /getStudentDetailsForSchool/{schoolname} endpoint to serve the business purpose. For simplicity, we are hard coding the student details.
+
+package com.example.howtodoinjava.springeurekaclientstudentservice.controller;
+ 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+ 
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+ 
+import com.example.howtodoinjava.springeurekaclientstudentservice.domain.Student;
+ 
+@RestController
+public class StudentServiceController {
+ 
+    private static Map<String, List<Student>> schooDB = new HashMap<String, List<Student>>();
+ 
+    static {
+        schooDB = new HashMap<String, List<Student>>();
+ 
+        List<Student> lst = new ArrayList<Student>();
+        Student std = new Student("Sajal", "Class IV");
+        lst.add(std);
+        std = new Student("Lokesh", "Class V");
+        lst.add(std);
+ 
+        schooDB.put("abcschool", lst);
+ 
+        lst = new ArrayList<Student>();
+        std = new Student("Kajal", "Class III");
+        lst.add(std);
+        std = new Student("Sukesh", "Class VI");
+        lst.add(std);
+ 
+        schooDB.put("xyzschool", lst);
+ 
+    }
+ 
+    @RequestMapping(value = "/getStudentDetailsForSchool/{schoolname}", method = RequestMethod.GET)
+    public List<Student> getStudents(@PathVariable String schoolname) {
+        System.out.println("Getting Student details for " + schoolname);
+ 
+        List<Student> studentList = schooDB.get(schoolname);
+        if (studentList == null) {
+            studentList = new ArrayList<Student>();
+            Student std = new Student("Not Found", "N/A");
+            studentList.add(std);
+        }
+        return studentList;
+    }
+}
+Student class is a simple POJO.
+
+public class Student 
+{
+    private String name;
+    private String className;
+     
+    public Student(String name, String className) {
+        super();
+        this.name = name;
+        this.className = className;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public void setName(String name) {
+        this.name = name;
+    }
+ 
+    public String getClassName() {
+        return className;
+    }
+ 
+    public void setClassName(String className) {
+        this.className = className;
+    }
+}
+
+Test Eureka Client
+
+Start this project as spring boot application. Now verify that this service has been registered in Eureka server automatically. Go to Eureka service console and refresh the page. Now if everything goes well, we will see one entry for student-service in the eureka service console. This indicates that both Eureka server and client are aware each other.
+
+We will now verify that the /getStudentDetailsForSchool/{schoolname} endpoint is up and running. Go to browser and go to http://localhost:8098/getStudentDetailsForSchool/abcschool, it will give the Student details for a particular school abcschool.
+
+
+Eureka Client – School Service
+
+Now we will create school service which will register itself with eureka server – and it will discover and invoke student-service without hardcoded URL path.
+
+Follow exact steps for creating student service, to create and run Eureka client running school service as well.
+
+Create Eureka Client Project
+
+Create a Spring boot project from initializer portal with four dependencies i.e. Actuator, Web, Rest Repositories, Eureka Discovery. Give other maven GAV coordinates and download the project.
+
+Unzip and import the project into Eclipse as existing maven project.
+
+Now add the @EnableEurekaClient annotation on Spring boot application class present in src folder. With this annotation, this artifact will act like a spring discovery client and will register itself in the eureka server attached to this service.
+
+package com.example.howtodoinjava.springeurekaclientschoolservice;
+ 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+ 
+@SpringBootApplication
+@EnableEurekaClient
+public class SpringEurekaClientSchoolServiceApplication {
+ 
+    public static void main(String[] args) {
+        SpringApplication.run(SpringEurekaClientSchoolServiceApplication.class, args);
+    }
+}
+
+Client Configuration
+
+Create one file called application.yml in the src\main\resources directory and add below lines. These configurations are very similar to student service except port number and service name.
+
+server:
+  port: 9098    #port number
+ 
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+ 
+spring:
+  application:
+    name: school-service    #service name
+ 
+logging:
+  level:
+    com.example.howtodoinjava: DEBUG
+Add REST API which consume student service’s REST API
+Now add one RestController and expose one rest endpoint for getting school details. This endpoint will use the service discovery style URL using the application name, instead full URL with host:port.
+
+package com.example.howtodoinjava.springeurekaclientschoolservice.controller;
+ 
+
+ 
+@RestController
+public class SchoolServiceController {
+    @Autowired
+    RestTemplate restTemplate;
+ 
+    @RequestMapping(value = "/getSchoolDetails/{schoolname}", method = RequestMethod.GET)
+    public String getStudents(@PathVariable String schoolname) 
+    {
+        System.out.println("Getting School details for " + schoolname);
+ 
+        String response = restTemplate.exchange("http://student-service/getStudentDetailsForSchool/{schoolname}",
+                                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {}, schoolname).getBody();
+ 
+        System.out.println("Response Received as " + response);
+ 
+        return "School Name -  " + schoolname + " \n Student Details " + response;
+    }
+ 
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+This way we can get rid of specific service configuration and we can give the service look up responsibility to eureka server and rest template provided here. We can also apply load balancing (see @LoadBalanced annotation) here if the multiple instances are running for the same service.
+
+The URL we have used is http://student-service/getStudentDetailsForSchool/{schoolname}. Clearly we are using only service name student-service in the place of host:port. This will be handled internally by spring framework, eureka server and rest template together.
+
+
+Demo of Service Discovery and Calling
+Now start the school service as well. All three services are started. Check the eureka server console. Bothe student and school services must be registered there.
+
+
+Eureka console with both services registered
+Go to browser and go to http://localhost:9098//getSchoolDetails/abcschool, it will give the school details for a particular school abcschool details. We have invoked student service internally. 

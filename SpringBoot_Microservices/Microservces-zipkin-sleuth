@@ -1,0 +1,150 @@
+Spring Cloud Zipkin and Sleuth Example
+
+
+
+Zipkin is very efficient tool for distributed tracing in microservices ecosystem. Distributed tracing, in general, is latency measurement of each component in a distributed transaction where multiple microservices are invoked to serve a single business usecase. Let’s say from our application, we have to call 4 different services/components for a transaction. Here with distributed tracing enabled, we can measure which component took how much time.
+
+This is useful during debugging when lots of underlying systems are involved and the application becomes slow in any particular situation. In such case, we first need to identify see which underlying service is actually slow. Once the slow service is identified, we can work to fix that issue. Distributed tracing helps in identifying that slow component among in the ecosystem.
+
+
+1) Zipkin :
+
+Zipkin was originally developed at Twitter, based on a concept of a Google paper that described Google’s internally-built distributed app debugger – dapper. It manages both the collection and lookup of this data. To use Zipkin, applications are instrumented to report timing data to it.
+
+If you are troubleshooting latency problems or errors in ecosystem, you can filter or sort all traces based on the application, length of trace, annotation, or timestamp. By analyzing these traces, you can decide which components are not performing as per expectations, and you can fix them.
+
+Internally it has 4 modules –
+
+Collector – Once any component sends the trace data arrives to Zipkin collector daemon, it is validated, stored, and indexed for lookups by the Zipkin collector.
+
+Storage – This module store and index the lookup data in backend. Cassandra, ElasticSearch and MySQL are supported.
+
+Search – This module provides a simple JSON API for finding and retrieving traces stored in backend. The primary consumer of this API is the Web UI.
+
+Web UI – A very nice UI interface for viewing traces.
+
+-How to install Zipkin
+
+Detailed installation steps can be found for different operating system including Docker image at quickstart page. For windows installation, just download the latest Zipkin server from maven repository and run the executable jar file using below command.
+
+java -jar zipkin-server-1.30.3-exec.jar
+
+Once Zipkin is started, we can see the Web UI at http://localhost:9411/zipkin/.
+
+Above command will start the Zipkin server with default configuration. For advanced configuration, we can configure many other things like storage, collector listeners etc.
+
+To install Zipkin in spring boot application, we need to add Zipkin starter dependency in spring boot project.
+
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-zipkin</artifactId>
+</dependency>
+
+2)Sleuth:
+
+Sleuth is a tool from Spring cloud family. It is used to generate the trace id, span id and add these information to the service calls in the headers and MDC, so that It can be used by tools like Zipkin and ELK etc. to store, index and process log files. As it is from spring cloud family, once added to the CLASSPATH, it automatically integrated to the common communication channels like –
+
+requests made with the RestTemplate etc.
+requests that pass through a Netflix Zuul microproxy
+HTTP headers received at Spring MVC controllers
+requests over messaging technologies like Apache Kafka or RabbitMQ etc.
+Using Sleuth is very easy. We just need to add it’s started pom in the spring boot project. It will add the Sleuth to project and so in its runtime.
+
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-sleuth</artifactId>
+</dependency>
+
+So far we have integrated Zipkin and Sleuth to microservices and ran Zipkin server. Let’s see how to utilize this setup.
+
+
+3) Zipkin and Sleuth Integration Example
+
+
+For this demo, lets create 4 spring boot based microservices. They all will have both Zipkin and Sleuth starter dependencies. In each microservice, we will expose one endpoint and from the first service we will call second service, and from second service we will invoke third and so on using rest Template.
+
+And as we have already mentioned, Sleuth works automatically with rest template so it would send this instrumented service call information to attached Zipkin server. Zipkin will then start the book keeping of latency calculation along with few other statistics like service call details.
+
+Microservices Interactions
+Microservices Interactions
+
+- Create Microservice
+
+All the four services will have the same configuration, only difference is the service invocation details where the endpoint changes. Let’s create Spring boot applications with Web, Rest Repository, Zipkin and Sleuth dependencies.
+
+I have packaged those services inside a parent project so that those four services can be build together to save time. You can proceed with individual set up if you wish to. Also I have added useful windows scripts so start/stop all the services with a single command.
+
+This is one sample rest controller which exposes one endpoint and also invokes one downstream service using rest template.
+
+package com.example.zipkinservice1;
+  
+@SpringBootApplication
+public class ZipkinService1Application {
+ 
+    public static void main(String[] args) {
+        SpringApplication.run(ZipkinService1Application.class, args);
+    }
+}
+ 
+@RestController
+class ZipkinController{
+     
+    @Autowired
+    RestTemplate restTemplate;
+ 
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
+ 
+    @Bean
+    public AlwaysSampler alwaysSampler() {
+        return new AlwaysSampler();
+    }
+ 
+    private static final Logger LOG = Logger.getLogger(ZipkinController.class.getName());
+     
+    @GetMapping(value="/zipkin")
+    public String zipkinService1() 
+    {
+        LOG.info("Inside zipkinService 1..");
+         
+         String response = (String) restTemplate.exchange("http://localhost:8082/zipkin2", 
+                        HttpMethod.GET, null, new ParameterizedTypeReference<String>() {}).getBody();
+        return "Hi...";
+    }
+}
+
+-App Configurations
+
+As all services will run in a single machine, so we need to run them in different ports. Also to identify in Zipkin, we need to give proper names. So configure application name and port information in application.properties file under resources folder.
+
+server.port = 8081
+spring.application.name = zipkin-server1
+
+Similarly for other 3 services, we will use ports 8082, 8083, 8084 and name will also be like zipkin-server2, zipkin-server3 and zipkin-server4.
+
+Also we have intentionally introduced a delay in the last service so that we can view that in Zipkin.
+
+
+Demo
+Do a final maven build using command mvn clean install in microservices, start all the 4 applications along with the 
+zipkin server.
+
+For quick start and stop, use the bat file Start-all.bat and Stop-all.bat.
+
+Now test the first service endpoint couple of time from browser – http://localhost:8081/zipkin. Please be aware that there is an intentional delay in one of the above 4 services. So there will be delay is final response which is expected, just don’t give up.
+
+After API call succeed, we can see the latency statistics at zipkin UI http://localhost:9411/zipkin/. Choose the first service in the first drop-down, and once click on Find Traces button.
+
+
+-Zipkin Home screen
+You should see this type of UI where you can do performance analysis by looking at tracing data.
+
+
+Find Traces UI
+
+One particular transaction overview
+
+Details of a particular service call statistics
+
