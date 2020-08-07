@@ -1,0 +1,432 @@
+Elasticsearch - Populate
+
+
+1) Create Index :
+You can use the following command to create an index −
+PUT school
+
+Response
+If the index is created, you can see the following output −
+
+{"acknowledged": true}
+
+2) Add data :
+Elasticsearch will store the documents we add to the index as shown in the following code. The documents are given some IDs which are used in identifying the document.
+
+Request Body
+POST school/_doc/10
+{
+   "name":"Saint Paul School", "description":"ICSE Afiliation",
+   "street":"Dawarka", "city":"Delhi", "state":"Delhi", "zip":"110075",
+   "location":[28.5733056, 77.0122136], "fees":5000,
+   "tags":["Good Faculty", "Great Sports"], "rating":"4.5"
+}
+Response
+{
+   "_index" : "school",
+   "_type" : "_doc",
+   "_id" : "10",
+   "_version" : 1,
+   "result" : "created",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 2,
+   "_primary_term" : 1
+}
+Here, we are adding another similar document.
+
+POST school/_doc/16
+{
+   "name":"Crescent School", "description":"State Board Affiliation",
+   "street":"Tonk Road",
+   "city":"Jaipur", "state":"RJ", "zip":"176114","location":[26.8535922,75.7923988],
+   "fees":2500, "tags":["Well equipped labs"], "rating":"4.5"
+}
+Response
+{
+   "_index" : "school",
+   "_type" : "_doc",
+   "_id" : "16",
+   "_version" : 1,
+   "result" : "created",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 9,
+   "_primary_term" : 7
+}
+
+
+====== API Convention =======
+
+Elasticsearch provides a REST API, which is accessed by JSON over HTTP. Elasticsearch uses some conventions which we shall discuss now.
+
+
+1)Multiple Indices :
+
+Most of the operations, mainly searching and other operations, in APIs are for one or more than one indices. This helps the user to search in multiple places or all the available data by just executing a query once. Many different notations are used to perform operations in multiple indices. We will discuss a few of them here in this chapter.
+
+Comma Separated Notation
+POST /index1,index2,index3/_search
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"any_string"
+      }
+   }
+}
+Response
+JSON objects from index1, index2, index3 having any_string in it.
+
+
+2)_all Keyword for All Indices
+
+POST /_all/_search
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"any_string"
+      }
+   }
+}
+Response
+JSON objects from all indices and having any_string in it.
+
+3)Wildcards ( * , + , –) :
+
+POST /school*/_search
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"CBSE"
+      }
+   }
+}
+Response
+JSON objects from all indices which start with school having CBSE in it.
+
+Alternatively, you can use the following code as well −
+
+POST /school*,-schools_gov /_search
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"CBSE"
+      }
+   }
+}
+Response
+JSON objects from all indices which start with “school” but not from schools_gov and having CBSE in it.
+
+There are also some URL query string parameters −
+
+ignore_unavailable − No error will occur or no operation will be stopped, if the one or more index(es) present in the URL does not exist. For example, schools index exists, but book_shops does not exist.
+POST /school*,book_shops/_search
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"CBSE"
+      }
+   }
+}
+Request Body
+{
+   "error":{
+      "root_cause":[{
+         "type":"index_not_found_exception", "reason":"no such index",
+         "resource.type":"index_or_alias", "resource.id":"book_shops",
+         "index":"book_shops"
+      }],
+      "type":"index_not_found_exception", "reason":"no such index",
+      "resource.type":"index_or_alias", "resource.id":"book_shops",
+      "index":"book_shops"
+   },"status":404
+}
+Consider the following code −
+
+POST /school*,book_shops/_search?ignore_unavailable = true
+Request Body
+{
+   "query":{
+      "query_string":{
+         "query":"CBSE"
+      }
+   }
+}
+Response (no error)
+JSON objects from all indices which start with school having CBSE in it.
+
+
+
+============== Elasticsearch - Document APIs  =====================
+
+1)Index API :
+
+It helps to add or update the JSON document in an index when a request is made to that respective index with specific mapping. For example, the following request will add the JSON object to index schools and under school mapping −
+
+PUT schools/_doc/5
+{
+   name":"City School", "description":"ICSE", "street":"West End",
+   "city":"Meerut",
+   "state":"UP", "zip":"250002", "location":[28.9926174, 77.692485],
+   "fees":3500,
+   "tags":["fully computerized"], "rating":"4.5"
+}
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "5",
+   "_version" : 1,
+   "result" : "created",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 2,
+   "_primary_term" : 1
+}
+
+2)Automatic Index Creation :
+
+When a request is made to add JSON object to a particular index and if that index does not exist, then this API automatically creates that index and also the underlying mapping for that particular JSON object. This functionality can be disabled by changing the values of following parameters to false, which are present in elasticsearch.yml file.
+
+action.auto_create_index:false
+index.mapper.dynamic:false
+You can also restrict the auto creation of index, where only index name with specific patterns are allowed by changing the value of the following parameter −
+
+action.auto_create_index:+acc*,-bank*
+Note − Here + indicates allowed and – indicates not allowed.
+
+
+3)Versioning :
+
+Elasticsearch also provides version control facility. We can use a version query parameter to specify the version of a particular document.
+
+PUT schools/_doc/5?version=7&version_type=external
+{
+   "name":"Central School", "description":"CBSE Affiliation", "street":"Nagan",
+   "city":"paprola", "state":"HP", "zip":"176115", "location":[31.8955385, 76.8380405],
+   "fees":2200, "tags":["Senior Secondary", "beautiful campus"], "rating":"3.3"
+}
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "5",
+   "_version" : 7,
+   "result" : "updated",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 3,
+   "_primary_term" : 1
+}
+Versioning is a real-time process and it is not affected by the real time search operations.
+
+There are two most important types of versioning −
+
+Internal Versioning
+Internal versioning is the default version that starts with 1 and increments with each update, deletes included.
+
+External Versioning
+It is used when the versioning of the documents is stored in an external system like third party versioning systems. To enable this functionality, we need to set version_type to external. Here Elasticsearch will store version number as designated by the external system and will not increment them automatically.
+
+4)Operation Type
+The operation type is used to force a create operation. This helps to avoid the overwriting of existing document.
+
+PUT chapter/_doc/1?op_type=create
+{
+   "Text":"this is chapter one"
+}
+On running the above code, we get the following result −
+
+{
+   "_index" : "chapter",
+   "_type" : "_doc",
+   "_id" : "1",
+   "_version" : 1,
+   "result" : "created",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 0,
+   "_primary_term" : 1
+}
+Automatic ID generation
+When ID is not specified in index operation, then Elasticsearch automatically generates id for that document.
+
+POST chapter/_doc/
+{
+   "user" : "tpoint",
+   "post_date" : "2018-12-25T14:12:12",
+   "message" : "Elasticsearch Tutorial"
+}
+On running the above code, we get the following result −
+
+{
+   "_index" : "chapter",
+   "_type" : "_doc",
+   "_id" : "PVghWGoB7LiDTeV6LSGu",
+   "_version" : 1,
+   "result" : "created",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 1,
+   "_primary_term" : 1
+}
+Get API
+API helps to extract type JSON object by performing a get request for a particular document.
+
+pre class="prettyprint notranslate" > GET schools/_doc/5
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "5",
+   "_version" : 7,
+   "_seq_no" : 3,
+   "_primary_term" : 1,
+   "found" : true,
+   "_source" : {
+      "name" : "Central School",
+      "description" : "CBSE Affiliation",
+      "street" : "Nagan",
+      "city" : "paprola",
+      "state" : "HP",
+      "zip" : "176115",
+      "location" : [
+         31.8955385,
+         76.8380405
+      ],
+      "fees" : 2200,
+      "tags" : [
+         "Senior Secondary",
+         "beautiful campus"
+      ],
+      "rating" : "3.3"
+   }
+}
+This operation is real time and does not get affected by the refresh rate of Index.
+
+You can also specify the version, then Elasticsearch will fetch that version of document only.
+
+You can also specify the _all in the request, so that the Elasticsearch can search for that document id in every type and it will return the first matched document.
+
+You can also specify the fields you want in your result from that particular document.
+
+GET schools/_doc/5?_source_includes=name,fees 
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "5",
+   "_version" : 7,
+   "_seq_no" : 3,
+   "_primary_term" : 1,
+   "found" : true,
+   "_source" : {
+      "fees" : 2200,
+      "name" : "Central School"
+   }
+} 
+You can also fetch the source part in your result by just adding _source part in your get request.
+
+GET schools/_doc/5?_source 
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "5",
+   "_version" : 7,
+   "_seq_no" : 3,
+   "_primary_term" : 1,
+   "found" : true,
+   "_source" : {
+      "name" : "Central School",
+      "description" : "CBSE Affiliation",
+      "street" : "Nagan",
+      "city" : "paprola",
+      "state" : "HP",
+      "zip" : "176115",
+      "location" : [
+         31.8955385,
+         76.8380405
+      ],
+      "fees" : 2200,
+      "tags" : [
+         "Senior Secondary",
+         "beautiful campus"
+      ],
+      "rating" : "3.3"
+   }
+}
+You can also refresh the shard before doing get operation by set refresh parameter to true.
+
+Delete API
+You can delete a particular index, mapping or a document by sending a HTTP DELETE request to Elasticsearch.
+
+DELETE schools/_doc/4  
+On running the above code, we get the following result −
+
+{
+   "found":true, "_index":"schools", "_type":"school", "_id":"4", "_version":2,
+   "_shards":{"total":2, "successful":1, "failed":0}
+}
+Version of the document can be specified to delete that particular version. Routing parameter can be specified to delete the document from a particular user and the operation fails if the document does not belong to that particular user. In this operation, you can specify refresh and timeout option same like GET API.
+
+Update API
+Script is used for performing this operation and versioning is used to make sure that no updates have happened during the get and re-index. For example, you can update the fees of school using script −
+
+POST schools/_update/4
+{
+   "script" : {
+      "source": "ctx._source.name = params.sname",
+      "lang": "painless",
+      "params" : {
+         "sname" : "City Wise School"
+      }
+   }
+ }
+On running the above code, we get the following result −
+
+{
+   "_index" : "schools",
+   "_type" : "_doc",
+   "_id" : "4",
+   "_version" : 3,
+   "result" : "updated",
+   "_shards" : {
+      "total" : 2,
+      "successful" : 1,
+      "failed" : 0
+   },
+   "_seq_no" : 4,
+   "_primary_term" : 2
+}
+You can check the update by sending get request to the updated document.
+
+ Previous 

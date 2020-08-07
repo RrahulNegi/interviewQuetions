@@ -1,0 +1,369 @@
+Elasticsearch - Aggregations
+
+
+The aggregations framework collects all the data selected by the search query and consists of many building blocks, which help in building complex summaries of the data
+
+1) Metrics Aggregations
+These aggregations help in computing matrices from the field’s values of the aggregated documents and sometime some values can be generated from scripts.
+
+Numeric matrices are either single-valued like average aggregation or multi-valued like stats.
+
+2) Avg Aggregation
+This aggregation is used to get the average of any numeric field present in the aggregated documents. For example,
+
+POST /schools/_search
+{
+   "aggs":{
+      "avg_fees":{"avg":{"field":"fees"}}
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 41,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : 1.0,
+      "hits" : [
+         {
+            "_index" : "schools",
+            "_type" : "school",
+            "_id" : "5",
+            "_score" : 1.0,
+            "_source" : {
+               "name" : "Central School",
+               "description" : "CBSE Affiliation",
+               "street" : "Nagan",
+               "city" : "paprola",
+               "state" : "HP",
+               "zip" : "176115",
+               "location" : [
+                  31.8955385,
+                  76.8380405
+               ],
+            "fees" : 2200,
+            "tags" : [
+               "Senior Secondary",
+               "beautiful campus"
+            ],
+            "rating" : "3.3"
+         }
+      },
+      {
+         "_index" : "schools",
+         "_type" : "school",
+         "_id" : "4",
+         "_score" : 1.0,
+         "_source" : {
+            "name" : "City Best School",
+            "description" : "ICSE",
+            "street" : "West End",
+            "city" : "Meerut",
+            "state" : "UP",
+            "zip" : "250002",
+            "location" : [
+               28.9926174,
+               77.692485
+            ],
+            "fees" : 3500,
+            "tags" : [
+               "fully computerized"
+            ],
+            "rating" : "4.5"
+         }
+      }
+   ]
+ },
+   "aggregations" : {
+      "avg_fees" : {
+         "value" : 2850.0
+      }
+   }
+}
+
+
+3)Cardinality Aggregation
+
+This aggregation gives the count of distinct values of a particular field.
+
+POST /schools/_search?size=0
+{
+   "aggs":{
+      "distinct_name_count":{"cardinality":{"field":"fees"}}
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 2,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "distinct_name_count" : {
+         "value" : 2
+      }
+   }
+}
+Note − The value of cardinality is 2 because there are two distinct values in fees.
+
+4)Extended Stats Aggregation 
+
+This aggregation generates all the statistics about a specific numerical field in aggregated documents.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+      "fees_stats" : { "extended_stats" : { "field" : "fees" } }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 8,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "fees_stats" : {
+         "count" : 2,
+         "min" : 2200.0,
+         "max" : 3500.0,
+         "avg" : 2850.0,
+         "sum" : 5700.0,
+         "sum_of_squares" : 1.709E7,
+         "variance" : 422500.0,
+         "std_deviation" : 650.0,
+         "std_deviation_bounds" : {
+            "upper" : 4150.0,
+            "lower" : 1550.0
+         }
+      }
+   }
+}
+
+5)Max Aggregation
+
+This aggregation finds the max value of a specific numeric field in aggregated documents.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+   "max_fees" : { "max" : { "field" : "fees" } }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 16,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+  "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "max_fees" : {
+         "value" : 3500.0
+      }
+   }
+}
+
+6)Min Aggregation
+
+This aggregation finds the min value of a specific numeric field in aggregated documents.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+      "min_fees" : { "min" : { "field" : "fees" } }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 2,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+  "aggregations" : {
+      "min_fees" : {
+         "value" : 2200.0
+      }
+   }
+}
+
+7)Sum Aggregation
+This aggregation calculates the sum of a specific numeric field in aggregated documents.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+      "total_fees" : { "sum" : { "field" : "fees" } }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 8,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "total_fees" : {
+         "value" : 5700.0
+      }
+   }
+}
+There are some other metrics aggregations which are used in special cases like geo bounds aggregation and geo centroid aggregation for the purpose of geo location.
+
+
+8)Stats Aggregations 
+
+A multi-value metrics aggregation that computes stats over numeric values extracted from the aggregated documents.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+      "grades_stats" : { "stats" : { "field" : "fees" } }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 2,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "grades_stats" : {
+         "count" : 2,
+         "min" : 2200.0,
+         "max" : 3500.0,
+         "avg" : 2850.0,
+         "sum" : 5700.0
+      }
+   }
+}
+
+9)Aggregation Metadata
+
+You can add some data about the aggregation at the time of request by using meta tag and can get that in response.
+
+POST /schools/_search?size=0
+{
+   "aggs" : {
+      "min_fees" : { "avg" : { "field" : "fees" } ,
+         "meta" :{
+            "dsc" :"Lowest Fees This Year"
+         }
+      }
+   }
+}
+On running the above code, we get the following result −
+
+{
+   "took" : 0,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 2,
+         "relation" : "eq"
+      },
+      "max_score" : null,
+      "hits" : [ ]
+   },
+   "aggregations" : {
+      "min_fees" : {
+         "meta" : {
+            "dsc" : "Lowest Fees This Year"
+         },
+         "value" : 2850.0
+      }
+   }
+}

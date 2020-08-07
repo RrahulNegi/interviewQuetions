@@ -1,0 +1,36 @@
+Elasticsearch - Basic Concepts
+
+-Elasticsearch is an Apache Lucene-based search server.
+-Elasticsearch is a real-time distributed and open source full-text search and analytics engine.
+- It is accessible from RESTful web service interface and uses schema less JSON (JavaScript Object Notation) documents to store data. It is built on Java programming language and hence Elasticsearch can run on different platforms. It enables users to explore very large amount of data at very high speed.
+
+Key Concepts :
+
+Node
+It refers to a single running instance of Elasticsearch. Single physical and virtual server accommodates multiple nodes depending upon the capabilities of their physical resources like RAM, storage and processing power.
+
+Cluster
+It is a collection of one or more nodes. Cluster provides collective indexing and search capabilities across all the nodes for entire data.
+
+Index
+It is a collection of different type of documents and their properties. Index also uses the concept of shards to improve the performance. For example, a set of document contains data of a social networking application.
+
+Document
+It is a collection of fields in a specific manner defined in JSON format. Every document belongs to a type and resides inside an index. Every document is associated with a unique identifier called the UID.
+
+Shard
+Indexes are horizontally subdivided into shards. This means each shard contains all the properties of document but contains less number of JSON objects than index. The horizontal separation makes shard an independent node, which can be store in any node. Primary shard is the original horizontal part of an index and then these primary shards are replicated into replica shards.
+
+Replicas
+Elasticsearch allows a user to create replicas of their indexes and shards. Replication not only helps in increasing the availability of data in case of failure, but also improves the performance of searching by carrying out a parallel search operation in these replicas.
+
+Comparison between Elasticsearch and RDBMS :
+
+Elasticsearch	RDBMS
+Cluster	       Database
+Shard	       Shard
+Index	       Table
+Field	       Column
+Document	   Row
+
+

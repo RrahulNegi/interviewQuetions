@@ -1,0 +1,240 @@
+Elasticsearch - Search APIs
+
+This API is used to search content in Elasticsearch. A user can search by sending a get request with query string as a parameter or they can post a query in the message body of post request. Mainly all the search APIS are multi-index, multi-type.
+
+1)Multi-Index :
+
+Elasticsearch allows us to search for the documents present in all the indices or in some specific indices. For example, if we need to search all the documents with a name that contains central, we can do as shown here −
+
+GET /_all/_search?q=city:paprola 
+
+On running the above code, we get the following response −
+
+{
+   "took" : 33,
+   "timed_out" : false,
+   "_shards" : {
+      "total" : 7,
+      "successful" : 7,
+      "skipped" : 0,
+      "failed" : 0
+   },
+   "hits" : {
+      "total" : {
+         "value" : 1,
+         "relation" : "eq"
+      },
+      "max_score" : 0.9808292,
+      "hits" : [
+         {
+            "_index" : "schools",
+            "_type" : "school",
+            "_id" : "5",
+            "_score" : 0.9808292,
+            "_source" : {
+               "name" : "Central School",
+               "description" : "CBSE Affiliation",
+               "street" : "Nagan",
+               "city" : "paprola",
+               "state" : "HP",
+               "zip" : "176115",
+               "location" : [
+                  31.8955385,
+                  76.8380405
+               ],
+               "fees" : 2200,
+               "tags" : [
+                  "Senior Secondary",
+                  "beautiful campus"
+               ],
+               "rating" : "3.3"
+            }
+         }
+      ]
+   }
+}
+
+
+URI Search
+Many parameters can be passed in a search operation using Uniform Resource Identifier −
+
+
+1)Q
+
+This parameter is used to specify query string.
+
+2)lenient
+
+This parameter is used to specify query string.Format based errors can be ignored by just setting this parameter to true. It is false by default.
+
+3)fields
+
+This parameter is used to specify query string.
+
+4) sort
+
+We can get sorted result by using this parameter, the possible values for this parameter is fieldName, fieldName:asc/fieldname:desc
+
+5)timeout
+
+We can restrict the search time by using this parameter and response only contains the hits in that specified time. By default, there is no timeout.
+
+6) terminate_after
+
+We can restrict the response to a specified number of documents for each shard, upon reaching which the query will terminate early. By default, there is no terminate_after.
+
+7)from
+
+The starting from index of the hits to return. Defaults to 0.
+
+8) size
+
+It denotes the number of hits to return. Defaults to 10.
+
+10) The main event for Elasticsearch is, of course, the search feature. I’ve created a dump of my “System” event log, then made a quick application to move the records into an index named “syslogs.” I used the following command from the “cat” API to print out the stats on that index.
+
+curl -X GET "localhost:9200/_cat/count/syslogs?v"
+
+epoch timestamp count
+1533611156 22:05:56 4137
+
+As you can see, we have 4137 documents in that index to work with. It’s not much in terms of what we would actually use this technology for, but it’ll do for a demo. Let’s search!
+
+11) Filter by context
+First, let’s take a look at how many errors are in the logs. We’ll do this with the “_search” endpoint on the index as follows:
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error
+
+response : it will send json in text Well, I don’t know if that’s even readable. It’s just a wall of JSON as far as I can tell.
+
+12) Make it pretty :
+
+Let’s see if we can get a better look by using the “pretty” option like this:
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty
+Notice how one of the query params is “pretty.” You can do “pretty=true” if it makes you feel better, but it isn’t necessary. 
+
+{
+    "took" : 5,
+    "timed_out" : false,
+    "_shards" : {
+        "total" : 5,
+        "successful" : 5,
+        "skipped" : 0,
+        "failed" : 0
+    },
+    "hits" : {
+        "total" : 355,
+        "max_score" : 2.579004,
+        "hits" : [
+            {
+                "_index" : "syslogs",
+                "_type" : "event",
+                "_id" : "ROtLEmUBn9IhJVP8VmEO",
+                "_score" : 2.579004,
+                "_source" : {
+                    "level" : "Error",
+                    "dateAndTime" : "2018-08-06T20:41:14",
+                    "source" : "Microsoft-Windows-DistributedCOM",
+                    "eventId" : 10016,
+                    "taskCategory" : "None"
+                }
+            },
+            ...
+            {
+                "_index" : "syslogs",
+                "_type" : "event",
+                "_id" : "zetMEmUBn9IhJVP8e2M8",
+                "_score" : 2.579004,
+                "_source" : {
+                    "level" : "Error",
+                    "dateAndTime" : "2018-07-23T12:33:49",
+                    "source" : "Microsoft-Windows-DistributedCOM",
+                    "eventId" : 10016,
+                    "taskCategory" : "None"
+                }
+            }
+        ]
+    }
+}
+
+
+Trim the fat
+We can trim down the result. Exclude the “_source” by adding “_source=false” to the query params.
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty&_source=false
+That’ll tell Elasticsearch to skip the “_source” for each record. It’s better, but it’s still too much. It looks like this now:
+
+{
+    "took" : 5,
+    "timed_out" : false,
+    "_shards" : {
+        "total" : 5,
+        "successful" : 5,
+        "skipped" : 0,
+        "failed" : 0
+    },
+    "hits" : {
+        "total" : 355,
+        "max_score" : 2.579004,
+        "hits" : [
+            {
+                "_index" : "syslogs",
+                "_type" : "event",
+                "_id" : "ROtLEmUBn9IhJVP8VmEO",
+                "_score" : 2.579004
+            },
+            ...
+            {
+                "_index" : "syslogs",
+                "_type" : "event",
+                "_id" : "zetMEmUBn9IhJVP8e2M8",
+                "_score" : 2.579004
+            }
+        ]
+    }
+}
+And that’s the truncated version as before. Notice the “hits” no longer include the “_source” attribute.
+
+13) Page results for a better UX :
+
+How do we page the results? Can’t we just return all 355 records in one query, or do we have to page them? Let’s try it!
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty&_source=false&size=355
+I won’t bore you with the details, but it printed out all 355 hits as requested! There’s a practical limit though. I’d say somewhere around 20-25 at most. They’re pretty spot on with 10 as a starting point though.
+
+Let’s try something sane with paging. We’ll get the first 25. Mind you, we aren’t sorting yet so these are being returned in a somewhat arbitrary order. The highest “_score” values are coming up first, but all search results match exactly (case insensitive). There is only a slight difference in scores across all 355 events (wouldn’t you like to know why? I would.).
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty&_source=false&size=25
+I’ve added “&size=25,” which will return the first 25 events (“from” defaults to zero). To get the next 25, we’ll do this:
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty&_source=false&size=25&from=25
+Here, I’ve added the “&from=25”, which brings back the next 25.
+
+One thing to consider when paging is the last set. Usually, it’ll be less than the page size. When we start from 350 with a “size” of 25, we’ll get the last five back without any errors.
+
+What’s more, we can even start past the number of results. Unlike our earlier example of “size=0,” we get a “max_score” in the response.
+
+curl -X GET http://localhost:9200/syslogs/_search?q=level:error&pretty&_source=false&size=1&from=360
+
+{
+   "took" : 7,
+    "timed_out" : false,
+    "_shards" : {
+        "total" : 5,
+        "successful" : 5,
+        "skipped" : 0,
+        "failed" : 0
+    },
+    "hits" : {
+        "total" : 355,
+        "max_score" : 2.579004,
+        "hits" : [ ]
+    }
+}
+
+
+14) Sort for relevance
+We can sort by adding the “sort” parameter. To sort by “_score,” add “&sort=_score:desc.” This way, we’ll get the most relevant hits first.
+
+
