@@ -1,0 +1,237 @@
+Docker commands:
+
+1) docker --version
+
+Docker version 19.03.8, build afacb8b
+
+2) docker create hello-world
+
+it will return container-id "ea3fa4c2d8be94bfe26427344eed173973ea6fef74b3173de60da4c8043bb11e"
+
+3) docker start <container-id>
+
+this will start the container and stops it and return container-id
+
+4)docker logs <container-id>
+
+it will prinnt the result of that container
+
+5)docker run hello-world
+
+it will run that image and store the image in hard drive
+
+6) docker run <image name>  <command(this is alternate command)>
+
+it will change and override the basic command
+
+docker run busybox echo hi
+
+o/p => hi
+
+7) docker ps
+
+it will show the table format of details of container id
+
+8) docker kill <container-id>
+
+it will stop the container and it will take some time for cleaning the stuff before killing the process
+
+9) docker kill <container-id>
+
+it will stop the container right now
+
+10) multicommands
+
+For running redis we need to start both like server and client cli so first we run redis server and in another command prompt we run redis client cli for interaction with server
+Like I run redis server using my container using docker :
+
+docker run redis 
+
+so it will load redis in container and start its server and if we try to run redis client in another cmd prompt it will not run becoz the redis server is running inside the docker container.
+
+So for this we have to try to run redis-cli inside the container. So we have to run multiple command inside the container So for this what we have to do is :-
+
+docker exec -it <container-id> command
+
+exec => it will tell we have to run another command
+-it =>it allow us to provide input direclty into the container
+then we provide container-id and the command to execute
+
+11) create a custom image 
+
+# Use an existing docker image as a base
+FROM alpine
+
+#Download and install a dependency
+RUN apk add --update redis
+
+#Tell the image what to do when it start as container
+CMD ["redis-server"]
+
+so after creating file we write cmd :
+
+docker build . 
+
+Explanation :-
+
+FROM ,RUN ,CMD ===>is just an instruction telling docker server what to do
+
+FROM :- it is used to specify the docker image that we want to use as a base.
+RUN :- instruction is used to execute some command while we are preparing our custom image.
+CMD :- command instruction specifies what should be executed when our containers.
+
+For tragging the docker command
+
+ docker build -t stephegrid/redis:latest .
+
+============================================================================================================================
+
+Custom docker image for spring boot project
+
+1) create a normal spring boot application
+
+package com.blog.samples.docker;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }  
+}
+
+2)create a pom.xml file :
+
+FROM maven:3.5.2-jdk-8-alpine AS MAVEN_BUILD
+MAINTAINER Brian Hannaway
+COPY pom.xml /build/
+COPY src /build/src/
+WORKDIR /build/
+RUN mvn package
+FROM openjdk:8-jre-alpine
+WORKDIR /app
+COPY --from=MAVEN_BUILD /build/target/docker-boot-intro-0.1.0.jar /app/
+ENTRYPOINT ["java", "-jar", "docker-boot-intro-0.1.0.jar"]
+FROM maven:3.5.2-jdk-8-alpine AS MAVEN_BUILD tells Docker to use the Maven image maven:3.5.2-jdk-8-alpine as the base image for the first stage of the build. Docker will look for this image locally and if it isn't available it will be pulled from DockerHub. Although Maven will be discarded from the final image (see COPY --from command later) I've used the Alpine-flavored Maven image as its faster to download.
+
+MAINTAINER Brian Hannaway isn't essential but improves maintainability by providing a point of contact for the image author.
+
+COPY pom.xml /build/ creates a build directory in the image and copies the pom.xml into it.
+
+COPY src /build/src/ copies the src directory into the build directory in the image.
+
+WORKDIR /build/ sets build as the working directory. Any further commands will run from the build directory.
+
+RUN mvn package runs the mvn package command to compile and package the application as an executable JAR. The first time the image is built, Maven will pull all required dependencies from the public Maven repo and cache them locally in the image. Subsequent builds will use a cached version of this image layer which means that the dependencies will be referenced locally and won't have to be pulled down again.
+
+At this point, I've defined the image up to the point where it builds an executable JAR. This is the first part of the multi-stage build finished. The next stage will take the JAR and run it.
+
+FROM openjdk:8-jre-alpine tells Docker you want to use the openjdk:8-jre-alpine base image for the next stage of the multi-stage build. Again, I've used a lightweight Alpine image for the Java 8 JRE. Using an Alpine image here is more important than using it for the Maven image earlier. While the Maven image will be discarded, openjdk:8-jre-alpine will form part of the final image. So choosing a lightweight JRE image is important if you want to keep the final image as small as possible.
+
+WORKDIR /app tells Docker to create a new working directory in the image called /app. All further commands will run from this directory.
+
+COPY --from=MAVEN_BUILD /build/target/docker-boot-intro-0.1.0.jar /app/ tells Docker to copy docker-boot-intro-0.1.0.jar from the /build/target directory in the MAVEN_BUILD stage to the /app directory of the current stage. As mentioned earlier, multi-stage builds are great because they allow you to copy specific artefacts from one build stage to another and discard everything else. If you were to retain everything from the MAVEN_BUILD stage you'd end up with an image that contains Maven, a local Maven repo. and all the class files generated in the target directory. By cherrypicking what you want from the MAVEN_BUILD stage and discarding everything else, you end up with a much smaller image.
+
+ENTRYPOINT ["java", "-jar", "app.jar"] tells Docker what command to run when a container is started from this image. The individual parts of the command are comma-separated. In this instance, you want to run the executable JAR you copied to the /app directory.
+
+Building the Image
+Now that you have a Docker image defined, it's time to build it. Open a directory containing the Dockerfile (project root). To build the image run the following command docker image build -t docker-boot-intro . The -t option allows you to specify a name and optionally a tag. If you don't specify a tag Docker will automatically tag the image as latest.
+
+$ docker image build -t docker-boot-intro .
+Sending build context to Docker daemon  26.56MB
+Step 1/10 : FROM maven:3.5.2-jdk-8-alpine AS MAVEN_BUILD
+ ---> 293423a981a7
+Step 2/10 : MAINTAINER Brian Hannaway
+ ---> Using cache
+ ---> db354a426bfd
+Step 3/10 : COPY pom.xml /build/
+ ---> Using cache
+ ---> 256340699bc3
+Step 4/10 : COPY src /build/src/
+ ---> Using cache
+ ---> 65eb0f98bb79
+Step 5/10 : WORKDIR /build/
+ ---> Using cache
+ ---> b16b294b6b74
+Step 6/10 : RUN mvn package
+ ---> Using cache
+ ---> c48659e0197e
+Step 7/10 : FROM openjdk:8-jre-alpine
+ ---> f7a292bbb70c
+Step 8/10 : WORKDIR /app
+ ---> Using cache
+ ---> 1723d5b9c22f
+Step 9/10 : COPY --from=MAVEN_BUILD /build/target/docker-boot-intro-0.1.0.jar /app/
+ ---> Using cache
+ ---> d0e2f8fbe5c9
+Step 10/10 : ENTRYPOINT ["java", "-jar", "docker-boot-intro-0.1.0.jar"]
+ ---> Using cache
+ ---> f265acb14147
+Successfully built f265acb14147
+Successfully tagged docker-boot-intro:latest
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+Brians Computer@DESKTOP-077OUJ8 MINGW64 /c/dev/docker-boot-intro (master)
+When you run a build, Docker executes each command in the Docker file as an individual step. A layer is created for each step along with a unique ID. For example, step 1 created a layer with ID 293423a981a7.
+
+The first time you build an image, Docker will pull whatever external images it needs from DockerHub and build new layers from scratch. As you might expect, this can make the first build quite slow.
+
+During the build, Docker checks its cache to see if it already has a cached version of each layer before attempting to build it. If a cached version of the layer is available, Docker uses it instead of building the layer from scratch. This means that once you've built an image, subsequent builds become much faster. You can see cached layers being used in the build output above where Docker outputs --> Using Cache and then the hash of the layer used.
+
+As part of the RUN mvn package command, Docker pulls all POM dependencies from the public Maven repo, builds an executable JAR, and stores all of this in layer c48659e0197e. The next time you build the image, the Maven dependencies and the application JAR will be taken from the cached layer and won't have to be downloaded and built again. This is what's happening in step 6 above.
+
+
+Running a Container
+Now that the image is image built you can run a container with the following command docker container run -p 8080:8080 docker-boot-intro. The run command takes an optional -p option that allows you to map a port from the container to your host machine. If you're familiar with Spring Boot, you'll probably know that by default a Boot app starts on port 8080. When you run a container, Docker will run the executable JAR and the application will start on port 8080 inside the container. In order to access the application running in the container you need to map the internal container port to a port on the host machine. The -p 8080:8080 option maps the containers internal port 8080 to port 8080 on the host machine.
+
+
+
+
+================================================================================================================================= Create python docker app
+
+1) create a python application file
+index.py
+
+from flask import Flask
+app = Flask(__name__)
+@app.route("/")
+def hello():
+    return "Hello World!"
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int("5000"), debug=True)
+
+
+2) Create Dockerfile
+
+FROM python:alpine3.7
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 5000
+CMD python ./index.py
+
+
+Note that FROM directive is pointing to python:alpine3.7. This is telling Docker what base image to use for the container, and implicitly selecting the Python version to use, which in this case is 3.7. Docker Hub has base images for almost all supported versions of Python including 2.7. This example is using Python installed on Alpine Linux, a minimalist Linux distro, which helps keep the images for Docker small. Prefer Alpine unless there’s a compelling reason to use another base image such as Debian Jessie.
+
+Also note is the RUN directive that is calling PyPi (pip) and pointing to the requirements.txt file. This file contains a list of the dependencies that the application needs to run. Because Flask is a dependency, it is included as such in the requirements.txt with a simple reference. You can also select version libraries if you need specific versions with requirements.txt. The file should also be in the root of the application.
+
+3)requirements.txt files contains the dependencies we required so now we need "flask":
+
+flask
+
+
+The remaining directives in the Dockerfile are pretty straightforward. The CMD directive tells the container what to execute to start the application. In this case, it is telling Python to run index.py. The COPY directive simply moves the application into the container image, WORKDIR sets the working directory, EXPOSE exposes a port that is used by Flask.
+
+To build the image, run Docker build from a command line or terminal that is in the root directory of the application.
+
+docker build --tag my-python-app .
+This will “tag” the image my-python-app and build it. After it is built, you can run the image as a container.
+
+docker run --name python-app -p 5000:5000 my-python-app
+This starts the application as a container. The –name parameter names the container and the -p parameter maps the host’s port 5000 to the containers port of 5000. Lastly, the my-python-app refers to the image to run. After it starts, you should be able to browse to the container. Depending on how you are running Docker depends on what the IP address of the application will be. Docker for Windows and Docker for Mac will be able to use 127.0.0.1. For other instances, it will be the host IP of a VM or physical machine you are running Docker on.
+
+
+4)  Now if we want to see the file dir in container we can open new cmd prompt and run
+ - docker ps (to obtain container-id)
+ - docker exec -t <container-id> sh (this will run a shell cmd inside container)
+ 
+ 
