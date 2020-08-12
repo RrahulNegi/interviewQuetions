@@ -1,0 +1,326 @@
+CI n CD
+
+Continuous Integration
+
+In this developers commit the code in git and their is an automated verification process that Compile the code, test the code, Sonar testing and generate the report of bugs error and waring and then packaging the code in war/jar
+
+Continuous Delivery :
+
+it is  the process in which developers commit the code in git and then it is tested and the packaged to jar/war and then it is deliverd to the productions env
+
+it is followed by the CI
+
+it automates software release process
+release software updates faster
+improves developers productivity
+enables developers to find and fix bugs quickers 
+
+
+CI vs CD
+
+CD is same as CI but in CD we have to take approval to depoly the code in productions
+
+
+
+a)How to configuer jobs with git and maven
+
+1)GO to jenkins create a new task
+2)select freestyle project
+3)Go to source Code manaagment and select git and add the your repository path in it
+4)Go to build and select invoke top level Maven targets and in golas => clean package
+
+5) for configutring maven -go to 
+manage jenkins >> global configutring >>add maven (here u shuld add the path of maven)
+
+6) go back to ur job in build select maven you have configuer above
+
+====================================================
+
+b) How to configuer jenkins pipeline to git and maven
+
+1) create a job and select pipeline
+2)Go to pipeline options like script or sub version like git
+if we use script then we have to specify the steps of the pipeline.
+in git we have to put the jenkins script inside the git repository 
+So create Jenkinsfile inside the root dir
+node {
+	stage('SCM Checkout') {
+	tool name: 'maven3', type: 'maven'
+	git 'https://github.com/javahometech/my-app'
+	}
+	stage('Compile-Package'){
+		 def mvnHome = tool name: 'maven-3', type: 'maven'
+
+	sh "${mvnHome}/bin/mvn package"  ==>> this is the command we have to run on pom.xml that create the package
+	}
+}
+
+save and commit the file
+
+so in jenkins we seleted the git options so here we put repository url since its a public so no neewd to put any credentials and branch is master branch and scriptfile is JenkinsFile and runs the job
+
+we have to create mvn pipeline script so for this we select pipeline script and the select the step i.e tool:Use a tool from predefine Tool installation
+
+then go to tool type: Maven then select Tool maven3
+then generate pipeline script then copy the generated script to our JenkinsFile
+
+
+=============================
+
+c) Email Notifications
+
+for this we need smtp server details like of google
+
+1) goto jenkins home page >> Manage jenkins >> configure System
+2)In this go to E-mail Notifications in this put all details like 
+smtp.gmail.com
+and in advance add username and password and enable ssl and supply smtp port and UTF-4 and click test so email is send successfully
+
+Now we have to configure the jobs to send email notifications so now we go to pipline jobs
+
+in jenkinfile we have to add email-notification now we have to again get the pipeline syntax for email notifications and iside tools select mail:Mail and then add all the fields and then click Generate Pipeline Script button
+
+node {
+	stage('SCM Checkout') {
+	tool name: 'maven3', type: 'maven'
+	git 'https://github.com/javahometech/my-app'
+	}
+	stage('Compile-Package'){
+		 def mvnHome = tool name: 'maven-3', type: 'maven'
+
+	sh "${mvnHome}/bin/mvn package"  ==>> this is the command we have to run on pom.xml that create the package
+	}
+	stage('Email Notification'){ ===>> Add for email
+	mail bcc: '', body: 'Hi', cc: '', from: '', replyTo: '', subject: 'Test', to: 'abc.com'
+	}
+	
+}
+
+commit this jenkinsfile and build again and then we build the job
+then it will perform three steps i.e SCM checkout, Compile-package, email notification
+
+
+============================================================================================= 
+d) Public Code to Sonarqube
+
+1) jenkins home >> Manage jenkins >> Manage plugins >> select Available and serch for Sonarquobe and click install plugin
+
+2)jenkins home  >> Cofigure system >> select Sonar quobe server (this o ptions comes after installing somar qube)
+
+3) we have to download and install sonarqubes in our windows after installing and runnig it we have to start sonar server at localhost:9000 and generate the token and this token act like username and password and using this jenkins will connect to sonar qubes and publishes the source code
+
+4) add the server url and the token in the SonarQubes server in jenkins
+
+5) we have created a jenkins file called sonarqubes analyis at our git
+
+node{
+   stage('SCM Checkout'){
+     git 'https://github.com/javahometech/my-app'
+   }
+   stage('Compile-Package'){
+      // Get maven home path
+      def mvnHome =  tool name: 'maven-3', type: 'maven'   
+      sh "${mvnHome}/bin/mvn package"
+   }
+   
+   stage('SonarQube Analysis') {
+        def mvnHome =  tool name: 'maven-3', type: 'maven'
+        withSonarQubeEnv('sonar-6') { 
+          sh "${mvnHome}/bin/mvn sonar:sonar"
+        }
+    }
+   
+   stage('Email Notification'){
+      mail bcc: '', body: '''Hi Welcome to jenkins email alerts
+      Thanks
+      Hari''', cc: '', from: '', replyTo: '', subject: 'Jenkins Job', to: 'hari.kammana@gmail.com'
+   }
+   stage('Slack Notification'){
+       slackSend baseUrl: 'https://hooks.slack.com/services/',
+       channel: '#jenkins-pipeline-demo',
+       color: 'good', 
+       message: 'Welcome to Jenkins, Slack!', 
+       teamDomain: 'javahomecloud',
+       tokenCredentialId: 'slack-demo'
+   }
+
+}
+
+commit the file and and in jenkis we have to change JenkinsFile to sonarqube-analysis
+
+ 
+and then we have to start piplepine build when build got sucessfully done then win console o/p we get the link that will show the report of sonarqubes detalis
+
+
+e) Jenkins Mark build as failed if sonarqubes quality checks not met
+
+for this again we have to go to pipeline syntax and select Tool like "WaitForQualityGate: Wait for SonarQubes analysis..."
+ and we get folowing syntax :
+ 
+ stage("Quality Gate"){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+              }
+          }
+ 
+ 
+ 
+created a new file like sonar-status-check  in git 
+
+
+node{
+   stage('SCM Checkout'){
+     git 'https://github.com/javahometech/my-app'
+   }
+   stage('Compile-Package'){
+      // Get maven home path
+      def mvnHome =  tool name: 'maven-3', type: 'maven'   
+      sh "${mvnHome}/bin/mvn package"
+   }
+   
+   stage('SonarQube Analysis') {
+        def mvnHome =  tool name: 'maven-3', type: 'maven'
+        withSonarQubeEnv('sonar-6') { 
+          sh "${mvnHome}/bin/mvn sonar:sonar"
+        }
+    }
+    
+    stage("Quality Gate Statuc Check"){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                   slackSend baseUrl: 'https://hooks.slack.com/services/',
+                   channel: '#jenkins-pipeline-demo',
+                   color: 'danger', 
+                   message: 'SonarQube Analysis Failed', 
+                   teamDomain: 'javahomecloud',
+                   tokenCredentialId: 'slack-demo'
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+              }
+          }
+      }    
+   
+   stage('Email Notification'){
+      mail bcc: '', body: '''Hi Welcome to jenkins email alerts
+      Thanks
+      Hari''', cc: '', from: '', replyTo: '', subject: 'Jenkins Job', to: 'hari.kammana@gmail.com'
+   }
+   stage('Slack Notification'){
+       slackSend baseUrl: 'https://hooks.slack.com/services/',
+       channel: '#jenkins-pipeline-demo',
+       color: 'good', 
+       message: 'Welcome to Jenkins, Slack!', 
+       teamDomain: 'javahomecloud',
+       tokenCredentialId: 'slack-demo'
+   }
+
+}
+ 
+ 
+ commit the text file in git 
+ So in thios stage("Quality Gate Statuc Check") if status is not ok then we mark this piplepine as failed and the max time is 1 hor i.e max 1 hr we will wait to get sonarqube status
+ 
+ Save this anc commit the file and comes back to jenkins clikc to the pipeline job and under script path we change  the name to "sonar-status-check"
+ 
+ 
+ ============================================================================
+ 
+ f) Depoly War file to tomcat
+ 
+ 1)to copy war files to remote machine we have to install SSH Agent to jenkins
+ 
+ 2) We have to configure the credentials to tomcat server so go to jenkins home page ==> configuration >>Manage Credentials >> choose jenkins >> global credentials >> Add credentianls>> in kind we choose SSH Username and private key 
+ 
+ So for tomcat server we have a private key and from that private key we will connect this SSH server. So enter username and private key and some id. Now we added the credentilas for tomcat 
+ 
+ Now again we use this pipelinescript by taking this tomcat credential we execute and generate the pipeline script copy the script.
+ 
+ Go to demo-pipeline kob click configure n in pipeline script and paste the pipeline script
+ 
+ so go to git and cretae a txt file like depoly-war-to-tomcat
+ 
+ node{
+   stage('SCM Checkout'){
+     git 'https://github.com/javahometech/my-app'
+   }
+   stage('Compile-Package'){
+      // Get maven home path
+      def mvnHome =  tool name: 'maven-3', type: 'maven'   
+      sh "${mvnHome}/bin/mvn package"
+   }
+   stage('Deploy to Tomcat'){
+      
+      sshagent(['tomcat-dev']) {
+         sh 'scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.29.242:/opt/tomcat8/webapps/'
+      }
+   }
+   stage('Email Notification'){
+      mail bcc: '', body: '''Hi Welcome to jenkins email alerts
+      Thanks
+      Hari''', cc: '', from: '', replyTo: '', subject: 'Jenkins Job', to: 'hari.kammana@gmail.com'
+   }
+   stage('Slack Notification'){
+       slackSend baseUrl: 'https://hooks.slack.com/services/',
+       channel: '#jenkins-pipeline-demo',
+       color: 'good', 
+       message: 'Welcome to Jenkins, Slack!', 
+       teamDomain: 'javahomecloud',
+       tokenCredentialId: 'slack-demo'
+   }
+
+}
+
+
+commit the changes and create a new pipeline demo and script path to "deploy-war-to-tomcat"
+
+Now it will generate the package as war deploy it to tomcat server
+
+
+============================================================================
+
+g) Jenkins pipeline, Parametrized builds 
+
+in this we can pass diffrent parameter to the same jobs and we can reuse them
+
+1) Create a new job like "parameterized-builds" select pipeline options and go to piple line.
+2)Here we use Pipeline scripts and generate a script using pippeline srcipt generator and select tools like "properties: Set job properties" and then select this project is parametrized
+and we select choice of selecting choices
+3)Name : branch
+Choices : master
+		feature-1
+		feature-2
+Description : Select branch to build
+and then click button as generate pipelinescript
+scripts :
+
+properties([parameters([choice(choices: 'master\nfeature-1\nfeature-2', description: 'Select Branch to build', name: 'branch')])])
+
+node{
+    stage('Scm Checkout'){
+        echo "Pulling changes from the branch ${params.branch}"
+        git url: 'https://github.com/javahometech/my-app', branch: "${params.branch}"
+    }
+    
+}
+
+Here we want to check out the branch select by the users and the build it
+
+
+==========================================================================
+
+h)integrate jenkin jobs with Github webhooks
+
+In this we want to trigger jenkins job automaticaly using githubs 
+
+1) Cretae a github repo which has maven based projects
+2)Create jobs like jobOne and select freestyle project and click ok
+3)in source code managment select the repository url
+4) go to build trigger and select Github hook trigger for GITScm pooling
+54) go to repository settings >> under webhook add webhook >> inside it we put jenkins url i.e http://localhost:8080/github-webhook/
+
+content type : application/json
+
+select "Just the push event"
+
