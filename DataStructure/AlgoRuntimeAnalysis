@@ -134,5 +134,37 @@ n/2powerk=1 =>n=2 power k so k=log keap
 
 so total result is log n
 
+======================================================================================
+Big O :
+
+
+o(1) ==> is constatnt time it dosnt depend on data size
+
+o(n)===> it scale linear on baisc of input data like if data is twice then it will take twice the time
+
+example  :
+
+boolean contains(array,x){
+ for eah element in array{
+ if element == x {
+ retur true
+ }
+ }
+ }
+ 
+ so it will O(N) as N is sie of array
+ 
+ void print(array){
+ 
+ foreach x in array{
+ 
+	foreach y in array {
+		(x,y)
+	}
+}
+} 
+
+So it will take O(N*N) or O(N squre)
+
 
 

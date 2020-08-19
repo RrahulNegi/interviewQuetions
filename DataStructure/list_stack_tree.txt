@@ -1,0 +1,74 @@
+1) LinkedList
+
+- sequence of element(String, Number etc) in wgich each element is linked to next elemet.
+
+1->2->3->5
+
+- It differ from array as if we want 4th element we can directly fetch that element arr[3] but in linklist we have to start from head and then move it to 4th element  that take linear time which is slower
+
+- advantage is :- insertion and deletion elemnt middle of element it take constant time
+
+DoublyLinkedList :- its same as a linkedlist as in this each element is linked with next element it also linked with previous element
+
+public class Node {
+
+	Node root;
+	int data;
+	public Node(int data) {
+	 this.data=data;
+	 }
+	
+	
+	
+2) Stacks and queus
+
+-both are liner ds
+- they r flexible i.etheir size increase/decreases as we add /remove the data
+
+Stack= LIFO(Last in first out)
+Queue= FIFO (First in first out) like in movie 
+
+
+3) Trees
+
+- it has a root node and many child nodes and each child node may has other child nodes
+- leafe is a node which has no cild node
+
+a) Binary Tree :
+it means each node has no more the two child node i.e Left and right node
+
+Binary Search tree :- 
+
+its a tree 'in which left node is less then the root node whcih is less then the right nodes
+
+it makes the search easy
+
+lets see we r looking for a 5 in a tree so we have to check wether it is bigger or smaller then the root if it is smaller then the root then we have to search the left node other wise we have to search the right node
+
+Insert : if lets say wehave to insert 19 in a tree so it works same as a search i.e firstly we will check it is biiger or smaller then the root and if it is biiger then we move to right node and we continue do so unless we got to the leafe node or no node so we will insert it their
+
+i) UnBalances tree :-- lets sasy we have insert 1 and the 2 then 3 then 4 so these will move to one direction  i.e right node so i   nsertion and seach is tough O(n)
+
+II) Balanced Tree
+
+we insert 4 then 2 then 5 then 1 then 6 its balancd and insert/search is easy O(log n)
+
+
+Traversel of tree :
+
+example B is root node A is left and C is right node
+
+-INORDER Traversal :- left node then root then right node (A, B, C)
+
+PREORDER Traversal :- root then left then right (B,A,C)
+
+POSTOrder traversal : left then right the root i,e(A,C,B)
+
+Bsicaly we do INORDER traversal so that the node is in order
+
+
+
+4) HasHTable :
+
+- its a key value looks up i.e its a key,Value pair
+

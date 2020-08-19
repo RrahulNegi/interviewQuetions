@@ -1,0 +1,282 @@
+[33mcommit eccb3ceb6a76c341c925948c0f52c452bf968a04[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Wed Aug 12 17:04:54 2020 +0530
+
+    Jenkins ci cd
+
+[33mcommit 69aab81a63768b98fb178f64dbb8148c91dbbf2e[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Aug 11 17:04:30 2020 +0530
+
+    docker python and springboot application
+
+[33mcommit 778b6dd3bd807ee38518957f8855343276a39517[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Aug 7 16:14:20 2020 +0530
+
+    Elastic search and MQ(JMS)
+
+[33mcommit f648afc25520335203cb6ca124d933337a9e42fd[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Thu Aug 6 17:23:13 2020 +0530
+
+    Add Microservice files
+
+[33mcommit 1e724897204872fed673a3040ab31a04f923a10e[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Wed Aug 5 17:45:15 2020 +0530
+
+    modification in angular files
+
+[33mcommit 30cb4aa835548f65c2e4b3aaa6857880a294deef[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Aug 4 16:29:03 2020 +0530
+
+    Angular file
+
+[33mcommit 35dc09a007964b280fb19dffbf320996314fa78d[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Sun Aug 2 10:22:51 2020 +0530
+
+    created seprate python, springboot folder
+
+[33mcommit 48c2bb7b4dc4a895ad24def1c5b48cb00602f4db[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Jul 31 15:11:37 2020 +0530
+
+    Threadlocal example
+
+[33mcommit 1304bdadbee483d3436bddaebae08ef7618d1fba[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Jul 31 14:23:34 2020 +0530
+
+    Adding swagger
+
+[33mcommit 3fc8a308ebb19fb0b3e5b419a0d2c37476e3b05d[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Jul 24 16:32:34 2020 +0530
+
+    python tutorial, Java, Spring realted topic
+
+[33mcommit 2fb4b4f64340914e5d3fac2af8487bb436fda5b0[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Jul 10 18:07:49 2020 +0530
+
+    Java 7 , 8 , 9 questions
+
+[33mcommit f8d9da0e1f5ef85623bd14b121eb745193b248b4[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Fri Jul 10 18:05:08 2020 +0530
+
+    Angular
+
+[33mcommit 047e4f12e67ad32a73300ed140d0232d41b3d366[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu Jul 9 23:24:42 2020 +0530
+
+    Adding javam angular folder
+
+[33mcommit b657f565a107d1df4aa2a087e82dfb0cac9cd566[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Thu Jul 2 00:10:51 2020 +0530
+
+    Update AngularInt
+
+[33mcommit 3a48dfee428ad6b3138efaf8f489940dd7874943[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Wed Jul 1 18:44:09 2020 +0530
+
+    Angular Questions
+
+[33mcommit 888a2a1657cf06c13b5c8af5eecb62b8161bb673[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Jun 30 17:55:28 2020 +0530
+
+    interview questions
+
+[33mcommit 2f6eeabc6e332411a97187fe62dca0134959e5c3[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Mon Jun 29 18:05:56 2020 +0530
+
+    interview questions and answers
+
+[33mcommit b380b9b718e533cd03af13fa8416fd93f4fbe7a5[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Jun 23 11:35:41 2020 +0530
+
+    Changes in Thread
+
+[33mcommit d143be4cdb32af8b628ddf4f66c7711897470e4c[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Thu Jun 18 18:41:28 2020 +0530
+
+    Docker changes
+
+[33mcommit 2a5c0be1cb0f4b2fbd9aa7a24fbce4291b85b7a3[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Jun 16 17:13:19 2020 +0530
+
+    New Added Docker files
+
+[33mcommit 4161c01b6c04a5ffc0d2e51a7f2ced39bd82ecc3[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Tue Jun 16 17:11:43 2020 +0530
+
+    New Spring files
+
+[33mcommit d9f61c72833e739ee2a5b6143524477678cbd467[m
+Author: Rahul Singh Negi <singh.rahul001@gmail.com>
+Date:   Mon Jun 15 13:29:51 2020 +0530
+
+    Update Spring_Security.txt
+
+[33mcommit 6378225f22e91935c1e819f5e6df6c54ce7fbd18[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu Jun 4 00:35:10 2020 +0530
+
+    Questions related Microservices and spring-cloud
+
+[33mcommit 440b45dde1c06290079438ddbdbd4b4b2006fae0[m
+Merge: 158b1a6 df7e6a5
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu May 28 00:58:38 2020 +0530
+
+    MS SAGA and 2/3 phase
+
+[33mcommit 158b1a692b1d873bd5ba64e116e405f9b572d1af[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu May 28 00:54:20 2020 +0530
+
+    MS SAGA and 2/3 phase
+
+[33mcommit df7e6a58d350aa9080078f04ce647f0e1bee52f6[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Thu Mar 5 15:52:56 2020 +0530
+
+    Imp url
+
+[33mcommit b079d2db7502f9fec3dee00c6c923a267168e762[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Tue Mar 3 17:24:48 2020 +0530
+
+    Java8 and Spring
+
+[33mcommit 48a8fbc22459ee4aa4c688ea319177375274772e[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Mon Mar 2 12:37:35 2020 +0530
+
+    Spring Ques
+
+[33mcommit 8c89e4fff2dcedc43325dff8904a627adab02e81[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Mon Mar 2 00:45:49 2020 +0530
+
+    Spring sec addOns
+
+[33mcommit 8214c6255dc837accf44277baf3b5f211330fb02[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Sat Feb 29 13:53:41 2020 +0530
+
+    Sprimg interview addOn
+
+[33mcommit 90b618c6ceb6ae8bd99620fd87da5f9cab6e273f[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Thu Feb 27 17:21:15 2020 +0530
+
+    Spring+java
+
+[33mcommit 04a3873e631475a347d353870d001251b51fe3f9[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Wed Feb 26 01:03:24 2020 +0530
+
+    queryy
+
+[33mcommit 307ba8ab2e768d879604a76bdd90107b6aafd487[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Thu Feb 20 14:08:07 2020 +0530
+
+    Java_memory
+
+[33mcommit 73c15942c3883b0750235ada4dd751ccd5e6e29f[m
+Merge: dab5265 5639a94
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Wed Feb 19 21:51:28 2020 +0530
+
+    Merge branch 'master' of https://github.com/RrahulNegi/interviewQuetions
+
+[33mcommit dab5265a4350e66c4ef635d853720c34a58cd0ba[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Wed Feb 19 21:50:26 2020 +0530
+
+    changes
+
+[33mcommit 5639a9427c878b191994067da0486d738261de91[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Wed Feb 19 17:38:22 2020 +0530
+
+    JUNIT,SQl
+
+[33mcommit a3273bc321d913098cbdc12f2464b8cfdb571fee[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Mon Feb 17 22:04:05 2020 +0530
+
+    cleancode
+
+[33mcommit 057504a3d6280b1ba1d553f139804e6c267307b4[m
+Merge: ec548ee 960b6ca
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Mon Feb 17 22:03:29 2020 +0530
+
+    Merge branch 'master' of https://github.com/RrahulNegi/interviewQuetions
+
+[33mcommit 960b6ca772599999b3d0a339784cfcedb39cbe54[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Mon Feb 17 15:32:09 2020 +0530
+
+    Add junit
+
+[33mcommit ec548eeec894e291dec871114b046b9c911ba2cc[m
+Merge: 4495686 94c9d53
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu Feb 13 21:09:08 2020 +0530
+
+    Merge branch 'master' of https://github.com/RrahulNegi/interviewQuetions
+
+[33mcommit 4495686b791208b57b4fca0efb9c7342fe5ceed0[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu Feb 13 20:46:35 2020 +0530
+
+    Angular+Thread
+
+[33mcommit 94c9d53f0ae5ca3b6d4c1612416f90efdae9cb51[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Thu Feb 13 13:22:54 2020 +0530
+
+    Added pdf files
+
+[33mcommit 775068a86a0cc6ff4a71ccf66917f7d63b239658[m
+Merge: e3c2265 4c6999c
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Fri Feb 7 10:18:18 2020 +0530
+
+    Merge branch 'master' of https://github.com/RrahulNegi/interviewQuetions
+
+[33mcommit 4c6999c67cc5ee57ed5552ef353a020a1c10c0cb[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Fri Feb 7 00:55:06 2020 +0530
+
+    Pic Ans
+
+[33mcommit 975d0d746a53f9833c20f4193fa5cdc180c67443[m
+Author: RrahulNegi <singh.rahul001@gmail.com>
+Date:   Thu Feb 6 00:08:55 2020 +0530
+
+    New questions
+
+[33mcommit e3c22659ea8a29a07b3d6e753e6448157d47c5ee[m
+Author: rnegi <rahul.negi@soprasteria.com>
+Date:   Tue Feb 4 17:36:53 2020 +0530
+
+    Lambda and java8
+
+[33m

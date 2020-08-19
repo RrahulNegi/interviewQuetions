@@ -1,0 +1,383 @@
+JUNIT
+
+
+1 Fixtures is a fixed state of a set of objects used as a baseline for running tests. The purpose of a test fixture is to ensure that there is a well-known and fixed environment in which tests are run so that results are repeatable. It includes −
+
+setUp() method, which runs before every test invocation.
+tearDown() method, which runs after every test method.
+
+// assigning the values
+   protected void setUp(){
+      value1 = 3;
+      value2 = 3;
+   }
+
+   // test method to add two values
+   public void testAdd(){
+      double result = value1 + value2;
+      assertTrue(result == 6);
+   }
+   
+ 
+2) Test Suites
+
+A test suite bundles a few unit test cases and runs them together. In JUnit, both @RunWith and @Suite annotation are used to run the suite test. Given below is an example that uses TestJunit1 & TestJunit2 test classes.
+
+//JUnit Suite Test
+@RunWith(Suite.class)
+
+@Suite.SuiteClasses({ 
+   TestJunit1.class ,TestJunit2.class
+})
+
+
+Example 
+
+public class MessageUtil {
+
+   private String message;
+
+   //Constructor
+   //@param message to be printed
+	
+   public MessageUtil(String message){
+      this.message = message;
+   }
+      
+   // prints the message
+   public String printMessage(){
+      System.out.println(message);
+      return message;
+   }   
+}  
+
+
+public class TestJunit {
+	
+   String message = "Hello World";	
+   MessageUtil messageUtil = new MessageUtil(message);
+
+   @Test
+   public void testPrintMessage() {
+      assertEquals(message,messageUtil.printMessage());
+   }
+}
+
+
+public class TestRunner {
+   public static void main(String[] args) {
+      Result result = JUnitCore.runClasses(TestJunit.class);
+		
+      for (Failure failure : result.getFailures()) {
+         System.out.println(failure.toString());
+      }
+		
+      System.out.println(result.wasSuccessful());
+   }
+}  	
+
+3) Methods :
+
+void assertEquals(boolean expected, boolean actual)
+
+Checks that two primitives/objects are equal.
+
+2	
+void assertFalse(boolean condition)
+
+Checks that a condition is false.
+
+3	
+void assertNotNull(Object object)
+
+Checks that an object isn't null.
+
+4	
+void assertNull(Object object)
+
+Checks that an object is null.
+
+5	
+void assertTrue(boolean condition)
+
+Checks that a condition is true.
+
+6	
+void fail()
+
+Fails a test with no message.
+
+
+
+   @Test
+   public void testAdd() {
+      //test data
+      int num = 5;
+      String temp = null;
+      String str = "Junit is working fine";
+
+      //check for equality
+      assertEquals("Junit is working fine", str);
+      
+      //check for false condition
+      assertFalse(num > 6);
+
+      //check for not null value
+      assertNotNull(temp);
+   }
+
+   
+ Example 2 :
+ 
+ public class EmployeeDetails {
+
+   private String name;
+   private double monthlySalary;
+   private int age;
+   
+   /**
+   * @return the name
+   */
+	
+   public String getName() {
+      return name;
+   }
+	
+   /**
+   * @param name the name to set
+   */
+	
+   public void setName(String name) {
+      this.name = name;
+   }
+	
+   /**
+   * @return the monthlySalary
+   */
+	
+   public double getMonthlySalary() {
+      return monthlySalary;
+   }
+	
+   /**
+   * @param monthlySalary the monthlySalary to set
+   */
+	
+   public void setMonthlySalary(double monthlySalary) {
+      this.monthlySalary = monthlySalary;
+   }
+	
+   /**
+   * @return the age
+   */
+   public int getAge() {
+      return age;
+   }
+	
+   /**
+   * @param age the age to set
+   */
+   public void setAge(int age) {
+      this.age = age;
+   }
+}
+EmployeeDetails class is used to −
+
+get/set the value of employee's name.
+get/set the value of employee's monthly salary.
+get/set the value of employee's age.
+Create a file called EmpBusinessLogic.java in C:\>JUNIT_WORKSPACE, which contains the business logic.
+
+public class EmpBusinessLogic {
+   // Calculate the yearly salary of employee
+   public double calculateYearlySalary(EmployeeDetails employeeDetails) {
+      double yearlySalary = 0;
+      yearlySalary = employeeDetails.getMonthlySalary() * 12;
+      return yearlySalary;
+   }
+	
+   // Calculate the appraisal amount of employee
+   public double calculateAppraisal(EmployeeDetails employeeDetails) {
+      double appraisal = 0;
+		
+      if(employeeDetails.getMonthlySalary() < 10000){
+         appraisal = 500;
+      }else{
+         appraisal = 1000;
+      }
+		
+      return appraisal;
+   }
+}
+EmpBusinessLogic class is used for calculating −
+
+the yearly salary of an employee.
+the appraisal amount of an employee.
+Create a file called TestEmployeeDetails.java in C:\>JUNIT_WORKSPACE, which contains the test cases to be tested.
+
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+public class TestEmployeeDetails {
+   EmpBusinessLogic empBusinessLogic = new EmpBusinessLogic();
+   EmployeeDetails employee = new EmployeeDetails();
+
+   //test to check appraisal
+   @Test
+   public void testCalculateAppriasal() {
+      employee.setName("Rajeev");
+      employee.setAge(25);
+      employee.setMonthlySalary(8000);
+		
+      double appraisal = empBusinessLogic.calculateAppraisal(employee);
+      assertEquals(500, appraisal, 0.0);
+   }
+
+   // test to check yearly salary
+   @Test
+   public void testCalculateYearlySalary() {
+      employee.setName("Rajeev");
+      employee.setAge(25);
+      employee.setMonthlySalary(8000);
+		
+      double salary = empBusinessLogic.calculateYearlySalary(employee);
+      assertEquals(96000, salary, 0.0);
+   }
+}
+TestEmployeeDetails class is used for testing the methods of EmpBusinessLogic class. It
+
+tests the yearly salary of the employee.
+tests the appraisal amount of the employee.
+Next, create a java class filed named TestRunner.java in C:\>JUNIT_WORKSPACE to execute test case(s).
+
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
+public class TestRunner {
+   public static void main(String[] args) {
+      Result result = JUnitCore.runClasses(TestEmployeeDetails.class);
+		
+      for (Failure failure : result.getFailures()) {
+         System.out.println(failure.toString());
+      }
+		
+      System.out.println(result.wasSuccessful());
+   }
+} 
+Compile the test case and Test Runner classes using javac.
+
+C:\JUNIT_WORKSPACE>javac EmployeeDetails.java 
+EmpBusinessLogic.java TestEmployeeDetails.java TestRunner.java
+Now run the Test Runner, which will run the test case defined in the provided Test Case class.
+
+C:\JUNIT_WORKSPACE>java TestRunner
+Verify the output.
+
+true
+
+ 
+ 
+   @Test
+   public void testAssertions() {
+      //test data
+      String str1 = new String ("abc");
+      String str2 = new String ("abc");
+      String str3 = null;
+      String str4 = "abc";
+      String str5 = "abc";
+		
+      int val1 = 5;
+      int val2 = 6;
+
+      String[] expectedArray = {"one", "two", "three"};
+      String[] resultArray =  {"one", "two", "three"};
+
+      //Check that two objects are equal
+      assertEquals(str1, str2);
+
+      //Check that a condition is true
+      assertTrue (val1 < val2);
+
+      //Check that a condition is false
+      assertFalse(val1 > val2);
+
+      //Check that an object isn't null
+      assertNotNull(str1);
+
+      //Check that an object is null
+      assertNull(str3);
+
+      //Check if two object references point to the same object
+      assertSame(str4,str5);
+
+      //Check if two object references not point to the same object
+      assertNotSame(str1,str3);
+
+      //Check whether two arrays are equal to each other.
+      assertArrayEquals(expectedArray, resultArray);
+   }
+
+   
+   
+@Test
+
+The Test annotation tells JUnit that the public void method to which it is attached can be run as a test case.
+
+2	
+@Before
+
+Several tests need similar objects created before they can run. Annotating a public void method with @Before causes that method to be run before each Test method.
+
+3	
+@After
+
+If you allocate external resources in a Before method, you need to release them after the test runs. Annotating a public void method with @After causes that method to be run after the Test method.
+
+4	
+@BeforeClass
+
+Annotating a public static void method with @BeforeClass causes it to be run once before any of the test methods in the class.
+
+5	
+@AfterClass
+
+This will perform the method after all tests have finished. This can be used to perform clean-up activities.
+
+6	
+@Ignore
+
+The Ignore annotation is used to ignore the test and that test will not be executed.
+
+
+
+   //execute only once, in the starting 
+   @BeforeClass
+   public static void beforeClass() {
+      System.out.println("in before class");
+   }
+
+   //execute only once, in the end
+   @AfterClass
+   public static void  afterClass() {
+      System.out.println("in after class");
+   }
+
+   //execute for each test, before executing test
+   @Before
+   public void before() {
+      System.out.println("in before");
+   }
+	
+   //execute for each test, after executing test
+   @After
+   public void after() {
+      System.out.println("in after");
+   }
+	
+   //test case 1
+   @Test
+   public void testCase1() {
+      System.out.println("in test case 1");
+   }
+

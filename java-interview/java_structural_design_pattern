@@ -367,7 +367,8 @@ public class CommandExecutorProxy implements CommandExecutor {
 	private CommandExecutor executor;
 	
 	public CommandExecutorProxy(String user, String pwd){
-		if("Pankaj".equals(user) && "J@urnalD$v".equals(pwd)) isAdmin=true;
+		if("Pankaj".equals(user) && "J@urnalD$v".equals(pwd)) 
+		isAdmin=true;
 		executor = new CommandExecutorImpl();
 	}
 	
@@ -777,6 +778,10 @@ We can use Factory pattern with Facade to provide better interface to client sys
 =========================================================================================================================================================================================================================
 
 Bridge Design Pattern :
+
+
+When we have interface hierarchies in both interfaces as well as implementations, then bridge design pattern is used to decouple the interfaces from implementation and hiding the implementation details from the client programs.
+
 
 Notice the bridge between Shape and Color interfaces and use of composition in implementing the bridge pattern.
 
