@@ -1,0 +1,227 @@
+java 8 more feature
+
+
+1) Java Nashorn
+
+Nashorn is a JavaScript engine. It is used to execute JavaScript code dynamically at JVM (Java Virtual Machine). Java provides a command-line tool jjs which is used to execute JavaScript code.
+
+You can execute JavaScript code by using jjs command-line tool and by embedding into Java source code.
+
+1) Create a file hello.js.
+
+2) Write and save the following code into the file.
+
+var hello = function(){  
+    print("Hello Nashorn");  
+};  
+hello();  
+3) Open terminal
+
+4) Write command jjs hello.js and press enter.
+
+After executing command, you will see the below output.
+
+Output:
+
+Hello Nashorn
+
+
+Example: Executing JavaScript file in Java Code
+You can execute JavaScript file directly from your Java file. In the following code, we are reading a file hello.js with the help of FileReader class.
+
+import javax.script.*;  
+import java.io.*;  
+public class NashornExample {  
+    public static void main(String[] args) throws Exception{  
+        // Creating script engine  
+        ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");  
+        // Reading Nashorn file  
+        ee.eval(new FileReader("js/hello.js"));  
+    }  
+}  
+Output:
+
+Hello Nashorn
+
+
+2) Java StringJoiner
+
+Java added a new final class StringJoiner in java.util package. It is used to construct a sequence of characters separated by a delimiter. Now, you can create string by passing delimiters like comma(,), hyphen(-) etc. You can also pass prefix and suffix to the char sequence.
+
+ public static void main(String[] args) {  
+        StringJoiner joinNames = new StringJoiner(","); // passing comma(,) as delimiter   
+          
+        // Adding values to StringJoiner  
+        joinNames.add("Rahul");  
+        joinNames.add("Raju");  
+        joinNames.add("Peter");  
+        joinNames.add("Raheem");  
+                  
+        System.out.println(joinNames);  
+    }  
+
+Rahul,Raju,Peter,Raheem
+
+
+3) Java Optional Class
+
+Java introduced a new class Optional in jdk8. It is a public final class and used to deal with NullPointerException in Java application. You must import java.util package to use this class. It provides methods which are used to check the presence of value for particular variable.
+
+
+ String[] str = new String[10];  
+        Optional<String> checkNull = Optional.ofNullable(str[5]);  
+        if(checkNull.isPresent()){  // check for value is present or not  
+            String lowercaseString = str[5].toLowerCase();  
+            System.out.print(lowercaseString);  
+        }else  
+            System.out.println("string value is not present");  
+    }  
+
+
+-         checkNull.ifPresent(System.out::println);   // printing value by using method reference  
+
+
+4) Functional Interface
+
+1. Function<T, R>
+
+@FunctionalInterface
+public interface Function<T, R> {
+
+      R apply(T t);
+
+}
+T – Type of the input to the function.
+R – Type of the result of the function.
+
+public static void main(String[] args) {
+
+        Function<String, Integer> func = x -> x.length();
+
+        Integer apply = func.apply("mkyong");   // 6
+
+        System.out.println(apply);
+
+    }
+
+
+2. BiFunction<T, U, R>
+
+@FunctionalInterface
+public interface BiFunction<T, U, R> {
+
+      R apply(T t, U u);
+
+}
+
+
+        BiFunction<Integer, Integer, Integer> func = (x1, x2) -> x1 + x2;
+
+        Integer result = func.apply(2, 3);
+
+        System.out.println(result); // 5
+
+
+3. Consumer 
+
+In Java 8, Consumer is a functional interface; it takes an argument and returns nothing.
+
+@FunctionalInterface
+public interface Consumer<T> {
+  void accept(T t);
+}
+
+
+        Consumer<String> print = x -> System.out.println(x);
+        print.accept("java");   // java
+
+    }
+
+
+        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+
+        // implementation of the Consumer's accept methods.
+        Consumer<Integer> consumer = (Integer x) -> System.out.println(x);
+        forEach(list, consumer);
+
+
+4. BiConsumer
+
+In Java 8, BiConsumer is a functional interface; it takes two arguments and returns nothing.
+
+@FunctionalInterface
+public interface BiConsumer<T, U> {
+  void accept(T t, U u);
+}
+
+      BiConsumer<Integer, Integer> addTwo = (x, y) -> System.out.println(x + y);
+      addTwo.accept(1, 2);    // 3
+
+    }
+	
+	
+
+5. Predicate in filter()
+
+In Java 8, Predicate is a functional interface, which accepts an argument and returns a boolean. Usually, it used to apply in a filter for a collection of objects.
+
+@FunctionalInterface
+public interface Predicate<T> {
+  boolean test(T t);
+}
+
+
+        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        List<Integer> collect = list.stream().filter(x -> x > 5).collect(Collectors.toList());
+
+        System.out.println(collect); // [6, 7, 8, 9, 10]
+
+
+
+6. BiPredicate Hello World.
+
+
+In Java 8, BiPredicate is a functional interface, which accepts two arguments and returns a boolean, basically this BiPredicate is same with the Predicate, instead, it takes 2 arguments for the test.
+
+@FunctionalInterface
+public interface BiPredicate<T, U> {
+    boolean test(T t, U u);
+}
+
+        BiPredicate<String, Integer> filter = (x, y) -> {
+            return x.length() == y;
+        };
+
+        boolean result = filter.test("mkyong", 6);
+        System.out.println(result);  // true
+
+        boolean result2 = filter.test("java", 10);
+        System.out.println(result2); // false
+
+
+7. BinaryOperator
+
+In Java 8, BinaryOperator is a functional interface and it extends BiFunction.
+
+The BinaryOperator takes two arguments of the same type and returns a result of the same type of its arguments.
+
+
+BinaryOperator.java
+@FunctionalInterface
+public interface BinaryOperator<T> extends BiFunction<T,T,T> {
+}
+
+
+8. UnaryOperator 
+
+In Java 8, UnaryOperator is a functional interface and it extends Function.
+
+The UnaryOperator takes one argument, and returns a result of the same type of its arguments.
+
+@FunctionalInterface
+public interface UnaryOperator<T> extends Function<T, T> {
+}
+
+
+

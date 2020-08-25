@@ -1,0 +1,361 @@
+Mockito
+
+
+Step 1 − Create an interface called CalculatorService to provide mathematical functions
+
+File: CalculatorService.java
+
+public interface CalculatorService {
+   public double add(double input1, double input2);
+   public double subtract(double input1, double input2);
+   public double multiply(double input1, double input2);
+   public double divide(double input1, double input2);
+}
+Step 2 − Create a JAVA class to represent MathApplication
+
+File: MathApplication.java
+
+public class MathApplication {
+   private CalculatorService calcService;
+
+   public void setCalculatorService(CalculatorService calcService){
+      this.calcService = calcService;
+   }
+   
+   public double add(double input1, double input2){
+      return calcService.add(input1, input2);
+   }
+   
+   public double subtract(double input1, double input2){
+      return calcService.subtract(input1, input2);
+   }
+   
+   public double multiply(double input1, double input2){
+      return calcService.multiply(input1, input2);
+   }
+   
+   public double divide(double input1, double input2){
+      return calcService.divide(input1, input2);
+   }
+}
+Step 3 − Test the MathApplication class
+
+Let's test the MathApplication class, by injecting in it a mock of calculatorService. Mock will be created by Mockito.
+
+File: MathApplicationTester.java
+
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+// @RunWith attaches a runner with the test class to initialize the test data
+@RunWith(MockitoJUnitRunner.class)
+public class MathApplicationTester {
+	
+   //@InjectMocks annotation is used to create and inject the mock object
+   @InjectMocks 
+   MathApplication mathApplication = new MathApplication();
+
+   //@Mock annotation is used to create the mock object to be injected
+   @Mock
+   CalculatorService calcService;
+
+   @Test 
+   public void testAdd(){
+      //add the behavior of calc service to add two numbers
+      when(calcService.add(10.0,20.0)).thenReturn(30.00);
+		
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+   }
+}
+Step 4 − Create a class to execute to test cases
+
+Create a java class file named TestRunner in C> Mockito_WORKSPACE to execute Test case(s).
+
+File: TestRunner.java
+
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
+public class TestRunner {
+   public static void main(String[] args) {
+      Result result = JUnitCore.runClasses(MathApplicationTester.class);
+      
+      for (Failure failure : result.getFailures()) {
+         System.out.println(failure.toString());
+      }
+      
+      System.out.println(result.wasSuccessful());
+   }
+}  	
+Step 5 − Verify the Result
+
+Compile the classes using javac compiler as follows −
+
+C:\Mockito_WORKSPACE>javac CalculatorService.java MathApplication.
+   java MathApplicationTester.java TestRunner.java
+Now run the Test Runner to see the result −
+
+C:\Mockito_WORKSPACE>java TestRunner
+Verify the output.
+
+true
+
+
+
+==================================================================================================
+
+1) Mockito - Adding Behavior
+
+
+Mockito adds a functionality to a mock object using the methods when()
+
+//add the behavior of calc service to add two numbers
+when(calcService.add(10.0,20.0)).thenReturn(30.00);
+
+Here we've instructed Mockito to give a behavior of adding 10 and 20 to the add method of calcService and as a result, to return the value of 30.00.
+
+At this point of time, Mock recorded the behavior and is a working mock object.
+
+//add the behavior of calc service to add two numbers
+when(calcService.add(10.0,20.0)).thenReturn(30.00);
+
+
+2) Mockito - Verifying Behavior
+
+Mockito can ensure whether a mock method is being called with reequired arguments or not. It is done using the verify() method. 
+
+
+//test the add functionality
+Assert.assertEquals(calcService.add(10.0, 20.0),30.0,0);
+
+//verify call to calcService is made or not with same arguments.
+verify(calcService).add(10.0, 20.0);
+
+
+
+// @RunWith attaches a runner with the test class to initialize the test data
+@RunWith(MockitoJUnitRunner.class)
+public class MathApplicationTester {
+	
+   //@InjectMocks annotation is used to create and inject the mock object
+   @InjectMocks 
+   MathApplication mathApplication = new MathApplication();
+
+   //@Mock annotation is used to create the mock object to be injected
+   @Mock
+   CalculatorService calcService;
+
+   @Test
+   public void testAdd(){
+      //add the behavior of calc service to add two numbers
+      when(calcService.add(10.0,20.0)).thenReturn(30.00);
+		
+      //test the add functionality
+      Assert.assertEquals(calcService.add(10.0, 20.0),30.0,0);
+       
+      //verify the behavior
+      verify(calcService).add(20.0, 30.0);
+   }
+}
+
+
+3) Mockito - Expecting Calls
+
+Mockito provides a special check on the number of calls that can be made on a particular method. Suppose MathApplication should call the CalculatorService.serviceUsed() method only once, then it should not be able to call CalculatorService.serviceUsed() more than once.
+
+//add the behavior of calc service to add two numbers
+when(calcService.add(10.0,20.0)).thenReturn(30.00);
+
+//limit the method call to 1, no less and no more calls are allowed
+verify(calcService, times(1)).add(10.0, 20.0);
+
+
+// @RunWith attaches a runner with the test class to initialize the test data
+@RunWith(MockitoJUnitRunner.class)
+public class MathApplicationTester {
+	
+   //@InjectMocks annotation is used to create and inject the mock object
+   @InjectMocks 
+   MathApplication mathApplication = new MathApplication();
+
+   //@Mock annotation is used to create the mock object to be injected
+   @Mock
+   CalculatorService calcService;
+
+   @Test
+   public void testAdd(){
+      //add the behavior of calc service to add two numbers
+      when(calcService.add(10.0,20.0)).thenReturn(30.00);
+		
+      //add the behavior of calc service to subtract two numbers
+      when(calcService.subtract(20.0,10.0)).thenReturn(10.00);
+      
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      
+      //test the subtract functionality
+      Assert.assertEquals(mathApplication.subtract(20.0, 10.0),10.0,0.0);
+      
+      //default call count is 1 
+      verify(calcService).subtract(20.0, 10.0);
+      
+      //check if add function is called three times
+      verify(calcService, times(3)).add(10.0, 20.0);
+      
+      //verify that method was never called on a mock
+      verify(calcService, never()).multiply(10.0,20.0);
+   }
+}
+
+
+4) Mockito - Varying Calls
+
+Mockito provides the following additional methods to vary the expected call counts.
+
+atLeast (int min) − expects min calls.
+
+atLeastOnce () − expects at least one call.
+
+atMost (int max) − expects max calls.
+
+
+
+@Test
+   public void testAdd(){
+      //add the behavior of calc service to add two numbers
+      when(calcService.add(10.0,20.0)).thenReturn(30.00);
+		
+      //add the behavior of calc service to subtract two numbers
+      when(calcService.subtract(20.0,10.0)).thenReturn(10.00);
+      
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0);
+      
+      //test the subtract functionality
+      Assert.assertEquals(mathApplication.subtract(20.0, 10.0),10.0,0.0);
+      
+      //check a minimum 1 call count
+      verify(calcService, atLeastOnce()).subtract(20.0, 10.0);
+      
+      //check if add function is called minimum 2 times
+      verify(calcService, atLeast(2)).add(10.0, 20.0);
+      
+      //check if add function is called maximum 3 times
+      verify(calcService, atMost(3)).add(10.0,20.0);     
+   }
+   
+   
+5) Mockito - Exception Handling
+
+Mockito provides the capability to a mock to throw exceptions, so exception handling can be tested. Take a look at the following code snippet.
+
+//add the behavior to throw exception
+doThrow(new Runtime Exception("divide operation not implemented"))
+   .when(calcService).add(10.0,20.0);
+Here we've added an exception clause to a mock object. MathApplication makes use of calcService using its add method and the mock throws a RuntimeException whenever calcService.add() method is invoked.
+
+
+
+   @Test(expected = RuntimeException.class)
+   public void testAdd(){
+      //add the behavior to throw exception
+      doThrow(new RuntimeException("Add operation not implemented"))
+         .when(calcService).add(10.0,20.0);
+
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(10.0, 20.0),30.0,0); 
+   }
+
+
+
+6) Mockito - Create Mock
+
+
+So far, we've used annotations to create mocks. Mockito provides various methods to create mock objects. mock() creates mocks without bothering about the order of method calls that the mock is going to make in due course of its action.
+
+Syntax
+calcService = mock(CalculatorService.class);
+
+
+// @RunWith attaches a runner with the test class to initialize the test data
+@RunWith(MockitoJUnitRunner.class)
+public class MathApplicationTester {
+	
+   private MathApplication mathApplication;
+   private CalculatorService calcService;
+
+   @Before
+   public void setUp(){
+      mathApplication = new MathApplication();
+      calcService = mock(CalculatorService.class);
+      mathApplication.setCalculatorService(calcService);
+   }
+
+   @Test
+   public void testAddAndSubtract(){
+
+      //add the behavior to add numbers
+      when(calcService.add(20.0,10.0)).thenReturn(30.0);
+
+      //subtract the behavior to subtract numbers
+      when(calcService.subtract(20.0,10.0)).thenReturn(10.0);
+
+      //test the subtract functionality
+      Assert.assertEquals(mathApplication.subtract(20.0, 10.0),10.0,0);
+
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(20.0, 10.0),30.0,0);
+
+      //verify call to calcService is made or not
+      verify(calcService).add(20.0,10.0);
+      verify(calcService).subtract(20.0,10.0);
+   }
+}
+
+
+
+7) Mockito - Ordered Verification
+
+
+Mockito provides Inorder class which takes care of the order of method calls that the mock is going to make in due course of its action.
+
+Syntax
+//create an inOrder verifier for a single mock
+InOrder inOrder = inOrder(calcService);
+
+//following will make sure that add is first called then subtract is called.
+inOrder.verify(calcService).add(20.0,10.0);
+inOrder.verify(calcService).subtract(20.0,10.0);
+
+
+================================================================================ 
+
+we can use mock serivce like  :
+
+TodoService toDoserviceMock = mock(TodoService.class)
+
+if we have to use @Mock annotation then we have to annotate class
+using @RunWith(MockitoJUnitRunner.class)
+ 
+@InjectMocks
+TodoBusinnessImpl todo
+
+
+ ==>
+Now mockito will look at TodoBusinnessImpl class and identify what their inside the class and if it find srevice and then will aoutomaticaly inject the service .
+
+so earlier we do like this :
+TodoBusinessImpl todo = new TodoBusinessImpl(toDoserviceMock)
+
+So after using @InjectMocks we didnt have to do that

@@ -1,0 +1,73 @@
+Java Telephonic Interview Questions
+
+1) Roles and responsibility and day to day activity
+
+2) what is exception handeling 
+3) custom hashmap what all method should we override
+
+4) why java created static
+5) senario we will go with dynamic or static polymorphism 
+6) concept of string constant pool
+
+7) New features in Angular 6
+8) life cycle Anguar
+9) Mongo db aggregate or group by
+
+10) without calling method how to know how many object is created by class in java
+
+11) Super calss thorws exception then sub class mandatory handel the exception
+12) if we r fetching 100 records from db and at time of manipulation the data it thorws some exxception and I want throw rest of data that dosnt cause exception ti the user 
+
+13) internal how apache kafka works
+14) how u cretae async service 
+15) How to handel 100000 record from db
+16) How to handel logging framework like how many request and response is going and comming
+
+17)microservices S1 calling S2 and S2 calling S3. Due to some Ssystem design if calling sequence changes like S2 is calling S1 and S3 so how can we handel such things?
+ 
+18) Api registery in microservices
+
+19) converted JSON to XML
+
+20) SOAP
+
+21) Whats need of double lock in singelton design pattern
+22) When we using autowired in class so can we cretae multiple bean of same class and whats need of it
+
+23) Spring boot we configuer jpa in pom  so it download all the Hibernate related files so how to avoid this if we dont use hibernate so we dont want to download hibernate related files?
+
+24) spring boot profiling
+
+25)cloud computing
+
+26) hOW SINGELTON WORK IN SPRING and how it is diffrent from normal one?
+ 
+27) How Transaction managment happend in microservices
+
+28) What will happend if we dont follow soild principle
+
+29) convert list<Employee> into map<> with some senario ==> Use group by
+
+30) Angular what is AOT compiler and its advantages?
+
+31) Can we make angular application to render on server-side to  minimise the load on browser
+
+32) DI
+its a pattern allows us to remove hard coded dependecies and make our application loosely coupled and maintanable.
+we can implement di pattern to move the dependency resolution from compile tiem to runtime
+
+33) Spring 5
+- support java 8 
+- own commons logging
+- webflux
+- support junit 5
+
+34) diffrence between executor.submit() and executer.execute()
+- submit() can acept both  callable and runnable
+- execute () - only runnable
+- return type of submit() is future but return type of execute() is void
+
+35) handel error condition while writting a stored procedure or accessing a dtored procedure from java 
+
+36)What happens in back ground when a spring boot application is Run as Java Application?
+ - where the exection start - what all class get loaded
