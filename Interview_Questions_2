@@ -1,0 +1,119 @@
+Interview Question
+
+1) Reverse the string using string in build function
+char chars[] str.toCharArray();
+for(int i = chars.length-1; i>-0; i--){
+sop(chars[i])
+} 
+
+2) Palindrom 
+3) Second highest no from array 
+int largest =0
+int secondlargest = 0
+for(int i =0; i< arr.length; i++){
+	if(arr[i]> largest){
+		secondlargest = largest
+		largest = arr[i]
+	}
+	else if(arr[i] > secondlargest){
+		secondlargest = arr[i]
+		}
+}
+
+4) error vs exception
+
+error : caused by the env in which apllication is running
+exception : occur due to application 
+ 
+5) try with resources
+
+try(FileReader fr =  new FileReader(""); BufferReader br = new BufferReader("")){
+
+------
+} catch(IOException e) {
+e.printStackTrace()
+}
+}
+
+- its out closable
+
+6) MultiCatch block
+
+tr {
+
+} catch(FileNotFoundException | EOFException e){
+
+} 
+
+7) Angular life cycle :
+
+- ngOnChanges - ngOnInit - ngDoCheck - ngAfterContentInt - ngAfterContentChecked - ngAfterViewInit - ngAgterViewChecked - ngOnDestroy
+
+8)WeakHashmap '
+its a normal hashmap but use weak refrence for kesys which means if the key object dosnt have any refrences then both key/value will become eligible for garbage colllection
+
+9) Object oriented vs object based
+ OO : support oops concept
+ OB : dont support all feature of oops like polymorphism and inheritance
+ 
+10) Syncronized object : vector , hashtable
+11) Other then String what r diffrent immutale classes
+All primitive wrapper classe like Boolean, Character, Byte, Short, Integer, Long, Float and Double
+
+----------- JP mOrgon ---------
+12) Diffrent ways to create XSD
+13) what does wsdl contains
+14)Hpw to declrae optional values in wsdl
+15linkedlist, circularlinkedlist and when to use what?
+
+16) what is elastic search?
+17) Observer design pattern
+18) What is the one thing ypu want to see as java feature which is not currently avaliable in java
+19) Program to display diagonal element of matrix
+20) delete odd values from a linkedlist without using linkedlist collection
+21) Design hottle booking system with lot of flexibility to the user to add another bed/chairs
+22) Their is a theater with rows ato z each row has a number 1 to 30 the row will be filed based on the input time of the peopel sequentially. Need to findout people who entered thearter in a particular time frame?
+23) Spring steorytype annotation
+24) how to perform secure transactions
+25)Best way to save/modify 1 lakh records using hibernate?
+26) what are top 10 owsap security issues
+27) how to find security issue of an application
+28) How to limit the object creation in factory design pattern
+29) latching wrt multi threading
+30) Diffrent tupe of  cloud platforms
+
+--------------------
+31) design pattern use in jdk
+32) concurrent api in java
+33)expose a rst api which will take two inputs(range of numbers) we need to treverse between two numbers and dend back the response in the json format and if any number divisible by 3 we need to replace thatr no by FIZZ and if it is divisible by 5 we need to replace it with BUZZ at same time we were asked to create a project in GIT and check in the code every 15 min and write juint test case
+Input 1 and 10
+o/p : 1,2, FIZZ,4, Buzz, Fizz,...
+
+34) why return type is not consider in overloading in java
+- the overloads in java are only allowd for method with diffrent signatures
+-the return type is not part of signatures 
+35) can u use hashmap in multithreaded env? What can be the problem?When does get() method go to the infinite loop?
+
+- nothing is wrong it depends upon how you are using example if u initializew a hashmap in just one thread and thenm all threads are only reading from it, then it is perfectly fine.
+- The real problem starts when at least one of the thread is updating HashMap i.e adding, changing  or remoing any key-value pair.
+
+- Since put() operation can cause re-sizing and which can furthor lead to an infinite loop thats why either u should use hashTable or concurrentHashMap
+
+36) Marker interface
+- Marker interface is used as a tag to inform a message to the Java compiler so that it can add special behaviour to the class implementing it.
+
+37) Design a stack push(), pop() and min()
+
+38) Find one triplet such that indexes are in increasing order so as values at index
+ 
+ 39) calculate power x : Power(x,n)
+ 
+ 40) Find pivot in sorted rotated array
+ 
+ 41) Design a app for Railway Ticekt Booking
+ 42) Java memory model changes in java 8 metaspace concept and what its benifit
+ 43) if multiple servers are in pictres how to send request to handle by multiple server thread pool
+ 44) Read a paragraph from a file and print the palindroms
+ 45) 5 thhread that perfoem the same task. Main thread starts all these threads. Find out which thread gives fastest result
+ 46) Dessign a system where you can subscribe to daily needs things
+ 47)write a program to find the number in sorted array. Constraints : you dont know the size of the array and you should try without finding the array size
