@@ -1,0 +1,211 @@
+Interview Question
+
+1) Inside a Bean Class if I am creating new Object like Test t = new Test() tthen what will be the scope of the object? 
+
+-
+
+2)How  to start a dead thread again?
+- No we cant start it again
+
+3) Diffrencde between permgen and metaSpace
+
+4) in which senario we should use static block
+
+- use d for initializing static variable
+- it get executed when class get   loadded in memory 
+5) Need of SerialversionId
+- Deserialize uses this id  to insure that loaded class correspond exactly to the serialized object if no match is found the invalidcalssexception is called
+6) What is the importance of COmmit Intervals in Apache Kafka?
+- if not doing it properly then its a great chances of reading the duplicate msgs
+
+7) How do u define gloabal variable in bean implementation 
+
+8) What is LiveRelod?
+- the spring-boot-devtools module include an embedded LiveRelod server that can be used to trigger a browser refresh when a resource is changed.
+-Live relod browser extensions are freely available for chrome,Firefox etc
+
+9) What are the advantages of spring externalized Configuration?
+
+externalized ur configuration to workwith the same application code in diff env.
+ u can use properties files env varable and command line argument for it
+ 
+10) Hot swapping in springboot?
+
+Reloading the changes without restartting the server called hot swapping
+Modern IDE all support hot swapping of bytecode, so if u make  changes that dosnt affect the class or method signature it should relod cleannely with no side effect 
+
+11) Diff between embedded container and war ?
+ in Spring boot application as a jar from the command prompt withoiut setting up web server.
+But ro run war file we need to set up tomcat 
+
+12) what is angular?
+its a type script based open-source web application framework develop and maintained by Google.
+it offer easy way to built front end web -based application.
+
+- it has feature like DI, Declarative templates, end-toend tooling, etc
+
+13) SPA
+
+in traditional tech, the client request for a web page(html/jsp) and server sends the resource(html/jsp) and client again sends the request server again send the resp8urces. The problem it with this is tht its time consuming and loas on server is high  due to lots of reloding.
+In SPA we maintain only one page even though URL keaps on changeing 
+
+14) Componets vs directive?
+- component break up the application into smallerv parts whereas directive add behaviour to an existing DOM element
+
+15) Services in Angular?
+- its a singelton object in angular that get instattiaed only once during the lifetime of an application 
+- Service contain methods that maintain the data throughout the life of an application
+-the primary intent of an angular service is to organise as well as share  bussiness logics , models or data and function with various components of aNGULAR aPLLICATION.
+
+-THE FUN OFFERERD BY AN ANGULAR SERVice can be invoked from any component like controller or directive
+
+16) Observalbe vs promise
+
+- as soon as promise is made, the execution take place. its noa in case of observable since it is lazy.
+this means nothing happens until a subcription is made.
+- while promise handel a single event , observable handels a stream that allow passing more then one event
+
+17) Directive?
+ - it allow an devloper to write , new application-specific HTML syntax
+ 
+ - Attribute Directive - Component Directive - Structural Directive
+ 
+18) Building blocks of Angular
+1- Component :-
+- it controls one or more view. each view is some specific section of the screen
+- every angular application has  atleast one compoment i.e root Component. Its bootstrap inside the main module called root module.
+- it contains application logic define inside the class
+
+2- Data Binding : in this part a template coordinate with [part of a component.
+- one way binding - two way binding
+
+3- DI :
+Angular makes use of DI to provide required dependencies to new component
+- typicalyy dependencies required by compoment is services
+- A component constructor parameters tell the angular abt the dependencies i.e service that component require
+
+4- Directives :-
+the template used by angular is dynamic in nature
+- it give instruction to angular that how to transform DOM when rendering the templates
+- Components is also a directive
+
+5- MetaData :
+in order to let angular know how to process a class, metadata s attached to class
+
+6- Modules :
+- it also known as NgModules
+- Modules are used in Angular JS to put logical boundaries in your application. Hence, instead of coding everything into one application, you can instead build everything into separate modules to separate the functionality of your application. Let’s inspect the code which gets added to the demo application.
+
+7- Routing :
+- anguklar router is responsible for interpreting a browser URL as an to navigate the view
+
+8- Services :
+
+9- Template : each component has a tenplate i.ew view
+
+19) Explain Data Binding
+
+in order to connect application with DOM we use daata binding
+a) event Binding :- (click)="add()"
+b) property binding: enables interpolation of values from component to html/jsp
+c) Two-day binding : [()] i.e changes made in apllication automatically reflected in the view vice-versa 
+
+20) Sprig boot starter project
+
+-these are set of convenient dependency descriptor that u can include in your application. you get a one-stop-shop for all the pring and related technology 
+
+like if we want Spring and jpa for db access just include spring-boot-starter-data-jpa dependencies in your project
+
+21) Disable a Specific Auto-Configuration
+@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
+
+22) FileSystemResources vs ClassPathResources in Spring
+
+- ClassPathRes look at the class path for spring config files while FileSystemRes looks in the file system
+- in Classres spring-config.xml should be include in classpath. if it is placed in src folderthen config file can be directy used becoz its already in classpath
+- in filesystemRes the path of spring-config.ml needed to be provides relative to the project or the absolute location of file 
+
+
+23) @Bean vs @Component
+
+@Component
+This is a generic annotation and can be applied to any class of the application to make it a spring managed component(simply, generic stereotype for any spring managed component). when the classpath is scanned by the spring’s component-scan (@ComponentScan) feature, it will identify the classes annotated with @Component annotation (within the given package) and create the beans of such classes and register them in the ApplicationContext. @Component is a class level annotation and its purpose it to make the class as spring managed component and auto detectable bean for classpath scanning feature.
+
+if you want to know more about  @Component and other stereo type annotations, it is recommended to look at this article.
+
+ 
+
+@Bean
+@Bean is used to explicitly declare and register a bean (as a configuration bean) in Spring IOC container that is returned from a method. @Bean is a method level annotation and it is used within a class that is annotated with @Configuration. Simply, @Bean annotation is used to register the bean returned by a method as a spring configuration bean in IOC Container.  @Bean is only a method level annotation and it cannot be used with classes and object declaration.
+
+@Bean annotation indicates that a method produces a bean that should be managed by the Spring container.
+
+   To declare a bean, simply annotate a method with the @Bean annotation. When JavaConfig encounters such a method, it will execute that method and register the return value as a bean within a ApplicationContext. By default, the bean name will be the same as the method name.The following is a simple example of a @Bean method declaration.
+
+ 
+
+@Configuration
+public class ApplicationConfig {
+
+ @Bean
+ public User adminUserProfile() 
+ {
+     return new User("Chathuranga","Tennakoon");
+ }
+}
+
+
+24) How to inject value in static variable in spring bean>
+
+- Spring does not allow injection public static nn-final fields. So the workaround will be changing to private modiier
+
+
+Another way is to create a non static setter to assign injected static variable
+@Value("${my.name}")
+public void setName(String privateName) {
+ This.class.name = privateName;
+ }
+ 
+ 
+25)  Why spring boot opinionated ?
+becoz Springboot automatically configuer a lot of dependencies just by availability in the class path. for ex it can configuer tomcat if the server container is not availbale. 
+Thtas why spring boot opinionated becoz it auto-configuer many dependencies and if it is not neede and we can ovverride auto-configuer setting as needed 
+
+
+26) Spring Boot - Auto restart using spring-boot-devtools
+
+
+During runtime, Spring boot monitors the folder which are in classpath (in maven, the folders which are under 'target' folder). We just need to trigger compilation of the sources on changes which will cause to update the 'target' folder and Spring boot will automatically restart the application. If we are using Eclipse IDE then save action can trigger the compilation. In Intellij we can use Ctrl + F9 to recompile.
+
+Spring uses a custom classloader to restart the application. It's also good to know following lines from Spring boot reference doc:
+
+ The restart technology provided by Spring Boot works by using two classloaders. Classes that don't change (for example, those from third-party jars) are loaded into a base classloader. Classes that you're actively developing are loaded into a restart classloader. When the application is restarted, the restart classloader is thrown away and a new one is created. This approach means that application restarts are typically much faster than "cold starts" since the base classloader is already available and populated.
+ 
+ 
+ 27) Explain Statelessness wrt Restful ?
+ 
+ in REST ST itself define State transfer and Statelessness means complete isolation. This means the state of client application is neverv stored to the server and passed on 
+ 
+ 
+ 28) Create full flow of Angular 2 application
+ 
+ 29) Compnents vs Directive
+ - for regioster component we use @Componet  and for register directive we use @Directive
+ - Component is it self a directive and Directive is used to add behaviour in DOM
+ - Component is used to break up the application into smaller application where as directive is used to design reusable component
+ -only one component used per element where as we can have multiple directive
+ 
+ - component has @view where as directive dosnt has view 
+ 
+ 29) Modules :- A amodule in angular is a file where we have all Directive, Components, Pipes and server are grouped together
+ 
+ 30) What is AOT (Ahead of Time) Compilation
+ 
+ 31) can we write any code after thriw
+ - no it will raise unreachble error 
+
+32) String is balanced "{}()", "[{()}]", "({()})"
+
+33) Seprate vowels and consonants from string
+
+34) What is the root application context in spring mvc and how it is loaded  
