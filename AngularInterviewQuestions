@@ -1,0 +1,195 @@
+Angular interview questions
+
+1) What is Angular?
+
+- Its a binding framework which binds the html UI and Javascript model
+ 
+- its a mvc/mvvm arch
+ 
+- it help in build single page Application using concept of routing.
+-it has DI,HTTP
+
+2) Angular js vs Angular ?
+ Angular js :
+ - language Javascript
+ - Mobile compliant : No
+ Lazy Lodaing : No
+ Server Side : no
+ Cli : No
+ 
+ Angular :
+ Language : TypeScript
+ Mobile Complaint : yes 
+ Lazy Loading : Yes
+ Server Side : yes 
+ cli : yes
+ 
+ 3) Directives in Angular ?
+  
+ - it help u to attach behaviour in html or its a angular syntax in angular like :
+ [(ngModel)], [hidden]
+ 
+ if i put ngmodel in input text box so now it start binding the data 
+ this is angular syntax in html which change the behaviour of dom
+ 
+ 4) Kind of directives ?
+ 
+ -Structural : it change the structure of dom element like add or remove it example <tr *ngFor =" let temp of list">
+ </tr>
+ 
+ -Attribute : it changes the behaviour or look n feel of html 
+ <dv [hidden]="hide()">Hello</div> 
+ it dosnt change the structre of dom
+ 
+ -Component : its a user control which has its own template 
+  
+  
+ 5) what is npm ?
+ 
+ - it is node package manager which makes installation of javasctipt framework easy like jqquey,  angular etc
+ 
+ npm isnatll jquery
+ 
+ - node_modules is the folder where all packages are installed
+  
+ 6)what is package.json?
+ 
+ its a file where we have ajavascript refrences are listed in it
+ 
+ 7)what is typescript ?
+ 
+ its adds type to javascript
+ its a super set of javascript 
+ its get compiled to javascript
+ its gives oop concept env like we can use extends, interfaces
+ 
+ 8) Importance of Angular CLI?
+  
+  Command line interfaces
+  it help in create redimate project
+  - npm install @angular/cli ===> install angular cli
+  
+  - ng new myapp ==> create a project template with base source code
+  
+ 9) what is component and module?
+ 
+ - aS WE KNW ANGULAR IS BINDING FRAME WORK it binds view and model easliy 
+ - so componet is middle ware which combine view and model
+ - module groups the compoment
+ 
+ 10)What is decorator ?
+ 
+ - it define what knid of Angular clas is it. 
+ - ex : if we decorate @Component then it is angular, if we put @NgModule it becomes Angulat Module
+ 
+ 11) What are Templates ?
+ 
+ its an html view of Angular in which we can write directives
+ - we can define it inline  or we can creates seprate file and connect it using templateUrl: 'abc.html '
+ 
+ 12) What are diffrence type of databinding ?
+ 
+ - it define how the view and component communicate
+ 
+ a) Expression /interpolation : 
+	-data flow from component to template/view  
+	- we can mix it in html {{}}
+ b) property bidniding :
+ 
+	- data flows from component to the view 
+	- represent like : []
+	-it get bind with the input types 
+	<input [hidden]="hide()">
+ c) Event binding :
+	send data from view to the componet like () 
+	<button (click)="sendMsg()"/>
+	
+e) two way binding :
+	- send data from controller to view and view to controller 
+	<input [(ngModel)] ="">
+	
+13) Explain architecture of Angular ?
+ - template : html view
+ - component : template/view talks to component
+ -Modules : its a gropu of components
+ - binding :- its binds view to comonent or component to view
+ - directives :- in template we have various directives
+ - service :- it create a common logic 
+ - DI : this services get injectted inside the components using DI
+ 
+ 14) SPA 
+ -in this  where main ui gets loaded once and then needed UI is loaded on demand
+ 
+ - like in html we have header footer or left footer it gets loaded only once
+ - and if user hits the link only that thing will get loaded from the server
+ - performance advantage
+ 
+ 15) how do we implements SPA ?
+ 
+ - we use angular routing.
+ - So routing i sa simple collection of URL and components
+- when Url is called which leads to loading a component
+- routing helps to define  the navigation  for your angular application.
+- So if we want to move from one screen to another we should respect SPA tha means not loading abd refrehing the whole UI routing is needed
+- it define navigation 
+{path: 'home', componnet : HomeComponent}
+
+in html we define <router-outlet></router-outlet>
+
+<a [routerLink]="['Home']">Home </a>
+
+we needthree things for this a router, a router outlet and a router link
+
+if we want to do it from component we do like :
+
+this.route.navigate(['/Home']);
+
+16) What is Lazy loding?
+
+it means on demad loading .
+- loading only the necessary html, css and javascript so we have better performance
+
+17) How to implements lazy loading ?
+
+- divide project in seprate modules like Home module, customer module
+
+- Use loadChilren to loda module
+
+like in  HomeAppRouting.ts
+
+export const HomeRoutes =[
+	{path: 'Customer', loadChilren: '../CustApp/CustApp.Modules'
+]
+
+18) What are services ?
+
+- share common funstionality in project 
+
+19) what is DI ?
+
+- its a design pattern where class rather then insentatiing object from the class it rather it get prefer from outside  and send it to class.
+
+- constructor(public ser : ServiceLogger){
+}
+
+- we use providers[] belongs to ngModules
+
+20) Benifits of DI?
+
+-Decoupling (i.e when we do change at one place we didnt have to change on another place)
+
+21) ng serve and ng build
+ - ng serve : it builds angular application in memory.
+ - ng build : build the angular application on hard disk.
+	- it crate a "dist" folder 
+	- it use in production
+	
+22) Explain the --prod parameter in ng build do ?
+- it makes application redy for production
+- it makes most compress build
+- it compree the js file.
+
+
+https://www.youtube.com/watch?v=-jeoyDJDsSM
+
+Angular part 2 https://www.youtube.com/watch?v=TDo--zM9Yrk
