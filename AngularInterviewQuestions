@@ -190,6 +190,562 @@ export const HomeRoutes =[
 - it compree the js file.
 
 
+23) constructur vs ngOnInit?
+
+- constructor is the conecpt of typescript class.
+- ngonitit is concept of angular
+- first the constructor fires so we can initialize  class variables and we can do DI in it.
+- we cant do coding like accessing any UI elements DOM inside constructor becoz they will be not be avaliabel during the event.
+- After constructor fires we do UI and Component binding. And after that ngOnInit() fires
+
+- So we have to access dom element and write any logic  of initialize
+- in ngOnit we can do anything
+
+- in constructor binding not happend till this momoent only class variable is accessible.
+- in ngonit binding with ui has been done so the class variable have value set frm the ui
+
+24) Angular life cycle ?
+
+- we use life cycle so that developer can write some custom code like during starting the angular or we can write some clean up code during destroy methd.
+
+a) it fires on first time :-
+- constructor --> ngOnChanges --> ngOnInit ---> ngDoCheck --> ngAfterContentInit --> ngAfterContentCheck  --->  ngAfterViewInit --> ngAfterViewCheck --> ngOnChanges
+
+b) Fires on every change detection:
+ ngAfterContentCheck --> ngAfterViewChecked ---> ngOnChanges
+
+25) Explain ViewChild and ViewChildren?
+
+viewChild help to reference view objects in the component to which it is connected
+
+- we can use this to manipulate element property
+
+- example :
+<div id="someElement" > Sample Code </div>
+
+or
+
+<div #someElement> Sample Code </div>
+
+ @viewChild("someElement") domRefrence;
+ 
+ ngAfterViewInit():void {
+	this.domRefrence.nativeElement.focus();
+ }
+
+- the viewChild element domRefrence will get access to dom element only after it has been rendered. Once component is rendered a life cycle event alled ngAfterViewInit is invoked. So we can refer element in this life cycle.
+
+
+- we can also use Angular directives like NgModel with @viewChild
+
+<div>
+	<input type ="text" id="userName" [(ngModel)] ="userName" />
+</div>
+
+
+@viewChild("ngModel") domRefrence: NgModel;
+ 
+ ngAfterViewInit():void {
+	this.domRefrence.nativeElement.focus();
+ }
+
+
+viewChildren:
+
+Working with @ViewChildren is similar to @ViewChild, but the difference between the two is @ViewChildren provides a list of element references rather than returning a single reference. It is used to reference multiple elements. We can then iterate the list of the element referenced by the variable.
+
+@Component({
+  selector: 'accessing-template-reference',
+  template: `
+    <div>
+      <input type="text" [(ngModel)]="userName" />
+      <input type="text" [(ngModel)]="userAge" />
+      <input type="text" [(ngModel)]="userDesignation" />
+    </div>
+  `
+})
+export class HeroListComponent implements OnInit {
+  @ViewChildren("NgModel") domReference: QueryList<NgModel>;
+  
+  ngAfterViewInit(): void {
+    console.log("Element List: " + this.domReference.length);
+  }
+}
+
+
+26) Why do we need Template reference variables?
+
+Template reference variables are a very useful feature of Angular 2+ which allow you to save a reference to a DOM element or Angular Component instance.
+
+To declare a template reference variable, write a hash symbol with a name as an attribute of the element, like so:
+
+<input type="text" #myInput>
+
+Now, you can access the variable anywhere in the template. In the below example, the value of the input element is displayed beside it, and the input DOM element gets passed to the onClick function.
+<input type="text" #myInput> {{ myInput.value }}
+<button (click)="onClick(myInput)">Submit</button>
+Template reference variables can also be referenced in the Component, using the ViewChild decorator. In the below example, a reference to the input element will be available in this.myInput.
+import { ViewChild, ElementRef } from '@angular/core';
+
+@ViewChild('myInput') private myInput: ElementRef;
+Using a reference variable on a Component will give you a reference to the actual Component instance, giving you access to all of its methods and properties.
+
+<my-component #myComponent></my-component>
+
+ 27) What is ContentProjection?
+ 
+ - if you want to insert HTML elements or other components in a component, then you do that using the concept of content projection.
+ 
+ - In Angular, you achieve content projection using < ng-content >< /ng-content >.  
+ 
+ @Component({
+    selector: 'greet',
+    template: `{{message}}`
+})
+export class GreetComponent {
+    message: string = "Hello There !"
+}
+
+Now if you use GreetComponent in another component, and want to pass a greeting message from the parent component, then you should use the @Input() decorator. This way, a modified GreetComponnet will look like the listing below:
+
+@Component({
+    selector: 'greet',
+    template: `{{message}}`
+})
+export class GreetComponent {
+    @Input() message: string;
+}
+
+
+Using the @Input() decorator, you can pass a simple string to the GreetComponnet, but what if you need to pass different types of data to the GreetComponent such as:
+
+Inner HTML
+HTML Elements
+Styled HTML
+Another Component, etc.
+To pass or project styled HTML or another component, content projection is used. Let us modify the GreetComponent to use content projection in this code: 
+
+@Component({
+    selector: 'greet',
+    template: `<div class="container">
+			<ng-content></ng-content>
+			</div>`
+})
+export class GreetComponent {
+}
+
+
+now in AppComponent if we r using greet and pass any html conneten
+
+@Component({
+    selector: 'app-root',
+    template: `<div>
+			<greet>
+				<h1> Hello World </h1>
+			</greet>
+			</div>`
+})
+export class AppComponent {
+}
+
+28) Explain Content projection Slot?
+- when we use multiple conent projection
+
+
+29) What is ContentChild and ContentChildren?
+
+- same as viewchild or viewChildren 
+- it used in content projection like ng-content
+- any element which is located insside the template is contentChild
+
+example :
+MessageContainerComponent
+
+@Component({
+    selector: 'app-messagecontainer',
+    template: `
+   
+<div>
+   
+<h3>{{greetMessage}}</h3>
+ 
+  <ng-content select="app-message"></ng-content>
+  </div>
+ 
+  `
+})
+export class MessageContainerComponent {
+    greetMessage = 'Ignite UI Rocks!';
+}
+
+Any element or component projected inside becomes a ContentChild. If you want to access and communicate with MessageComponent projected inside MessageContainerComponent, you need to read it as ContnetChild.
+
+import { Component, OnInit } from '@angular/core';
+@Component({
+    selector: 'app-root',
+    template: `
+   
+<div>
+  <app-messagecontainer>
+  <app-message [message]='message'></app-message>
+  </app-messagecontainer>
+  </div>
+ 
+`
+})
+export class AppComponent implements OnInit {
+    message: any;
+    ngOnInit() {
+        this.message = 'Hello World !';
+    }
+}
+
+
+
+As you see in the above listing that in the AppComponent, we are using MessageContainerComponent and passing MessageComponent to be projected inside it. Since MessageComponent is used in MessageContainerComponent using content projection, it becomes ContentChild.
+
+Since, MessageComponnet is projected and being used inside template of MessageContainerComponent, it can be used as ContentChild as shown in the below listing:
+
+
+import { Component, ContentChild, AfterContentInit } from '@angular/core';
+import { MessageComponent } from './message.component';
+  
+@Component({
+    selector: 'app-messagecontainer',
+    template: `
+   
+<div>
+   
+<h3>{{greetMessage}}</h3>
+ 
+    <ng-content select="app-message"></ng-content>
+    </div>
+ 
+    `
+})
+export class MessageContainerComponent implements AfterContentInit {
+    greetMessage = 'Ignite UI Rocks!';
+    @ContentChild(MessageComponent) MessageComponnetContentChild: MessageComponent;
+    ngAfterContentInit() {
+        console.log(this.MessageComponnetContentChild);
+    }
+}
+
+We need to do the following tasks:
+
+Import ContnetChild and AfterContnetInit from @angular/core
+Implement AfterContnetInit life cycle hook to component class
+Create a variable with decorator @ContnetChild
+Access that inside ngAfterContnetInit life cycle hook
+
+
+30) How to make HTTP calls using Angular ?
+
+- In app.module.ts file :
+
+@NgModule({
+  declarations: [
+    ////....
+  ],
+  imports: [
+    // Other Modules...,
+    HttpClientModule    
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+Once HttpClientModule is imported into AppModule, we can easily inject the HTTPClient into an application class like below in data.service.ts file.
+
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+@Injectable()
+export class DataService {
+  constructor(private httpClient: HttpClient) { }
+getPosts() {
+    return this.httpClient
+    .get('https://jsonplaceholder.typicode.com/posts')
+  }
+}
+
+
+31) What is the need of Subscribe function ?
+
+- It's a method that comes from rxjs library which Angular is using internally.
+
+- If you can imagine yourself when subscribing to a newsletter and after subscribing, every time that there is a new newsletter, they will send it to your home (the method inside subscribe gets called).
+
+That's what happens when you subscribing to a source of magazines ( which they call it Observable in rxjs library)
+
+
+32) How to handle errors when HTTP fails ?
+
+getPosts() : Observable {
+    return this.httpClient.jsonp('apiURL', 'callback').pipe(
+      catchError(this.handleError('searchHeroes', [])) 
+      // then handle the errorResponse
+   );
+}
+
+We need to handle two type of errors in any application — server and client side.
+The server back-end might reject the request, returning an HTTP response with a status code such as 404 or 500.
+Client side error can be like network error resulting into unsuccessful completion of request or any exception thrown in an RxJS operator. The result of these exception or errors will be JavaScript ErrorEvent objects.
+One of the benefit of HttpClient api is that it can captures both kinds of errors in its HttpErrorResponse and we can use the response to figure out what actually have caused the issue.
+
+a) Creating Error Handler
+
+
+private handleError(errorResponse: HttpErrorResponse) {
+    if (errorResponse.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it   accordingly.
+      console.error('An error occurred:',   errorResponse.error.message);
+    } 
+   else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      console.error(
+        'Backend returned code ${errorResponse.status}, '+
+        'body was: ${errorResponse.error}');
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Error Occurred; please try again later.');
+  };
+  
+In above example, we are returning RxJS ErrorObservable so that it will easy for service consumer to handle it.
+
+getEntities(): Observable<Entity[]> {
+    return this.httpClient.get<Entity[]>(this.apiUrl)
+     .pipe(
+      catchError(this.handleError)
+     ); 
+  }
+  
+  
+b)More Generic Approach
+
+
+/**
+ * Handle Http operation that failed.
+ * Let the app continue.
+ * @param operation - name of the operation that failed
+ * @param result - optional value to return as the observable result
+ */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+// TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+// TODO: better job of transforming error for user consumption
+      this.log(`${operation} failed: ${error.message}`);
+// Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+  }
+Now using the above method as below -
+getEntities(): Observable<Entity[]> {
+    return this.httpClient.get<Entity[]>(this.apiUrl)
+     .pipe(      
+   catchError(this.handleError<Entity>('getEntities'))
+     ); 
+  }
+
+
+
+33) How to pass data between components ?
+
+
+- Parent to Child:
+ Sharing Data via Input This is probably the most common and straightforward method of sharing data. It works by using the @Input() decorator to allow data to be passed via the template.
+
+- Child to Parent: Sharing Data via ViewChild 
+ViewChild allows a one component to be injected into another, giving the parent access to its attributes and functions. One caveat, however, is that child won’t be available until after the view has been initialized. This means we need to implement the AfterViewInit lifecycle hook to receive the data from the child.
+
+parent.component.ts
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    Message: {{ message }}
+    <app-child></app-child>
+  `,
+  styleUrls: ['./parent.component.css']
+})
+export class ParentComponent implements AfterViewInit {
+
+  @ViewChild(ChildComponent) child;
+
+  constructor() { }
+
+  message:string;
+
+  ngAfterViewInit() {
+    this.message = this.child.message
+  }
+}
+
+child.component.ts
+import { Component} from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `
+  `,
+  styleUrls: ['./child.component.css']
+})
+export class ChildComponent {
+
+  message = 'Hola Mundo!';
+
+  constructor() { }
+
+}
+
+
+- Child to Parent: Sharing Data via Output() and EventEmitter 
+
+Another way to share data is to emit data from the child, which can be listed to by the parent. This approach is ideal when you want to share data changes that occur on things like button clicks, form entires, and other user events.
+
+In the parent, we create a function to receive the message and set it equal to the message variable.
+
+In the child, we declare a messageEvent variable with the Output decorator and set it equal to a new event emitter. Then we create a function named sendMessage that calls emit on this event with the message we want to send. Lastly, we create a button to trigger this function.
+
+The parent can now subscribe to this messageEvent that’s outputted by the child component, then run the receive message function whenever this event occurs.
+
+parent.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    Message: {{message}}
+    <app-child (messageEvent)="receiveMessage($event)"></app-child>
+  `,
+  styleUrls: ['./parent.component.css']
+})
+export class ParentComponent {
+
+  constructor() { }
+
+  message:string;
+
+  receiveMessage($event) {
+    this.message = $event
+  }
+}
+child.component.ts
+import { Component, Output, EventEmitter } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `
+      <button (click)="sendMessage()">Send Message</button>
+  `,
+  styleUrls: ['./child.component.css']
+})
+export class ChildComponent {
+
+  message: string = "Hola Mundo!"
+
+  @Output() messageEvent = new EventEmitter<string>();
+
+  constructor() { }
+
+  sendMessage() {
+    this.messageEvent.emit(this.message)
+  }
+}
+
+
+
+- Unrelated Components:
+
+ Sharing Data with a Service When passing data between components that lack a direct connection, such as siblings, grandchildren, etc, you should you a shared service. When you have data that should always been in sync, I find the RxJS BehaviorSubject very useful in this situation.
+
+You can also use a regular RxJS Subject for sharing data via the service, but here’s why I prefer a BehaviorSubject.
+
+It will always return the current value on subscription - there is no need to call onnext It has a getValue() function to extract the last value as raw data. It ensures that the component always receives the most recent data. In the service, we create a private BehaviorSubject that will hold the current value of the message. We define a currentMessage variable handle this data stream as an observable that will be used by the components. Lastly, we create function that calls next on the BehaviorSubject to change its value.
+
+The parent, child, and sibling components all receive the same treatment. We inject the DataService in the constructor, then subscribe to the currentMessage observable and set its value equal to the message variable.
+
+Now if we create a function in any one of these components that changes the value of the message. when this function is executed the new data it’s automatically broadcast to all other components.
+
+
+data.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+@Injectable()
+export class DataService {
+
+  private messageSource = new BehaviorSubject('default message');
+  currentMessage = this.messageSource.asObservable();
+
+  constructor() { }
+
+  changeMessage(message: string) {
+    this.messageSource.next(message)
+  }
+
+}
+
+parent.component.ts
+import { Component, OnInit } from '@angular/core';
+import { DataService } from "../data.service";
+
+@Component({
+  selector: 'app-parent',
+  template: `
+    {{message}}
+  `,
+  styleUrls: ['./sibling.component.css']
+})
+export class ParentComponent implements OnInit {
+
+  message:string;
+
+  constructor(private data: DataService) { }
+
+  ngOnInit() {
+    this.data.currentMessage.subscribe(message => this.message = message)
+  }
+
+}
+sibling.component.ts
+import { Component, OnInit } from '@angular/core';
+import { DataService } from "../data.service";
+
+@Component({
+  selector: 'app-sibling',
+  template: `
+    {{message}}
+    <button (click)="newMessage()">New Message</button>
+  `,
+  styleUrls: ['./sibling.component.css']
+})
+export class SiblingComponent implements OnInit {
+
+  message:string;
+
+  constructor(private data: DataService) { }
+
+  ngOnInit() {
+    this.data.currentMessage.subscribe(message => this.message = message)
+  }
+
+  newMessage() {
+    this.data.changeMessage("Hello from Sibling")
+  }
+
+}
+
+34) How to pass during routing ?
+
+
+35) Is it a good practice to pass data using services ?
+
+
 https://www.youtube.com/watch?v=-jeoyDJDsSM
 
 Angular part 2 https://www.youtube.com/watch?v=TDo--zM9Yrk
