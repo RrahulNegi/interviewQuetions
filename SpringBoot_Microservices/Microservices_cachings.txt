@@ -1,0 +1,35 @@
+Caching 
+
+1) EMbedded cache :
+
+try to reduce the latency with the application and database we try to copy the data from database n put it in application in form of cash
+
+we use for refrence mapping or private info like we have application based info so we can use embedded cache in that senario
+
+2) Client Server cache
+
+- it follow client server arch
+- where cache lies in between application and database and it act like a server
+- if we compare iit with embedded cache the cahche is placed outside the application and we can connect with it  
+
+-like we have many applications which share the same cache that share between them to reduse the space consumed by the cache embedded in each application
+
+- here we seprate the cache from application and it act as a server and application act like clients
+
+-Shared Caches and Standalone Caches
+
+
+3)Distributed cache 
+
+- in this we have a multiple applications and multiple cache distibuted like a nodes
+
+-its popular if we have a low latency and high volume of data
+
+4) Cloud Cache (it is used when we want toscale up and scale down our caches)
+
+- we have providers which managed the cache like Amazom 
+- in this  we have a ditributed applications and a databasse hosted at Amazon RDS and so Amazon provide the chache layed called Amazon ElasticCache which we can apply using redis and it is distributed as well
+
+- we can merge distributed cache , embedded cache into one and move this to cloud and this is managed by amazon
+
+-

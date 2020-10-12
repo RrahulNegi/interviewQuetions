@@ -381,3 +381,35 @@ The Ignore annotation is used to ignore the test and that test will not be execu
       System.out.println("in test case 1");
    }
 
+
+ JUnit - Time Test :
+ 
+ JUnit provides a handy option of Timeout. If a test case takes more time than the specified number of milliseconds, then JUnit will automatically mark it as failed. The timeout parameter is used along with @Test annotation. Let us see the @Test(timeout) in action.
+
+@Test(timeout = 1000)
+   public void testPrintMessage() {	
+      System.out.println("Inside testPrintMessage()");     
+      messageUtil.printMessage();     
+   }
+
+
+   
+ JUnit - Exceptions Test
+
+ JUnit provides an option of tracing the exception handling of code. You can test whether the code throws a desired exception or not. The expected parameter is used along with @Test annotation. Let us see @Test(expected) in action.
+
+@Test(expected = ArithmeticException.class)
+   public void testPrintMessage() {	
+      System.out.println("Inside testPrintMessage()");     
+      messageUtil.printMessage();     
+   }
+
+
+ 
+
+   ======================================================================================================
+   
+   Interview questions
+   
+   
+   

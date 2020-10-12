@@ -181,7 +181,9 @@ ribbon.eureka.enabled=false
  
 #Will start the gateway server @8080
 server.port=8080
+
 Here zuul.routes.student.url will route all traffic to request for /student to the actual student service server. This way we can add route to other services as well.
+
 ribbon.eureka.enabled is auto integrated with Zuul.
 server.port – is needed to override the default port, as we will have multiple instances of different microservices will run in localhost.
 

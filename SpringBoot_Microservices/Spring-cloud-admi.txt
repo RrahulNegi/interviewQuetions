@@ -1,0 +1,178 @@
+spring boot admin
+
+Spring Boot Admin is a web application, used for managing and monitoring Spring Boot applications. Each application is considered as a client and registers to the admin server. Behind the scenes, the magic is given by the Spring Boot Actuator endpoints.
+
+In this article, we're going to describe steps for configuring a Spring Boot Admin server and how an application becomes a client.
+
+2. Admin Server Setup
+First of all, we need to create a simple Spring Boot web application and also add the following Maven dependency:
+
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-server</artifactId>
+    <version>2.2.2</version>
+</dependency>
+After this, the @EnableAdminServer will be available, so we'll be adding it to the main class, as shown in the example below:
+
+@EnableAdminServer
+@SpringBootApplication
+public class SpringBootAdminServerApplication {
+ 
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminServerApplication.class, args);
+    }
+}
+At this point, we're ready to start the server and register client applications.
+
+
+3. Setting Up a Client
+
+
+Now, after we've set up our admin server, we can register our first Spring Boot application as a client. We must add the following Maven dependency:
+
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-client</artifactId>
+    <version>2.2.2</version>
+</dependency>
+Next, we need to configure the client to know about the admin server's base URL. For this to happen, we just add the following property:
+
+spring.boot.admin.client.url=http://localhost:8080
+Starting with Spring Boot 2, endpoints other than health and info are not exposed by default.
+
+Let's expose all the endpoints:
+
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
+
+
+
+4. Security Configuration
+The Spring Boot Admin server has access to the application's sensitive endpoints, so it's advised that we add some security configuration to both admin and client application.
+
+At first, we'll focus on configuring the admin server's security. We must add the following Maven dependencies:
+
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-server-ui-login</artifactId>
+    <version>1.5.7</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+    <version>2.1.8.RELEASE</version>
+</dependency>
+This will enable security and add a login interface to the admin application.
+
+
+Next, we'll add a security configuration class as you can see below:
+
+@Configuration
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final AdminServerProperties adminServer;
+ 
+    public WebSecurityConfig(AdminServerProperties adminServer) {
+        this.adminServer = adminServer;
+    }
+ 
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = 
+          new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setTargetUrlParameter("redirectTo");
+        successHandler.setDefaultTargetUrl(this.adminServer.getContextPath() + "/");
+ 
+        http
+            .authorizeRequests()
+                .antMatchers(this.adminServer.getContextPath() + "/assets/**").permitAll()
+                .antMatchers(this.adminServer.getContextPath() + "/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin()
+                .loginPage(this.adminServer.getContextPath() + "/login")
+                .successHandler(successHandler)
+                .and()
+            .logout()
+                .logoutUrl(this.adminServer.getContextPath() + "/logout")
+                .and()
+            .httpBasic()
+                .and()
+            .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers(
+                  new AntPathRequestMatcher(this.adminServer.getContextPath() + 
+                    "/instances", HttpMethod.POST.toString()), 
+                  new AntPathRequestMatcher(this.adminServer.getContextPath() + 
+                    "/instances/*", HttpMethod.DELETE.toString()),
+                  new AntPathRequestMatcher(this.adminServer.getContextPath() + "/actuator/**"))
+                .and()
+            .rememberMe()
+                .key(UUID.randomUUID().toString())
+                .tokenValiditySeconds(1209600);
+    }
+}
+There's a simple security configuration, but after adding it, we'll notice that the client cannot register to the server anymore.
+
+In order to register the client to the newly secured server, we must add some more configuration into the property file of the client:
+
+spring.boot.admin.client.username=admin
+spring.boot.admin.client.password=admin
+We're at the point, where we secured our admin server. In a production system, naturally, the applications we're trying to monitor will be secured. So, we'll add security to the client as well – and we'll notice in the UI interface of the admin server that the client information is not available anymore.
+
+We have to add some metadata that we'll send to the admin server. This information is used by the server to connect to client's endpoints:
+
+spring.security.user.name=client
+spring.security.user.password=client
+spring.boot.admin.client.instance.metadata.user.name=${spring.security.user.name}
+spring.boot.admin.client.instance.metadata.user.password=${spring.security.user.password}
+Sending credentials via HTTP is, of course, not safe – so the communication needs to go over HTTPS.
+
+5. Monitoring and Management Features
+Spring Boot Admin can be configured to display only the information that we consider useful. We just have to alter the default configuration and add our own needed metrics:
+
+spring.boot.admin.routes.endpoints=env, metrics, trace, jolokia, info, configprops
+As we go further, we'll see that there are some other features that can be explored. We're talking about JMX bean management using Jolokia and also Loglevel management.
+
+Spring Boot Admin also supports cluster replication using Hazelcast. We just have to add the following Maven dependency and let the autoconfiguration do the rest:
+
+<dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+    <version>3.12.2</version>
+</dependency>
+If we want a persistent instance of Hazelcast, we're going to use a custom configuration:
+
+@Configuration
+public class HazelcastConfig {
+ 
+    @Bean
+    public Config hazelcast() {
+        MapConfig eventStoreMap = new MapConfig("spring-boot-admin-event-store")
+          .setInMemoryFormat(InMemoryFormat.OBJECT)
+          .setBackupCount(1)
+          .setEvictionPolicy(EvictionPolicy.NONE)
+          .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+ 
+        MapConfig sentNotificationsMap = new MapConfig("spring-boot-admin-application-store")
+          .setInMemoryFormat(InMemoryFormat.OBJECT)
+          .setBackupCount(1)
+          .setEvictionPolicy(EvictionPolicy.LRU)
+          .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMapMergePolicy.class.getName(), 100));
+ 
+        Config config = new Config();
+        config.addMapConfig(eventStoreMap);
+        config.addMapConfig(sentNotificationsMap);
+        config.setProperty("hazelcast.jmx", "true");
+ 
+        config.getNetworkConfig()
+          .getJoin()
+          .getMulticastConfig()
+          .setEnabled(false);
+        TcpIpConfig tcpIpConfig = config.getNetworkConfig()
+          .getJoin()
+          .getTcpIpConfig();
+        tcpIpConfig.setEnabled(true);
+        tcpIpConfig.setMembers(Collections.singletonList("127.0.0.1"));
+        return config;
+    }
+}

@@ -1,0 +1,116 @@
+1) What is busspin in java?
+Busy spinning is a waiting strategy in which a thread just wait in a loop, without releasing the CPU just by going to sleep. By not releasing the CPU or suspending the thread, your thread retains all the cached data and instruction, which may be lost if the thread was suspended and resumed back in a different core of CPU.
+
+This is popular in high-frequency low latency programming domain, where programmers are trying for extremely low latency in the range of micro to milliseconds.
+
+private volatile boolean isDone = false;
+
+public void waitUntilDone() {
+while (!isDone) {
+Thread.sleep(1000);
+}
+
+}
+
+-----------------
+
+What is busy spin?
+When one thread loops continuously waiting for another thread to signal.
+
+Performance point of view - Busy spin is very bad from performance point of view, because one thread keeps on looping continuously ( and consumes CPU) waiting for another thread to signal.
+
+
+
+Solution to busy spin -
+We must use sleep() or wait() and notify() method. Using wait() is better option.
+
+Why using wait() and notify() is much better option to solve busy spin? 
+Because in case when we use sleep() method, thread will wake up again and again after specified sleep time until boolean variable is true. But, in case of wait() thread will wake up only when when notified by calling notify() or notifyAll(), hence end up consuming CPU in best possible manner
+
+
+Program - Consumer Producer problem with busy spin >
+
+Note:  In below program, Producer will allow consumer to consume only when 10 products have been produced (i.e. when production is over)
+
+Consumer thread continuously execute (busy spin) in while loop (till productionInProcess is true) and wait for producer thread to get over. Once producer thread has ended it will make boolean variable productionInProcess false and busy spin will be over.
+while(this.prod.productionInProcess){ 
+  System.out.println("BUSY SPIN - Consumer waiting for production to get over");
+}
+
+
+But how performance is impacted in this program?
+Performance is impacted because consumer thread is continuously executing and unnecessarily consuming CPU. It would have been better if consumer would have called wait() and waited until being notified by producer. So, consumer thread consumes CPU unnecessarily and didn’t allow producer to utilize complete CPU better performance.
+
+
+2) What is phantom refrence ?
+
+-a) Strong refrence :
+its a normal refrence taht we use daily like :
+Employee emp = new Employee("aaa", 111); //Strong refrence
+at this point its not eligible for garbage collection because it has object addign to emp object.
+- emp = null; then it is eligible for garbage colection
+
+-b) Weak refrence :-
+  Employee emp = new Employee("aaa", 111);
+  WeakRefrence<Employee> wkRef = new WeakRefrence<Employee>(emp);
+  sysout(wkRef.get());
+  emp = null;
+  system.gc();
+  sysout(wkRef.get()) ==> we get null
+ - it belong to java.lang.refrence
+ - it ignord by jvm
+ 
+ A weak reference can be created with the java.lang.ref.WeakReference class. If the JVM sees an object that has only a weak reference during GC, it will be collected.
+
+There is a get() method of WeakReference that will return an object itself if it is not garbage-collected yet or returns null if it is removed already.
+
+Weak references can be used to prevent memory leaks. For example, for a temporary object, if you want to keep some additional information, you generally use a global map with the temporary object as a key and additional information as a value. This can be seen as an in-memory cache.
+
+With a strong referenced map, even if the temporary object lifecycle ends, since we reference from the map, the temporary object and the additional info will remain in heap for more time than the expected lifecycle of the object. This causes a memory leak, but it can be prevented using weak references.
+
+Fortunately, we do not need to implement this as Java has a built-in WeakHashMap class. If you use this map, GC will collect the temporary object if the only reference to this object is from WeakHashMap.
+
+Note that WeakHashMap can hold a ReferenceQueue, which is defined during the creation of the weak reference. This queue will hold the reference object (not the referent) after GC runs. We can poll the reference after the referent garbage is collected. Before GC collects, the referent queue poll will return null.
+
+-c) SoftRefrence :
+
+ Employee emp = new Employee("aaa", 111);
+  SoftRefrence<Employee> sfRef = new SoftRefrence<Employee>(emp);
+  sysout(dfRef.get());
+  emp = null;
+  system.gc();
+  sysout(sf.get()) ==> we will get the objected printed i,e Employee [name=aaa, id=111] since jvm has enaough memory to keap this object 
+  
+  - A soft reference can be created with the java.lang.ref.SoftReference class. A soft reference is garbage-collected only if there is not enough memory left in the heap. That means it can be used for memory-sensitive caches where we do not want it to be removed from memory because reading from the source is more expensive. 
+  - the obj which are associated with softRefrence are not garbage collected even though it is avaliable. It will be garbage collected only whenjvm needs the memory
+  
+ - d) Phantom refrence
+ 
+ Employee emp = new Employee("aaa", 111);
+ RefrenceQueue<Employee> refQueue = new RefrenceQueue<Employee>(emp);
+ PhantomRefrence<Employee> phRef = new PhantomRefrence(emp,refqueue);
+ 
+ A phantom reference can be created with java.lang.ref.PhantomReference class. Unlike weak and soft references whereby we can control how objects garbage-collected, a phantom reference is used for pre-mortem clean-up actions before the GC removes the object. 
+
+It is mainly used as a replacement for the finalize method, which is unreliable and can slow down the application as the JVM uses a separate thread pool for finalization and an object with a finalize method consumes more resources than a normal object. 
+
+Another problem with the finalize method is that it allows the objects to be resurrected during finalization, and for this reason, at least two GC cycles need to be run as the first GC makes the object finalizable and the second GC reclaims the object if it is not resurrected. And between these two GC cycles, the finalizer thread must have been run to actually reclaim the object.
+
+If the finalizer thread does not run, more than two numbers of GC can run, and this means the object will wait to be reclaimed for a long time although it is not used anymore, which can cause an out-of-memory exception even though most the objects in heap are garbage.
+
+
+  usecases :- 1) replace finalize method
+  
+  
+3) Prevent sql injection?
+
+operator overloading in java ?
+
+No, Java doesn't support user-defined operator overloading. The only aspect of Java which comes close to "custom" operator overloading is the handling of + for strings, which either results in compile-time concatenation of constants or execution-time concatenation using StringBuilder/StringBuffer
+
+avoid deadlock ?
+
+diffrence types of db types?
+
+
+what is readwrite lock ?

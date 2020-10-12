@@ -7,18 +7,88 @@ Interview Question
 2)How  to start a dead thread again?
 - No we cant start it again
 
-3) Diffrencde between permgen and metaSpace
+3) Diffrencde between permgen and metaSpace ?
+
+PermGen (Permanent Generation) is a special heap space separated from the main memory heap.
+
+The JVM keeps track of loaded class metadata in the PermGen. Additionally, the JVM stores all the static content in this memory section. This includes all the static methods, primitive variables, and references to the static objects.
+
+Furthermore, it contains data about bytecode, names, and JIT information. Before Java 7, the String Pool was also part of this memory. The disadvantages of the fixed pool size are listed in our write-up.
+
+The default maximum memory size for 32-bit JVM is 64 MB and 82 MB for the 64-bit version.
+
+However, we can change the default size with the JVM options:
+
+-XX:PermSize=[size] is the initial or minimum size of the PermGen space
+-XX:MaxPermSize=[size] is the maximum size
+Most importantly, Oracle completely removed this memory space in the JDK 8 release. Therefore, if we use these tuning flags in Java 8 and newer versions, we'll get the following warnings:
+
+>> java -XX:PermSize=100m -XX:MaxPermSize=200m -version
+OpenJDK 64-Bit Server VM warning: Ignoring option PermSize; support was removed in 8.0
+OpenJDK 64-Bit Server VM warning: Ignoring option MaxPermSize; support was removed in 8.0
+...
+With its limited memory size, PermGen is involved in generating the famous OutOfMemoryError. Simply put, the class loaders weren't garbage collected properly and, as a result, generated a memory leak.
+
+Therefore, we receive a memory space error; this happens mostly in the development environment while creating new class loaders.
+
+imp diffrence:
+
+The main difference from a user perspective - which I think the previous answer does not stress enough - is that Metaspace by default auto increases its size (up to what the underlying OS provides), while PermGen always has a fixed maximum size. You can set a fixed maximum for Metaspace with JVM parameters, but you cannot make PermGen auto-increase.
+
+To a large degree it is just a change of name. Back when PermGen was introduced, there was no Java EE or dynamic class(un)loading, so once a class was loaded it was stuck in memory until the JVM shut down - thus Permanent Generation. Nowadays classes may be loaded and unloaded during the lifespan of the JVM, so Metaspace makes more sense for the area where the metadata is kept.
+
+Both of them contain the java.lang.Class instances and both of them suffer from ClassLoader leaks. Only difference is that with Metaspace default settings, it takes longer until you notice the symptoms (since it auto increases as much as it can), i.e. you just push the problem further away without solving it. OTOH I imagine the effect of running out of OS memory can be more severe than just running out of JVM PermGen, so I'm not sure it is much of an improvement.
+
+Whether you're using a JVM with PermGen or with Metaspace, if you are doing dynamic class unloading, you should to take measures against classloader leaks, for example by using my ClassLoader Leak Prevention library.
+
+3. Metaspace
+Simply put, Metaspace is a new memory space – starting from the Java 8 version; it has replaced the older PermGen memory space. The most significant difference is how it handles memory allocation.
+
+Specifically, this native memory region grows automatically by default.
+
+
+We also have new flags to tune the memory:
+
+MetaspaceSize and MaxMetaspaceSize – we can set the Metaspace upper bounds.
+MinMetaspaceFreeRatio – is the minimum percentage of class metadata capacity free after garbage collection
+MaxMetaspaceFreeRatio – is the maximum percentage of class metadata capacity free after a garbage collection to avoid a reduction in the amount of space
+Additionally, the garbage collection process also gains some benefits from this change. The garbage collector now automatically triggers the cleaning of the dead classes once the class metadata usage reaches its maximum metaspace size.
+
+Therefore, with this improvement, JVM reduces the chance to get the OutOfMemory error.
+
+
 
 4) in which senario we should use static block
 
 - use d for initializing static variable
 - it get executed when class get   loadded in memory 
+
 5) Need of SerialversionId
 - Deserialize uses this id  to insure that loaded class correspond exactly to the serialized object if no match is found the invalidcalssexception is called
+
 6) What is the importance of COmmit Intervals in Apache Kafka?
 - if not doing it properly then its a great chances of reading the duplicate msgs
 
 7) How do u define gloabal variable in bean implementation 
+
+1.In your bean declaration,
+
+Use java.lang.String instead of String in constructor type attribute.
+
+<bean id="controllerURL" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="tt"/>
+</bean>
+
+2. In your Controller,
+
+@Autowired String controllerURL;
+
+and
+
+@RequestMapping(value = controllerURL +"/qrcode/blablbal", method = RequestMethod.GET)
+
+
+
 
 8) What is LiveRelod?
 - the spring-boot-devtools module include an embedded LiveRelod server that can be used to trigger a browser refresh when a resource is changed.
@@ -171,6 +241,11 @@ public void setName(String privateName) {
 becoz Springboot automatically configuer a lot of dependencies just by availability in the class path. for ex it can configuer tomcat if the server container is not availbale. 
 Thtas why spring boot opinionated becoz it auto-configuer many dependencies and if it is not neede and we can ovverride auto-configuer setting as needed 
 
+Spring Boot just decides on a set of default configured beans which you can override if you want.
+
+For example if you include the spring boot starter pom for jpa, you'll get autoconfigured for you an in memory database, a hibernate entity manager, and a simple datasource. This is an example of an opinionated (Spring's opinion that it's a good starting point) default configuration that you can override.
+
+
 
 26) Spring Boot - Auto restart using spring-boot-devtools
 
@@ -200,6 +275,18 @@ Spring uses a custom classloader to restart the application. It's also good to k
  29) Modules :- A amodule in angular is a file where we have all Directive, Components, Pipes and server are grouped together
  
  30) What is AOT (Ahead of Time) Compilation
+ 
+ The Angular ahead-of-time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase before the browser downloads and runs that code. ... Faster rendering With AOT, the browser downloads a pre-compiled version of the application.
+ 
+ Benefits of AOT compilation
+Smaller application size (Angular compiler excluded)
+Faster component rendering (already compiled templates)
+Template parse errors detected earlier (at build time)
+More secure (no need to evaluate templates dynamically)
+
+
+ Q) What is JIT and AOT in angular?
+The main differences between JIT and AOT in Angular are: Just-in-Time (JIT), compiles your app in the browser at runtime. Ahead-of-Time (AOT), compiles your app at build time on the server.Sep
  
  31) can we write any code after thriw
  - no it will raise unreachble error 

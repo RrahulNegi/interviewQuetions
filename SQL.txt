@@ -258,3 +258,14 @@ FROM Customers
 WHERE Country = "Brazil";
 
 SELECT * FROM [Brazil Customers];
+
+
+
+2nd higest
+
+
+SELECT column_name
+FROM table_name e
+WHERE 2 = (SELECT COUNT (DISTINCT column_name) 
+           FROM table_name p
+           WHERE e.column_name<=p.column_name) 

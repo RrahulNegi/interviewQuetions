@@ -74,6 +74,7 @@ Output :
 
 1
 Hi... From Class One
+
 Rule 2 : Select most specific interfaces than general interfaces.
 
 If your class doesn’t extend any class and inherit multiple methods with same signature from multiple interfaces which belong to same hierarchy, then a method from most specific interface is selected (If interface X extends Y then X is more specific than Y).
@@ -109,6 +110,7 @@ Output :
 
 1
 Hi... From Interface Two
+
 Rule 3 : InterfaceName.super.methodName()
 
 If your class doesn’t extend any class and inherit multiple methods with same signature from multiple interfaces which doesn’t belong to same hierarchy, then override that method and from within body explicitly call desired method as InterfaceName.super.methodName().

@@ -369,6 +369,7 @@ processElements(listB);
 
 List<C> listC = new ArrayList<C>();
 processElements(listC);
+
 The processElements() method still cannot insert elements into the list, because you don't know if the list passed as parameter is typed to the class A, B or C.
 
 4) The super Wildcard Boundary :

@@ -104,7 +104,7 @@ Abstraction is used to hiding something too but in a higher degree(class, interf
 
 Abstraction solve problem in design level while encapsulation solve the problem in implementation level.
 
-Abstraction is used for hiding the unwanted data and giving relevant data. where as encapsulationmeans hiding the code and data into single unit to protect the data from outside world.
+Abstraction is used for hiding the unwanted data and giving relevant data. where as encapsulation means hiding the code and data into single unit to protect the data from outside world.
 
 Abstraction lets you focus on what the object does insted of how it does it.while encapsulation means hiding the internal details of how an object does something;
 
@@ -779,7 +779,7 @@ public class BillPughSingleton {
 Notice the private inner static class that contains the instance of the singleton class. When the singleton class is loaded, SingletonHelper class is not loaded into memory and only when someone calls the getInstance method, this class gets loaded and creates the Singleton class instance.
 
 This is the most widely used approach for Singleton class as it doesn’t require synchronization. I am using this approach in many of my projects and it’s easy to understand and implement also.
-
+                
 Read: Java Nested Classes
 
 
@@ -1383,7 +1383,9 @@ Object readResolve(): If this method is present, then after deserialization proc
 Usually while implementing above methods, it’s kept as private so that subclasses can’t override them. They are meant for serialization purpose only and keeping them private avoids any security issue.
 
 
-Serialization with Inheritance
+Serialization with Inheritance :
+
+
 Sometimes we need to extend a class that doesn’t implement Serializable interface. If we rely on the automatic serialization behavior and the superclass has some state, then they will not be converted to stream and hence not retrieved later on.
 
 This is one place, where readObject() and writeObject() methods really help. By providing their implementation, we can save the super class state to the stream and then retrieve it later on. Let’s see this in action.

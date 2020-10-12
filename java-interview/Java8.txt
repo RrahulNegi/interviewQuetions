@@ -5,6 +5,7 @@ In real life programming, we may never need to use Spliterator directly. Under n
 Spliterator Syntax
 Spliterator<T> spliterator = list.spliterator();
 he Java collection classes provide default stream() and parallelStream() methods which internally use the Spliterator through the call to the spliterator(). It helps in processing the collection data in parallel.
+
 Collection.java
 default Stream<E> stream() {
     return StreamSupport.stream(spliterator(), false);
@@ -20,8 +21,10 @@ Spliterator has been introduced in Java 8.
 -It provides tryAdvance() method to iterate elements individually in different threads. It helps in parallel processing.
 -To iterate elements sequentially in a single Thread, use forEachRemaining() method.
 -The trySplit() method is used partition the spliterator, if it is possible.
--It helps in combining the hasNext() and next() operations into one method.
-Java Spliterator Methods
+-It helps in combining the hasNext() and next() operations into one method.4
+
+Java Spliterator Methods :
+
 -int characteristics() : returns the list of characteristics of the spliterator. It can be any of ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED.
 -long estimateSize() : returns an estimate of the number of elements that would be encountered by a forEachRemaining() traversal, or returns Long.MAX_VALUE if infinite, unknown, or too expensive to compute.
 -default void forEachRemaining(Consumer action) : performs the given action for each remaining element, sequentially in the current thread, until all elements have been processed or the action throws an exception.
@@ -30,6 +33,60 @@ Java Spliterator Methods
 -default boolean hasCharacteristics(int characteristics) : returns true if the dpliterator’s characteristics() contain all of the given characteristics.
 -boolean tryAdvance(Consumer action) : if a remaining element exists, performs the given action on it, returning true; else returns false.
 -Spliterator trySplit() : if the spliterator can be partitioned, returns a Spliterator covering elements, that will, upon return from this method, not be covered by this Spliterator.
+
+
+ArrayList<String> list = new ArrayList<>();
+         
+list.add("A");
+list.add("B");
+list.add("C");
+list.add("D");
+list.add("E");
+list.add("F");
+ 
+Spliterator<String> spliterator1 = list.spliterator();
+Spliterator<String> spliterator2 = spliterator1.trySplit();
+ 
+spliterator1.forEachRemaining(System.out::println);
+ 
+System.out.println("========");
+ 
+spliterator2.forEachRemaining(System.out::println);
+
+D
+E
+F
+========
+A
+B
+C
+ // Create an array list for doubles. 
+        ArrayList<Integer> al1 = new ArrayList<>(); 
+              
+        // Add values to the array list. 
+        al1.add(1); 
+        al1.add(2); 
+        al1.add(-3); 
+        al1.add(-4); 
+        al1.add(5); 
+              
+              
+        // Use tryAdvance() to display(action) contents of arraylist. 
+              
+        System.out.print("Contents of arraylist:\n"); 
+              
+        // getting Spliterator object on al1 
+        Spliterator<Integer> splitr = al1.spliterator(); 
+              
+        // Use tryAdvance() to display(action) contents of arraylist. 
+        // Notice how lambda expression is used to implement accept method 
+        // of Consumer interface 
+              
+        while(splitr.tryAdvance((n) -> System.out.println(n))); 
+              
+
+
+
 Q) Diffrence between sequential and parrallel stream?
 Streams in Java
 A stream in Java is a sequence of objects represented as a conduit of data. It usually has a source where the data is situated and a destination where it is transmitted. Note that a stream is not a repository; instead, it operates on a data source such as on an array or a collection. The in-between bits in the passage are actually called the stream. During the process of transmission, the stream usually goes through one or more possible transformations, such as filtering or sorting, or it can be any other process operating on the data. This customizes the original data into a different form, typically, according to the need of the programmer. Therefore, a new stream is created according to the operation applied on it. For example, when a stream is sorted, it results in a new stream that produces a result which then s sorted. This means the new data is a transformed copy of the original rather than being in the original form.
@@ -67,7 +124,9 @@ We'll also compare the system time to get an idea which part of the code takes m
 However, we always can switch between parallel and sequential as per the need. If we want to change the parallel stream to sequential, we may do so by invoking the sequential() method specified by BaseStream. As we saw in our first program, the operation performed on the stream can be ordered or unordered according to the order of the elements. This means that the order depends upon the data source. This, however, is not the situation in the case of parallel streams. To boost performance, they are processed in parallel. Because this is done without any sequence, where each partition of the stream is processed independently of the other partitions without any coordination, the consequence is unpredictably unordered. But, if we want specifically to perform an operation on each element in the parallel stream to be ordered, we can consider the forEachOrdered() method, which is an alternative to the forEach() method.
 
 To ensure that the result of parallel processing applied on stream is same as is obtained through sequential processing, parallel streams must be stateless, non-interfering, and associative
+
 Q) How Java8's Collection.parallelStream works?
+
 Looking at the stream’s parallel method, you may wonder where the threads used by the parallel stream come from, how many there are, and how you can customize the process. Parallel streams internally use the default ForkJoinPool, which by default has as many threads as you have processors, as returned by Runtime.getRuntime().availableProcessors(). But you can change the size of this pool using the system property java.util.concurrent.ForkJoinPool.common.parallelism.
 
 The infrastructure used behind the scenes by parallel streams to execute operations in parallel is the fork/join framework introduced in Java 7. It’s vital to have a good understanding of the parallel stream internals in order to use them correctly. The fork/join framework was designed to recursively split a parallelizable task into smaller tasks and then combine the results of each subtask to produce the overall result. It’s an implementation of the ExecutorService interface, which distributes those subtasks to worker threads in a thread pool, called ForkJoinPool.
@@ -77,6 +136,7 @@ The Spliterator stands for “splitable iterator.” Like Iterators, Spliterator
 The algorithm that splits a Stream into multiple parts is a recursive process. In the first step, a method called trySplit is invoked on the first Spliterator and generates a second one. Then in step 2 it’s called again on these two Spliterators, which results in a total of four. The framework keeps invoking the method trySplit on a Spliterator until it returns null to signal that the data structure that it’s processing is no longer divisible. Finally, this recursive splitting process terminates when all Spliterators have returned null to a trySplit invocation.
 
 The last abstract method declared by the Spliterator interface is characteristics, which returns an int encoding the set of characteristics of the Spliterator itself. The Spliterator clients can use these characteristics to better control and optimize its usage. They are: ORDERED, DISTINCT, SORTED, SIZED, NONNULL, IMMUTABLE, CONCURRENT, and SUBSIZED. Depending on the specific characteristics of a stream, it may in fact not run in parallel at all.
+
 Q)What are the major drawbacks of External Iteration?
 
 We need to write code in Imperative Style.
@@ -87,6 +147,7 @@ We have to iterate elements in Sequential order only.
 It does not support Concurrency and Parallelism properly.
 
 Q)What are the major advantages of Internal Iteration over External Iteration?
+
 Compare to External Iteration, Internal Iteration has the following advantages:
 
 As it follows Functional Programming style, we can write Declarative Code.

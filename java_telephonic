@@ -12,6 +12,8 @@ Java Telephonic Interview Questions
 7) New features in Angular 6
 8) life cycle Anguar
 9) Mongo db aggregate or group by
+> db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
+
 
 10) without calling method how to know how many object is created by class in java
 
@@ -19,7 +21,53 @@ Java Telephonic Interview Questions
 12) if we r fetching 100 records from db and at time of manipulation the data it thorws some exxception and I want throw rest of data that dosnt cause exception ti the user 
 
 13) internal how apache kafka works
+
 14) how u cretae async service 
+
+A JAX-RS resource method can be made asynchronous by using the @Suspended annotation on a parameter of type, AsyncResponse. Usually, the resource method would return void since the actual response would be returned using the AsyncResponse.resume(Object) method. Here is an example:
+
+@Path("/airline")
+public class AirlineService {
+    private static ExecutorService executor = Executors.newFixedThreadPool(10);
+    @Path("/cost")
+    @GET
+    public void getReservation(@QueryParam("from") String from,
+                               @QueryParam("to") String to,
+                               @QueryParam("start") LocalDate start,
+                               @QueryParam("end") LocalDate end,
+                               @Suspended AsyncResponse ar) {
+        executor.execute( () -> {
+            Reservation r = new Reservation();
+            r.setDestination(to);
+            r.setInitialLocation(from);
+            r.setStartDate(start);
+            r.setReturnDate(end);
+            r.setCost(DBHelper.getCostOfAirlineReservation(from, to, start, end));
+            ar.resume(r);
+        });
+    }
+}
+
+Next, notice that the getReservation resource method doesn’t actually return anything. Instead, it creates a new Reservation in a Runnable (via lambda) that makes a database call and then returns the reservation to the client through the AsyncResponse object. This means that the thread invoking the getReservation method can return immediately to handle new requests. The client won’t see a response, however, until the call to the Reservation has been constructed and passed to the resume method, which might take a little while depending on how long the database request might take (DBHelper…). This example is essentially throttling access to the database.
+
+Let’s suppose that the database is running slowly for some reason. If we implement this method synchronously, we might run into a situation where the database starts rejecting work, leading to exceptions thrown back to the client. By implementing this asynchronously, we limit the connections to 10; additional requests would be queued until they could eventually be executed by the executor service. This is ideal so long as the database can eventually catch up with the work.
+
+In practice, it is my opinion that there are relatively few use cases where asynchronous methods on the server are more effective than their synchronous counterparts. Throttling access to another resource (as above) is one use case. Others might include where the thread factory has created threads optimized for the response (i.e. they already contain data on a ThreadLocal). Perhaps there is a performance benefit on some application servers; Open Liberty uses a well-tuned, global thread pool, there aren’t a lot of performance benefits to using async methods on the server.
+
+using Spting
+
+  @Async
+  public CompletableFuture<User> findUser(String user) throws InterruptedException {
+    logger.info("Looking up " + user);
+    String url = String.format("https://api.github.com/users/%s", user);
+    User results = restTemplate.getForObject(url, User.class);
+    // Artificial delay of 1s for demonstration purposes
+    Thread.sleep(1000L);
+    return CompletableFuture.completedFuture(results);
+  }
+
+
+
 15) How to handel 100000 record from db
 16) How to handel logging framework like how many request and response is going and comming
 
@@ -29,9 +77,44 @@ Java Telephonic Interview Questions
 
 19) converted JSON to XML
 
+A JSON is a lightweight data-interchange format and the format of JSON is like a key-value pair. We can convert a JSONObject into an XML format using org.json.XML class, this provides static methods to convert an XML text into a JSONObject and to convert a JSONObject into an XML text. The XML.toString() method convert a JSON object into a well-formed, element-normal XML string.
+
+import java.io.*;
+import org.json.*;
+public class JSONtoXMLTest {
+   public static void main(String[] args) throws JSONException {
+      String json = "{employee : { age:30, name : Raja, technology:Java}}";
+      //Convert JSON to XML
+      String xml = convert(json, "root"); // This method converts json object to xml string
+      System.out.println(xml);
+   }
+   public static String convert(String json, String root) throws JSONException {
+      JSONObject jsonObject = new JSONObject(json);
+      String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-15\"?>\n<"+root+">" + XML.toString(jsonFileObject) + "</"+root+">";
+      return xml;
+   }
+}
+
+
 20) SOAP
 
 21) Whats need of double lock in singelton design pattern
+
+1 if (searchBox == null) {
+2     synchronized (SearchBox.class) {
+3     if (searchBox == null) {
+4         searchBox = new SearchBox();
+5     }
+6 }
+
+If an instance was already created, don't do anything - avoid locking threads
+The first thread that has acquired the lock checks and sees that there is no such object and creates it. It releases the lock and the second one can do the same - it has to check if the object exists because the first one may have created it.
+So basically the outer if is used to prevent redundant locks - it lets all thread know that there is already an object and they don't need to lock/do anything. And the inner if is used to let a concurrent thread know whether another has already created the object or not.
+
+
+Let's try to reason about this. Let's say we have two threads A and B and let's assume that at least one of them reaches line 3 and observes searchBox == null is true. Two threads can not both be at line 3 at the same time because of the synchronized block. This is the key to understanding why double-checked locking works. So, it must the case that either A or B made it through synchronized first. Without loss of generality, say that that thread is A. Then, upon seeing searchBox == null is true, it will enter the body of the statement, and set searchBox to a new instance of SearchBox. It will then eventually exit the synchronized block. Now it will be B's turn to enter: remember, B was blocked waiting for A to exit. Now when it enters the block, it will observe searchBox. But A will have left just having set searchBox to a non-null value. 
+
+
 22) When we using autowired in class so can we cretae multiple bean of same class and whats need of it
 
 23) Spring boot we configuer jpa in pom  so it download all the Hibernate related files so how to avoid this if we dont use hibernate so we dont want to download hibernate related files?
@@ -41,6 +124,27 @@ Java Telephonic Interview Questions
 25)cloud computing
 
 26) hOW SINGELTON WORK IN SPRING and how it is diffrent from normal one?
+
+If a scope is set to singleton, the Spring IoC container creates exactly one instance of the object defined by that bean definition. This single instance is stored in a cache of such singleton beans, and all subsequent requests and references for that named bean return the cached object.
+
+Spring framework does not do anything under the hood concerning the multi-threaded behavior of a singleton bean. It is the developer’s responsibility to deal with concurrency issue and thread safety of the singleton bean.
+
+While practically, most spring beans have no mutable state, and as such are trivially thread safe. But if your bean has mutable state, so you need to ensure thread safety. The most easy and obvious solution for this problem is to change bean scope of mutable beans from “singleton” to “prototype“.
+
+Singleton pattern is scoped by per Java class.
+Singleton bean scope is scoped by per spring container.
+
+In singleton pattern, Java considers a class as singleton if it cannot create more than one instance of that class within a given class loader whereas spring considers a bean class as singleton scope if it cannot create more than one instance of bean class within a given Applicationcontext(container).
+
+Spring container will create exactly one instance of the defined bean. This single instance will be stored in a cache of singleton bean and same instance will be returned in all subsequent requests.
+
+Very important point to discuss here is what happens if there are multiple containers and same class loader.Lets create one example to understand this.
+
+In below Spring example, we have created two applicationContext object( in MainApp class) which are used to load the ‘student bean'(Student class). When the same bean is again loaded with different application context object then it will return ‘null’ as bean name because scope of bean is limited within an application context.
+
+
+
+
  
 27) How Transaction managment happend in microservices
 
@@ -71,3 +175,25 @@ we can implement di pattern to move the dependency resolution from compile tiem 
 
 36)What happens in back ground when a spring boot application is Run as Java Application?
  - where the exection start - what all class get loaded
+ 
+ 
+ 37) @Springbootapplication
+ 
+ 
+ @SpringBootApplication = @Configuration + @ComponentScan + @EnableAutoConfiguration
+The @SpringBootApplication annotation is a combination of following three Spring annotations and provides the functionality of all three with just one line of code.
+
+@Configuration
+This annotation marks a class as a Configuration class for Java-based configuration. This is particularly important if you favor Java-based configuration over XML configuration. 
+
+@ComponentScan
+This annotation enables component-scanning so that the web controller classes and other components you create will be automatically discovered and registered as beans in Spring's Application Context. All the@Controller classes you write are discovered by this annotation.
+
+@EnableAutoConfiguration
+This annotation enables the magical auto-configuration feature of Spring Boot, which can automatically configure a lot of stuff for you.
+
+For example, if you are writing a Spring MVC application and you have Thymeleaf JAR files on the application classpath, then Spring Boot auto-configuration can automatically configure the Thymeleaf template resolver, view resolver, and other settings automatically.
+
+So, you can say that @SpringBootApplication is a 3-in-1 annotation that combines the functionality of @Configuration, @ComponentScan, and @EnableAutoConfiguration.
+
+

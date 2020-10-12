@@ -1,0 +1,60 @@
+1) Spy vs mock
+
+mock :-
+
+Mock will override all the methods of the class 
+
+example :
+
+ @Test
+ public void test(){
+ 
+	List arrayListMock = mock(ArrayList.class)
+	assertEquals(0,arrayListMock.size())
+	
+	stub(arrayListMock.size()).toReturn(5);
+	
+	arrayListMock.sdd("AA") 
+	assertEquals(5,arrayListMock.size())
+	// return true
+		arrayListMock.add("AA")  // its a dummmy add i.e  it wont using actual arraylist class
+
+	}
+
+	spy :- If want to overide certain methods not all then we can use spy
+	-we can also verify certain metods
+	its lile real spy that it leds the real action  happends expects certain methods
+	verify(arrayListSpy).add("AAA");
+	
+	
+	List arrayListSpy = spy(ArrayList.class)
+	assertEquals(0,arrayListMock.size())
+	
+	stub(arrayListSpy.size()).toReturn(5);
+	
+	arrayListSpy.sdd("AA") 
+	assertEquals(5,arrayListSpy.size())
+	// return true
+
+	}
+
+	
+2) HamcredtMatches :
+
+add lib for Hamcrest.jar
+
+List<Integers> scores = Arrays.asList(2,33,44,55)
+
+assertThat(scores, hasSize(4))
+assertThat(scores, hasItems(2))
+assertThat(scores, everyItem(greaterThan(90))
+
+
+3) PowerMock to mock private and static method :
+ 
+ 
+ 
+ Imp lionk
+ 
+ 
+ https://github.com/in28minutes/MockitoTutorialForBeginners/blob/master/Step02.md

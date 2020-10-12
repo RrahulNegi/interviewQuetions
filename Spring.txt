@@ -25,22 +25,34 @@ Spring @Bean Annotation is applied on a method to specify that it returns a bean
 Pointcut
 – An expression that selects one or more Join Points
 -: Pointcut is expressions that are matched with join points to determine whether advice needs to be executed or not. Pointcut uses different kinds of expressions that are matched with the join points and Spring framework uses the AspectJ pointcut expression language.
+
+
 Join Point
 – A point in the execution of a program such as a method call or exception thrown
 - A join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc. In Spring AOP a join point is always the execution of a method.
+
+
+
 Advice
 – Code to be executed at each selected Join Point
 -Advices are actions taken for a particular join point. In terms of programming, they are methods that get executed when a certain join point with matching pointcut is reached in the application
+
 Aspect
 – A module that encapsulates pointcuts and advice
 -An aspect is a class that implements enterprise application concerns that cut across multiple classes, such as transaction management. Aspects can be a normal class configured through Spring XML configuration or we can use Spring AspectJ integration to define a class as Aspect using @Aspect annotation.
+
 Weaving
 – Technique by which aspects are combined with main code
 Introduction
 -Spring AOP allows to introduce new interfaces (and a corresponding application) to any object advises.
+
+
+
 Target Object
 -An object is assisted by one or more respects. Also known as the object advised.
 -They are the object on which advices are applied. Spring AOP is implemented using runtime proxies so this object is always a proxied object. What is means is that a subclass is created at runtime where the target method is overridden and advice are included based on their configuration.
+
+
 AOP Proxy
 -AOP proxy is an object used to perform the contract area. This object is created by the AOP framework. In Spring AOP proxy is part of JDK dynamic proxy or proxy CGLIB.
 Spring AOP is proxy-based. AOP proxy is an object created by the AOP framework in order to implement the aspect contracts in runtime.
@@ -729,10 +741,11 @@ The cross-cutting concern is a concern which is applicable throughout the applic
 
 Q)What are the difference between Spring AOP and AspectJ AOP?
 Spring AOP vs AspectJ AOP
-Spring AOP	AspectJ AOP
+Spring AOP	                                         AspectJ AOP
 Runtime weaving through proxy is done  |	Compile time weaving through AspectJ Java tools is done 
 It supports only method level PointCut  |  	It suports field level Pointcuts
 It is DTD based 						| It is schema based and Annotation configuration
+
 45. What do you mean by Proxy in Spring Framework?
 An object which is created after applying advice to a target object is known as a Proxy. In case of client objects the target object and the proxy object are the same.
 
@@ -743,4 +756,11 @@ Q)Describe DispatcherServlet.
 The DispatcherServlet is the core of Spring Web MVC framework. It handles all the HTTP requests and responses. The DispatcherServlet receives the entry of handler mapping from the configuration file and forwards the request to the controller. The controller then returns an object of Model And View. The DispatcherServlet checks the entry of view resolver in the configuration file and calls the specified view component.
 
 
+Q)Understanding @Transactional annotation ?
 
+
+At a high level, when a class declares @Transactional on itself or its members, Spring creates a proxy that implements the same interface(s) as the class you’re annotating. In other words, Spring wraps the bean in the proxy and the bean itself has no knowledge of it. A proxy provides a way for Spring to inject behaviors before, after, or around method calls into the object being proxied.
+
+Internally, its the same as using a transaction advice (using AOP), where a proxy is created first and is invoked before/after the target bean’s method.
+
+The generated proxy object is supplied with a TransactionInterceptor, which is created by Spring. So when the @Transactional method is called from client code, the TransactionInterceptor gets invoked first from the proxy object, which begins the transaction and eventually invokes the method on the target bean. When the invocation finishes, the TransactionInterceptor commits/rolls back the transaction accordingly.

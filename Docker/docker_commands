@@ -28,6 +28,8 @@ docker run busybox echo hi
 
 o/p => hi
 
+Docker start command will start any stopped container. If you used docker create command to create a container, you can start it with this command. Docker run command is a combination of create and start as it creates a new container and starts it immediately.
+
 7) docker ps
 
 it will show the table format of details of container id
@@ -112,6 +114,8 @@ FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=MAVEN_BUILD /build/target/docker-boot-intro-0.1.0.jar /app/
 ENTRYPOINT ["java", "-jar", "docker-boot-intro-0.1.0.jar"]
+
+
 FROM maven:3.5.2-jdk-8-alpine AS MAVEN_BUILD tells Docker to use the Maven image maven:3.5.2-jdk-8-alpine as the base image for the first stage of the build. Docker will look for this image locally and if it isn't available it will be pulled from DockerHub. Although Maven will be discarded from the final image (see COPY --from command later) I've used the Alpine-flavored Maven image as its faster to download.
 
 MAINTAINER Brian Hannaway isn't essential but improves maintainability by providing a point of contact for the image author.
@@ -224,9 +228,11 @@ The remaining directives in the Dockerfile are pretty straightforward. The CMD d
 To build the image, run Docker build from a command line or terminal that is in the root directory of the application.
 
 docker build --tag my-python-app .
+
 This will “tag” the image my-python-app and build it. After it is built, you can run the image as a container.
 
 docker run --name python-app -p 5000:5000 my-python-app
+
 This starts the application as a container. The –name parameter names the container and the -p parameter maps the host’s port 5000 to the containers port of 5000. Lastly, the my-python-app refers to the image to run. After it starts, you should be able to browse to the container. Depending on how you are running Docker depends on what the IP address of the application will be. Docker for Windows and Docker for Mac will be able to use 127.0.0.1. For other instances, it will be the host IP of a VM or physical machine you are running Docker on.
 
 

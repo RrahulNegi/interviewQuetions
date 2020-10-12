@@ -195,9 +195,11 @@ First, we create a mock object using the PowerMockito API:
 CollaboratorWithFinalMethods mock = mock(CollaboratorWithFinalMethods.class);
 
 Next, set an expectation telling that whenever the no-arg constructor of that class is invoked, a mock instance should be returned rather than a real one:
+
 whenNew(CollaboratorWithFinalMethods.class).withNoArguments().thenReturn(mock);
 
 Let's see how this construction mocking works in action by instantiating the CollaboratorWithFinalMethods class using its default constructor, and then verify the behaviors of PowerMock:
+
 CollaboratorWithFinalMethods collaborator = new CollaboratorWithFinalMethods();
 verifyNew(CollaboratorWithFinalMethods.class).withNoArguments();
 
@@ -236,7 +238,9 @@ when(CollaboratorWithStaticMethods.firstMethod(Mockito.anyString()))
 when(CollaboratorWithStaticMethods.secondMethod()).thenReturn("Nothing special");
 
 Or an exception may be set to be thrown when calling the thirdMethod method:
+
 doThrow(new RuntimeException()).when(CollaboratorWithStaticMethods.class);
+
 CollaboratorWithStaticMethods.thirdMethod();
 
 

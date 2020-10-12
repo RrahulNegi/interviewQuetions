@@ -7,6 +7,7 @@ Streams can be defined as a sequences of elements from a source which support da
 Almost every Java application use Collections API to store and process the data. Despite being the most used Java API, it is not easy to write the code for even some common data processing operations like filtering, finding, matching, sorting, mapping etc using Collections API . So, there needed Next-Gen API to process the data. So Java API designers have come with Java 8 Streams API to write more complex data processing operations with much of ease.
 
 3) Characteristics Of Java 8 Streams
+
 3.1) Streams are not the data structures
 Streams doesn’t store the data. You can’t add or remove elements from streams. Hence, they are not the data structures. They are the just operations on data.
 
@@ -25,6 +26,7 @@ A pipeline of operations consists of three things – a source, one or more inte
 
 1
 IntStream.of(new int[] {4, 7, 1, 8, 3, 9, 7}).filter((int i) -> i > 5).distinct().forEach(System.out::println);
+
 3.5) Internal Iteration
 Collections need to be iterated explicitly. i.e you have to write the code to iterate over collections. But, all stream operations do the iteration internally behind the scene for you. You need not to worry about iteration at all while writing the code using Java 8 Streams API.
 

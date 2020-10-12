@@ -1,0 +1,92 @@
+1) Spring zuul 
+
+@EnableZuulProxy
+
+
+2)Circiot breaker/Hystric
+
+@EnableCircuitBreaker
+@EnableHystricDashboard
+
+3)Eureka Discouvery
+
+-server :
+
+@EnableEurekaServer
+
+pro[ :
+ server:
+  port: ${PORT:8761} # Indicate the default PORT where this service will be started
+ 
+eureka:
+  client:
+    registerWithEureka: false   #telling the server not to register himself in the service registry
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0    #wait time for subsequent sync
+	
+-cliemt
+
+@EnableEurekaClient
+
+prop :
+
+server:
+  port: 8098    #default port where the service will be started
+ 
+eureka:         #tells about the Eureka server details and its refresh time
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+ 
+spring:     
+  application:
+    name: student-service   #current service name to be used by the eureka server
+     
+management:
+  security:
+    enabled: false  #disable the spring security on the management endpoints like /env, /refresh etc. 
+ 
+logging:
+  level:
+    com.example.howtodoinjava: DEBUG
+	
+
+	
+	
+4) Concul server
+
+@EnableDiscoveryClient
+
+
+5)Client side loadbalancing Ribbon:
+
+@RibbonClient(name = "chatbook", configuration = RibbonConfiguration.class)
+
+
+5) Swagger
+
+@EnableSwagger2
+
+localohost:9090/swagger-ui.html
+
+6) Acuator :
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+application.properties
+
+management.endpoints.web.exposure.include=*
+ 
+# To expose only selected endpoints
+#management.endpoints.jmx.exposure.include=health,info,env,beans

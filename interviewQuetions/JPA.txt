@@ -5,6 +5,8 @@ JPA Interview Questions
 2) Does JPA performs the actual task like access, persist and manage data?
 No, JPA is only a specification. The ORM tools like Hibernate, iBatis, and TopLink implements the JPA specification and perform these type of tasks.
 
+
+
 3)What is the JPQL?
 JPQL is the Java Persistence query language defined in JPA specification. It is used to construct the queries.
 
