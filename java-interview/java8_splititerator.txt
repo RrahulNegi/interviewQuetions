@@ -56,4 +56,151 @@ Spliterator<T> trySplit() {
  - spliterator is used for java 8 parallel stream where we end up with spliting the input into chunks and the it will process sequentialy 
 
 
-Q) 
+Enumeration, Iterator and ListIterator – till Java 7, these three iterators are available in Java. 
+From Java 8, Spliterator is added to this group of iterators. 
+As the name itself suggest, Spliterator performs partitioning as well as iterating.
+ It is most suitable for parallel programming. Using old Iterators, you can iterate only collection types. 
+But, Spliterator can be used to iterate collections, arrays and streams. Let’s see Java 8 Spliterator in detail.
+
+Spliterator is an interface introduced from Java 8 as a member of java.util package.
+As the name itself suggests, it can be used for both, partitioning as well as iterating.
+The source to Spliterator can be an array or a collection or a stream or an I/O channel.
+It can be used to traverse the elements one by one (tryAdvance() method) or in bulk (forEachRemaining() method).
+It is most suitable for parallel programming.
+Spliterator can provide you the exact size or at least an estimate size of the source. That is not possible with other iterators.
+Spliterators are fail-fast in nature. i.e. they throw exception if the source is modified after the creation of Spliterator.
+Through Spliterator, You can extract some characteristics of iterating elements like ORDERED, DISTINCT, IMMUTABLE, CONCURRENT, NONNULL, SIZED, SORTED, SUBSIZED.
+
+
+Working With Java 8 Spliterator :
+1) spliterator() : This method is added into java.lang.Iterable interface from Java 8 as a default method.
+ So, it is available in all the classes and subinterfaces which implement or extend this interface.
+ It is used to get Spliterator over the elements of arrays or collections or streams.
+ 
+ 
+ //Spliterator from an array
+         
+String[] languageArray = new String[] {"Java", "C", "C++", "Python", "Scala", "Kotlin"};
+Spliterator<String> spliteratorOfArray = Arrays.spliterator(languageArray);
+         
+//Spliterator from a List
+         
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> spliteratorOfList = languageList.spliterator();
+         
+//Spliterator from a Stream
+         
+Stream<String> languageStream = Stream.of("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> spliteratorOfStream = languageStream.spliterator();
+
+2) tryAdvance() : Performs the given action on next element. It is used to traverse the elements one by one.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+
+languageSpliterator.tryAdvance(System.out::println);
+languageSpliterator.tryAdvance(System.out::println);
+         
+//      Output : 
+//      Java
+//      C
+
+
+3) forEachRemaining() : Performs the given action on each of the remaining elements. 
+It is used to traverse the elements in bulk.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+languageSpliterator.tryAdvance(System.out::println); ===> Java
+languageSpliterator.tryAdvance(System.out::println); ===> C
+languageSpliterator.forEachRemaining(System.out::println); ==>rest of the element
+         
+//      Output : 
+//      Java
+//      C
+//      C++
+//      Python
+//      Scala
+//      Kotlin
+
+
+4) trySplit() : This method splits current Spliterator into another Spliterator. It is helpful in parallel programming.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+Spliterator<String> anotherLanguageSpliterator = languageSpliterator.trySplit();
+ 
+System.out.println("From 1st Spliterator");
+System.out.println("------------------");
+languageSpliterator.forEachRemaining(System.out::println);
+         
+System.out.println("------------------");
+         
+System.out.println("From 2nd Spliterator");
+System.out.println("------------------");
+anotherLanguageSpliterator.forEachRemaining(System.out::println);
+                 
+//      From 1st Spliterator
+//      ------------------
+//      Python
+//      Scala
+//      Kotlin
+//      ------------------
+//      From 2nd Spliterator
+//      ------------------
+//      Java
+//      C
+//      C++
+
+
+5) estimateSize() : It returns the estimate of number of elements yet to be traversed by the Spliterator.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+System.out.println(languageSpliterator.estimateSize());       //Output : 6
+languageSpliterator.tryAdvance(System.out::println);
+System.out.println(languageSpliterator.estimateSize());       //Output : 5
+
+
+6) getExactSizeIfKnown() : It returns exact size if known, otherwise returns -1.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+System.out.println(languageSpliterator.getExactSizeIfKnown());       //Output : 6
+languageSpliterator.tryAdvance(System.out::println);
+System.out.println(languageSpliterator.getExactSizeIfKnown());       //Output : 5
+
+7) characteristics() : Returns set of characteristics of elements in an integer form.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+System.out.println(languageSpliterator.characteristics());
+         
+//Output : 16464
+
+
+8) hasCharacteristics() : Checks whether this Spliterator has specified characteristics or not.
+
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+System.out.println(languageSpliterator.hasCharacteristics(16464));
+         
+//Output : true
+
+
+9) getComparator() : It returns Comparator of the source if it is sorted, otherwise throws IllegalStateException. 
+If the source is sorted in natural order, it returns null.
+
+List<String> languageList = Arrays.asList("Java", "C", "C++", "Python", "Scala", "Kotlin");
+Spliterator<String> languageSpliterator = languageList.spliterator();
+System.out.println(languageSpliterator.getComparator());
+         
+//Output : Exception in thread "main" java.lang.IllegalStateException
+
