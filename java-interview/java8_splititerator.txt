@@ -1,0 +1,59 @@
+Spliterator
+
+its a new type of splittable itterator in java 8
+
+lets divide the splitterator in two parts 1) iterartor 2)split
+
+1) iterator part :
+
+- iterator is usde to traverse the element from source like list or array
+
+ex:
+
+List<String> quotes = Arrays.aslist("This", "above", "xx", "cc");
+
+for(Spliterator<String> s = quote.spliterator();
+
+s.tryAdvance(System.out::print)!=false;)
+continue;
+
+- trAdvance combines the hasNext() and next() method of iterator
+
+
+2) Split part : it also partition all elemenr of source
+
+Spliterator<String> secondHalf = quote.spliterator();
+
+Spliterator<String> firsthalf = secondhalf.trySplit();
+
+trySplit() return a spliterator covering elements that will no longer be covered by the invoking splitterator
+
+firsthalf.foEachRemaing(System.out::print)
+
+secondHalf.foEachRemaing(System,out::print)
+
+Spliterator<T> trySplit() {
+	if(input <= minimum sze)
+		return null
+	else {
+		split input in 2 chunks
+		update "right chunk"
+		return spliterator
+				for "left chunk"
+		}
+		
+- trySplit called recursively until all chunks are <= to the minimize size 
+
+- arraylist  it split into half part 
+
+
+ Now we will perform some action on the each elements in the spliterator
+ 
+ firsthalf.forEachRemaning(Sysetm,out::print)
+ 
+ secondHalf.foEachRemaing(System.out::print)
+ 
+ - spliterator is used for java 8 parallel stream where we end up with spliting the input into chunks and the it will process sequentialy 
+
+
+Q) 
