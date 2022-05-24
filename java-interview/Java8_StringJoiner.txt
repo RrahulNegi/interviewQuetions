@@ -1,0 +1,56 @@
+Java 8 StringJoiner, String.join() And Collectors.joining()
+
+
+Joining the strings or concatenating the strings is the frequent operation while programming any kind of applications. 
+To make this process easy and efficient, Java API developers has introduced java.util.StringJoiner class, 
+String.join() method and Collectors.joining() method from Java 8. 
+By using them, you can join an array of strings or a list of strings or simply string elements separated by a
+
+
+Java 8 StringJoiner :
+
+StringJoiner class internally uses StringBuilder class to join the strings. It is placed in java.util package. Using Java 8 StringJoiner, you can join only the strings, but not the array of strings or list of strings.
+
+
+There are two ways to construct StringJoiner objects. They are,
+
+ mandatory delimiter and optional prefix and suffix. Let’s see them in detail.
+
+ 
+ a) StringJoiner(CharSequence delimiter)
+
+b) StringJoiner(CharSequence delimiter, CharSequence prefix, CharSequence suffix)
+
+
+Java 8 String.join() Method :
+
+String.join() method internally uses StringJoiner class. This method can be used to join strings or array of strings or list of strings, but only with delimiter not with prefix and suffix.
+
+There are two overloaded forms of String.join().
+
+a) public static String join(CharSequence delimiter, CharSequence… elements)
+
+b) public static String join(CharSequence delimiter, Iterable<? extends CharSequence> elements)
+
+String joinedString = String.join(" | ", "Facebook", "Twitter", "YouTube", "WhatsApp", "LinkedIn");
+
+
+Java 8 Collectors.joining() :
+
+There are three forms of Collectors.joining() method available. They are,
+
+a) Collectors.joining()
+
+b) Collectors.joining(CharSequence delimiter)
+
+c) Collectors.joining(CharSequence delimiter, CharSequence prefix, CharSequence suffix)
+
+
+        List<String> listOfStrings = Arrays.asList("Facebook", "Twitter", "YouTube", "WhatsApp", "LinkedIn");
+         
+        String joinedString = listOfStrings.stream().collect(Collectors.joining());
+         
+        System.out.println(joinedString);
+
+
+
