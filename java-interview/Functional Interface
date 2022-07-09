@@ -3,7 +3,8 @@ Java 8 consumer/predicate function
 1)Consumer Functional Interface
 
 -Fucntional interface is interface which has only one method.
--Counsumer Functional Interface has a function that accept only one Object and perform some operation on it, and its return type is void.
+-Counsumer Functional Interface has a function that accept only one Object and perform some operation on it, and its 
+return type is void.
 
 -In java 8 we have :
 
@@ -284,7 +285,8 @@ for (Student student : listOfStudents)
 }
 b) Consumer – Consumes an object
 
-Consumer represents an operation which takes an argument and returns nothing. Use this functional interface If you want to compose a lambda expression which performs some operations on an object.
+Consumer represents an operation which takes an argument and returns nothing. Use this functional interface If you 
+want to compose a lambda expression which performs some operations on an object.
 
 For example, displaying all students with their percentage.
 
@@ -302,7 +304,8 @@ for (Student student : listOfStudents)
 
 c) Function – Applies to an object
 
-Function represents an operation which takes an argument of type T and returns a result of type R. Use this functional interface if you want to extract some data from an existing data.
+Function represents an operation which takes an argument of type T and returns a result of type R. Use this functional 
+interface if you want to extract some data from an existing data.
 
 For example, extracting only the names from listOfStudents.
 

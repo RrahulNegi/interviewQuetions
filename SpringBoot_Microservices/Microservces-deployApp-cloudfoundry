@@ -2,9 +2,12 @@ How to Deploy Spring Boot Application to Cloud Foundry Platform
 
 1) Cloud Foundry Installation for Windows
 
-Here are the installation steps for Windows, for other operating system, cloud foundry has a very good documentation which we can easily follow.
+Here are the installation steps for Windows, for other operating system, cloud foundry has a very good documentation which we 
+can easily follow.
 
-The cloud foundry works very well from command prompt and cloud foundry has provided one command line tool called cf which does almost all the activities for us. So to make this tool (cf command) available in local workstation, first we need to install and configure the Cloud Foundry Command line (CLI) interface.
+The cloud foundry works very well from command prompt and cloud foundry has provided one command line tool called cf which 
+does almost all the activities for us. So to make this tool (cf command) available in local workstation, first we need to 
+install and configure the Cloud Foundry Command line (CLI) interface.
 
 Download the CF Windows installer. It will prompt for the download. Save the zip file distribution.
 Unpack the zip file to a suitable place in your workstation.
@@ -13,7 +16,8 @@ Unzip Installer
 After successfully unzip operation, double cick on the cf CLI executable.
 
 CF Installer Location
-When prompted, click Install, then Close. Here are the sample steps for the same. This is very straight froward, you can select the default values.
+When prompted, click Install, then Close. Here are the sample steps for the same. This is very straight froward, you can 
+select the default values.
 
 Verify the installation by opening a terminal window and type cf. If your installation was successful, the cf CLI help listing appears. This indicates that you are ready to go with any cloud foundry platform from your local workstation.
 
@@ -23,7 +27,9 @@ We will now proceed with Pivotal Web service account sign up and development of 
 
 2)Setup PWS Console
 
-Now we need to create one account in pivotal in order to deploy our application in Pivotal Cloud Foundry Platform. We need to register in the below page to start with the sign up process. It is free and it will just ask some very common things like email address, name etc.
+Now we need to create one account in pivotal in order to deploy our application in Pivotal Cloud Foundry Platform.
+ We need to register in the below page to start with the sign up process. It is free and it will just ask some very 
+ common things like email address, name etc.
 
 
 -Pivotal web service console signup

@@ -31,10 +31,12 @@ A TestResult collects the results of executing a test case. It is an instance of
 
 
 Q) What is the purpose of @Before annotation in JUnit?
-Several tests need similar objects created before they can run. Annotating a public void method with @Before causes that method to be run before each Test method.
+Several tests need similar objects created before they can run. Annotating a public void method with @Before causes that 
+method to be run before each Test method.
 
 Q) What is the purpose of @After annotation in JUnit?
-If you allocate external resources in a Before method you need to release them after the test runs. Annotating a public void method with @After causes that method to be run after the Test method.
+If you allocate external resources in a Before method you need to release them after the test runs. 
+Annotating a public void method with @After causes that method to be run after the Test method.
 
 Q) What is the purpose of @BeforeClass annotation in JUnit?
 Annotating a public static void method with @BeforeClass causes it to be run once before any of the test methods in the class.
@@ -68,16 +70,21 @@ Q) How can you use JUnit to test that the code throws desired exception?
 JUnit provides a option of tracing the Exception handling of code. You can test if a code throws desired exception or not. The expected parameter is used along with @Test annotation as follows − @Test(expected)
 
 Q)What happens if a JUnit Test Method is Declared as "private"?
-If a JUnit test method is declared as "private", it compiles successfully. But the execution will fail. This is because JUnit requires that all test methods must be declared as "public".
+If a JUnit test method is declared as "private", it compiles successfully. But the execution will fail. 
+This is because JUnit requires that all test methods must be declared as "public".
 
 Q) How do you test a "protected" method?
-When a method is declared as "protected", it can only be accessed within the same package where the class is defined. Hence to test a "protected" method of a target class, define your test class in the same package as the target class.
+When a method is declared as "protected", it can only be accessed within the same package where the class is defined. 
+Hence to test a "protected" method of a target class, define your test class in the same package as the target class.
 
 Q) How do you test a "private" method?
-When a method is declared as "private", it can only be accessed within the same class. So there is no way to test a "private" method of a target class from any test class. Hence you need to perform unit testing manually. Or you have to change your method from "private" to "protected".
+When a method is declared as "private", it can only be accessed within the same class. So there is no way to test a 
+"private" method of a target class from any test class. Hence you need to perform unit testing manually. 
+Or you have to change your method from "private" to "protected".
 
 @)What happens if a JUnit test method is declared to return "String"?
-If a JUnit test method is declared to return "String", the compilation will pass ok. But the execution will fail. This is because JUnit requires that all test methods must be declared to return "void".
+If a JUnit test method is declared to return "String", the compilation will pass ok. 
+But the execution will fail. This is because JUnit requires that all test methods must be declared to return "void".
 
 Q) Can you use a main() Method for Unit Testing?
 Yes you can test using main() method. One obvious advantage seems to be that you can whitebox test the class. That is, you can test the internals of it (private methods for example). You can't do that with unit-tests. But primarily the test framework tests the interface and the behavior from the user's perspective.
@@ -120,7 +127,10 @@ public class ItemServiceTest {
 
 Q) PowerMock ?
 PowerMock – Mocking the Impossible
-With PowerMockito it is possible to mock all the hard cases that Mockito does not support. Most of the time this means mocking of static methods. But it is also possible to mock private methods and constructor calls. Anyway most of time the use case is mocking static methods calls. PowerMockito is using byte code manipulation and thus it comes with its own JUnit runner. Furthermore the list of classes that needs to be mocked must be given using the @PrepareForTest annotation. Let’s take a look at an example again.
+With PowerMockito it is possible to mock all the hard cases that Mockito does not support. Most of the time this means 
+mocking of static methods. But it is also possible to mock private methods and constructor calls. Anyway most of time
+ the use case is mocking static methods calls. PowerMockito is using byte code manipulation and thus it comes
+ with its own JUnit runner. Furthermore the list of classes that needs to be mocked must be given using the @PrepareForTest annotation. Let’s take a look at an example again.
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({StaticService.class})
@@ -161,7 +171,10 @@ public class ItemServiceTest {
         assertThat(value, equalTo("Dummy"));
     }
 }
-It can be nicely seen here that the tests are written in almost the same manner using PowerMock as we are used to from Mockito. Main reason for this is that PowerMock comes with a specific API for Mockito (and also for EasyMock). This can be seen from an excerpt of the Maven file where we are not only importing the PowerMock JUnit-module but also the Mockito-API:
+It can be nicely seen here that the tests are written in almost the same manner using PowerMock as we are used to 
+from Mockito. Main reason for this is that PowerMock comes with a specific API for Mockito (and also for EasyMock).
+ This can be seen from an excerpt of the Maven file where we are not only importing the PowerMock JUnit-module but also the
+ Mockito-API:
 
 ...
 <dependency>
@@ -178,12 +191,15 @@ It can be nicely seen here that the tests are written in almost the same manner 
     <scope>test</scope>
 </dependency>
 ...
-Classes containing static methods must be mocked using the mockStatic()-method. Also verification if a method has actually been called is slightly different. But for the when-then mocking-part the syntax stays the same.
+Classes containing static methods must be mocked using the mockStatic()-method. Also verification if a method has 
+actually been called is slightly different. But for the when-then mocking-part the syntax stays the same.
 
 
 Q) Mocking Constructors and Final Methods :
 
-In this section, we will demonstrate the ways to get a mock instance instead of a real one when instantiating a class with the new operator, and then use that object to mock a final method. The collaborating class, whose constructors and final methods will be mocked, is defined as follows:
+In this section, we will demonstrate the ways to get a mock instance instead of a real one when instantiating a
+ class with the new operator, and then use that object to mock a final method. The collaborating class, whose constructors
+ and final methods will be mocked, is defined as follows:
 
 public class CollaboratorWithFinalMethods {
     public final String helloMethod() {
@@ -247,9 +263,11 @@ CollaboratorWithStaticMethods.thirdMethod();
 Q)@Mock, @Spy, @Captor, @InjectMocks ?
 
 1) @Mock
-The @Mock annotation is used to create and inject mocked instances. We do not create real objects, rather ask mockito to create a mock for the class.
+The @Mock annotation is used to create and inject mocked instances. We do not create real objects, rather ask mockito to 
+create a mock for the class.
 
-The @Mock annotation is alternative to Mockito.mock(classToMock). They both achieve the same result. Using @Mock is usually considered “cleaner“, as we don’t fill up the tests with boilerplate assignments that all look the same.
+The @Mock annotation is alternative to Mockito.mock(classToMock). They both achieve the same result. Using @Mock is 
+usually considered “cleaner“, as we don’t fill up the tests with boilerplate assignments that all look the same.
 
 Using the @Mock annotation –
 
@@ -272,7 +290,8 @@ public void saveTest()
     assertEquals(0, mockHashMap.size());
 
 2. @Spy
-The @Spy annotation is used to create a real object and spy on that real object. A spy helps to call all the normal methods of the object while still tracking every interaction, just as we would with a mock.
+The @Spy annotation is used to create a real object and spy on that real object. A spy helps to call all the normal 
+methods of the object while still tracking every interaction, just as we would with a mock.
 
 Notice in given example, how the size of map is maintained to 1 because we added one key-value pair to it. We are also able to get back the value added to map using it’s key. It is not possible in mocked instances.
 
@@ -292,17 +311,25 @@ public void saveTest()
     assertEquals(new Integer(10), (Integer) hashMap.get("A"));
 }
 Difference between @Mock and @Spy
-When using @Mock, mockito creates a bare-bones shell instance of the Class, entirely instrumented to track interactions with it. This is not a real object and does not maintain the state changes to it.
+When using @Mock, mockito creates a bare-bones shell instance of the Class, entirely instrumented to track interactions with it.
+ This is not a real object and does not maintain the state changes to it.
 
-When using @Spy, mockito creates a real instance of the class and track every interactions with it. It maintains the state changes to it.
+When using @Spy, mockito creates a real instance of the class and track every interactions with it. It maintains the state 
+changes to it.
 
 3)@InjectMocks
-In mockito, we need to create the object of class to be tested and than insert it’s dependencies (mocked) to completely test the behavior. To do this, we use @InjectMocks annotation.
+In mockito, we need to create the object of class to be tested and than insert it’s dependencies (mocked) to completely test 
+the behavior. To do this, we use @InjectMocks annotation.
 
-@InjectMocks marks a field on which injection should be performed. Mockito will try to inject mocks only either by constructor injection, setter injection, or property injection – in this order. If any of the given injection strategy fail, then Mockito won’t report failure.
+@InjectMocks marks a field on which injection should be performed. Mockito will try to inject mocks only either by constructor 
+injection, setter injection, or property injection – in this order. If any of the given injection strategy fail, then Mockito 
+won’t report failure.
 
 
-When shoud you use mock or spy? If you want to be safe and avoid calling external services and just want to test the logic inside of the unit, then use mock. If you want to call external service and perform calling of real dependency, or simply say, you want to run the program as it is and just stub specific methods, then use spy. So that’s the difference between spy and mock in mockito.
+When shoud you use mock or spy? If you want to be safe and avoid calling external services and just want to test the logic inside
+ of the unit, then use mock. If you want to call external service and perform calling of real dependency, or simply say, 
+ you want to run the program as it is and just stub specific methods, then use spy. So that’s the difference between spy and
+ mock in mockito.
 
 
 Q) EasyMock Private Method Mock using PowerMock ?

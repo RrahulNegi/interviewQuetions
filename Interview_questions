@@ -1,31 +1,45 @@
 Q1) Various State of Object in Hibernate ?
 
-Transient state: An object is in transient state if it just has been instantiated using the new operator and there is no reference of it in the database i.e it does not represent any row in the database.
+Transient state: An object is in transient state if it just has been instantiated using the new operator and there 
+is no reference of it in the database i.e it does not represent any row in the database.
 
-Persistent state: An object is in the persistent state if it has some reference in the database i.e it represent some row in the database and identifier value is assigned to it. If any changes are made to the object then hibernate will detect those changes and effects will be there in the database that is why the name Persistent. These changes are made when session is closed. A persistent object is in the session scope.
+Persistent state: An object is in the persistent state if it has some reference in the database i.e it represent some row in the database
+ and identifier value is assigned to it. If any changes are made to the object then hibernate will detect those changes and effects will be
+ there in the database that is why the name Persistent. These changes are made when session is closed. A persistent object is in the 
+ session scope.
 
-Detached state: An object that has been persistent and is no longer in the session scope. The hibernate will not detect any changes made to this object. It can be connected to the session again to make it persistent again.
+Detached state: An object that has been persistent and is no longer in the session scope. The hibernate will not detect any changes made to
+ this object. It can be connected to the session again to make it persistent again.
 
 Q2) How can we make detached object to persistent ?
 
-In this state, hibernate doesn't track the object but you can re-attach a detached object to Hibernate session by calling the update() or saveOrUpdate(), or merge() method. Once reattached, the detached object will move to Persistent state.
+In this state, hibernate doesn't track the object but you can re-attach a detached object to Hibernate session by calling the update() 
+or saveOrUpdate(), or merge() method. Once reattached, the detached object will move to Persistent state.
 
 Q3)Autowiring in spring and types of autowiring ?
-In Spring framework, declaring bean dependencies in configuration files is a good practice to follow, so the Spring container is able to autowire relationships between collaborating beans. This means that it is possible to automatically let Spring resolve collaborators (other beans) for your beans by inspecting the contents of the BeanFactory. This is called spring bean autowiring.
+In Spring framework, declaring bean dependencies in configuration files is a good practice to follow, so the Spring container is able to 
+autowire relationships between collaborating beans. This means that it is possible to automatically let Spring resolve collaborators
+ (other beans) for your beans by inspecting the contents of the BeanFactory. This is called spring bean autowiring.
 
 no
 This option is default for spring framework and it means that autowiring is OFF. You have to explicitly set the dependencies using <property> tags in bean definitions.
 
 byName
-This option enables the dependency injection based on bean names. When autowiring a property in bean, property name is used for searching a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, a error is raised.
+This option enables the dependency injection based on bean names. When autowiring a property in bean, property name is used for searching 
+a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, a error is 
+raised.
 
 
 byType
-This option enables the dependency injection based on bean types. When autowiring a property in bean, property’s class type is used for searching a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, a error is raised.
+This option enables the dependency injection based on bean types. When autowiring a property in bean, property’s class type is used for 
+searching a matching bean definition in configuration file. If such bean is found, it is injected in property. If no such bean is found, 
+a error is raised.
 
 
 constructor
-Autowiring by constructor is similar to byType, but applies to constructor arguments. In autowire enabled bean, it will look for class type of constructor arguments, and then do a autowire bytype on all constructor arguments. Please note that if there isn’t exactly one bean of the constructor argument type in the container, a fatal error is raised.
+Autowiring by constructor is similar to byType, but applies to constructor arguments. In autowire enabled bean, it will look for class 
+type of constructor arguments, and then do a autowire bytype on all constructor arguments. Please note that if there isn’t exactly one 
+bean of the constructor argument type in the container, a fatal error is raised.
 
 Q4)If two bean are of same type in case of autowiring, what will happen ?
 
@@ -94,26 +108,35 @@ public final class FinalClassExample {
 	}
 
 Q6) Composition vs Aggregation ?
-In both aggregation and composition object of one class "owns" object of another class. But there is a subtle difference: Aggregation implies a relationship where the child can exist independently of the parent. ... Composition implies a relationship where the child cannot exist independent of the parent.
+In both aggregation and composition object of one class "owns" object of another class. But there is a subtle difference: 
+Aggregation implies a relationship where the child can exist independently of the parent. ...
+ Composition implies a relationship where the child cannot exist independent of the parent.
 
 
 Q7) Encapculation vs Abstraction ?
-Encapsulate hides variables or some implementation that may be changed so often in a class to prevent outsiders access it directly. They must access it via getter and setter methods.
+Encapsulate hides variables or some implementation that may be changed so often in a class to prevent outsiders access it directly. 
+They must access it via getter and setter methods.
 
-Abstraction is used to hiding something too but in a higher degree(class, interface). Clients use an abstract class(or interface) do not care about who or which it was, they just need to know what it can do.
+Abstraction is used to hiding something too but in a higher degree(class, interface). Clients use an abstract class(or interface) do 
+not care about who or which it was, they just need to know what it can do.
 
 Abstraction solve problem in design level while encapsulation solve the problem in implementation level.
 
-Abstraction is used for hiding the unwanted data and giving relevant data. where as encapsulationmeans hiding the code and data into single unit to protect the data from outside world.
+Abstraction is used for hiding the unwanted data and giving relevant data. where as encapsulationmeans hiding the code and data into 
+single unit to protect the data from outside world.
 
-Abstraction lets you focus on what the object does insted of how it does it.while encapsulation means hiding the internal details of how an object does something;
+Abstraction lets you focus on what the object does insted of how it does it.while encapsulation means hiding the internal details of 
+how an object does something;
 
 	
 Q8) how GWT client intract with GWT Server ?
 
 Q9) Diffrence between factory and abstract factory design pattern ?
 
-Difference between Factory vs Abstract Factory pattern in JavaLet see another example of Abstract Factory and Factory design pattern in Java from JDK itself to get a better understanding. If you have done some XML work in Java e.g. reading XML files using DOM parser, you may be familiar with DocumentBuilderFactory  class which is an example abstract factory design pattern because it returns a factory called DocumentBuilder which then used to create Document.
+Difference between Factory vs Abstract Factory pattern in JavaLet see another example of Abstract Factory and Factory design pattern in 
+Java from JDK itself to get a better understanding. If you have done some XML work in Java e.g. reading XML files using DOM parser, you 
+may be familiar with DocumentBuilderFactory  class which is an example abstract factory design pattern because it returns a factory called
+ DocumentBuilder which then used to create Document.
 
 
 
@@ -127,17 +150,23 @@ In this example DocumentBuilderFactory (Abstract Factory) creates DocumentBuilde
 
 Let's see some more difference between Abstract Factory and Factory design pattern in Java in point form :
 
-1) One more difference between Abstract Factory and Factory design pattern is that AbstractFactory pattern uses composition to delegate responsibility of creating object to another class while Factory design pattern uses inheritance and relies on derived class or sub class to create object.
+1) One more difference between Abstract Factory and Factory design pattern is that AbstractFactory pattern uses composition to delegate 
+responsibility of creating object to another class while Factory design pattern uses inheritance and relies on derived class or sub class 
+to create object.
 
-2) Abstract Factory may use Factory design pattern for creating objects but they are not just limited to that they can also use Builder design pattern to build object by doing series of steps or Prototype pattern to build object by copying or customizing prototype of that object. It completely depends upon your implementation whether to use Factory pattern or Builder pattern for creating products.
+2) Abstract Factory may use Factory design pattern for creating objects but they are not just limited to that they can also use Builder 
+design pattern to build object by doing series of steps or Prototype pattern to build object by copying or customizing prototype of that 
+object. It completely depends upon your implementation whether to use Factory pattern or Builder pattern for creating products.
 
 
 When to use Abstract Factory and Factory method design pattern in Java
 Factory method design pattern are modern way of creating objects. It offers some notable advantages over new() operator to create Objects e.g. By using Factory method design pattern client is completely decoupled with object creation code, which enforces Encapsulation and result is loosely coupled and highly cohesive system. Any change e.g. a new product from Factory requires almost no change in existing clients. See When to use Factory method design pattern in Java for more scenarios. 
 
-On the other hand if you need an additional level of abstraction over your Factory pattern than Abstract Factory is the right design pattern to use. Abstract Factory allows you to use different Factory implementation for different purpose. 
+On the other hand if you need an additional level of abstraction over your Factory pattern than Abstract Factory is the right design
+ pattern to use. Abstract Factory allows you to use different Factory implementation for different purpose. 
 
-Abstract Factory pattern can be implemented using Factory method and Singleton design pattern in Java. One of the best example of Abstract Factory and Factory pattern in Java is DocumentBuilderFactory and DocumentBuilder javax.xml.parsers package.
+Abstract Factory pattern can be implemented using Factory method and Singleton design pattern in Java. One of the best example of 
+Abstract Factory and Factory pattern in Java is DocumentBuilderFactory and DocumentBuilder javax.xml.parsers package.
 
 
 Q) What is singelton and factory design pattern?
@@ -149,9 +178,11 @@ In case of sendRedirect request is transfer to another resource to different dom
 
 In case of forward Web container handle all process internally and client or browser is not involved.
 
-When you use SendRedirect container transfers the request to client or browser so url given inside the sendRedirect method is visible as a new request to the client.
+When you use SendRedirect container transfers the request to client or browser so url given inside the sendRedirect method is visible as a 
+new request to the client.
 
-When forward is called on requestdispather object we pass request and response object so our old request object is present on new resource which is going to process our request
+When forward is called on requestdispather object we pass request and response object so our old request object is present on new resource
+ which is going to process our request
 
 In case of SendRedirect call old request and response object is lost because it’s treated as new request by the browser.
 Visually we are not able to see the forwarded address, its is transparent
@@ -228,12 +259,15 @@ The ServletContext parameters are specified for an entire application outside of
 
 Q13) IOC?
 
-Inversion of Control is a principle in software engineering by which the control of objects or portions of a program is transferred to a container or framework. It's most often used in the context of object-oriented programming.
-By contrast with traditional programming, in which our custom code makes calls to a library, IoC enables a framework to take control of the flow of a program and make calls to our custom code. To enable this, frameworks use abstractions with additional behavior built in.
+Inversion of Control is a principle in software engineering by which the control of objects or portions of a program is transferred to a 
+container or framework. It's most often used in the context of object-oriented programming.
+By contrast with traditional programming, in which our custom code makes calls to a library, IoC enables a framework to take control of 
+the flow of a program and make calls to our custom code. To enable this, frameworks use abstractions with additional behavior built in.
 
 Dependency injection is a pattern through which to implement IoC, where the control being inverted is the setting of object's dependencies.
 
-The act of connecting objects with other objects, or “injecting” objects into other objects, is done by an assembler rather than by the objects themselves.
+The act of connecting objects with other objects, or “injecting” objects into other objects, is done by an assembler rather than by the 
+objects themselves.
 
 Q14) Joins?
 Here are the different types of the JOINs in SQL:
@@ -245,13 +279,16 @@ FULL (OUTER) JOIN: Returns all records when there is a match in either left or r
 
 Q15) Indexes?
 
-Indexing is a powerful structure in MySQL which can be leveraged to get the fastest response times from common queries. MySQL queries achieve efficiency by generating a smaller table, called an index, from a specified column or set of columns. These columns, called a key, can be used to enforce uniqueness
+Indexing is a powerful structure in MySQL which can be leveraged to get the fastest response times from common queries. 
+MySQL queries achieve efficiency by generating a smaller table, called an index, from a specified column or set of columns. These columns, called a key, can be used to enforce uniqueness
 
 CREATE UNIQUE INDEX index_name ON table_name ( column1, column2,...);
 
 Q16) Function vs Procedure ?
 
-Basic Differences between Stored Procedure and Function in SQL Server. The function must return a value but in Stored Procedure it is optional. Even a procedure can return zero or n values. Functions can have only input parameters for it whereas Procedures can have input or output parameters.Sep 15, 2012
+Basic Differences between Stored Procedure and Function in SQL Server. The function must return a value but in Stored Procedure it is optional.
+ Even a procedure can return zero or n values. Functions can have only input parameters for it whereas Procedures can have input or 
+ output parameters.Sep 15, 2012
 
 Functions can have only input parameters for it whereas Procedures can have input or output parameters.
 
@@ -275,22 +312,32 @@ We can use Transactions in Procedure whereas we can't use Transactions in Functi
 Q17) update vs merge?
 
 
-Hibernate handles persisting any changes to objects in the session when the session is flushed. update can fail if an instance of the object is already in the session. Merge should be used in that case. It merges the changes of the detached object with an object in the session, if it exists.
+Hibernate handles persisting any changes to objects in the session when the session is flushed. update can fail if an instance of the 
+object is already in the session. Merge should be used in that case. It merges the changes of the detached object with an object in the 
+session, if it exists.
 
-Update: if you are sure that the session does not contains an already persistent instance with the same identifier,then use update to save the data in hibernate
+Update: if you are sure that the session does not contains an already persistent instance with the same identifier,then use update to 
+save the data in hibernate
 
 Merge: if you want to save your modifications at any time with out knowing about the state of an session, then use merge() in hibernate
 
 Update: Suppose we are dealing with any employee object in the same session then we should use update() or saveOrUpdate() method.
 
-Update: if you are sure that the session does not contains an already persistent instance with the same identifier,then use update to save the data in hibernate
+Update: if you are sure that the session does not contains an already persistent instance with the same identifier,then use update to save 
+the data in hibernate
 
-Merge: Suppose we are creating a session and load an employee object. Now object in session cache. If we close the session at this point and we edit state of object and tried to save using update() it will throw exception. To make object persistent we need to open another session. Now we load same object again in current session. So if we want to update present object with previous object changes we have to use merge() method. Merge method will merge changes of both states of object and will save in database.
+Merge: Suppose we are creating a session and load an employee object. Now object in session cache. If we close the session at this point 
+and we edit state of object and tried to save using update() it will throw exception. To make object persistent we need to open another 
+session. Now we load same object again in current session. So if we want to update present object with previous object changes we have to 
+use merge() method. Merge method will merge changes of both states of object and will save in database.
 
 Q18) Internal working of hashset and hashmap ?
 
 Q19)Garbage collectors ?
-An object becomes eligible for Garbage collection or GC if it's not reachable from any live threads or by any static references. In other words, you can say that an object becomes eligible for garbage collection if all references are null. Cyclic dependencies are not counted as the reference so if object A has a reference to object B and object B has a reference to Object A and they don't have any other live reference then both Objects A and B will be eligible for Garbage collection.
+An object becomes eligible for Garbage collection or GC if it's not reachable from any live threads or by any static references. 
+In other words, you can say that an object becomes eligible for garbage collection if all references are null. Cyclic dependencies are 
+not counted as the reference so if object A has a reference to object B and object B has a reference to Object A and they don't have any 
+other live reference then both Objects A and B will be eligible for Garbage collection.
 
 Generally, an object becomes eligible for garbage collection in Java on the following cases:
 
@@ -550,7 +597,12 @@ For String manipulations in a non-multi threaded environment, we should use Stri
 
 Q22) What is hashcode ?
 
-The hashcode of a Java Object is simply a number, it is 32-bit signed int, that allows an object to be managed by a hash-based data structure. We know that hash code is an unique id number allocated to an object by JVM. But actually speaking, Hash code is not an unique number for an object. If two objects are equals then these two objects should return same hash code. So we have to implement hashcode() method of a class in such way that if two objects are equals, ie compared by equal() method of that class, then those two objects must return same hash code. If you are overriding hashCode you need to override equals method also.
+The hashcode of a Java Object is simply a number, it is 32-bit signed int, that allows an object to be managed by a hash-based data 
+structure. We know that hash code is an unique id number allocated to an object by JVM. But actually speaking,
+ Hash code is not an unique number for an object. If two objects are equals then these two objects should return same hash code.
+ So we have to implement hashcode() method of a class in such way that if two objects are equals, ie compared by equal() 
+ method of that class, then those two objects must return same hash code. If you are overriding hashCode you need to
+ override equals method also.
 
 Q23) Iterate hashmap in java ?
 
@@ -608,12 +660,24 @@ Q23) Iterate hashmap in java ?
 
 Q24) String litteral vs String using new ?
 
-Both expression gives you String object, but there is subtle difference between them. When you create String object using new() operator, it always create a new object in heap memory. On the other hand, if you create object using String literal syntax e.g. "Java", it may return an existing object from String pool (a cache of String object in Perm gen space, which is now moved to heap space in recent Java release), if it's already exists. Otherwise it will create a new string object and put in string pool for future re-use. In rest of this article, why it is one of the most important thing you should remember about String in Java.
+Both expression gives you String object, but there is subtle difference between them. When you create String object using new() operator,
+ it always create a new object in heap memory. On the other hand, if you create object using String literal syntax e.g. "Java", it may 
+ return an existing object from String pool (a cache of String object in Perm gen space, which is now moved to heap space in recent Java 
+ release), if it's already exists. Otherwise it will create a new string object and put in string pool for future re-use. In rest of this 
+ article, why it is one of the most important thing you should remember about String in Java.
 
 
 
 What is String literal and String Pool
-Since String is one of the most used type in any application, Java designer took a step further to optimize uses of this class. They know that Strings will not going to be cheap, and that's why they come up with an idea to cache all String instances created inside double quotes e.g. "Java". These double quoted literal is known as String literal and the cache which stored these String instances are known as as String pool. In earlier version of Java, I think up-to Java 1.6 String pool is located in permgen area of heap, but in Java 1.7 updates its moved to main heap area. Earlier since it was in PermGen space, it was always a risk to create too many String object, because its a very limited space, default size 64 MB and used to store class metadata e.g. .class files. Creating too many String literals can cause java.lang.OutOfMemory: permgen space. Now because String pool is moved to a much larger memory space, it's much more safe. By the way, don't misuse memory here, always try to minimize temporary String object e.g. "a", "b" and then "ab". Always use StringBuilder to deal with temporary String object.
+Since String is one of the most used type in any application, Java designer took a step further to optimize uses of this class. 
+They know that Strings will not going to be cheap, and that's why they come up with an idea to cache all String instances created 
+inside double quotes e.g. "Java". These double quoted literal is known as String literal and the cache which stored these String 
+instances are known as as String pool. In earlier version of Java, I think up-to Java 1.6 String pool is located in permgen area of
+ heap, but in Java 1.7 updates its moved to main heap area. Earlier since it was in PermGen space, it was always a risk to create too 
+ many String object, because its a very limited space, default size 64 MB and used to store class metadata e.g. .class files. Creating 
+ too many String literals can cause java.lang.OutOfMemory: permgen space. Now because String pool is moved to a much larger memory space, 
+ it's much more safe. By the way, don't misuse memory here, always try to minimize temporary String object e.g. "a", "b" and then "ab". 
+ Always use StringBuilder to deal with temporary String object.
 
 
 Difference between String literal and String object
@@ -647,7 +711,8 @@ That's all about this question, what is difference between String literal and St
 Q25) implements Singelton ?
 
 1. Eager initialization
-In eager initialization, the instance of Singleton Class is created at the time of class loading, this is the easiest method to create a singleton class but it has a drawback that instance is created even though client application might not be using it.
+In eager initialization, the instance of Singleton Class is created at the time of class loading, this is the easiest method to create a 
+singleton class but it has a drawback that instance is created even though client application might not be using it.
 
 Here is the implementation of the static initialization singleton class.
 
@@ -665,7 +730,9 @@ public class EagerInitializedSingleton {
         return instance;
     }
 }
-If your singleton class is not using a lot of resources, this is the approach to use. But in most of the scenarios, Singleton classes are created for resources such as File System, Database connections, etc. We should avoid the instantiation until unless client calls the getInstance method. Also, this method doesn’t provide any options for exception handling.
+If your singleton class is not using a lot of resources, this is the approach to use. But in most of the scenarios, Singleton classes are
+ created for resources such as File System, Database connections, etc. We should avoid the instantiation until unless client calls the 
+getInstance method. Also, this method doesn’t provide any options for exception handling.
 
 
 2. Static block initialization
@@ -693,7 +760,8 @@ public class StaticBlockSingleton {
         return instance;
     }
 }
-Both eager initialization and static block initialization creates the instance even before it’s being used and that is not the best practice to use. So in further sections, we will learn how to create a Singleton class that supports lazy initialization.
+Both eager initialization and static block initialization creates the instance even before it’s being used and that is not the best
+ practice to use. So in further sections, we will learn how to create a Singleton class that supports lazy initialization.
 
 Read: Java static
 
@@ -717,7 +785,10 @@ public class LazyInitializedSingleton {
         return instance;
     }
 }
-The above implementation works fine in case of the single-threaded environment but when it comes to multithreaded systems, it can cause issues if multiple threads are inside the if condition at the same time. It will destroy the singleton pattern and both threads will get the different instances of the singleton class. In next section, we will see different ways to create a thread-safe singleton class.
+The above implementation works fine in case of the single-threaded environment but when it comes to multithreaded systems, 
+it can cause issues if multiple threads are inside the if condition at the same time. It will destroy the singleton pattern and 
+both threads will get the different instances of the singleton class. In next section, we will see different ways to create a
+ thread-safe singleton class.
 
 
 4. Thread Safe Singleton
@@ -740,7 +811,10 @@ public class ThreadSafeSingleton {
     }
     
 }
-Above implementation works fine and provides thread-safety but it reduces the performance because of the cost associated with the synchronized method, although we need it only for the first few threads who might create the separate instances (Read: Java Synchronization). To avoid this extra overhead every time, double checked locking principle is used. In this approach, the synchronized block is used inside the if condition with an additional check to ensure that only one instance of a singleton class is created.
+Above implementation works fine and provides thread-safety but it reduces the performance because of the cost associated with the 
+synchronized method, although we need it only for the first few threads who might create the separate instances 
+(Read: Java Synchronization). To avoid this extra overhead every time, double checked locking principle is used.
+ In this approach, the synchronized block is used inside the if condition with an additional check to ensure that only one instance of a singleton class is created.
 
 The following code snippet provides the double-checked locking implementation.
 
@@ -759,7 +833,9 @@ Read: Thread Safe Singleton Class
 
 
 5. Bill Pugh Singleton Implementation
-Prior to Java 5, java memory model had a lot of issues and the above approaches used to fail in certain scenarios where too many threads try to get the instance of the Singleton class simultaneously. So Bill Pugh came up with a different approach to create the Singleton class using an inner static helper class. The Bill Pugh Singleton implementation goes like this;
+Prior to Java 5, java memory model had a lot of issues and the above approaches used to fail in certain scenarios where too many 
+threads try to get the instance of the Singleton class simultaneously. So Bill Pugh came up with a different approach to create the 
+Singleton class using an inner static helper class. The Bill Pugh Singleton implementation goes like this;
 
 
 package com.journaldev.singleton;
@@ -776,9 +852,12 @@ public class BillPughSingleton {
         return SingletonHelper.INSTANCE;
     }
 }
-Notice the private inner static class that contains the instance of the singleton class. When the singleton class is loaded, SingletonHelper class is not loaded into memory and only when someone calls the getInstance method, this class gets loaded and creates the Singleton class instance.
+Notice the private inner static class that contains the instance of the singleton class. When the singleton class is loaded, 
+SingletonHelper class is not loaded into memory and only when someone calls the getInstance method, this class gets loaded and creates 
+the Singleton class instance.
 
-This is the most widely used approach for Singleton class as it doesn’t require synchronization. I am using this approach in many of my projects and it’s easy to understand and implement also.
+This is the most widely used approach for Singleton class as it doesn’t require synchronization. I am using this approach in many of my
+ projects and it’s easy to understand and implement also.
 
 Read: Java Nested Classes
 
@@ -812,11 +891,14 @@ public class ReflectionSingletonTest {
     }
 
 }
-When you run the above test class, you will notice that hashCode of both the instances is not same that destroys the singleton pattern. Reflection is very powerful and used in a lot of frameworks like Spring and Hibernate, do check out Java Reflection Tutorial.
+When you run the above test class, you will notice that hashCode of both the instances is not same that destroys the singleton pattern. 
+Reflection is very powerful and used in a lot of frameworks like Spring and Hibernate, do check out Java Reflection Tutorial.
 
 
 7. Enum Singleton
-To overcome this situation with Reflection, Joshua Bloch suggests the use of Enum to implement Singleton design pattern as Java ensures that any enum value is instantiated only once in a Java program. Since Java Enum values are globally accessible, so is the singleton. The drawback is that the enum type is somewhat inflexible; for example, it does not allow lazy initialization.
+To overcome this situation with Reflection, Joshua Bloch suggests the use of Enum to implement Singleton design pattern as 
+Java ensures that any enum value is instantiated only once in a Java program. Since Java Enum values are globally accessible, so is the 
+singleton. The drawback is that the enum type is somewhat inflexible; for example, it does not allow lazy initialization.
 
 
 package com.journaldev.singleton;
@@ -833,7 +915,8 @@ Read: Java Enum
 
 
 8. Serialization and Singleton
-Sometimes in distributed systems, we need to implement Serializable interface in Singleton class so that we can store its state in the file system and retrieve it at a later point of time. Here is a small singleton class that implements Serializable interface also.
+Sometimes in distributed systems, we need to implement Serializable interface in Singleton class so that we can store its state in the 
+file system and retrieve it at a later point of time. Here is a small singleton class that implements Serializable interface also.
 
 
 package com.journaldev.singleton;
@@ -855,7 +938,8 @@ public class SerializedSingleton implements Serializable{
     }
     
 }
-The problem with serialized singleton class is that whenever we deserialize it, it will create a new instance of the class. Let’s see it with a simple program.
+The problem with serialized singleton class is that whenever we deserialize it, it will create a new instance of the class.
+ Let’s see it with a simple program.
 
 
 package com.journaldev.singleton;
@@ -905,7 +989,8 @@ protected Object readResolve() {
 Q26) Object has copy of refrence or value>?
 
 Object references are passed by value
-All object references in Java are passed by value. This means that a copy of the value will be passed to a method. But the trick is that passing a copy of the value also changes the real value of the object. To understand why, start with this example:
+All object references in Java are passed by value. This means that a copy of the value will be passed to a method. But the trick is that 
+passing a copy of the value also changes the real value of the object. To understand why, start with this example:
 
 
 public class ObjectReferenceExample {
@@ -928,13 +1013,16 @@ class Simpson {
 What do you think the simpson.name will be after the transformIntoHomer method is executed?
 
 [ Also on InfoWorld: What is Kotlin? The Java alternative explained ]
-In this case, it will be Homer! The reason is that Java object variables are simply references that point to real objects in the memory heap. Therefore, even though Java passes parameters to methods by value, if the variable points to an object reference, the real object will also be changed.
+In this case, it will be Homer! The reason is that Java object variables are simply references that point to real objects in the memory 
+heap. Therefore, even though Java passes parameters to methods by value, if the variable points to an object reference, the real object 
+will also be changed.
 
 If you’re still not quite clear how this works, take a look at the figure below.
 
 Flow diagram of object references in JavaRafael Chinelato Del Nero
 Are primitive types passed by value?
-Like object types, primitive types are also passed by value. Can you deduce what will happen to the primitive types in the following code example?
+Like object types, primitive types are also passed by value. Can you deduce what will happen to the primitive types in the following code 
+example?
 
 
 public class PrimitiveByValueExample {
@@ -949,15 +1037,85 @@ public class PrimitiveByValueExample {
     	    homerAge = 35;
 	}
 }
-If you determined that the value would change to 30, you are correct. It’s 30 because (again) Java passes object parameters by value. The number 30 is just a copy of the value, not the real value. Primitive types are allocated in the stack memory, so only the local value will be changed. In this case, there is no object reference.
+If you determined that the value would change to 30, you are correct. It’s 30 because (again) Java passes object parameters by value. 
+The number 30 is just a copy of the value, not the real value. Primitive types are allocated in the stack memory, so only the local 
+value will be changed. In this case, there is no object reference.
+
+Q) JDK vs JVM ?
+Differences between JDK, JRE and JVM
+
+Difficulty Level : Easy
+Last Updated : 03 Jun, 2022
+Java Development Kit (JDK) is a software development environment used for developing Java applications and applets. 
+It includes the Java Runtime Environment (JRE), an interpreter/loader (Java), a compiler (javac), an archiver (jar), a
+ documentation generator (Javadoc), and other tools needed in Java development. 
+
+Now we need an environment to make a run of our program. Henceforth, JRE stands for “Java Runtime Environment” and may also be written as “Java RTE.” The Java Runtime Environment provides the minimum requirements for executing a Java application; it consists of the Java Virtual Machine (JVM), core classes, and supporting files. 
+
+Now let us discuss JVM, which stands out for java virtual machine. It is as follows:
+
+A specification where the working of Java Virtual Machine is specified. But implementation provider is independent to choose the algorithm. Its implementation has been provided by Sun and other companies.
+An implementation is a computer program that meets the requirements of the JVM specification.
+Runtime Instance Whenever you write a java command on the command prompt to run the java class, an instance of JVM is created.
+Before proceeding to the differences between JDK, JRE, and JVM, let us discuss them in brief first and interrelate them with the image below being proposed.
 
 
+
+Don’t get confused as we are going to discuss all of them one by one.
+
+1. JDK (Java Development Kit) is a Kit that provides the environment to develop and execute(run) the Java program. 
+JDK is a kit(or package) that includes two things
+
+Development Tools(to provide an environment to develop your java programs)
+JRE (to execute your java program).
+ 
+2. JRE (Java Runtime Environment) is an installation package that provides an environment to only run(not develop) 
+the java program(or application)onto your machine. JRE is only used by those who only want to run Java programs that 
+are end-users of your system.
+ 
+
+3. JVM (Java Virtual Machine) is a very important part of both JDK and JRE because it is contained or inbuilt in both. 
+Whatever Java program you run using JRE or JDK goes into JVM and JVM is responsible for executing the java program line 
+by line, hence it is also known as an interpreter.
+
+Now let us discuss the components of JRE in order to understand its importance of it and perceive how it actually works. For this let us discuss components.
+
+The components of JRE are as follows:
+
+Deployment technologies, including deployment, Java Web Start, and Java Plug-in.
+User interface toolkits, including Abstract Window Toolkit (AWT), Swing, Java 2D, Accessibility, Image I/O, Print Service, Sound, drag, and drop (DnD), and input methods.
+Integration libraries, including Interface Definition Language (IDL), Java Database Connectivity (JDBC), Java Naming and Directory Interface (JNDI), Remote Method Invocation (RMI), Remote Method Invocation Over Internet Inter-Orb Protocol (RMI-IIOP), and scripting.
+Other base libraries, including international support, input/output (I/O), extension mechanism, Beans, Java Management Extensions (JMX), Java Native Interface (JNI), Math, Networking, Override Mechanism, Security, Serialization, and Java for XML Processing (XML JAXP).
+Lang and util base libraries, including lang and util, management, versioning, zip, instrument, reflection, Collections, Concurrency Utilities, Java Archive (JAR), Logging, Preferences API, Ref Objects, and Regular Expressions.
+Java Virtual Machine (JVM), including Java HotSpot Client and Server Virtual Machines.
+After having an adequate understanding of the components, now let us discuss the working of JRE. In order to understand how JRE works, let us consider an illustration below as follows:
+
+Illustration:
+
+Consider a java source file saved as ‘Example.java’. The file is compiled into a set of Byte Code that is stored in 
+a “.class” file. Here it will be “Example.class“. 
+
+Compile time
+
+Note: From above, media operation computing during the compile time can be interpreted.
+
+The following actions occur at runtime as listed below:
+
+Class Loader
+Byte Code Verifier
+Interpreter
+Execute the Byte Code
 Q27) Structure of JVM?
 
-Every Java developer knows that bytecode will be executed by the JRE (Java Runtime Environment). But many don't know the fact that JRE is the implementation of Java Virtual Machine (JVM), which analyzes the bytecode, interprets the code, and executes it. It is very important, as a developer, that we know the architecture of the JVM, as it enables us to write code more efficiently. In this article, we will learn more deeply about the JVM architecture in Java and different components of the JVM.
+Every Java developer knows that bytecode will be executed by the JRE (Java Runtime Environment). But many don't know the 
+fact that JRE is the implementation of Java Virtual Machine (JVM), which analyzes the bytecode, interprets the code, and executes it. It is very 
+important, as a developer, that we know the architecture of the JVM, as it enables us to write code more efficiently. In this article, 
+we will learn more deeply about the JVM architecture in Java and different components of the JVM.
 
 What Is the JVM?
-A Virtual Machine is a software implementation of a physical machine. Java was developed with the concept of WORA (Write Once Run Anywhere), which runs on a VM. The compiler compiles the Java file into a Java .class file, then that .class file is input into the JVM, which loads and executes the class file. Below is a diagram of the Architecture of the JVM.
+A Virtual Machine is a software implementation of a physical machine. Java was developed with the concept of WORA 
+(Write Once Run Anywhere), which runs on a VM. The compiler compiles the Java file into a Java .class file, then 
+that .class file is input into the JVM, which loads and executes the class file. Below is a diagram of the Architecture of the JVM.
 
 JVM Architecture Diagram
 JVM Architecture Diagram
@@ -968,40 +1126,70 @@ As shown in the above architecture diagram, the JVM is divided into three main s
 ClassLoader Subsystem
 Runtime Data Area
 Execution Engine
+
 1. ClassLoader Subsystem
-Java's dynamic class loading functionality is handled by the ClassLoader subsystem. It loads, links. and initializes the class file when it refers to a class for the first time at runtime, not compile time.
+Java's dynamic class loading functionality is handled by the ClassLoader subsystem. It loads, links. and initializes the class file
+ when it refers to a class for the first time at runtime, not compile time.
 
 1.1 Loading
-Classes will be loaded by this component. BootStrap ClassLoader, Extension ClassLoader, and Application ClassLoader are the three ClassLoaders that will help in achieving it.
+Classes will be loaded by this component. BootStrap ClassLoader, Extension ClassLoader, and Application ClassLoader are the three 
+ClassLoaders that will help in achieving it.
 
-BootStrap ClassLoader – Responsible for loading classes from the bootstrap classpath, nothing but rt.jar. Highest priority will be given to this loader.
+BootStrap ClassLoader – Responsible for loading classes from the bootstrap classpath, nothing but rt.jar. Highest priority will be given 
+to this loader.
+
 Extension ClassLoader – Responsible for loading classes which are inside the ext folder (jre\lib).
+
 Application ClassLoader –Responsible for loading Application Level Classpath, path mentioned Environment Variable, etc.
+
 The above ClassLoaders will follow Delegation Hierarchy Algorithm while loading the class files.
 
 1.2 Linking
-Verify – Bytecode verifier will verify whether the generated bytecode is proper or not if verification fails we will get the verification error.
+Verify – Bytecode verifier will verify whether the generated bytecode is proper or not if verification fails we will get the verification
+ error.
 Prepare – For all static variables memory will be allocated and assigned with default values.
+
 Resolve – All symbolic memory references are replaced with the original references from Method Area.
+
 1.3 Initialization
-This is the final phase of ClassLoading; here, all static variables will be assigned with the original values, and the static block will be executed.
+This is the final phase of ClassLoading; here, all static variables will be assigned with the original values, and the static block will 
+be executed.
 
 2. Runtime Data Area
 The Runtime Data Area is divided into five major components:
 
-Method Area – All the class-level data will be stored here, including static variables. There is only one method area per JVM, and it is a shared resource.
-Heap Area – All the Objects and their corresponding instance variables and arrays will be stored here. There is also one Heap Area per JVM. Since the Method and Heap areas share memory for multiple threads, the data stored is not thread-safe.
-Stack Area – For every thread, a separate runtime stack will be created. For every method call, one entry will be made in the stack memory which is called Stack Frame. All local variables will be created in the stack memory. The stack area is thread-safe since it is not a shared resource. The Stack Frame is divided into three subentities:
+Method Area – All the class-level data will be stored here, including static variables. There is only one method area per JVM, and it is a
+ shared resource.
+ 
+Heap Area – All the Objects and their corresponding instance variables and arrays will be stored here. There is also one Heap Area per JVM.
+ Since the Method and Heap areas share memory for multiple threads, the data stored is not thread-safe.
+ 
+Stack Area – For every thread, a separate runtime stack will be created. For every method call, one entry will be made in the stack memory 
+which is called Stack Frame. All local variables will be created in the stack memory. The stack area is thread-safe since it is not a 
+shared resource. The Stack Frame is divided into three subentities:
+
 Local Variable Array – Related to the method how many local variables are involved and the corresponding values will be stored here.
 Operand stack – If any intermediate operation is required to perform, operand stack acts as runtime workspace to perform the operation.
 Frame data – All symbols corresponding to the method is stored here. In the case of any exception, the catch block information will be maintained in the frame data.
-PC Registers – Each thread will have separate PC Registers, to hold the address of current executing instruction once the instruction is executed the PC register will be updated with the next instruction.
-Native Method stacks – Native Method Stack holds native method information. For every thread, a separate native method stack will be created.
-3. Execution Engine
-The bytecode, which is assigned to the Runtime Data Area, will be executed by the Execution Engine. The Execution Engine reads the bytecode and executes it piece by piece.
 
-Interpreter – The interpreter interprets the bytecode faster but executes slowly. The disadvantage of the interpreter is that when one method is called multiple times, every time a new interpretation is required.
-JIT Compiler – The JIT Compiler neutralizes the disadvantage of the interpreter. The Execution Engine will be using the help of the interpreter in converting byte code, but when it finds repeated code it uses the JIT compiler, which compiles the entire bytecode and changes it to native code. This native code will be used directly for repeated method calls, which improve the performance of the system.
+PC Registers – Each thread will have separate PC Registers, to hold the address of current executing instruction once the instruction is 
+executed the PC register will be updated with the next instruction.
+
+Native Method stacks – Native Method Stack holds native method information. For every thread, a separate native method stack will be 
+created.
+
+3. Execution Engine
+The bytecode, which is assigned to the Runtime Data Area, will be executed by the Execution Engine. The Execution Engine reads the 
+bytecode and executes it piece by piece.
+
+Interpreter – The interpreter interprets the bytecode faster but executes slowly. The disadvantage of the interpreter is that when one
+ method is called multiple times, every time a new interpretation is required.
+ 
+JIT Compiler – The JIT Compiler neutralizes the disadvantage of the interpreter. The Execution Engine will be using the help of the 
+interpreter in converting byte code, but when it finds repeated code it uses the JIT compiler, which compiles the entire bytecode and
+ changes it to native code. This native code will be used directly for repeated method calls, which improve the 
+ performance of the system.
+ 
 Intermediate Code Generator – Produces intermediate code
 Code Optimizer – Responsible for optimizing the intermediate code generated above
 Target Code Generator – Responsible for Generating Machine Code or Native Code
@@ -1023,7 +1211,8 @@ public class EmailNotUniqueException extends Exception {
 
 Q29) Throw vs Throws ?
 
-1. Throws clause is used to declare an exception, which means it works similar to the try-catch block. On the other hand throw keyword is used to throw an exception explicitly.
+1. Throws clause is used to declare an exception, which means it works similar to the try-catch block. On the other hand throw keyword 
+is used to throw an exception explicitly.
 
 2. If we see syntax wise than throw is followed by an instance of Exception class and throws is followed by exception class names.
 For example:
@@ -1077,7 +1266,10 @@ void myMethod() throws ArithmeticException, NullPointerException{
 
 Q30)Why we use searalization ?
 
-Serialization in Java allows us to convert an Object to stream that we can send over the network or save it as file or store in DB for later usage. Deserialization is the process of converting Object stream to actual Java Object to be used in our program. Serialization in Java seems very easy to use at first but it comes with some trivial security and integrity issues that we will look in the later part of this article. We will look into following topics in this tutorial.
+Serialization in Java allows us to convert an Object to stream that we can send over the network or save it as file or store in DB for 
+later usage. Deserialization is the process of converting Object stream to actual Java Object to be used in our program. Serialization 
+in Java seems very easy to use at first but it comes with some trivial security and integrity issues that we will look in the later part 
+of this article. We will look into following topics in this tutorial.
 
 Serializable in Java
 Class Refactoring with Serialization and serialVersionUID
@@ -1087,7 +1279,9 @@ Serialization with Inheritance
 Serialization Proxy Pattern
 
 Serializable in Java
-If you want a class object to be serializable, all you need to do it implement the java.io.Serializable interface. Serializable in java is a marker interface and has no fields or methods to implement. It’s like an Opt-In process through which we make our classes serializable.
+If you want a class object to be serializable, all you need to do it implement the java.io.Serializable interface. Serializable in java 
+is a marker interface and has no fields or methods to implement. It’s like an Opt-In process through which we make our classes 
+serializable.
 
 Serialization in java is implemented by ObjectInputStream and ObjectOutputStream, so all we need is a wrapper over them to either save it to file or send it over the network. Let’s see a simple Serialization in java program example.
 
@@ -1113,9 +1307,11 @@ public class Employee implements Serializable {
 	//getter and setter methods
 	
 }
-Notice that it’s a simple java bean with some properties and getter-setter methods. If you want an object property to be not serialized to stream, you can use transient keyword like I have done with salary variable.
+Notice that it’s a simple java bean with some properties and getter-setter methods. If you want an object property to be not 
+serialized to stream, you can use transient keyword like I have done with salary variable.
 
-Now suppose we want to write our objects to file and then deserialize it from the same file. So we need utility methods that will use ObjectInputStream and ObjectOutputStream for serialization purposes.
+Now suppose we want to write our objects to file and then deserialize it from the same file. So we need utility methods that will use 
+ObjectInputStream and ObjectOutputStream for serialization purposes.
 
 
 package com.journaldev.serialization;
@@ -1155,7 +1351,8 @@ public class SerializationUtil {
 	}
 
 }
-Notice that the method arguments work with Object that is the base class of any java object. It’s written in this way to be generic in nature.
+Notice that the method arguments work with Object that is the base class of any java object. It’s written in this way to be generic in 
+nature.
 
 Now let’s write a test program to see Java Serialization in action.
 
@@ -1200,13 +1397,16 @@ empNew Object::Employee{name=Pankaj,id=100,salary=0}
 Since salary is a transient variable, it’s value was not saved to file and hence not retrieved in the new object. Similarly static variable values are also not serialized since they belongs to class and not object.
 
 
-Class Refactoring with Serialization and serialVersionUID
-Serialization in java permits some changes in the java class if they can be ignored. Some of the changes in class that will not affect the deserialization process are:
+Class Refactoring with Serialization and serialVersionUID :
+
+Serialization in java permits some changes in the java class if they can be ignored. Some of the changes in class that will not affect 
+the deserialization process are:
 
 Adding new variables to the class
 Changing the variables from transient to non-transient, for serialization it’s like having a new field.
 Changing the variable from static to non-static, for serialization it’s like having a new field.
-But for all these changes to work, the java class should have serialVersionUID defined for the class. Let’s write a test class just for deserialization of the already serialized file from previous test class.
+But for all these changes to work, the java class should have serialVersionUID defined for the class. Let’s write a test class just for 
+deserialization of the already serialized file from previous test class.
 
 
 package com.journaldev.serialization;
@@ -1243,7 +1443,10 @@ java.io.InvalidClassException: com.journaldev.serialization.Employee; local clas
 	at com.journaldev.serialization.SerializationUtil.deserialize(SerializationUtil.java:22)
 	at com.journaldev.serialization.DeserializationTest.main(DeserializationTest.java:13)
 empNew Object::null
-The reason is clear that serialVersionUID of the previous class and new class are different. Actually if the class doesn’t define serialVersionUID, it’s getting calculated automatically and assigned to the class. Java uses class variables, methods, class name, package etc to generate this unique long number. If you are working with any IDE, you will automatically get a warning that “The serializable class Employee does not declare a static final serialVersionUID field of type long”.
+The reason is clear that serialVersionUID of the previous class and new class are different. Actually if the class doesn’t define 
+serialVersionUID, it’s getting calculated automatically and assigned to the class. Java uses class variables, methods, class name,
+ package etc to generate this unique long number. If you are working with any IDE, you will automatically get a warning that 
+ “The serializable class Employee does not declare a static final serialVersionUID field of type long”.
 
 We can use java utility “serialver” to generate the class serialVersionUID, for Employee class we can run it with below command.
 
@@ -1254,8 +1457,10 @@ Note that it’s not required that the serial version is generated from this pro
 For example, uncomment only the serialVersionUID field from the Employee class and run SerializationTest program. Now uncomment the password field from Employee class and run the DeserializationTest program and you will see that the object stream is deserialized successfully because the change in Employee class is compatible with serialization process.
 
 
-Java Externalizable Interface
-If you notice the java serialization process, it’s done automatically. Sometimes we want to obscure the object data to maintain it’s integrity. We can do this by implementing java.io.Externalizable interface and provide implementation of writeExternal() and readExternal() methods to be used in serialization process.
+Java Externalizable Interface :
+
+If you notice the java serialization process, it’s done automatically. Sometimes we want to obscure the object data to maintain it’s 
+integrity. We can do this by implementing java.io.Externalizable interface and provide implementation of writeExternal() and readExternal() methods to be used in serialization process.
 
 
 package com.journaldev.externalization;
@@ -1320,7 +1525,9 @@ public class Person implements Externalizable{
 	}
 
 }
-Notice that I have changed the field values before converting it to Stream and then while reading reversed the changes. In this way, we can maintain data integrity of some sorts. We can throw exception if after reading the stream data, the integrity checks fail. Let’s write a test program to see it in action.
+Notice that I have changed the field values before converting it to Stream and then while reading reversed the changes. In this way, 
+we can maintain data integrity of some sorts. We can throw exception if after reading the stream data, the integrity checks fail. 
+Let’s write a test program to see it in action.
 
 
 package com.journaldev.externalization;
@@ -1368,25 +1575,37 @@ When we run above program, we get following output.
 
 
 Person Object Read=Person{id=1,name=Pankaj,gender=Male}
-So which one is better to be used for serialization in java. Actually it’s better to use Serializable interface and by the time we reach at the end of article, you will know why.
+So which one is better to be used for serialization in java. Actually it’s better to use Serializable interface and by the time we reach 
+at the end of article, you will know why.
 
 
-Java Serialization Methods
-We have seen that serialization in java is automatic and all we need is implementing Serializable interface. The implementation is present in the ObjectInputStream and ObjectOutputStream classes. But what if we want to change the way we are saving data, for example we have some sensitive information in the object and before saving/retrieving we want to encrypt/decrypt it. That’s why there are four methods that we can provide in the class to change the serialization behavior.
+Java Serialization Methods :
+
+We have seen that serialization in java is automatic and all we need is implementing Serializable interface. The implementation is 
+present in the ObjectInputStream and ObjectOutputStream classes. But what if we want to change the way we are saving data, for example 
+we have some sensitive information in the object and before saving/retrieving we want to encrypt/decrypt it. That’s why there are 
+four methods that we can provide in the class to change the serialization behavior.
 
 If these methods are present in the class, they are used for serialization purposes.
 
-readObject(ObjectInputStream ois): If this method is present in the class, ObjectInputStream readObject() method will use this method for reading the object from stream.
+readObject(ObjectInputStream ois): If this method is present in the class, ObjectInputStream readObject() method will use this method for 
+reading the object from stream.
 writeObject(ObjectOutputStream oos): If this method is present in the class, ObjectOutputStream writeObject() method will use this method for writing the object to stream. One of the common usage is to obscure the object variables to maintain data integrity.
-Object writeReplace(): If this method is present, then after serialization process this method is called and the object returned is serialized to the stream.
-Object readResolve(): If this method is present, then after deserialization process, this method is called to return the final object to the caller program. One of the usage of this method is to implement Singleton pattern with Serialized classes. Read more at Serialization and Singleton.
+Object writeReplace(): If this method is present, then after serialization process this method is called and the object returned is 
+serialized to the stream.
+Object readResolve(): If this method is present, then after deserialization process, this method is called to return the final object to 
+the caller program. One of the usage of this method is to implement Singleton pattern with Serialized classes. 
+Read more at Serialization and Singleton.
 Usually while implementing above methods, it’s kept as private so that subclasses can’t override them. They are meant for serialization purpose only and keeping them private avoids any security issue.
 
 
-Serialization with Inheritance
-Sometimes we need to extend a class that doesn’t implement Serializable interface. If we rely on the automatic serialization behavior and the superclass has some state, then they will not be converted to stream and hence not retrieved later on.
+Serialization with Inheritance :
 
-This is one place, where readObject() and writeObject() methods really help. By providing their implementation, we can save the super class state to the stream and then retrieve it later on. Let’s see this in action.
+Sometimes we need to extend a class that doesn’t implement Serializable interface. If we rely on the automatic serialization behavior
+ and the superclass has some state, then they will not be converted to stream and hence not retrieved later on.
+
+This is one place, where readObject() and writeObject() methods really help. By providing their implementation, we can save the super 
+class state to the stream and then retrieve it later on. Let’s see this in action.
 
 
 package com.journaldev.serialization.inheritance;
@@ -1463,7 +1682,8 @@ public class SubClass extends SuperClass implements Serializable, ObjectInputVal
 		if(getId() <=0) throw new InvalidObjectException("ID can't be negative or zero");
 	}	
 }
-Notice that order of writing and reading the extra data to the stream should be same. We can put some logic in reading and writing data to make it secure.
+Notice that order of writing and reading the extra data to the stream should be same. We can put some logic in reading and writing 
+data to make it secure.
 
 Also notice that the class is implementing ObjectInputValidation interface. By implementing validateObject() method, we can put some business validations to make sure that the data integrity is not harmed.
 
@@ -1508,7 +1728,8 @@ SubClass read = SubClass{id=10,value=Data,name=Pankaj}
 So in this way, we can serialize super class state even though it’s not implementing Serializable interface. This strategy comes handy when the super class is a third-party class that we can’t change.
 
 
-Serialization Proxy Pattern
+Serialization Proxy Pattern :
+
 Serialization in java comes with some serious pitfalls such as;
 
 The class structure can’t be changed a lot without breaking the java serialization process. So even though we don’t need some variables later on, we need to keep them just for backward compatibility.

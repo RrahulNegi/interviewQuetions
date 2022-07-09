@@ -12,8 +12,11 @@ So these jar came from  :-
 
 
  While creating spring boot app we adding spring-boot-starter-jpa, spring-boot-starter-test etc
- So when is adding it its doing nothing just downloading all jar for certain type of project like standalone or web app. once we have a jar in the build path its internally it contains file like spring.factories  inside META-INF
- -META-INF/spring.factories  :- Inside this develpoer metion what component should be  enable or disable. So inside it their is some properties based on jar present, in built path it will enable or desable some component, like it will enable the jpa repository etc on based on some condition.
+ So when is adding it its doing nothing just downloading all jar for certain type of project like standalone or
+ web app. once we have a jar in the build path its internally it contains file like spring.factories  inside META-INF
+ -META-INF/spring.factories  :- Inside this develpoer metion what component should be  enable or disable. 
+ So inside it their is some properties based on jar present, in built path it will enable or 
+ desable some component, like it will enable the jpa repository etc on based on some condition.
  So they use :-
  @Conditional since spring 4 we got this annotation earlier we use profilers .
  
@@ -24,7 +27,11 @@ So these jar came from  :-
  we have :-
  spring-boot-starter-web, spring-boot-starter-data-jpa, spring-boot-starter-test
  
- Now if we will go to build path we have all jar related to above like spring-boot-starter-web in if we click on jar we have package and then we can go to META-INF folder we will observe thier is spring.factories we have many component enable or disable on condition basis. Lets go to JpaRepositoriesAutoConfiguration.java file here we can see we have annotation @ConditionalOnBean(DataSource.class) so if dataSource bean is available then only we can enable the jpa repository thats why we r adding data source related properties in our application.properties.
+ Now if we will go to build path we have all jar related to above like spring-boot-starter-web in if we click on 
+ jar we have package and then we can go to META-INF folder we will observe thier is spring.factories we have many 
+ component enable or disable on condition basis. Lets go to JpaRepositoriesAutoConfiguration.java file here we 
+ can see we have annotation @ConditionalOnBean(DataSource.class) so if dataSource bean is available then only 
+ we can enable the jpa repository thats why we r adding data source related properties in our application.properties.
  like :
  OnBeanCondition :-check if bean is their in springfactory
  OClassCondition : Check if class is on ClassPath
@@ -44,8 +51,10 @@ So these jar came from  :-
  
  if we go inside @SpringBootApplication we have all anotation as mention above
  - it has some properties like :
-1-exclude :- it will exclude particular class that will be not applied and if we dont want include bean in IOC condition we use exclude
-2 - ScanBasePackage and scanBasePackageClass :- if we want our package or bean will be scan by ioc container we can mention base package class or we can directly specify the root package
+1-exclude :- it will exclude particular class that will be not applied and if we dont want include bean in IOC 
+condition we use exclude
+2 - ScanBasePackage and scanBasePackageClass :- if we want our package or bean will be scan by ioc container we 
+can mention base package class or we can directly specify the root package
  
  Q)Whats is the need of Main Method?
  

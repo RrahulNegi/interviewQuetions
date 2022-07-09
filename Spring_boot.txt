@@ -19,10 +19,14 @@ mvn package
 2) Spring Boot - Build Systems
 
 -Dependency Management
-Spring Boot team provides a list of dependencies to support the Spring Boot version for its every release. You do not need to provide a version for dependencies in the build configuration file. Spring Boot automatically configures the dependencies version based on the release. Remember that when you upgrade the Spring Boot version, dependencies also will upgrade automatically.
+Spring Boot team provides a list of dependencies to support the Spring Boot version for its every release. You do not
+ need to provide a version for dependencies in the build configuration file. Spring Boot automatically 
+ configures the dependencies version based on the release. Remember that when you upgrade the Spring Boot version, 
+ dependencies also will upgrade automatically.
 
 -Maven Dependency
-For Maven configuration, we should inherit the Spring Boot Starter parent project to manage the Spring Boot Starters dependencies. For this, simply we can inherit the starter parent in our pom.xml file as shown below.
+For Maven configuration, we should inherit the Spring Boot Starter parent project to manage the Spring Boot Starters dependencies.
+ For this, simply we can inherit the starter parent in our pom.xml file as shown below.
 
 <parent>
    <groupId>org.springframework.boot</groupId>
@@ -30,7 +34,8 @@ For Maven configuration, we should inherit the Spring Boot Starter parent projec
    <version>1.5.8.RELEASE</version>
 </parent>
 
-We should specify the version number for Spring Boot Parent Starter dependency. Then for other starter dependencies, we do not need to specify the Spring Boot version number. Observe the code given below −
+We should specify the version number for Spring Boot Parent Starter dependency. Then for other starter dependencies,
+ we do not need to specify the Spring Boot version number. Observe the code given below −
 
 <dependencies>
    <dependency>
@@ -41,9 +46,11 @@ We should specify the version number for Spring Boot Parent Starter dependency. 
 
 3) Beans and Dependency Injection
 
--In Spring Boot, we can use Spring Framework to define our beans and their dependency injection. The @ComponentScan annotation is used to find beans and the corresponding injected with @Autowired annotation.
+-In Spring Boot, we can use Spring Framework to define our beans and their dependency injection.
+ The @ComponentScan annotation is used to find beans and the corresponding injected with @Autowired annotation.
 
-If you followed the Spring Boot typical layout, no need to specify any arguments for @ComponentScan annotation. All component class files are automatically registered with Spring Beans.
+If you followed the Spring Boot typical layout, no need to specify any arguments for @ComponentScan annotation. 
+All component class files are automatically registered with Spring Beans.
 @SpringBootApplication
 public class DemoApplication {
 @Autowired
@@ -59,7 +66,9 @@ public class DemoApplication {
    
 4)Spring Boot - Runners
 
-Application Runner and Command Line Runner interfaces lets you to execute the code after the Spring Boot application is started. You can use these interfaces to perform any actions immediately after the application has started. This chapter talks about them in detail.
+Application Runner and Command Line Runner interfaces lets you to execute the code after the Spring Boot application is started. 
+You can use these interfaces to perform any actions immediately after the application has started. 
+This chapter talks about them in detail.
 a) Application Runner-
 @SpringBootApplication
 public class DemoApplication implements ApplicationRunner {
@@ -86,13 +95,17 @@ public class DemoApplication implements CommandLineRunner {
 
 Diffrence between them :-
 
-Finally Both of them provides the same functionality and the only difference between CommandLineRunner and ApplicationRunner is CommandLineRunner. run() accepts String array[] whereas ApplicationRunner. run() accepts ApplicationArguments as argument.
+Finally Both of them provides the same functionality and the only difference between CommandLineRunner and ApplicationRunner is
+ CommandLineRunner. run() accepts String array[] whereas ApplicationRunner. run() accepts ApplicationArguments as argument.
 
 5)Spring Boot - Application Properties
 Application Properties support us to work in different environments.
 
 a)Command Line Properties
-Spring Boot application converts the command line properties into Spring Boot Environment properties. Command line properties take precedence over the other property sources. By default, Spring Boot uses the 8080 port number to start the Tomcat. Let us learn how change the port number by using command line properties.
+Spring Boot application converts the command line properties into Spring Boot Environment properties. 
+Command line properties take precedence over the other property sources. By default,
+ Spring Boot uses the 8080 port number to start the Tomcat. Let us learn how change the port number by using command line 
+ properties.
 
 Step 1 − After creating an executable JAR file, run it by using the command java –jar <JARFILE>.
 
@@ -109,7 +122,8 @@ spring.application.name = demoservice
 
 c) Externalized Properties-
 
-Instead of keeping the properties file under classpath, we can keep the properties in different location or path. While running the JAR file, we can specify the properties file path. You can use the following command to specify the location of properties file while running the JAR −
+Instead of keeping the properties file under classpath, we can keep the properties in different location or path.
+ While running the JAR file, we can specify the properties file path. You can use the following command to specify the location of properties file while running the JAR −
 
 -Dspring.config.location = C:\application.properties
 
@@ -148,9 +162,11 @@ Before sending the request to the controller
 
 Before sending the response to the client
 
-For example, you can use an interceptor to add the request header before sending the request to the controller and add the response header before sending the response to the client.
+For example, you can use an interceptor to add the request header before sending the request to the controller and add the 
+response header before sending the response to the client.
 
-To work with interceptor, you need to create @Component class that supports it and it should implement the HandlerInterceptor interface.
+To work with interceptor, you need to create @Component class that supports it and it should implement the 
+HandlerInterceptor interface.
 
 The following are the three methods you should know about while working on Interceptors −
 
@@ -194,7 +210,8 @@ public class ProductServiceInterceptorAppConfig extends WebMvcConfigurerAdapter 
 
 7) Spring Boot - Servlet Filter
 
-A filter is an object used to intercept the HTTP requests and responses of your application. By using filter, we can perform two operations at two instances −
+A filter is an object used to intercept the HTTP requests and responses of your application. By using filter, we can perform 
+two operations at two instances −
 
 Before sending the request to the controller
 Before sending a response to the client.

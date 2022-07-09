@@ -1,0 +1,409 @@
+Hibernate One To Many Mapping Example Annotation
+
+
+In simple terms, one to many mapping means that one row in a table can be mapped to multiple rows in another table. 
+For example, think of a Cart system where we have another table for Items. A cart can have multiple items, so here we
+ have one to many mapping. We will use Cart-Items scenario for our hibernate one to many mapping example.
+
+One To Many Mapping in Hibernate – Database Setup
+We can use foreign key constraint for one to many mapping. Below is our database script for Cart and Items table. I am using 
+MySQL database for Hibernate one to many mapping example.
+
+setup.sql
+
+
+CREATE TABLE `Cart` (
+  `cart_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `total` decimal(10,0) NOT NULL,
+  `name` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`cart_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `Items` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `cart_id` int(11) unsigned NOT NULL,
+  `item_id` varchar(10) NOT NULL,
+  `item_total` decimal(10,0) NOT NULL,
+  `quantity` int(3) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `cart_id` (`cart_id`),
+  CONSTRAINT `items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `Cart` (`cart_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+
+Hibernate One To Many Mapping Model Classes
+For our tables Cart and Items, we have model classes to reflect them.
+
+Cart.java
+
+Hibernate One To Many Mapping Model Classes
+For our tables Cart and Items, we have model classes to reflect them.
+
+Cart.java
+
+
+package com.journaldev.hibernate.model;
+
+import java.util.Set;
+
+public class Cart {
+
+	private long id;
+	private double total;
+	private String name;
+	private Set<Items> items;
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public double getTotal() {
+		return total;
+	}
+	public void setTotal(double total) {
+		this.total = total;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Set<Items> getItems() {
+		return items;
+	}
+	public void setItems(Set<Items> items) {
+		this.items = items;
+	}
+	
+}
+
+
+I am using Set of Items, so that every record is unique. We can also use List or Array for one to many mapping in hibernate.
+
+Items.java
+
+
+package com.journaldev.hibernate.model;
+
+public class Items {
+
+	private long id;
+	private String itemId;
+	private double itemTotal;
+	private int quantity;
+	private Cart cart;
+	
+	//Hibernate requires no-args constructor
+	public Items(){}
+	
+	public Items(String itemId, double total, int qty, Cart c){
+		this.itemId=itemId;
+		this.itemTotal=total;
+		this.quantity=qty;
+		this.cart=c;
+	}
+	public String getItemId() {
+		return itemId;
+	}
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+	public double getItemTotal() {
+		return itemTotal;
+	}
+	public void setItemTotal(double itemTotal) {
+		this.itemTotal = itemTotal;
+	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public Cart getCart() {
+		return cart;
+	}
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+}
+
+Hibernate SessionFactory Utility Class
+We have a utility class for creating Hibernate SessionFactory.
+
+HibernateUtil.java
+
+public class HibernateUtil {
+
+	private static SessionFactory sessionFactory;
+	
+	private static SessionFactory buildSessionFactory() {
+        try {
+            // Create the SessionFactory from hibernate.cfg.xml
+        	Configuration configuration = new Configuration();
+        	configuration.configure("hibernate.cfg.xml");
+        	System.out.println("Hibernate Configuration loaded");
+        	
+        	ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        	System.out.println("Hibernate serviceRegistry created");
+        	
+        	SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        	
+            return sessionFactory;
+        }
+        catch (Throwable ex) {
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+	
+	public static SessionFactory getSessionFactory() {
+		if(sessionFactory == null) sessionFactory = buildSessionFactory();
+        return sessionFactory;
+    }
+}
+
+
+Hibernate One To Many Mapping Example – XML Configuration
+This is the most important part of tutorial, let’s see how we have to map both Cart and Items classes for 
+one to many mapping in hibernate.
+
+cart.hbm.xml
+
+
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+	
+<hibernate-mapping package="com.journaldev.hibernate.model">
+	<class name="Cart" table="CART" >
+		<id name="id" type="long">
+			<column name="cart_id" />
+			<generator class="identity" />
+		</id>
+		<property name="total" type="double">
+			<column name="total" />
+		</property>
+		<property name="name" type="string">
+			<column name="name" />
+		</property>
+		<set name="items" table="ITEMS" fetch="select">
+			<key>
+				<column name="cart_id" not-null="true"></column>
+			</key>
+			<one-to-many class="Items"/>
+		</set>
+	</class>
+	
+</hibernate-mapping>
+
+
+The important part is the set element and one-to-many element inside it. Notice that we are providing key to be used for one to many mapping i.e cart_id.
+
+items.hbm.xml
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.journaldev.hibernate.model">
+
+	<class name="Items" table="ITEMS">
+		<id name="id" type="long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="itemId" type="string">
+			<column name="item_id"></column>
+		</property>
+		<property name="itemTotal" type="double">
+			<column name="item_total"></column>
+		</property>
+		<property name="quantity" type="integer">
+			<column name="quantity"></column>
+		</property>
+		
+		<many-to-one name="cart" class="Cart">
+			<column name="cart_id" not-null="true"></column>
+		</many-to-one>
+	</class>
+
+</hibernate-mapping>
+
+Notice that from items to cart, it’s many to one relationship. So we need to use many-to-one element for cart and we are 
+providing column name that will be mapped with the key. So based on the Cart hibernate mapping configuration, it’s key cart_id 
+will be used for mapping.
+
+
+Hibernate One To Many Mapping Example – Test Program
+HibernateOneToManyMain.java
+
+public class HibernateOneToManyMain {
+
+	public static void main(String[] args) {
+
+		Cart cart = new Cart();
+		cart.setName("MyCart");
+		
+		Items item1 = new Items("I1", 10, 1, cart);
+		Items item2 = new Items("I2", 20, 2, cart);
+		Set<Items> itemsSet = new HashSet<Items>();
+		itemsSet.add(item1); itemsSet.add(item2);
+		
+		cart.setItems(itemsSet);
+		cart.setTotal(10*1 + 20*2);
+		
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction tx = null;
+		try{
+		//Get Session
+		sessionFactory = HibernateUtil.getSessionFactory();
+		session = sessionFactory.getCurrentSession();
+		System.out.println("Session created");
+		//start transaction
+		tx = session.beginTransaction();
+		
+		//Save the Model objects
+		session.save(cart);
+		session.save(item1);
+		session.save(item2);
+		
+		//Commit transaction
+		tx.commit();
+		System.out.println("Cart ID="+cart.getId());
+		
+		}catch(Exception e){
+			System.out.println("Exception occured. "+e.getMessage());
+			e.printStackTrace();
+		}finally{
+			if(!sessionFactory.isClosed()){
+				System.out.println("Closing SessionFactory");
+				sessionFactory.close();
+			}
+		}
+	}
+
+}
+Notice that we need to save both Cart and Items objects one by one. Hibernate will take care of updating the foreign keys in 
+Items table. When we execute above program, we get following output.
+
+
+Hibernate Configuration loaded
+Hibernate serviceRegistry created
+Session created
+Hibernate: insert into CART (total, name) values (?, ?)
+Hibernate: insert into ITEMS (item_id, item_total, quantity, cart_id) values (?, ?, ?, ?)
+Hibernate: insert into ITEMS (item_id, item_total, quantity, cart_id) values (?, ?, ?, ?)
+Hibernate: update ITEMS set cart_id=? where id=?
+Hibernate: update ITEMS set cart_id=? where id=?
+Cart ID=6
+Closing SessionFactory
+
+
+Hibernate One To Many Mapping Annotation :
+
+Cart1.java
+
+
+package com.journaldev.hibernate.model;
+
+
+
+@Entity
+@Table(name="CART")
+public class Cart1 {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="cart_id")
+	private long id;
+	
+	@Column(name="total")
+	private double total;
+	
+	@Column(name="name")
+	private String name;
+	
+	@OneToMany(mappedBy="cart1")
+	private Set<Items1> items1;
+	
+// Getter Setter methods for properties
+}
+
+Important point to note is the OneToMany annotation where mappedBy variable is used to define the property in Items1 class that 
+will be used for the mapping purpose. So we should have a property named “cart1” in Items1 class. Don’t forget to include all the 
+getter-setter methods.
+
+Items1.java
+
+
+package com.journaldev.hibernate.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ITEMS")
+public class Items1 {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id")
+	private long id;
+	
+	@Column(name="item_id")
+	private String itemId;
+	
+	@Column(name="item_total")
+	private double itemTotal;
+	
+	@Column(name="quantity")
+	private int quantity;
+	
+	@ManyToOne
+	@JoinColumn(name="cart_id", nullable=false)
+	private Cart1 cart1;
+	
+	//Hibernate requires no-args constructor
+	public Items1(){}
+	
+	public Items1(String itemId, double total, int qty, Cart1 c){
+		this.itemId=itemId;
+		this.itemTotal=total;
+		this.quantity=qty;
+		this.cart1=c;
+	}
+//Getter Setter methods
+}
+Most important point in above class is the ManyToOne annotation on Cart1 class variable and JoinColumn annotation to provide the 
+column name for mapping.
+
+That’s it for one to many mapping in hibernate using annotation in model classes. Compare it with XML based configurations, you will 
+find them very similar.
+
+
+
+
+
+
+
+

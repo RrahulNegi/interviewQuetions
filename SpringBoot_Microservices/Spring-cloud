@@ -1,6 +1,7 @@
 Spring cloud framework
 
--Tools for devlopwers to quickley build some of common pattern in distributed ststem like configuration managment, service discovery,circuit breakres,intelligent routing, micro-proxy etc. 
+-Tools for devlopwers to quickley build some of common pattern in distributed ststem like configuration managment, 
+service discovery,circuit breakres,intelligent routing, micro-proxy etc. 
 features:-
 1)Spring cloud config server :- We can put all configuration relatd info in this common place and this also provide basic security etc.
 

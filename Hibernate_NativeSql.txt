@@ -1,0 +1,151 @@
+Hibernate Native SQL Query Example
+
+
+Hibernate provide option to execute native SQL queries through the use of SQLQuery object. Hibernate SQL Query is very handy when we 
+have to execute database vendor specific queries that are not supported by Hibernate API. For example query hints or the CONNECT 
+keyword in Oracle Database.
+
+For normal scenarios, Hibernate SQL query is not the recommended approach because we loose benefits related to hibernate association 
+and hibernate first level cache.
+
+I will use MySQL database and same tables and data setup as used in HQL example, so you should check out that first to understand the 
+tables and corresponding model classes mapping.
+
+Hibernate Native SQL Example
+
+For Hibernate Native SQL Query, we use Session.createSQLQuery(String query) to create the SQLQuery object and execute it. 
+For example, if you want to read all the records from Employee table, we can do it through below code
+
+
+// Prep work
+SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+Session session = sessionFactory.getCurrentSession();
+
+// Get All Employees
+Transaction tx = session.beginTransaction();
+SQLQuery query = session.createSQLQuery("select emp_id, emp_name, emp_salary from Employee");
+List<Object[]> rows = query.list();
+for(Object[] row : rows){
+	Employee emp = new Employee();
+	emp.setId(Long.parseLong(row[0].toString()));
+	emp.setName(row[1].toString());
+	emp.setSalary(Double.parseDouble(row[2].toString()));
+	System.out.println(emp);
+}
+
+
+Hibernate: select emp_id, emp_name, emp_salary from Employee
+Id= 1, Name= Pankaj, Salary= 100.0, {Address= null}
+Id= 2, Name= David, Salary= 200.0, {Address= null}
+Id= 3, Name= Lisa, Salary= 300.0, {Address= null}
+Id= 4, Name= Jack, Salary= 400.0, {Address= null}
+Notice that list() method returns the List of Object array, we need to explicitly parse them to double, long etc. Our Employee and Address classes have following toString() method implementations.
+
+
+@Override
+public String toString() {
+	return "Id= " + id + ", Name= " + name + ", Salary= " + salary
+			+ ", {Address= " + address + "}";
+}
+
+@Override
+public String toString() {
+	return "AddressLine1= " + addressLine1 + ", City=" + city
+			+ ", Zipcode=" + zipcode;
+}
+Notice that our query is not returning Address data, whereas if we use HQL query "from Employee", it returns the associated table 
+data too.
+
+Hibernate SQL Query addScalar
+Hibernate uses ResultSetMetadata to deduce the type of the columns returned by the query, from performance point of view we can use 
+addScalar() method to define the data type of the column. However we would still get the data in form of Object array.
+
+
+//Get All Employees - addScalar example
+query = session.createSQLQuery("select emp_id, emp_name, emp_salary from Employee")
+		.addScalar("emp_id", new LongType())
+		.addScalar("emp_name", new StringType())
+		.addScalar("emp_salary", new DoubleType());
+rows = query.list();
+for(Object[] row : rows){
+	Employee emp = new Employee();
+	emp.setId(Long.parseLong(row[0].toString()));
+	emp.setName(row[1].toString());
+	emp.setSalary(Double.parseDouble(row[2].toString()));
+	System.out.println(emp);
+}
+The output generated will be same, however we will see slight performance improvement when the data is huge.
+
+Hibernate Native SQL Multiple Tables
+If we would like to get data from both Employee and Address tables, we can simply write the SQL query for that and parse the result set.
+
+
+
+query = session.createSQLQuery("select e.emp_id, emp_name, emp_salary,address_line1, city, 
+	zipcode from Employee e, Address a where a.emp_id=e.emp_id");
+rows = query.list();
+for(Object[] row : rows){
+	Employee emp = new Employee();
+	emp.setId(Long.parseLong(row[0].toString()));
+	emp.setName(row[1].toString());
+	emp.setSalary(Double.parseDouble(row[2].toString()));
+	Address address = new Address();
+	address.setAddressLine1(row[3].toString());
+	address.setCity(row[4].toString());
+	address.setZipcode(row[5].toString());
+	emp.setAddress(address);
+	System.out.println(emp);
+}
+For above code, the output produced will be like below.
+
+
+Hibernate: select e.emp_id, emp_name, emp_salary,address_line1, city, zipcode from Employee e, Address a where a.emp_id=e.emp_id
+Id= 1, Name= Pankaj, Salary= 100.0, {Address= AddressLine1= Albany Dr, City=San Jose, Zipcode=95129}
+Id= 2, Name= David, Salary= 200.0, {Address= AddressLine1= Arques Ave, City=Santa Clara, Zipcode=95051}
+Id= 3, Name= Lisa, Salary= 300.0, {Address= AddressLine1= BTM 1st Stage, City=Bangalore, Zipcode=560100}
+Id= 4, Name= Jack, Salary= 400.0, {Address= AddressLine1= City Centre, City=New Delhi, Zipcode=100100}
+Hibernate Native SQL Entity and Join
+We can also use addEntity() and addJoin() methods to fetch the data from associated table using tables join. For example, above data can also be retrieved as below.
+
+
+//Join example with addEntity and addJoin
+query = session.createSQLQuery("select {e.*}, {a.*} from Employee e join Address a ON e.emp_id=a.emp_id")
+		.addEntity("e",Employee.class)
+		.addJoin("a","e.address");
+rows = query.list();
+for (Object[] row : rows) {
+    for(Object obj : row) {
+    	System.out.print(obj + "::");
+    }
+    System.out.println("\n");
+}
+//Above join returns both Employee and Address Objects in the array
+for (Object[] row : rows) {
+	Employee e = (Employee) row[0];
+	System.out.println("Employee Info::"+e);
+	Address a = (Address) row[1];
+	System.out.println("Address Info::"+a);
+}
+{[aliasname].*} is used to return all properties of an entity. When we use addEntity() and addJoin() with join queries like above it returns both the objects, as shown above.
+
+Output produced by above code is like below.
+
+
+Hibernate: select e.emp_id as emp_id1_1_0_, e.emp_name as emp_name2_1_0_, e.emp_salary as emp_sala3_1_0_, a.emp_id as emp_id1_0_1_, a.address_line1 as address_2_0_1_, a.city as city3_0_1_, a.zipcode as zipcode4_0_1_ from Employee e join Address a ON e.emp_id=a.emp_id
+Id= 1, Name= Pankaj, Salary= 100.0, {Address= AddressLine1= Albany Dr, City=San Jose, Zipcode=95129}::AddressLine1= Albany Dr, City=San Jose, Zipcode=95129::
+
+Id= 2, Name= David, Salary= 200.0, {Address= AddressLine1= Arques Ave, City=Santa Clara, Zipcode=95051}::AddressLine1= Arques Ave, City=Santa Clara, Zipcode=95051::
+
+Id= 3, Name= Lisa, Salary= 300.0, {Address= AddressLine1= BTM 1st Stage, City=Bangalore, Zipcode=560100}::AddressLine1= BTM 1st Stage, City=Bangalore, Zipcode=560100::
+
+Id= 4, Name= Jack, Salary= 400.0, {Address= AddressLine1= City Centre, City=New Delhi, Zipcode=100100}::AddressLine1= City Centre, City=New Delhi, Zipcode=100100::
+
+Employee Info::Id= 1, Name= Pankaj, Salary= 100.0, {Address= AddressLine1= Albany Dr, City=San Jose, Zipcode=95129}
+Address Info::AddressLine1= Albany Dr, City=San Jose, Zipcode=95129
+Employee Info::Id= 2, Name= David, Salary= 200.0, {Address= AddressLine1= Arques Ave, City=Santa Clara, Zipcode=95051}
+Address Info::AddressLine1= Arques Ave, City=Santa Clara, Zipcode=95051
+Employee Info::Id= 3, Name= Lisa, Salary= 300.0, {Address= AddressLine1= BTM 1st Stage, City=Bangalore, Zipcode=560100}
+Address Info::AddressLine1= BTM 1st Stage, City=Bangalore, Zipcode=560100
+Employee Info::Id= 4, Name= Jack, Salary= 400.0, {Address= AddressLine1= City Centre, City=New Delhi, Zipcode=100100}
+Address Info::AddressLine1= City Centre, City=New Delhi, Zipcode=100100
+You can run both the queries in the mysql client and notice that the output produced is same.

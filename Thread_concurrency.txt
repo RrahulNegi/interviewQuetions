@@ -1,12 +1,22 @@
 1) Java ThreadLocal
 
-Java ThreadLocal is used to create thread local variables. We know that all threads of an Object share it’s variables, so the variable is not thread safe. We can use synchronization for thread safety but if we want to avoid synchronization, we can use ThreadLocal variables.
-Every thread has it’s own ThreadLocal variable and they can use it’s get() and set() methods to get the default value or change it’s value local to Thread.
+Java ThreadLocal is used to create thread local variables. We know that all threads of an Object share it’s variables, so the
+ variable is not thread safe. We can use synchronization for thread safety but if we want to avoid synchronization, we can use 
+ ThreadLocal variables.
+Every thread has it’s own ThreadLocal variable and they can use it’s get() and set() methods to get the default value or change
+ it’s value local to Thread.
 
 When to use ThreadLocal?
-For example, consider you are working on a eCommerce application. You have a requirement to generate a unique transaction id for each and every customer request this controller process and you need to pass this transaction id to the business methods in manager/DAO classes for logging purpose. One solution could be passing this transaction id as a parameter to all the business methods. But this is not a good solution as the code is redundant and unnecessary.
+For example, consider you are working on a eCommerce application. You have a requirement to generate a unique transaction id '
+for each and every customer request this controller process and you need to pass this transaction id to the business methods 
+in manager/DAO classes for logging purpose. One solution could be passing this transaction id as a parameter to all the business
+methods. But this is not a good solution as the code is redundant and unnecessary.
 
-To solve that, here you can use ThreadLocal variable. You can generate a transaction id in controller OR any pre-processor interceptor; and set this transaction id in the ThreadLocal. After this, whatever the methods, that this controller calls, they all can access this transaction id from the threadlocal. Also note that application controller will be servicing more that one request at a time and since each request is processed in separate thread at framework level, the transaction id will be unique to each thread and will be accessible from all over the thread’s execution path.
+To solve that, here you can use ThreadLocal variable. You can generate a transaction id in controller OR any pre-processor 
+interceptor; and set this transaction id in the ThreadLocal. After this, whatever the methods, that this controller calls,
+they all can access this transaction id from the threadlocal. Also note that application controller will be servicing more that 
+one request at a time and since each request is processed in separate thread at framework level, the transaction id will 
+be unique to each thread and will be accessible from all over the thread’s execution path.
 This class has following methods:
 
 get() : Returns the value in the current thread’s copy of this thread-local variable.
@@ -16,11 +26,15 @@ set(T value) : Sets the current thread’s copy of this thread-local variable to
 
 
 2) ThreadPoolExecutor 
-Java thread pool manages the pool of worker threads. It contains a queue that keeps tasks waiting to get executed. We can use ThreadPoolExecutor to create thread pool in Java.
+Java thread pool manages the pool of worker threads. It contains a queue that keeps tasks waiting to get executed. 
+We can use ThreadPoolExecutor to create thread pool in Java.
 
-Java thread pool manages the collection of Runnable threads. The worker threads execute Runnable threads from the queue. java.util.concurrent.Executors provide factory and support methods for java.util.concurrent.Executor interface to create the thread pool in java.
+Java thread pool manages the collection of Runnable threads. The worker threads execute Runnable threads from the queue. 
+java.util.concurrent.Executors provide factory and support methods for java.util.concurrent.Executor interface to create the 
+thread pool in java.
 
-Executors is a utility class that also provides useful methods to work with ExecutorService, ScheduledExecutorService, ThreadFactory, and Callable classes through various factory methods.
+Executors is a utility class that also provides useful methods to work with ExecutorService, ScheduledExecutorService, 
+ThreadFactory, and Callable classes through various factory methods.
 Let’s write a simple program to explain it’s working.
 
 First, we need to have a Runnable class, named WorkerThread.java
@@ -28,11 +42,15 @@ First, we need to have a Runnable class, named WorkerThread.java
 Types of Thred pool :
 there are various thread pools in java:
 
-Single Thread Executor : A thread pool with only one thread. So all the submitted tasks will be executed sequentially. Method : Executors.newSingleThreadExecutor()
+Single Thread Executor : A thread pool with only one thread. So all the submitted tasks will be executed sequentially. 
+Method : Executors.newSingleThreadExecutor()
 
-Cached Thread Pool : A thread pool that creates as many threads it needs to execute the task in parrallel. The old available threads will be reused for the new tasks. If a thread is not used during 60 seconds, it will be terminated and removed from the pool. Method : Executors.newCachedThreadPool()
+Cached Thread Pool : A thread pool that creates as many threads it needs to execute the task in parrallel. 
+The old available threads will be reused for the new tasks. If a thread is not used during 60 seconds, it will be 
+terminated and removed from the pool. Method : Executors.newCachedThreadPool()
 
-Fixed Thread Pool : A thread pool with a fixed number of threads. If a thread is not available for the task, the task is put in queue waiting for an other task to ends. Method : Executors.newFixedThreadPool()
+Fixed Thread Pool : A thread pool with a fixed number of threads. If a thread is not available for the task, the task is put in 
+queue waiting for an other task to ends. Method : Executors.newFixedThreadPool()
 
 Scheduled Thread Pool : A thread pool made to schedule future task. Method : Executors.newScheduledThreadPool()
 
@@ -42,18 +60,35 @@ Single Thread Scheduled Pool : A thread pool with only one thread to schedule fu
 Thread Scheduler is the Operating System service that allocates the CPU time to the available runnable threads. Once we create and start a thread, it’s execution depends on the implementation of Thread Scheduler. Time Slicing is the process to divide the available CPU time to the available runnable threads. Allocation of CPU time to threads can be based on thread priority or the thread waiting for longer time will get more priority in getting CPU time. Thread scheduling can’t be controlled by java, so it’s always better to control it from application itself.
 
 4)Why thread communication methods wait(), notify() and notifyAll() are in Object class?
-In Java every Object has a monitor and wait, notify methods are used to wait for the Object monitor or to notify other threads that Object monitor is free now. There is no monitor on threads in java and synchronization can be used with any Object, that’s why it’s part of Object class so that every class in java has these essential methods for inter thread communication.
+In Java every Object has a monitor and wait, notify methods are used to wait for the Object monitor or to notify other threads 
+that Object monitor is free now. There is no monitor on threads in java and synchronization can be used with any Object, 
+that’s why it’s part of Object class so that every class in java has these essential methods for inter thread communication.
 
 5) CyclicBarrier
 
-Now we know what is CyclicBarrier in Java and it's time to see an example of CyclicBarrier in Java. Here is a simple example of CyclicBarrier in Java on which we initialize CyclicBarrier with 3 parties, means in order to cross barrier, 3 thread needs to call await() method. each thread calls await method in short duration but they don't proceed until all 3 threads reached the barrier, once all thread reach the barrier, barrier gets broker and each thread started their execution from that point. Its much clear with the output of following example of CyclicBarrier in Java:
+Now we know what is CyclicBarrier in Java and it's time to see an example of CyclicBarrier in Java. Here is a simple example of 
+CyclicBarrier in Java on which we initialize CyclicBarrier with 3 parties, means in order to cross barrier, 3 thread needs to 
+call await() method. each thread calls await method in short duration but they don't proceed until all 3 threads reached the 
+barrier, once all thread reach the barrier, barrier gets broker and each thread started their execution from that point.
+ Its much clear with the output of following example of CyclicBarrier in Java:
 
 
 6) Semaphore 	
-Counting Semaphore in Java maintains specified number of pass or permits, In order to access a shared resource, Current Thread must acquire a permit. If permit is already exhausted by other thread than it can wait until a permit is available due to release of permit from different thread. This concurrency utility can be very useful to implement producer consumer design pattern or implement bounded pool or resources like Thread Pool, DB Connection pool etc. java.util.Semaphore class represent a Counting semaphore which is initialized with number of permits. Semaphore provides two main method acquire() and release() for getting permits and releasing permits. acquire() method blocks until permit is available. Semaphore provides both blocking method as well as unblocking method to acquire permits. This Java concurrency tutorial focus on a very simple example of Binary Semaphore and demonstrate how mutual exclusion can be achieved using Semaphore in Java.
+Counting Semaphore in Java maintains specified number of pass or permits, In order to access a shared resource, 
+Current Thread must acquire a permit. If permit is already exhausted by other thread than it can wait until a permit is
+ available due to release of permit from different thread. This concurrency utility can be very useful to implement producer
+ consumer design pattern or implement bounded pool or resources like Thread Pool, DB Connection pool etc. java.util.Semaphore 
+ class represent a Counting semaphore which is initialized with number of permits. Semaphore provides two main method acquire()
+ and release() for getting permits and releasing permits. acquire() method blocks until permit is available. Semaphore provides
+ both blocking method as well as unblocking method to acquire permits. This Java concurrency tutorial focus on a very simple 
+ example of Binary Semaphore and demonstrate how mutual exclusion can be achieved using Semaphore in Java.
 
 7)BlockingQueue
-BlockingQueue amazingly simplifies implementation of Producer-Consumer design pattern by providing outofbox support of blocking on put() and take(). Developer doesn't need to write confusing and critical piece of wait-notify code to implement communication. BlockingQuue is an interface and Java 5 provides different implantation like ArrayBlockingQueue and LinkedBlockingQueue , both implement FIFO order or elements, while ArrayLinkedQueue is bounded in nature LinkedBlockingQueue is optionally bounded. here is a complete code example of Producer Consumer pattern with BlockingQueue. Compare it with classic wait notify code, its much simpler and easy to understand.
+BlockingQueue amazingly simplifies implementation of Producer-Consumer design pattern by providing outofbox support of blocking 
+on put() and take(). Developer doesn't need to write confusing and critical piece of wait-notify code to implement communication.
+ BlockingQuue is an interface and Java 5 provides different implantation like ArrayBlockingQueue and LinkedBlockingQueue , 
+ both implement FIFO order or elements, while ArrayLinkedQueue is bounded in nature LinkedBlockingQueue is optionally bounded.
+ here is a complete code example of Producer Consumer pattern with BlockingQueue. Compare it with classic wait notify code, its much simpler and easy to understand.
 
 8)CountDownLatch
 CountDownLatch in Java is a kind of synchronizer which allows one Thread  to wait for one or more Threads before starts processing. This is very crucial requirement and often needed in server side core Java application and having this functionality built-in as CountDownLatch greatly simplifies the development. CountDownLatch in Java is introduced on Java 5 

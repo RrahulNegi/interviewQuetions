@@ -1,7 +1,8 @@
 Spring cloud : -
 
 1) What is Spring Cloud?
-Spring Cloud is a framework for building robust cloud applications. Spring Cloud provides a solution to the commonly encountered patterns when developing a distributed system.
+Spring Cloud is a framework for building robust cloud applications. Spring Cloud provides a solution to the commonly encountered
+ patterns when developing a distributed system.
 
 2) Features of Spring Cloud
 
@@ -9,11 +10,14 @@ Spring Cloud is a framework for building robust cloud applications. Spring Cloud
 When building a microservices on Spring Cloud, there is a primary concern to deal with the first two primary microservices: configuration service and the discovery service.
 
 Features of Spring Cloud
-The above figure represents the set of four microservices. The connection between each service indicates dependency. All services are dependent on each other. The configuration service lies at the top, and the discovery services at the bottom. There are two microservices in-between which are Recommendation Service and Movie Service.
+The above figure represents the set of four microservices. The connection between each service indicates dependency. All services are 
+dependent on each other. The configuration service lies at the top, and the discovery services at the bottom. 
+There are two microservices in-between which are Recommendation Service and Movie Service.
 
 
 - Service-to-Service calls
-It is the process of "how a microservice communicates with other dependent microservices via service registry or Eureka server." There is a sequence which follows in the service-to-service call.
+It is the process of "how a microservice communicates with other dependent microservices via service registry or Eureka server." 
+There is a sequence which follows in the service-to-service call.
 
 Registering the service
 Fetching the Registry

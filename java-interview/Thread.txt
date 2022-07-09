@@ -1,7 +1,8 @@
 -)Concurrency vs. Parallelism
 
 Concurrency means multiple tasks which start, run, and complete in overlapping time periods, in no specific order. 
-Parallelism is when multiple tasks OR several part of a unique task literally run at the same time, e.g. on a multi-core processor. Remember that Concurrency and parallelism are NOT the same thing.
+Parallelism is when multiple tasks OR several part of a unique task literally run at the same time, e.g. on a 
+multi-core processor. Remember that Concurrency and parallelism are NOT the same thing.
 
 Concurrency
 Concurrency is essentially applicable when we talk about minimum two tasks or more. When an application is capable of executing two tasks virtually 
@@ -13,12 +14,14 @@ Parallelism
 Parallelism does not require two tasks to exist. It literally physically run parts of tasks OR multiple tasks, at the same time using multi-core 
 infrastructure of CPU, by assigning one core to each task or sub-task.
 
-Parallelism requires hardware with multiple processing units, essentially. In single core CPU, you may get concurrency but NOT parallelism.
+Parallelism requires hardware with multiple processing units, essentially. In single core CPU, you may get 
+concurrency but NOT parallelism.
 
 -)1. Object level lock in Java
 
 Object level lock is mechanism when we want to synchronize a non-static method or non-static code block such that only one 
-thread will be able to execute the code block on given instance of the class. This should always be done to make instance level data thread safe.
+thread will be able to execute the code block on given instance of the class. This should always be done to make 
+instance level data thread safe.
 
 public class DemoClass
 {
@@ -52,10 +55,13 @@ public class DemoClass
 
 -)Class level lock in Java
 
-Class level lock prevents multiple threads to enter in synchronized block in any of all available instances of the class on runtime. 
-This means if in runtime there are 100 instances of DemoClass, then only one thread will be able to execute demoMethod() in any one of instance at a time, and all other instances will be locked for other threads.
+Class level lock prevents multiple threads to enter in synchronized block in any of all available instances of the 
+class on runtime. 
+This means if in runtime there are 100 instances of DemoClass, then only one thread will be able to execute demoMethod()
+ in any one of instance at a time, and all other instances will be locked for other threads.
 
-Class level locking should always be done to make static data thread safe. As we know that static keyword associate data of methods to class level, so use locking at static fields or methods to make it on class level.
+Class level locking should always be done to make static data thread safe. As we know that static keyword associate data 
+of methods to class level, so use locking at static fields or methods to make it on class level.
 
 Various ways for class level locking
 public class DemoClass
@@ -101,27 +107,35 @@ public class DemoClass
 
 There has been a good amount of debate on which is better way. Well, I also tried to find out and below is my learning.
 
-Implementing Runnable is the preferred way to do it. Here, you’re not really specializing or modifying the thread’s behavior. You’re just giving the thread something to run. That means composition is the better way to go.
+Implementing Runnable is the preferred way to do it. Here, you’re not really specializing or modifying the thread’s 
+behavior. You’re just giving the thread something to run. That means composition is the better way to go.
 Java only supports single inheritance, so you can only extend one class.
 Instantiating an interface gives a cleaner separation between your code and the implementation of threads.
-Implementing Runnable makes your class more flexible. If you extend Thread then the action you’re doing is always going to be in a thread. However, if you implement Runnable it doesn’t have to be. You can run it in a thread, or pass it to some kind of executor service, or just pass it around as a task within a single threaded application.
+Implementing Runnable makes your class more flexible. If you extend Thread then the action you’re doing is always going 
+to be in a thread. However, if you implement Runnable it doesn’t have to be. You can run it in a thread, or pass it to 
+some kind of executor service, or just pass it around as a task within a single threaded application.
 If you are working on JDK 4 or lesser, then there is bug :
 http://bugs.java.com/bugdatabase/view_bug.do;jsessionid=5869e03fee226ffffffffc40d4fa881a86e3:WuuT?bug_id=4533087
 
 It’s fixed in Java 1.5 but Sun doesn’t intend to fix it in 1.4.
 
-The issue is that at construction time, a Thread is added to a list of references in an internal thread table. It won’t get removed from that list until its start() method has completed. As long as that reference is there, it won’t get garbage collected.
+The issue is that at construction time, a Thread is added to a list of references in an internal thread table. 
+It won’t get removed from that list until its start() method has completed. As long as that reference is there, 
+it won’t get garbage collected.
 
 
 Q) Volatile vs Atomic
 
 Visibility problem :- default boolean flag = true;
-Thread 1 set boolean to false and since this flag is not shared so Thread 2 dosnt knw whats its updated value so for Thread2 its value is true only.
+Thread 1 set boolean to false and since this flag is not shared so Thread 2 dosnt knw whats its updated value so for 
+Thread2 its value is true only.
 So to solve this we use volatile keyword and after ths this update of value of flag is visible to Thread2
 
 Synchronization problem:
 int val =1;
-Thread1 we do val++ and Thread2 we do val++ so in one way we expecting val=2 at Thread1 and val=3 as Thread2 but its will not happend if we put val as volatile then too it will not work since its not a visibility problem since in this we have tow operation reading and writing
+Thread1 we do val++ and Thread2 we do val++ so in one way we expecting val=2 at Thread1 and val=3 as Thread2 but its 
+will not happend if we put val as volatile then too it will not work since its not a visibility problem since in this 
+we have tow operation reading and writing
 
 first way to solve is using syncronize block
 Second way is use AtomicInteger.
@@ -130,10 +144,45 @@ val.incrementAndGet
 
 
 Q) Which is more preferred – Synchronized method or Synchronized block?
-Synchronized block is more preferred way because it doesn’t lock the Object, synchronized methods lock the Object and if there are multiple synchronization blocks in the class, even though they are not related, it will stop them from execution and put them in wait state to get the lock on Object.
+Synchronized block is more preferred way because it doesn’t lock the Object, synchronized methods lock the Object and 
+if there are multiple synchronization blocks in the class, even though they are not related, it will stop them from 
+execution and put them in wait state to get the lock on Object.
+
+1. Scope of lock
+One significant difference between the synchronized method and block is that Synchronized block generally reduces the 
+scope of the lock. As the scope of a lock is inversely proportional to performance, it's always better to lock only a 
+critical section of code. 
+
+One of the best examples of using a synchronized block is double-checked locking in the Singleton pattern where 
+instead of locking the whole getInstance() method we only lock the critical section of code that is used to 
+create the Singleton instance. This improves performance drastically because locking is only required one or two times.
+
+2. Control over the lock
+Synchronized blocks provide granular control over a lock, as you can use arbitrary any lock to provide mutual exclusion 
+to critical section code. On the other hand, the synchronized method always locks either on the current object 
+represented by this keyword or class level lock, if it's a static synchronized method.
+
+
+3. NullPointerExcpetion
+Synchronized block can throw java.lang.NullPointerException if expression provided to block as parameter evaluates to 
+null, which is not the case with synchronized methods.
+
+4. Lock Acquisition
+In the case of the synchronized method, the lock is acquired by a thread when it enters the method and is 
+released when it leaves the method, either normally or by throwing Exception. On the other hand in the case of 
+the synchronized block, the thread acquires a lock when they enter the synchronized block and release it when they 
+leave the synchronized block. You can also see these Java Multithreading and Concurrency courses to learn more about 
+monitor, lock, and concurrency. 
+
+
+Read more: https://www.java67.com/2013/01/difference-between-synchronized-block-vs-method-java-example.html#ixzz7VtMcr9ya
 
 Q) What is Thread Group? Why it’s advised not to use it?
-ThreadGroup is a class which was intended to provide information about a thread group. ThreadGroup API is weak and it doesn’t have any functionality that is not provided by Thread. It has two main features – to get the list of active threads in a thread group and to set the uncaught exception handler for the thread. But Java 1.5 has added setUncaughtExceptionHandler(UncaughtExceptionHandler eh) method using which we can add uncaught exception handler to the thread. So ThreadGroup is obsolete and hence not advised to use anymore.
+ThreadGroup is a class which was intended to provide information about a thread group. ThreadGroup API is weak and it 
+doesn’t have any functionality that is not provided by Thread. It has two main features – to get the list of active 
+threads in a thread group and to set the uncaught exception handler for the thread. But Java 1.5 has added 
+setUncaughtExceptionHandler(UncaughtExceptionHandler eh) method using which we can add uncaught exception handler to 
+the thread. So ThreadGroup is obsolete and hence not advised to use anymore.
 ThreadGroup tg1 = new ThreadGroup("Group A");   
 Thread t1 = new Thread(tg1,new MyRunnable(),"one");     
 Thread t2 = new Thread(tg1,new MyRunnable(),"two");     
@@ -149,15 +198,23 @@ public void uncaughtException(Thread t, Throwable e) {
 });
 
 Q) What is Java Thread Dump, How can we get Java Thread dump of a Program?
-A thread dump is a list of all the threads active in the JVM, thread dumps are very helpful in analyzing bottlenecks in the application and analyzing deadlock situations. There are many ways using which we can generate Thread dump – Using Profiler, Kill -3 command, jstack tool, etc. I prefer jstack tool to generate thread dump of a program because it’s easy to use and comes with JDK installation. Since it’s a terminal-based tool, we can create a script to generate thread dump at regular intervals to analyze it later on.
+A thread dump is a list of all the threads active in the JVM, thread dumps are very helpful in analyzing bottlenecks 
+in the application and analyzing deadlock situations. There are many ways using which we can generate 
+Thread dump – Using Profiler, Kill -3 command, jstack tool, etc. I prefer jstack tool to generate thread dump of a 
+program because it’s easy to use and comes with JDK installation. Since it’s a terminal-based tool, we can create a 
+script to generate thread dump at regular intervals to analyze it later on.
 
 
 
 Q)What is Deadlock? How to analyze and avoid deadlock situation?
-Deadlock is a programming situation where two or more threads are blocked forever, this situation arises with at least two threads and two or more resources.
+Deadlock is a programming situation where two or more threads are blocked forever, this situation arises with at 
+least two threads and two or more resources.
 
-To analyze a deadlock, we need to look at the java thread dump of the application, we need to look out for the threads with state as BLOCKED and then the resources it’s waiting to lock, every resource has a unique ID using which we can find which thread is already holding the lock on the object.
+To analyze a deadlock, we need to look at the java thread dump of the application, we need to look out for the threads 
+with state as BLOCKED and then the resources it’s waiting to lock, every resource has a unique ID using which we can 
+find which thread is already holding the lock on the object.
 
-Avoid Nested Locks, Lock Only What is Required and Avoid waiting indefinitely are common ways to avoid deadlock situation, read this post to learn how  to analyze deadlock in java with a sample program.
+Avoid Nested Locks, Lock Only What is Required and Avoid waiting indefinitely are common ways to avoid deadlock 
+situation, read this post to learn how  to analyze deadlock in java with a sample program.
 
 

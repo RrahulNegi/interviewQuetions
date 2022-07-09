@@ -5,13 +5,16 @@ Spring Boot takes an opinionated view of the Spring platform and third-party lib
 
 1) Spring Boot Basics: Conditionals
 
-Before you become a Spring Boot guru, you need to understand just one very important concept: Spring Framework’s @Conditional annotation.
+Before you become a Spring Boot guru, you need to understand just one very important concept: 
+Spring Framework’s @Conditional annotation.
 
 a) How to share ApplicationContextConfigurations?
 
-Imagine you are working for ReallyBigCompany™ with a couple of teams working on different Spring projects or products. But you are not using Spring Boot, just plain Spring Framework.
+Imagine you are working for ReallyBigCompany™ with a couple of teams working on different Spring projects or products. 
+But you are not using Spring Boot, just plain Spring Framework.
 
-Also imagine that at one point, one of your developers had a great idea to extract one common ApplicationContextConfiguration out of all projects, because she noticed that every company project uses a few of the same beans.
+Also imagine that at one point, one of your developers had a great idea to extract one common ApplicationContextConfiguration 
+out of all projects, because she noticed that every company project uses a few of the same beans.
 
 @Configuration
 public class ReallyBigCompanySharedContextConfiguration { // (1)
@@ -24,9 +27,11 @@ public class ReallyBigCompanySharedContextConfiguration { // (1)
 }
 
 
-This SharedContextConfiguration would live in its own project, eventually published as its own .jar file that all your company’s Spring projects can import as a Maven/Gradle dependency.
+This SharedContextConfiguration would live in its own project, eventually published as its own .jar file that all your 
+company’s Spring projects can import as a Maven/Gradle dependency.
 
-Imagine that ReallyBigCompany built a proprietary Flyway clone, i.e. something that initializes and manages databases. And as every project in your company uses a relational database, it makes sense to extract it to this shared configuration.
+Imagine that ReallyBigCompany built a proprietary Flyway clone, i.e. something that initializes and manages databases. 
+And as every project in your company uses a relational database, it makes sense to extract it to this shared configuration.
 
 Your actual project ApplicationContextConfigurations would then do this:
 
@@ -38,7 +43,8 @@ public class EarlyExitUnicornProjectContextConfiguration {
 }
 
 
-1- Every company project from now on imports the SharedConfiguration, as it contains so many goodies (well, only the Flyway clone at the moment, but you get the point).
+1- Every company project from now on imports the SharedConfiguration, as it contains so many goodies 
+(well, only the Flyway clone at the moment, but you get the point).
 
 2-You would specify your project-specific beans here, as normal.
 
@@ -47,16 +53,19 @@ b) What is the problem with shared ApplicationContextConfigurations?
 
 Having such a shared Spring configuration in your company works, but there’s a problem on the horizon.
 
-What if you want to create another project which wants to import that shared configuration, but not have a ReallyBigCompanyProprietaryFlywayClone, because it does not use a relational database?
+What if you want to create another project which wants to import that shared configuration, but not have a 
+ReallyBigCompanyProprietaryFlywayClone, because it does not use a relational database?
 
-Then you need a way to tell Spring: That @Configuration is fine, but please don’t create that one specific @Bean - just ignore it. Go ahead and create all other @Beans though.
+Then you need a way to tell Spring: That @Configuration is fine, but please don’t create that one specific @Bean - 
+just ignore it. Go ahead and create all other @Beans though.
 
 That’s exactly what Spring’s @Conditional annotation is for.
 
 
 c) What is Spring’s @Conditional annotation?
 
-The Spring Framework offers the @Conditional annotation since version 4.0 (released on 2013). You can put it on @Bean methods, @Components or even @Configurations and it looks like so:
+The Spring Framework offers the @Conditional annotation since version 4.0 (released on 2013). 
+You can put it on @Bean methods, @Components or even @Configurations and it looks like so:
 
 @Conditional(SomeCondition.class) // (1)
 It has a "Condition" class parameter, which is a class that has a method called "matches", returning a simple Boolean.
@@ -65,7 +74,8 @@ True: (Further Evaluate/Register) Create that @Bean, @Component or @Configuratio
 
 False: (Stop Evaluating/Registering) Don’t create that @Bean, @Component or @Configuration
 
-In short: Even though an ApplicationContextConfiguration comes with certain @Bean definitions, you as the end-user can still somewhat influence if a bean gets created or not.
+In short: Even though an ApplicationContextConfiguration comes with certain @Bean definitions, you as the end-user 
+can still somewhat influence if a bean gets created or not.
 
 
 d) Making the shared ApplicationContextConfiguration @Conditional
@@ -83,7 +93,8 @@ public class ReallyBigCompanySharedContextConfiguration {
 
 }
 
-1)It is exactly the same ContextConfiguration as before, only now your @Bean method is also annotated with a condition that we have yet to write.
+1)It is exactly the same ContextConfiguration as before, only now your @Bean method is also annotated with a 
+condition that we have yet to write.
 
 
 Implementing a Spring Condition
@@ -117,14 +128,18 @@ public class IsRelationalDatabaseCondition implements Condition {
 }
 1- Condition is an interface which exposes one method called "matches" that returns true/false: Has the condition been met or not.
 
-2- I am mixing up two conditions here: I want to check if the Oracle driver class is on the classpath. And I want to check if the user has set a database URL in a .properties file.
+2- I am mixing up two conditions here: I want to check if the Oracle driver class is on the classpath. And I want to check 
+if the user has set a database URL in a .properties file.
 
-3- Checking for a property is rather simple, as you can go through Spring’s environment class, which will, in turn, check all @PropertySources (think: application.properties) for a property.
+3- Checking for a property is rather simple, as you can go through Spring’s environment class, which will, in turn, 
+check all @PropertySources (think: application.properties) for a property.
 
-4- Checking for dependencies is also rather simple: You can check for the availability of a certain class on your classpath and if it is there, then you can assume the whole library is there.
+4- Checking for dependencies is also rather simple: You can check for the availability of a certain class on your 
+classpath and if it is there, then you can assume the whole library is there.
 
 
-Though you would very likely split this class up into two different conditions in the real world, it highlights two very important conditions:
+Though you would very likely split this class up into two different conditions in the real world, 
+it highlights two very important conditions:
 
 1- You can create @Beans depending on specific available properties.
 
@@ -137,7 +152,9 @@ Even though we haven’t covered any Spring Boot source code just yet, there is 
 
 What if Spring Boot is just a shared context configuration with tons of @Conditionals?
 
-Conditionals that create a DataSource for you, because you have set specific properties (think: spring.datasource.url)? Or @Conditionals that boot up an embedded Tomcat server for you because you have the Tomcat libraries on your classpath?
+Conditionals that create a DataSource for you, because you have set specific properties 
+(think: spring.datasource.url)? Or @Conditionals that boot up an embedded Tomcat server for you because 
+you have the Tomcat libraries on your classpath?
 
 
 
@@ -146,7 +163,8 @@ Conditionals that create a DataSource for you, because you have set specific pro
 
 a) What happens when you start a Spring Boot application?
 
-Everyone who has created a new Spring Boot application knows you’ll end up with a runnable main() method that launches Spring Boot’s magic.
+Everyone who has created a new Spring Boot application knows you’ll end up with a 
+runnable main() method that launches Spring Boot’s magic.
 
 package com.example;
 
@@ -161,18 +179,22 @@ public class MySpringBootApp {
     }
 
 }
-You run this main method and suddenly your Tomcat server boots up, your application.properties file gets read in and you can immediately start writing @RestControllers.
+You run this main method and suddenly your Tomcat server boots up, your application.properties file gets read in and 
+you can immediately start writing @RestControllers.
 
 How does this work?
 
 Spring Boot: Three Internal Core Features
-There are many things happening when running your SpringApplication, but let’s have a look at three specific ones which, at first, don’t have much in common, but together form most of the basis of Spring Boot.
+There are many things happening when running your SpringApplication, but let’s have a look at three specific ones which, 
+at first, don’t have much in common, but together form most of the basis of Spring Boot.
 
 1. Auto-registered @PropertySources
-You can tell any plain Spring Framework application to read in .properties files from basically any location you want, with the help of the @PropertySource annotation.
+You can tell any plain Spring Framework application to read in .properties files from basically any location you want, 
+with the help of the @PropertySource annotation.
 
 @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
-When you run the main method of your MySpringBootApp, Spring Boot will automatically register 17 of these PropertySources for you (even though not correct, you can think of it as 17 of these annotations automatically added to your project).
+When you run the main method of your MySpringBootApp, Spring Boot will automatically register 17 of these PropertySources 
+for you (even though not correct, you can think of it as 17 of these annotations automatically added to your project).
 
 You can find the complete list of default PropertySources in the official documentation, but here’s an excerpt:
 
@@ -181,13 +203,16 @@ You can find the complete list of default PropertySources in the official docume
 10. OS environment variables.
 ...
 15. Application properties packaged inside your jar (application.properties and YAML variants).
-So, Spring Boot merely has a default set of property locations that it always tries to read in, like command line arguments, or application.properties inside your .jar file etc. Or, it ignores the location. That’s it.
+So, Spring Boot merely has a default set of property locations that it always tries to read in, like command line arguments, 
+or application.properties inside your .jar file etc. Or, it ignores the location. That’s it.
 
-Now, what does it do with these .properties? Before we have a look at that in Spring Boot’s original source code, let’s have a look at the second big thing that happens when running a Spring Boot’s main method.
+Now, what does it do with these .properties? Before we have a look at that in Spring Boot’s original source code, 
+let’s have a look at the second big thing that happens when running a Spring Boot’s main method.
 
 2. Read-in META-INF/spring.factories
 
-Every Spring Boot project has a dependency on the following library: org.springframework.boot:spring-boot-autoconfigure. It is a simple .jar file containing pretty much all of Spring Boot’s magic.
+Every Spring Boot project has a dependency on the following library: org.springframework.boot:spring-boot-autoconfigure. 
+It is a simple .jar file containing pretty much all of Spring Boot’s magic.
 
 In addition, it comes with a file called spring.factories, under the META-INF folder.
 
@@ -209,14 +234,18 @@ org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfigurat
 org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration,\
 // 100+ more lines
-These AutoConfigurations (more on that in a second) are normal Spring @Configurations with a ton of @Conditionals that Spring Boot reads in and tries to evaluate on every application startup.
+These AutoConfigurations (more on that in a second) are normal Spring @Configurations with a ton of @Conditionals that 
+Spring Boot reads in and tries to evaluate on every application startup.
 
 But before we look at these AutoConfigurations, let’s have one last look at one additional Spring Boot feature.
 
 3. Enhanced Conditional Support
-A couple of paragraphs earlier, we saw that Spring Framework comes with the @Conditional annotation. But that annotation is a bit low-level.
 
-Spring Boot comes with its own set of additional @Conditional annotations, which make developers' lives easier. (Note, that the following parameter values of the @Conditional annotations are just an example)
+A couple of paragraphs earlier, we saw that Spring Framework comes with the @Conditional annotation. But that annotation is a 
+bit low-level.
+
+Spring Boot comes with its own set of additional @Conditional annotations, which make developers' lives easier. 
+(Note, that the following parameter values of the @Conditional annotations are just an example)
 
 Spring Boot comes with its own set of additional @Conditional annotations, which make developers' lives easier. (Note, that the following parameter values of the @Conditional annotations are just an example)
 
@@ -232,7 +261,8 @@ Spring Boot comes with its own set of additional @Conditional annotations, which
 
 @ConditionalOnJndi("java:comp/env/ejb/myEJB"). The condition is true if the specified JNDI context exists.
 
-@ConditionalOnMissingBean(DataSource.class). The condition is true if the user did not specify a DataSource @Bean in any @Configuration.
+@ConditionalOnMissingBean(DataSource.class). The condition is true if the user did not specify a DataSource 
+@Bean in any @Configuration.
 
 @ConditionalOnMissingClass(DataSource.class). The condition is true if the DataSource class is not on the classpath.
 
@@ -246,7 +276,8 @@ Spring Boot comes with its own set of additional @Conditional annotations, which
 
 @ConditionalOnWebApplication. The condition is true if the application is a web application.
 
-So, in short, with Spring Boot you do not have to write the most common conditions yourself (like checking for a property). Instead, you can use its enhanced @Conditional annotations.
+So, in short, with Spring Boot you do not have to write the most common conditions yourself (like checking for a property). 
+Instead, you can use its enhanced @Conditional annotations.
 
 Summary
 When Spring Boot boots up:
@@ -260,10 +291,13 @@ It has an enhanced concept of @Conditionals, compared to plain Spring. This will
 This is enough knowledge to start analyzing said AutoConfigurations.
 
 
-How to analyze an AutoConfiguration: DataSourceAutoConfiguration
-Inside the spring-boot-autoconfigure module, you’ll find a subpackage and AutoConfiguration for every Spring or 3rd party library that Spring Boot integrates with.
+How to analyze an AutoConfiguration: DataSourceAutoConfiguration?
 
-Let’s have a look at the DataSourceAutoConfiguration class first. It is the one that builds a DataSource for you, after you put a couple of properties like "spring.datasource.url" into one of your .properties files.
+Inside the spring-boot-autoconfigure module, you’ll find a subpackage and AutoConfiguration for every Spring or 3rd party 
+ library that Spring Boot integrates with.
+
+Let’s have a look at the DataSourceAutoConfiguration class first. It is the one that builds a DataSource for you, 
+after you put a couple of properties like "spring.datasource.url" into one of your .properties files.
 
 Woohaa, look at this annotation festival! Let’s step through it line-by-line.
 
@@ -356,7 +390,8 @@ Back to the question from the beginning: How can Spring Boot boot up an embedded
 
 2-It might take into account specific properties that the user sets, like server.port.
 
-3- It needs to take Spring WebMVC’s DispatcherServlet and register it with Tomcat, to make your @RestControllers with their @GetMappings and @PostMappings work.
+3- It needs to take Spring WebMVC’s DispatcherServlet and register it with Tomcat, to make your @RestControllers with their 
+@GetMappings and @PostMappings work.
 
 4- It needs to start your embedded Tomcat server (and therefore your DispatcherServlet).
 
@@ -370,7 +405,8 @@ And if you are done with that, you can have a look at the AutoConfiguration for 
 
 c) What is Spring Boot?
 
-Spring Boot is just a couple of AutoConfigurations classes (== normal Spring @Configurations), that create @Beans for you if certain @Conditions are met.
+Spring Boot is just a couple of AutoConfigurations classes (== normal Spring @Configurations), that create @Beans for you 
+if certain @Conditions are met.
 
 Three of the most important conditions are
 
@@ -385,11 +421,13 @@ Three of the most important conditions are
 
 
 
-One last piece of the puzzle is missing. How do all these dependencies get on the classpath in Spring Boot projects? And how come you do not have to specify any version numbers for your 3rd party libraries?
+One last piece of the puzzle is missing. How do all these dependencies get on the classpath in Spring Boot projects? 
+And how come you do not have to specify any version numbers for your 3rd party libraries?
 
 a) Analyzing spring-boot-starter-web
 
-The one dependency every web-based Spring Boot project includes, is the spring-boot-starter-web dependency. Its pom.xml file looks like this:
+The one dependency every web-based Spring Boot project includes, is the spring-boot-starter-web dependency. 
+Its pom.xml file looks like this:
 
 <dependencies>
                 <!-- other dependencies left out for conciseness -->
@@ -424,13 +462,18 @@ Now, the pom.xml file for spring-boot-starter-tomcat looks like this:
                 <!-- other dependencies left out for conciseness -->
         </dependencies>
 		
-1- This dependency is everything you need to start/run an embedded Tomcat server. Spring Boot pulls it in, and guess what that means. That by default, @ConditionalOnClass(Tomcat.class) conditions will be true! And that is exactly the condition Spring Boot evaluates to start up an embedded Tomcat server. Not so much rocket science, anymore, is it?
+1- This dependency is everything you need to start/run an embedded Tomcat server. Spring Boot pulls it in, and guess what that means. 
+That by default, @ConditionalOnClass(Tomcat.class) conditions will be true! And that is exactly the condition Spring Boot evaluates to 
+start up an embedded Tomcat server. Not so much rocket science, anymore, is it?
 
-In general, by browsing through the starters, you’ll find that the spring-boot-starter-web pulls in 60+ other dependencies and third-party libraries into your project - by default. From JSON and YAML libraries, to logging, to Spring’s WebMVC framework. It’s all basic Maven/Gradle dependency management.
+In general, by browsing through the starters, you’ll find that the spring-boot-starter-web pulls in 60+ other dependencies and 
+third-party libraries into your project - by default. From JSON and YAML libraries, to logging, to Spring’s WebMVC framework. 
+It’s all basic Maven/Gradle dependency management.
 
 b) Why can you drop dependency versions in Spring Boot?
 
-This leaves us with the last question. Why don’t you (rather: almost never) have to specify third-party dependency versions, when including them in your pom.xml file? So, instead of this:
+This leaves us with the last question. Why don’t you (rather: almost never) have to specify third-party dependency versions, when 
+including them in your pom.xml file? So, instead of this:
 
 <dependency>
     <groupId>org.hibernate</groupId>
@@ -444,9 +487,12 @@ You would do this in Spring Boot projects.
     <artifactId>hibernate-core</artifactId>
 </dependency>
 
-That is because the Spring Boot project that is generated by Spring’s Initializr extends from a parent project called spring-boot-dependencies. It is not so much of a project, but a simple pom.xml file.
+That is because the Spring Boot project that is generated by Spring’s Initializr extends from a parent project called 
+spring-boot-dependencies. It is not so much of a project, but a simple pom.xml file.
 
-And in that pom.xml file, you have a huge   section (covering every 3rd party library Spring Boot integrates with), which defines dependencies that you can include in your pom.xml file, without specifying the version number. Because it is already specified in that parent pom.xml.
+And in that pom.xml file, you have a huge   section (covering every 3rd party library Spring Boot integrates with), 
+which defines dependencies that you can include in your pom.xml file, without specifying the version number. 
+Because it is already specified in that parent pom.xml.
 
   <properties>
     <hibernate.version>5.4.12.Final</hibernate.version> <!-- 1 -->
@@ -485,18 +531,23 @@ And in that pom.xml file, you have a huge   section (covering every 3rd party li
         <version>${hibernate.version}</version>
       </dependency>
 </dependencyManagement>
-Spring Boot puts the version numbers into the <properties> section so that you can easily override these version numbers in your sub-project.
+Spring Boot puts the version numbers into the <properties> section so that you can easily override these version numbers in 
+your sub-project.
 
-The <dependencyManagement> block is Maven’s standard feature for defining dependency versions "globally", across all the modules of your project.
+The <dependencyManagement> block is Maven’s standard feature for defining dependency versions "globally", across all the modules of 
+your project.
 
-That pom.xml file is the reason you do not have to specify 3rd party library versions anymore. Unless of course, your specific 3rd party library is not in that pom.xml file. Then you still need to define the version yourself.
+That pom.xml file is the reason you do not have to specify 3rd party library versions anymore. Unless of course, 
+your specific 3rd party library is not in that pom.xml file. Then you still need to define the version yourself.
 
 (Note: Inheriting from spring-boot-dependencies is one way to get Spring Boot’s dependency management working, another way would be to import the bom, but I won’t show that here.)
 
 Dependency Management: Summary
-Starters like spring-boot-starter-web include a ton of third-party libraries into your project - by default. Its AutoConfigurations use these dependencies (remember: @ConditionalOnClass) to setup and preconfigure these libraries automatically.
+Starters like spring-boot-starter-web include a ton of third-party libraries into your project - by default. 
+Its AutoConfigurations use these dependencies (remember: @ConditionalOnClass) to setup and preconfigure these libraries automatically.
 
-The spring-boot-dependencies pom.xml contains every 3rd party library (and version) that Spring Boot knows. These libraries are predefined in a dependenciesManagement section, so you do not need to specify the version numbers in your own project, anymore.
+The spring-boot-dependencies pom.xml contains every 3rd party library (and version) that Spring Boot knows. 
+These libraries are predefined in a dependenciesManagement section, so you do not need to specify the version numbers in your own project, anymore.
 
 =====================================================================================
 
@@ -518,13 +569,18 @@ Question: What exactly is the type of this context?
 
 Answer:
 
-The createApplicationContext method checks if it is a web or standalone application based on the type it creates for the context. I was creating a REST-based controller for which a context of type AnnotationConfigEmbeddedWebApplicationContext was initialized. In the case of a standalone application, AnnotationConfigApplicationContext will be initialized. 
+The createApplicationContext method checks if it is a web or standalone application based on the type it creates for the context. 
+I was creating a REST-based controller for which a context of type AnnotationConfigEmbeddedWebApplicationContext was initialized. 
+In the case of a standalone application, AnnotationConfigApplicationContext will be initialized. 
 
 Question: How are the beans created once the context is initialized?
 
 Answer:
 
-When the constructor of the context is invoked, it will register the annotated class beans with the context. That's why no XML configurations are required. All your @Repository, @Component, @Service, and Controller beans will be registered and the context is returned. The following lines of code are executed for context initialization and bean creation for a web application.
+When the constructor of the context is invoked, it will register the annotated class beans with the context. 
+That's why no XML configurations are required. All your @Repository, @Component, @Service, and Controller beans will be 
+registered and the context is returned. The following lines of code are executed for context initialization and bean creation for a 
+web application.
 
 public AnnotationConfigEmbeddedWebApplicationContext(Class<?>... annotatedClasses) {
     this();
@@ -539,7 +595,8 @@ Answer:
 
 No prizes for guessing that: DispatcherServlet.
 
-The AnnotationConfigEmbeddedWebApplicationContext class extends the EmbeddedWebApplicationContext, which registers the dispatcher servlet.
+The AnnotationConfigEmbeddedWebApplicationContext class extends the EmbeddedWebApplicationContext, which registers the 
+dispatcher servlet.
 
 public static final String DISPATCHER_SERVLET_NAME = ServletContextInitializerBeans.DISPATCHER_SERVLET_NAME;
  
@@ -569,7 +626,8 @@ tomcat.start();
 tomcat.getServer().await();
  
 
-So with regards to Spring Boot. the EmbeddedWebApplicationContext creates an instance of org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer and adds the context. 
+So with regards to Spring Boot. the EmbeddedWebApplicationContext creates an instance of 
+org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer and adds the context. 
 
 TomcatEmbeddedServletContainer class has Tomcat as an instance variable.
 

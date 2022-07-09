@@ -30,7 +30,8 @@ The JPA Spring Configuration with Java – in a non-Boot Project
 
 		1. To use JPA in a Spring project, we need to set up the EntityManager.
 
-		2. This is the main part of the configuration and we can do it via a Spring factory bean. This can be either the simpler LocalEntityManagerFactoryBean or the more flexible LocalContainerEntityManagerFactoryBean.
+		2. This is the main part of the configuration and we can do it via a Spring factory bean. This can be either the 
+		simpler LocalEntityManagerFactoryBean or the more flexible LocalContainerEntityManagerFactoryBean.
 		
 	Example:
 		Maven Dependencies:
@@ -49,7 +50,8 @@ The JPA Spring Configuration with Java – in a non-Boot Project
 				</dependency>
 				
 		Java based configuration needed a 3 step process:
-			1. for EntityManager Set up: Configuration class with EnableTransactionManagement annotation. Also Jpa vendor also needs to be set up.
+			1. for EntityManager Set up: Configuration class with EnableTransactionManagement annotation. Also Jpa vendor
+			also needs to be set up.
 			2. We also need to explicitly define the DataSource bean we’ve used above
 			3. The final part of the configuration are the additional Hibernate properties and the TransactionManager and exceptionTranslation beans:
 				

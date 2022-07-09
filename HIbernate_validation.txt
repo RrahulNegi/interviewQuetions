@@ -1,0 +1,285 @@
+Hibernate Validator JSR303 Example Tutorial
+
+Hibernate Validator
+Validation is a cross cutting task, so we should try to keep it apart from our business logic. That’s why JSR303 and JSR349 provides specification for validating a bean by using annotations. Hibernate Validator provides the reference implementation of both these bean validation specs.
+
+
+It’s very easy to use Hibernate Validator and best part is that we can easily extend it and create our own custom validation annotations. Today we will look into the hibernate validator in detail with examples. Finally we will have a test program to check out the validations.
+
+I have created a sample project for all the hibernate validation example, below image shows the final project structure.
+
+Hibernate Validator Maven Dependencies
+We need to add JSR303 and Hibernate Validator dependencies to use them.
+
+
+
+<dependency>
+	<groupId>javax.validation</groupId>
+	<artifactId>validation-api</artifactId>
+	<version>1.1.0.Final</version>
+</dependency>
+<dependency>
+	<groupId>org.hibernate</groupId>
+	<artifactId>hibernate-validator</artifactId>
+	<version>5.1.1.Final</version>
+</dependency>
+Hibernate Validator also requires an implementation of the Unified Expression Language (JSR 341) for evaluating dynamic expressions in constraint violation messages.
+
+If your application is running in a servlet container such as JBoss, it’s already provided. But if you are using it in a standalone application like my example project, you need to add them manually. Required dependencies are;
+
+
+<dependency>
+	<groupId>javax.el</groupId>
+	<artifactId>javax.el-api</artifactId>
+	<version>2.2.4</version>
+</dependency>
+<dependency>
+	<groupId>org.glassfish.web</groupId>
+	<artifactId>javax.el</artifactId>
+	<version>2.2.4</version>
+</dependency>
+Check the image for all the maven dependencies in the project. Now we are ready to get started with hibernate validation examples.
+
+Hibernate Validation Example
+Let’s create a simple class and add some validations to it.
+
+Employee.java
+
+
+public class Employee {
+
+	@Min(value=1, groups=EmpIdCheck.class)
+	private int id;
+	
+	@NotNull(message="Name cannot be null")
+	@Size(min=5, max=30)
+	private String name;
+	
+	@Email
+	private String email;
+	
+	@CreditCardNumber
+	private String creditCardNumber;
+	
+	//default no-args constructor
+	public Employee(){}
+	
+	public Employee(int id, String name, String email, String ccNum){
+		this.id=id;
+		this.name=name;
+		this.email=email;
+		this.creditCardNumber=ccNum;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCreditCardNumber() {
+		return creditCardNumber;
+	}
+
+	public void setCreditCardNumber(String creditCardNumber) {
+		this.creditCardNumber = creditCardNumber;
+	}
+	
+}
+
+
+We should avoid using implementation specific annotations for loose coupling. But hibernate validator provides some very good validation annotations such as @Email and @CreditCardNumber.
+
+We can also provide custom error message to use with any validation. If there are no message defined then hibernate built-in error message will be used.
+
+We can assign groups to any validation, this can be useful to validate a set of fields only. For example, if I just need to validate the Employee id field, I can use EmpIdCheck group. For this we need to define a class/interface.
+
+EmpIdCheck.java
+
+
+package com.journaldev.validator.hibernate.model;
+
+public interface EmpIdCheck {
+}
+We will look it’s usage in the test program later on.
+
+Hibernate Validator Custom Error Messages
+We can define our custom error messages too, all we need is to have ValidationMessages.properties file in the classpath.
+
+ValidationMessages.properties
+
+
+#Hibernate Bug for @CreditCardNumber Workaround - https://hibernate.atlassian.net/browse/HV-881
+org.hibernate.validator.constraints.LuhnCheck.message=The check digit for ${validatedValue} is invalid, Luhn Modulo 10 checksum failed.
+
+org.hibernate.validator.constraints.Email.message=Invalid email address
+These property files also support localization, in that case we need to keep file names like ValidationMessages_tr_TR.properties
+
+The property name for message is fully classified annotation name with message at the end, you can easily figure out from above examples.
+
+XML Based Constraints Validation
+Sometimes we want validation on third party classes, then we can’t use annotations with them. In this situation, xml configuration based validation comes handy. For example, let’s say we have a class without any validation annotations like below.
+
+
+EmployeeXMLValidation.java
+
+
+package com.journaldev.validator.hibernate.model;
+
+public class EmployeeXMLValidation {
+
+	private int id;
+	
+	private String name;
+	
+	private String email;
+	
+	private String creditCardNumber;
+	
+	//default no-args constructor
+	public EmployeeXMLValidation(){}
+	
+	public EmployeeXMLValidation(int id, String name, String email, String ccNum){
+		this.id=id;
+		this.name=name;
+		this.email=email;
+		this.creditCardNumber=ccNum;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCreditCardNumber() {
+		return creditCardNumber;
+	}
+
+	public void setCreditCardNumber(String creditCardNumber) {
+		this.creditCardNumber = creditCardNumber;
+	}
+	
+}
+
+A simple example for above bean hibernate validation could be like below.
+
+employeeXMLValidation.xml
+
+
+
+<constraint-mappings xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jboss.org/xml/ns/javax/validation/mapping validation-mapping-1.1.xsd"
+	xmlns="https://jboss.org/xml/ns/javax/validation/mapping" version="1.1">
+
+	<default-package>com.journaldev.validator.hibernate.model</default-package>
+
+	<bean class="EmployeeXMLValidation" ignore-annotations="true">
+		<field name="id">
+			<constraint annotation="javax.validation.constraints.Min">
+				<element name="value">1</element>
+			</constraint>
+		</field>
+		<field name="name">
+			<constraint annotation="javax.validation.constraints.NotNull" />
+			<constraint annotation="javax.validation.constraints.Size">
+				<element name="min">5</element>
+				<element name="max">30</element>
+			</constraint>
+		</field>
+		<field name="email">
+			<constraint annotation="org.hibernate.validator.constraints.Email" />
+		</field>
+		<field name="creditCardNumber">
+			<constraint annotation="org.hibernate.validator.constraints.CreditCardNumber" />
+		</field>
+	</bean>
+
+</constraint-mappings>
+
+default-package is used to define the base package, so that we can skip long package names.
+
+ignore-annotations is used to tell Hibernate validator to ignore any annotations present in the class for validation purpose, only perform validations as configured in the xml file.
+
+Property level constraints
+We can apply constraints on the getter methods too, we should not apply it on setter method. Also we should avoid applying constraints on both fields and getter method because then it will be validated twice.
+
+MyBean.java
+
+
+package com.journaldev.validator.hibernate.model;
+
+import javax.validation.constraints.NotNull;
+
+public class MyBean {
+
+	private String name;
+
+	@NotNull
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+Hibernate Validation with Inheritance
+Bean validations are inherited, so if we are validating object of child class then any validations in parent class will also be executed.
+
+MyChildBean.java
+
+
+package com.journaldev.validator.hibernate.model;
+
+import javax.validation.constraints.NotNull;
+
+public class MyChildBean extends MyBean {
+
+	private String data;
+
+	@NotNull
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
+	}
+}

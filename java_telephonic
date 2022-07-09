@@ -24,7 +24,9 @@ Java Telephonic Interview Questions
 
 14) how u cretae async service 
 
-A JAX-RS resource method can be made asynchronous by using the @Suspended annotation on a parameter of type, AsyncResponse. Usually, the resource method would return void since the actual response would be returned using the AsyncResponse.resume(Object) method. Here is an example:
+A JAX-RS resource method can be made asynchronous by using the @Suspended annotation on a parameter of type,
+ AsyncResponse. Usually, the resource method would return void since the actual response would be returned 
+ using the AsyncResponse.resume(Object) method. Here is an example:
 
 @Path("/airline")
 public class AirlineService {
@@ -48,11 +50,25 @@ public class AirlineService {
     }
 }
 
-Next, notice that the getReservation resource method doesn’t actually return anything. Instead, it creates a new Reservation in a Runnable (via lambda) that makes a database call and then returns the reservation to the client through the AsyncResponse object. This means that the thread invoking the getReservation method can return immediately to handle new requests. The client won’t see a response, however, until the call to the Reservation has been constructed and passed to the resume method, which might take a little while depending on how long the database request might take (DBHelper…). This example is essentially throttling access to the database.
+Next, notice that the getReservation resource method doesn’t actually return anything. Instead, it creates a 
+new Reservation in a Runnable (via lambda) that makes a database call and then returns the reservation to the 
+client through the AsyncResponse object. This means that the thread invoking the getReservation method can return 
+immediately to handle new requests. The client won’t see a response, however, until the call to the Reservation has
+ been constructed and passed to the resume method, which might take a little while depending on how long the 
+ database request might take (DBHelper…). This example is essentially throttling access to the database.
 
-Let’s suppose that the database is running slowly for some reason. If we implement this method synchronously, we might run into a situation where the database starts rejecting work, leading to exceptions thrown back to the client. By implementing this asynchronously, we limit the connections to 10; additional requests would be queued until they could eventually be executed by the executor service. This is ideal so long as the database can eventually catch up with the work.
+Let’s suppose that the database is running slowly for some reason. If we implement this method synchronously, 
+we might run into a situation where the database starts rejecting work, leading to exceptions thrown back to the 
+client. By implementing this asynchronously, we limit the connections to 10; additional requests would be queued 
+until they could eventually be executed by the executor service. This is ideal so long as the database can 
+eventually catch up with the work.
 
-In practice, it is my opinion that there are relatively few use cases where asynchronous methods on the server are more effective than their synchronous counterparts. Throttling access to another resource (as above) is one use case. Others might include where the thread factory has created threads optimized for the response (i.e. they already contain data on a ThreadLocal). Perhaps there is a performance benefit on some application servers; Open Liberty uses a well-tuned, global thread pool, there aren’t a lot of performance benefits to using async methods on the server.
+In practice, it is my opinion that there are relatively few use cases where asynchronous methods on the 
+server are more effective than their synchronous counterparts. Throttling access to another resource 
+(as above) is one use case. Others might include where the thread factory has created threads optimized 
+for the response (i.e. they already contain data on a ThreadLocal). Perhaps there is a performance benefit on 
+some application servers; Open Liberty uses a well-tuned, global thread pool, there aren’t a lot of performance 
+benefits to using async methods on the server.
 
 using Spting
 
@@ -71,13 +87,15 @@ using Spting
 15) How to handel 100000 record from db
 16) How to handel logging framework like how many request and response is going and comming
 
-17)microservices S1 calling S2 and S2 calling S3. Due to some Ssystem design if calling sequence changes like S2 is calling S1 and S3 so how can we handel such things?
+17)microservices S1 calling S2 and S2 calling S3. Due to some Ssystem design if calling sequence changes like
+ S2 is calling S1 and S3 so how can we handel such things?
  
 18) Api registery in microservices
 
 19) converted JSON to XML
 
-A JSON is a lightweight data-interchange format and the format of JSON is like a key-value pair. We can convert a JSONObject into an XML format using org.json.XML class, this provides static methods to convert an XML text into a JSONObject and to convert a JSONObject into an XML text. The XML.toString() method convert a JSON object into a well-formed, element-normal XML string.
+A JSON is a lightweight data-interchange format and the format of JSON is like a key-value pair. We can convert a 
+JSONObject into an XML format using org.json.XML class, this provides static methods to convert an XML text into a JSONObject and to convert a JSONObject into an XML text. The XML.toString() method convert a JSON object into a well-formed, element-normal XML string.
 
 import java.io.*;
 import org.json.*;

@@ -8,23 +8,30 @@ Maven:
 	artifactId – a unique name of the project
 	version – a version of the project
 	packaging – a packaging method (e.g. WAR/JAR/ZIP)
-	The first three of these (groupId:artifactId:version) combine to form the unique identifier and are the mechanism by which you specify which versions of external libraries (e.g. JARs) your project will use.
+	The first three of these (groupId:artifactId:version) combine to form the unique identifier and are the mechanism by 
+	which you specify which versions of external libraries (e.g. JARs) your project will use.
 	
 2. Dependencies:
-	These external libraries that a project uses are called dependencies. The dependency management feature in Maven ensures automatic download of those libraries from a central repository, so you don’t have to store them locally.
+	These external libraries that a project uses are called dependencies. The dependency management feature in Maven ensures 
+	automatic download of those libraries from a central repository, so you don’t have to store them locally.
 	
 	Transitive Dependencies
-		Maven can discover the libraries that are needed by our own dependencies in our pom.xml and includes them automatically. There’s no limit to the number of dependency levels that the libraries are gathered from.
+		Maven can discover the libraries that are needed by our own dependencies in our pom.xml and includes them 
+		automatically. There’s no limit to the number of dependency levels that the libraries are gathered from.
 
-		The conflict here comes when 2 dependencies refer to different versions of a specific artifact. Which one will be included by Maven?
+		The conflict here comes when 2 dependencies refer to different versions of a specific artifact. Which one will be 
+		included by Maven?
 
-		The answer here is the “nearest definition”. This means that the version used will be the closest one to our project in the tree of dependencies. This is called dependency mediation.
+		The answer here is the “nearest definition”. This means that the version used will be the closest one to our
+		project in the tree of dependencies. This is called dependency mediation.
 
 		Let’s see the following example to clarify the dependency mediation:
 
 		1
 		A -> B -> C -> D 1.4  and  A -> E -> D 1.0
-		This example shows that project A depends on B and E. B and E have their own dependencies which encounter different versions of the D artifact. Artifact D 1.0 will be used in the build of A project because the path through E is shorter.
+		This example shows that project A depends on B and E. B and E have their own dependencies which encounter different 
+		versions of the D artifact. Artifact D 1.0 will be used in the build of A project because the path through E 
+		is shorter.
 
 		There are different techniques to determine which version of the artifacts should be included: https://www.tutorialspoint.com/maven/maven_manage_dependencies
 
@@ -49,9 +56,11 @@ Maven:
 	
 3. Repositories:
 
-	A repository in Maven is used to hold build artifacts and dependencies of varying types. The default local repository is located in the .m2/repository folder under the home directory of the user.
+	A repository in Maven is used to hold build artifacts and dependencies of varying types. The default local 
+	repository is located in the .m2/repository folder under the home directory of the user.
 
-	If an artifact or a plug-in is available in the local repository, Maven uses it. Otherwise, it is downloaded from a central repository and stored in the local repository. The default central repository is Maven Central.
+	If an artifact or a plug-in is available in the local repository, Maven uses it. Otherwise, it is downloaded from a 
+	central repository and stored in the local repository. The default central repository is Maven Central.
 
 	Some libraries, such as JBoss server, are not available at the central repository but are available at an alternate repository. For those libraries, you need to provide the URL to the alternate repository inside pom.xml file:
 
@@ -65,33 +74,41 @@ Maven:
 1) Central Repository
 Maven central repository is repository provided by Maven community. It contains a large number of commonly used libraries.
 
-When Maven does not find any dependency in local repository, it starts searching in central repository using following URL − https://repo1.maven.org/maven2/
+When Maven does not find any dependency in local repository, it starts searching in central repository using following 
+URL − https://repo1.maven.org/maven2/
 2)Remote Repository
-	Sometimes, Maven does not find a mentioned dependency in central repository as well. It then stops the build process and output error message to console. To prevent such situation, Maven provides concept of Remote Repository, which is developer's own custom repository containing required libraries or other project jars.
+	Sometimes, Maven does not find a mentioned dependency in central repository as well. It then stops the build process 
+	and output error message to console. To prevent such situation, Maven provides concept of Remote Repository, which is 
+	developer's own custom repository containing required libraries or other project jars.
 3)Local Repository
 Maven local repository is a folder location on your machine. It gets created when you run any maven command for the first time.
 
-Maven local repository keeps your project's all dependencies (library jars, plugin jars etc.). When you run a Maven build, then Maven automatically downloads all the dependency jars into the local repository. It helps to avoid references to dependencies stored on remote machine every time a project is build.
+Maven local repository keeps your project's all dependencies (library jars, plugin jars etc.). When you run a Maven build, 
+then Maven automatically downloads all the dependency jars into the local repository. It helps to avoid references to dependencies stored on remote machine every time a project is build.
 
 Maven Dependency Search Sequence
 When we execute Maven build commands, Maven starts looking for dependency libraries in the following sequence −
 
 Step 1 − Search dependency in local repository, if not found, move to step 2 else perform the further processing.
 
-Step 2 − Search dependency in central repository, if not found and remote repository/repositories is/are mentioned then move to step 4. Else it is downloaded to local repository for future reference.
+Step 2 − Search dependency in central repository, if not found and remote repository/repositories is/are mentioned then
+ move to step 4. Else it is downloaded to local repository for future reference.
 
 Step 3 − If a remote repository has not been mentioned, Maven simply stops the processing and throws error (Unable to find dependency).
 
 Step 4 − Search dependency in remote repository or repositories, if found then it is downloaded to local repository for future reference. Otherwise, Maven stops processing and throws error (Unable to find dependency).
 
 4. Properties
-Custom properties can help to make your pom.xml file easier to read and maintain. In the classic use case, you would use custom properties to define versions for your project’s dependencies.
+Custom properties can help to make your pom.xml file easier to read and maintain. In the classic use case, 
+you would use custom properties to define versions for your project’s dependencies.
 
-Maven properties are value-placeholders and are accessible anywhere within a pom.xml by using the notation ${name}, where name is the property.
+Maven properties are value-placeholders and are accessible anywhere within a pom.xml by using the notation ${name}, 
+where name is the property.
 
 
 5. Build
-The build section is also a very important section of the Maven POM. It provides information about the default Maven goal, the directory for the compiled project, and the final name of the application. The default build section looks like this:
+The build section is also a very important section of the Maven POM. It provides information about the default Maven 
+goal, the directory for the compiled project, and the final name of the application. The default build section looks like this:
 
 <build>
     <defaultGoal>install</defaultGoal>

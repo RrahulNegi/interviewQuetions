@@ -4,7 +4,8 @@ Absrtract vs Interface
 
 Absrtract :
 -It can have default method implementation
-- Subclasses use extends keyword to extend an abstract class and they need to provide implementation of all the declared methods in the abstract class unless the subclass is also an abstract class
+- Subclasses use extends keyword to extend an abstract class and they need to provide implementation of all the 
+declared methods in the abstract class unless the subclass is also an abstract class
 
 -Abstract class can have constructor
 Abstract classes are almost same as java classes except you can not instantiate it.
@@ -13,13 +14,16 @@ Abstract classes are almost same as java classes except you can not instantiate 
 - Abstract class can extends one other class and can implement one or more interface.
 - It is faster than interface
 
-- If you add new method to abstract class, you can provide default implementation of it. So you don’t need to change your current code
+- If you add new method to abstract class, you can provide default implementation of it. So you don’t need to change your 
+current code
 
 
 Interface :
 
-- Interfaces are pure abstraction.It can not have implementation at all but in java 8, you can have default methods in interface.
-- subclasses use implements keyword to implement interfaces and should provide implementation for all the methods declared in the interface
+- Interfaces are pure abstraction.It can not have implementation at all but in java 8, you can have default methods in
+ interface.
+- subclasses use implements keyword to implement interfaces and should provide implementation for all the methods 
+declared in the interface
 - Interface  can not have constructor
 - Interfaces are altogether different type
 - Interface methods are by default public. you can not use any other access modifier with it
@@ -30,5 +34,7 @@ Interface :
 
 
 Marker interface :-
-Marker interfaces  are interfaces which have no method but it is used to indicate JVM to behave specially when any class implement these interfaces.
-For example : If you implement cloneable interface and then call .clone method of object, it will clone your object. If you do not implement cloneable interface, it will throw cloneNotSupported exception.
+Marker interfaces  are interfaces which have no method but it is used to indicate JVM to behave specially when any class 
+implement these interfaces.
+For example : If you implement cloneable interface and then call .clone method of object, it will clone your object. 
+If you do not implement cloneable interface, it will throw cloneNotSupported exception.

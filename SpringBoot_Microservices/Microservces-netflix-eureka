@@ -33,7 +33,8 @@ public class SpringEurekaServerApplication {
     }
 }
 
-Build the project once again. With this annotation, this artifact will act like microservice registry and discovery server.
+Build the project once again. With this annotation, this artifact will act like microservice registry and 
+discovery server.
 
 2 Server Configuration
 

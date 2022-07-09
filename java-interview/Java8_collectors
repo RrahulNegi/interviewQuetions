@@ -1,4 +1,7 @@
-Java 8 Collectors tutorial mainly consist of three things – Stream.collect() method, Collector interface and Collectors class. collect() method is a terminal operation in Stream interface. Collector is an interface in java.util.stream package. Collectors class, also a member of java.util.stream package, is an utility class containing many static methods which perform some common reduction operations. Let’s discuss them one by one.
+Java 8 Collectors tutorial mainly consist of three things – Stream.collect() method, Collector interface and 
+Collectors class. collect() method is a terminal operation in Stream interface. Collector is an interface in 
+java.util.stream package. Collectors class, also a member of java.util.stream package, is an utility class containing 
+many static methods which perform some common reduction operations. Let’s discuss them one by one.
 
 
  
@@ -30,7 +33,8 @@ public class CollectorsExamples
 
 2) java.util.stream.Collector Interface
 
-java.util.stream.Collector interface contains four functions that work together to accumulate input elements into a mutable result container and optionally performs a final transformation on the result. Those four functions are,
+java.util.stream.Collector interface contains four functions that work together to accumulate input elements into a 
+mutable result container and optionally performs a final transformation on the result. Those four functions are,
 
 a) Supplier() :
 
@@ -50,7 +54,9 @@ A function that performs final transformation from the intermediate accumulation
 
 3) java.util.stream.Collectors Class
 
-java.util.stream.Collectors class contains static factory methods which perform some common reduction operations such as accumulating elements into Collection, finding min, max, average, sum of elements etc. All the methods of Collectors class return Collector type which will be supplied to collect() method as an argument.
+java.util.stream.Collectors class contains static factory methods which perform some common reduction operations such 
+as accumulating elements into Collection, finding min, max, average, sum of elements etc. All the methods of Collectors 
+class return Collector type which will be supplied to collect() method as an argument.
 
 Java 8 Collectors
 Let’s see Collectors class methods one by one.
@@ -149,7 +155,8 @@ System.out.println(subjects);
 
 3.3) Collectors.toMap() :
 
-This method returns a Collector which collects input elements into a Map whose keys and values are the result of applying mapping functions to input elements.
+This method returns a Collector which collects input elements into a Map whose keys and values are the result of 
+applying mapping functions to input elements.
 
 Example : Collecting name and percentage of each student into a Map
 

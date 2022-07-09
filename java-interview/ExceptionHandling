@@ -28,9 +28,11 @@ public class ExceptionHandling
 Q) what are checked and unchecked exceptions in java?
 
 1) Checked Exceptions :
-Checked exceptions are the exceptions which are known during compile time. These are the exceptions that are checked at compile time. They are also called compile time exceptions.
+Checked exceptions are the exceptions which are known during compile time. These are the exceptions that are checked at 
+compile time. They are also called compile time exceptions.
 
-These exceptions must be handled either using try-catch blocks or using throws clause. If not handled properly, they will give compile time error.
+These exceptions must be handled either using try-catch blocks or using throws clause. If not handled properly, they 
+will give compile time error.
 
 All sub classes of java.lang.Exception except sub classes of RunTimeException are checked exceptions.
 
@@ -76,7 +78,8 @@ public class CheckedException
 )
 
 2) Unchecked Exceptions :
-Unchecked exceptions are the exceptions which are known  at run time. They can not be known at compile time because they occur only at run time. That’s why they are also called Run Time Exceptions.
+Unchecked exceptions are the exceptions which are known  at run time. They can not be known at compile time because 
+they occur only at run time. That’s why they are also called Run Time Exceptions.
 
 All the sub classes of RunTimeException and all sub classes of Error class are unchecked exceptions.
 
@@ -90,7 +93,8 @@ public class UncheckedException
     }
 }
 
-Above program throws NumberFormatException at run time, but it is not handled properly. So, program will terminate abruptly. To avoid this, you have to handle this exception using try-catch blocks.
+Above program throws NumberFormatException at run time, but it is not handled properly. So, program will 
+terminate abruptly. To avoid this, you have to handle this exception using try-catch blocks.
 
 public class UncheckedException
 {
@@ -108,15 +112,26 @@ public class UncheckedException
         }
     }
 }
-If any statement in the program throws unchecked exceptions and you are not handling them either using try-catch blocks or throws clause, then it does not give compile time error. Compilation will be successful but program may fail at run time. Therefore, to avoid premature termination of the program, you have to handle them properly.
+If any statement in the program throws unchecked exceptions and you are not handling them either using 
+try-catch blocks or throws clause, then it does not give compile time error. Compilation will be successful but
+ program may fail at run time. Therefore, to avoid premature termination of the program, you have to handle them 
+ properly.
 
 
 Q)What is the difference between ClassNotFoundException and NoClassDefFoundError in java?
 
-In Java, both ClassNotFoundException and NoClassDefFoundError occur when a particular class is not found at run time. But, they occur at different scenarios. ClassNotFoundException is an exception which occurs when you try to load a class at run time using Class.forName() or loadClass() methods and mentioned classes are not found in the classpath. On the other hand, NoClassDefFoundError is an error which occurs when a particular class is present at compile time but it was missing at run time.
+In Java, both ClassNotFoundException and NoClassDefFoundError occur when a particular class is not found at run time. 
+But, they occur at different scenarios. ClassNotFoundException is an exception which occurs when you try to load a 
+class at run time using Class.forName() or loadClass() methods and mentioned classes are not found in the classpath. 
+On the other hand, NoClassDefFoundError is an error which occurs when a particular class is present at compile time but 
+it was missing at run time.
 
 ClassNotFoundException In Java :
-ClassNotFoundException is a run time exception which is thrown when an application tries to load a class at run time using Class.forName() or loadClass() or findSystemClass() methods and the class with specified name are not found in the classpath. For example, you may have come across this exception when you try to connect to MySQL or Oracle databases and you have not updated the classpath with required JAR files. In most of time, this exception occurs when you try to run an application without updating the classpath with required JAR files.
+ClassNotFoundException is a run time exception which is thrown when an application tries to load a class at run time 
+using Class.forName() or loadClass() or findSystemClass() methods and the class with specified name are not found in 
+the classpath. For example, you may have come across this exception when you try to connect to MySQL or Oracle 
+databases and you have not updated the classpath with required JAR files. In most of time, this exception occurs 
+when you try to run an application without updating the classpath with required JAR files.
 
 
 public class MainClass
@@ -169,7 +184,8 @@ catch(NumberFormatException ex)
 
 Q)What is Re-throwing an exception in java?
 
-Exceptions raised in the try block are handled in the catch block. If it is unable to handle that exception, it can re-throw that exception using throw keyword. It is called re-throwing an exception.
+Exceptions raised in the try block are handled in the catch block. If it is unable to handle that exception, it can 
+ re-throw that exception using throw keyword. It is called re-throwing an exception.
 
 try
 {
@@ -185,7 +201,9 @@ catch(NullPointerException ex)
 
 Q)What is the use of throws keyword in java?
 
-If a method is capable of throwing an exception that it could not handle, then it should specify that exception using throws keyword. It helps the callers of that method in handling that exception. The syntax for using throws keyword is,
+If a method is capable of throwing an exception that it could not handle, then it should specify that exception using 
+throws keyword. It helps the callers of that method in handling that exception. The syntax for using throws keyword is,
+
 
 return_type method_name(parameter_list) throws exception_list
 {
@@ -301,7 +319,10 @@ public class ExceptionHandling
     }
 }
 
-- When a method is throwing unchecked type of exceptions, then you need not to mention it using throws keyword. But for a method throwing checked type of exceptions, you must declare it with throws keyword or enclose the statement which is throwing an exception in try-catch block. (We will discuss about this in detail while covering checked and unchecked exceptions).
+- When a method is throwing unchecked type of exceptions, then you need not to mention it using throws keyword. 
+But for a method throwing checked type of exceptions, you must declare it with throws keyword or enclose the statement 
+which is throwing an exception in try-catch block. (We will discuss about this in detail while covering checked and 
+unchecked exceptions).
 
 public class ExceptionHandling
 {
@@ -356,15 +377,24 @@ A variable which is declared as final, it’s value can not be changed once it i
 
 
 finally Block :
-finally is a block which is used for exception handling along with try and catch blocks. finally block is always executed whether exception is raised or not and raised exception is handled or not. Most of time, this block is used to close the resources like database connection, I/O resources etc.
+finally is a block which is used for exception handling along with try and catch blocks. finally block is always 
+executed whether exception is raised or not and raised exception is handled or not. Most of time, this block is used to 
+close the resources like database connection, I/O resources etc.
 
 finalize() Method :
-finalize() method is a protected method of java.lang.Object class. It is inherited to every class you create in java. This method is called by garbage collector thread before an object is removed from the memory. finalize() method is used to perform some clean up operations on an object before it is removed from the memory.
+finalize() method is a protected method of java.lang.Object class. It is inherited to every class you create in java.
+ This method is called by garbage collector thread before an object is removed from the memory. finalize() method is 
+ used to perform some clean up operations on an object before it is removed from the memory.
 
 finally Vs finalize() :
-But, there is one similarity between finally block and finalize() method. Both are used to close the resources used by the program. finally block is used to close the resources soon after their use. finalize() method is used to close the resources before an object is removed from the memory. That means if you use finalize() method to close the resources, they will remain open until an object,  which is using them, is garbage collected.
+But, there is one similarity between finally block and finalize() method. Both are used to close the resources used by 
+the program. finally block is used to close the resources soon after their use. finalize() method is used to close the 
+resources before an object is removed from the memory. That means if you use finalize() method to close the resources, 
+they will remain open until an object,  which is using them, is garbage collected.
 
-But, using finalize() method to close the resources is less recommended as it is not guaranteed that garbage collector will always call finalize() method on an object before it is removed from the memory. If it is not called, the resources will remain open. Therefore, it is always good to close the resources soon after their use using finally block.
+But, using finalize() method to close the resources is less recommended as it is not guaranteed that garbage collector 
+will always call finalize() method on an object before it is removed from the memory. If it is not called, the resources 
+will remain open. Therefore, it is always good to close the resources soon after their use using finally block.
 
 
 Q) How do you create customized exceptions in java?
@@ -393,7 +423,10 @@ public class ExceptionHandling
     }
 }
 
-When user enters negative value in the above example, it throws an exception and prints exception description which user may not understand. So, Let’s make this program more user friendly. Modify above example so that user can understand why the exception has occurred. To do this, create one sub class to Exception class and override toString() method.
+When user enters negative value in the above example, it throws an exception and prints exception description which 
+user may not understand. So, Let’s make this program more user friendly. Modify above example so that user can 
+understand why the exception has occurred. To do this, create one sub class to Exception class and override toString() 
+method.
 
 //Defining Our own exception by extending Exception class
  
@@ -423,16 +456,21 @@ ClassCastException is a RunTimeException which occurs when JVM unable to cast an
 Q)What is the difference between throw, throws and throwable in java?
 
 throw In Java :
-throw is a keyword in java which is used to throw an exception manually. Using throw keyword, you can throw an exception from any method or block. But, that exception must be of type java.lang.Throwable class or it’s sub classes. Below example shows how to throw an exception using throw keyword.
+throw is a keyword in java which is used to throw an exception manually. Using throw keyword, you can throw an 
+exception from any method or block. But, that exception must be of type java.lang.Throwable class or it’s sub classes. 
+Below example shows how to throw an exception using throw keyword.
 
 
 throws In Java :
-throws is also a keyword in java which is used in the method signature to indicate that this method may throw mentioned exceptions. The caller to such methods must handle the mentioned exceptions either using try-catch blocks or using throws keyword.
+throws is also a keyword in java which is used in the method signature to indicate that this method may throw mentioned 
+exceptions. The caller to such methods must handle the mentioned exceptions either using try-catch blocks or using 
+throws keyword.
 
 Throwable In Java :
 Throwable is a super class for all types of errors and exceptions in java. This class is a member of java.lang package. Only instances of this class or it’s sub classes are thrown by the java virtual machine or by the throw statement. The only argument of catch block must be of this type or it’s sub classes. If you want to create your own customized exceptions, then your class must extend this class. 
 
 Q)Can we override a super class method which is throwing an unchecked exception with checked exception in the sub class?
 
-No. If a super class method is throwing an unchecked exception, then it can be overridden in the sub class with same exception or any other unchecked exceptions but can not be overridden with checked exceptions.
+No. If a super class method is throwing an unchecked exception, then it can be overridden in the sub class with 
+same exception or any other unchecked exceptions but can not be overridden with checked exceptions.
 

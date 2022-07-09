@@ -1,15 +1,23 @@
 Spring Cloud Config Server with Git Integration
 
 1. Why to Use Spring Cloud Config Server
-The idea of config server has come from the 12-factor app manifesto related to the best practices guidelines of developing modern cloud-native applications. It suggests to externalize properties or resource files out of server where the values of those resources vary during runtime – usually different configurations that will differ in each environment.
+The idea of config server has come from the 12-factor app manifesto related to the best practices guidelines of 
+developing modern cloud-native applications. It suggests to externalize properties or resource files out of server 
+where the values of those resources vary during runtime – usually different configurations that will differ in each
+ environment.
 
-As an example, let’s say one service is dependent on another service (invoked for specific business scenarios) and if that dependent service URL got changed to something else. Then usually we need to build and deploy our service with the updated URL. Now, if we go by the 12-factor app approach and if we read those config properties from external service, then we just need to update URL in the config server and refresh that client service configuration to use the updated URL.
+As an example, let’s say one service is dependent on another service (invoked for specific business scenarios) and if 
+that dependent service URL got changed to something else. Then usually we need to build and deploy our service with the 
+updated URL. Now, if we go by the 12-factor app approach and if we read those config properties from external service, 
+then we just need to update URL in the config server and refresh that client service configuration to use the updated URL.
 
 So, the idea is obvious and effective. Let’s now see how to create spring cloud config server.
 
 
 2. Tech Stack
-We will be using spring-boot based spring-cloud API that is readily available and very popular. It is called Config Server in spring framework nomenclature. Also, we will use the git configuration to host the properties file.
+We will be using spring-boot based spring-cloud API that is readily available and very popular.
+ It is called Config Server in spring framework nomenclature. Also, we will use the git configuration to host the 
+ properties file.
 
 So finally, our technology stack for this demo will be:
 
@@ -31,7 +39,9 @@ one is the config client service, using the configuration exposed as config serv
 Let’s first build the config server part with given steps:
 
 Generate the project structure
-Start with spring boot initializer portal which is a great starting point for creating any spring boot based application. Here we will choose only Config server starter pom. The screen shot is something like this. With this configuration, once we generate the project, one zip file will be downloaded, which we will import in eclipse after unzipping.
+Start with spring boot initializer portal which is a great starting point for creating any spring boot based application. 
+Here we will choose only Config server starter pom. The screen shot is something like this. With this configuration, 
+once we generate the project, one zip file will be downloaded, which we will import in eclipse after unzipping.
 
 Generate Server Project with Config Server Starter POM
 Generate Server Project with Config Server Starter POM
@@ -41,13 +51,18 @@ Once you have the zip file from the spring initializer portal, we need to unzip 
 pom.xml
 
 Build in eclipse
-Next step will be to run mvn clean install from either command prompt or from eclipse whatever you are comfortable with. In this step, all necessary dependencies will be downloaded from the maven repo. Make sure you are trying it from any network where no download restriction is present. Successful build in this step is very much required to proceed to the next steps.
+Next step will be to run mvn clean install from either command prompt or from eclipse whatever you are comfortable with. 
+In this step, all necessary dependencies will be downloaded from the maven repo. Make sure you are trying it from any network
+ where no download restriction is present. Successful build in this step is very much required to proceed to the next steps.
 
 Add @EnableConfigServer annotation
 
-Now open the Spring Application class that spring already has provided and add the @EnableConfigServer annotation before the class and build the project once again. With this annotation, this artifact will act like a spring config server.
+Now open the Spring Application class that spring already has provided and add the @EnableConfigServer annotation 
+before the class and build the project once again. With this annotation, this artifact will act like a spring 
+config server.
 
-After adding this annotation, the class will look like below – the class name can be different depending on the Project name you gave while generating. Also you can manually change the class name to a name you like it.
+After adding this annotation, the class will look like below – the class name can be different depending on the 
+Project name you gave while generating. Also you can manually change the class name to a name you like it.
 
 SpringConfigServerApplication.java
 package com.howtodoinjava.example.springconfigserver;
@@ -65,18 +80,42 @@ public class SpringConfigServerApplication
         SpringApplication.run(SpringConfigServerApplication.class, args);
     }
 }
-Client properties in git repository
-The next essential step is to create a local git repository. It can easily be converted to a remote repository later by configuring its URL in the properties file. We will place the external property file [configuration], which will be used by the Config server microservice to provide the external configuration of properties. We need to follow the below steps to create a local git repository and check-in sample properties files.
 
-Make sure you have git shell installed in your machine and you can run git bash from command prompt. To verify it open command prompt and type git, if it recognize the command then you probably have the git prompt installed, if not please follow git website, download and install as per the instruction.
+Client properties in git repository :
+
+The next essential step is to create a local git repository. It can easily be converted to a remote repository 
+later by configuring its URL in the properties file. We will place the external property file [configuration], 
+which will be used by the Config server microservice to provide the external configuration of properties. We need
+to follow the below steps to create a local git repository and check-in sample properties files.
+
+Make sure you have git shell installed in your machine and you can run git bash from command prompt. 
+
+To verify it open command prompt and type git, if it recognize the command then you probably have the git 
+prompt installed, if not please follow git website, download and install as per the instruction.
+
 Now Create a directory config-server-repo in your Desktop.
-Then create a file config-server-client.properties file in the config-server-repo directory and add the message there msg = Hello world - this is from config server.
-Then create another file config-server-client-development.properties file in the config-server-repo directory and add the message there msg = Hello world - this is from config server – Development environment.
-Then create another file config-server-client-production.properties file in the config-server-repo directory and add the message there msg = Hello world - this is from config server – Production environment.
-Here we are maintaining same property name for different environment, as we generally maintain properties for different environments like urls, credentials, database details etc. Here the most important point is that we need to append hyphen (-) with the environment name in each property so that config server understands it. Also, we need to name the properties file with the config client service name that we will create after this.
+
+Then create a file config-server-client.properties file in the config-server-repo directory and add the message 
+there msg = Hello world - this is from config server.
+
+Then create another file config-server-client-development.properties file in the config-server-repo directory 
+and add the message there msg = Hello world - this is from config server – Development environment.
+
+Then create another file config-server-client-production.properties file in the config-server-repo directory and 
+add the message there msg = Hello world - this is from config server – Production environment.
+
+Here we are maintaining same property name for different environment, as we generally maintain properties for 
+different environments like urls, credentials, database details etc. Here the most important point is that we 
+need to append hyphen (-) with the environment name in each property so that config server understands it. 
+
+Also, we need to name the properties file with the config client service name that we will create after this.
+
 Now open command prompt from config-server-repo directory and run command git init to make that directory as git repository.
+
 Now run git add . to add everything to this repo.
-Then finally we need to commit the properties file by running command git commit –m "initial checkin". This should check in all the files in the git repository. Here is the command prompt screen shot for the same.
+
+Then finally we need to commit the properties file by running command git commit –m "initial checkin". 
+This should check in all the files in the git repository. Here is the command prompt screen shot for the same.
 Property Check-in in Git
 Property Check-in in Git
 
@@ -95,7 +134,8 @@ $ git add .
 $ git commit -m "initial commit"
 
 Point the Git repo from Config Server
-Create one file called bootstrap.properties in the src\main\resources directory of spring-config-sever project and add below lines.
+Create one file called bootstrap.properties in the src\main\resources directory of spring-config-sever project 
+and add below lines.
 
 bootstrap.properties 
 
@@ -115,34 +155,46 @@ Now let’s understand those properties.
 
 server.port defines the port on which the embedded server will start.
 
-spring.cloud.config.server.git.uri will bind the git location to look for the configuration. Here we are using local git repo but can be switched to remote got location by just changing this location.
+spring.cloud.config.server.git.uri will bind the git location to look for the configuration. Here we are using 
+local git repo but can be switched to remote got location by just changing this location.
 
-management.security.enabled=false will disable the spring security on the management enpoints like /env, /refresh etc. This is for development settings, in production security should be enabled.
+management.security.enabled=false will disable the spring security on the management enpoints like /env, /refresh etc. 
+This is for development settings, in production security should be enabled.
 
 So, this step will point to a git location and server port.
 
-All above steps are very much we need to do in the config server-side, now do a final mvn clean install command on this project so that everything gets compiled properly and also packaged in the target folder as well as in local maven repository. We will start the config server service once we have the client part ready and we will finally test the feature.
+All above steps are very much we need to do in the config server-side, now do a final mvn clean install command on this 
+project so that everything gets compiled properly and also packaged in the target folder as well as in local maven repository. We will start the config server service once we have the client part ready and we will finally test the feature.
 
-Verify Configuration
-The command to run the service in embedded mode is java -jar target\spring-config-server-0.0.1-SNAPSHOT.jar however we will revisit this in the testing part.
+Verify Configuration :
 
-To check if the Config-server can recognize the properties, first run the config server microservice from command prompt by using the given command from command prompt of the project code base location.
+The command to run the service in embedded mode is java -jar target\spring-config-server-0.0.1-SNAPSHOT.jar however 
+we will revisit this in the testing part.
+
+To check if the Config-server can recognize the properties, first run the config server microservice from command prompt 
+by using the given command from command prompt of the project code base location.
 
 java -jar target\spring-config-server-0.0.1-SNAPSHOT.jar
 
-Now open browser and check below URLs, it will return the JSON output and in propertySources section we can see all the properties we have added in the properties. This ensures that the config-server is running successfully, it has recognized the git location, and it is serving configuration for different environments.
+Now open browser and check below URLs, it will return the JSON output and in propertySources section we can see all the 
+properties we have added in the properties. This ensures that the config-server is running successfully, it has recognized 
+the git location, and it is serving configuration for different environments.
 
 http://localhost:8888/client-config/development
 http://localhost:8888/client-config/production
 
-Also to check if any change in the property file is reflected by the server without restart – do a change in the value of any environment’s property and check-in property file. Then run that specific environment’s endpoint, and verify that changed property value should be reflected immediately without restarting the server.
+Also to check if any change in the property file is reflected by the server without restart – do a change in the value of any 
+environment’s property and check-in property file. Then run that specific environment’s endpoint, and verify that changed 
+property value should be reflected immediately without restarting the server.
 
-To do the git check in, after doing the change and save the file by any text editor, run the command git add . and git commit -m "test"
+To do the git check in, after doing the change and save the file by any text editor, run the command git add . and 
+git commit -m "test"
 
 
-4. Config Client Configuration
+4. Config Client Configuration :
 
-Now we will proceed to the client-side implementation where we will use those properties from a separate microservice, which is our final goal – to externalize the configuration to different services.
+Now we will proceed to the client-side implementation where we will use those properties from a separate microservice, 
+which is our final goal – to externalize the configuration to different services.
 
 Create Maven Project
 Go to https://start.spring.io/ web portal and generate client project with the below selected artifacts:
@@ -160,7 +212,11 @@ Generate Client Project with Listed Dependencies
 
 Create REST Resource
 
-Add one RestController to view the Server side property values in the response. To do that open the @SpringBootApplication class file that has been generated, and add the below small class in the end of that file. This is very simple and straight forward, we are just exposing one method at /message URL where we will just return the property value of msg that will be supplied by the config server microservice, which is configured to a local git repository (which will be migrated to a remote git repository in production!).
+Add one RestController to view the Server side property values in the response. To do that open the @SpringBootApplication 
+class file that has been generated, and add the below small class in the end of that file. This is very simple and straight 
+forward, we are just exposing one method at /message URL where we will just return the property value of msg that will be 
+supplied by the config server microservice, which is configured to a local git repository (which will be migrated to a 
+remote git repository in production!).
 
 SpringConfigClientApplication.java
 package com.howtodoinjava.example.springconfigclient;
@@ -201,7 +257,8 @@ class MessageRestController {
     }
 }
 Bind with the Config Server
-Create one file called bootstrap.properties in the src\main\resources directory and add the below properties to connect with the config server along with some required configuration.
+Create one file called bootstrap.properties in the src\main\resources directory and add the below properties to connect with 
+the config server along with some required configuration.
 
 bootstrap.properties
 
@@ -219,36 +276,53 @@ management.security.enabled=false
 Let’s understand the properties now.
 
 spring.application.name is just the application name of the microservice that would be deployed.
-spring.cloud.config.uri is the property to mention the config server url. Point to note that our config server is running on port 8888; verify it by opening the application.properties file of the spring config server code base and check the server.port=8888.
-management.security.enabled=false will disable the spring security on the management endpoints like /env, /refresh etc. This is for development settings, in production security should be enabled.
 
-Verify Client Config
-This is very much we need to do in the config client side, not do a final mvn clean install command on this project so that everything gets compiled properly and packaged also in the target folder as well as in local maven repository. We will start the config client service along with the server side and we will finally test the feature.
+spring.cloud.config.uri is the property to mention the config server url. Point to note that our config server is running on
+ port 8888; verify it by opening the application.properties file of the spring config server code base and check the server.port=8888.
+management.security.enabled=false will disable the spring security on the management endpoints like /env, /refresh etc. 
+This is for development settings, in production security should be enabled.
+
+Verify Client Config :
+
+This is very much we need to do in the config client side, not do a final mvn clean install command on this project so that 
+everything gets compiled properly and packaged also in the target folder as well as in local maven repository. 
+We will start the config client service along with the server side and we will finally test the feature.
 
 
 5. Demo
 Let’s test the config server application.
 
-Build and Run Config Server Project
-Open command prompt from spring-config-server folder and run mvn clean install command. Once build is completed run the application from that command prompt itself by java -jar command like java -jar target\spring-config-server-0.0.1-SNAPSHOT.jar.
+Build and Run Config Server Project :
+
+Open command prompt from spring-config-server folder and run mvn clean install command. Once build is completed run the 
+application from that command prompt itself by java -jar command like 
+java -jar target\spring-config-server-0.0.1-SNAPSHOT.jar.
 
 This will start the config server service in 8888 port in the localhost.
 
-Build and Run Config Client Project
-Similarly, Open command prompt from spring-config-client folder and run mvn clean install command. Once build is completed run the application from that command prompt itself by java -jar command like java -jar target\spring-config-client-0.0.1-SNAPSHOT.jar.
+Build and Run Config Client Project:
+
+Similarly, Open command prompt from spring-config-client folder and run mvn clean install command. Once build is completed 
+run the application from that command prompt itself by java -jar command like 
+java -jar target\spring-config-client-0.0.1-SNAPSHOT.jar.
 
 This will start the Config Client service in 8080 port of localhost.
 
-Test REST Endpoint
-Now in the browser open the /msg rest endpoint by browsing the url http://localhost:8080/msg. It should return Hello world - this is from config server which is mentioned in the config-server-client-development.properties file.
+Test REST Endpoint :
+Now in the browser open the /msg rest endpoint by browsing the url http://localhost:8080/msg. 
+It should return Hello world - this is from config server which is mentioned in 
+the config-server-client-development.properties file.
 
 Test REST End Point
 Test REST End Point
 Test Property Change
-Now we will do a property change and test if this can be reflected in the config client service without restarting any of the Microservices.
-Do some change, in the value of the msg property in the config-server-client-development.properties and check-in in the local git, then hit the http://localhost:8080/msg again in the browser, You will the old value only.
+Now we will do a property change and test if this can be reflected in the config client service without restarting any of the 
+Microservices.
+Do some change, in the value of the msg property in the config-server-client-development.properties and check-in in the local 
+git, then hit the http://localhost:8080/msg again in the browser, You will the old value only.
 
-To reflect the new value, we need to refresh the configuration by hitting http://localhost:8080/refresh endpoint using POST method from any of the REST client.
+To reflect the new value, we need to refresh the configuration by hitting http://localhost:8080/refresh endpoint using 
+POST method from any of the REST client.
 
 Once you have successfully refreshed the config client service, the new value should be reflected in the service response. This is because @RefreshScope annotation the Rest Controller that we have exposed.
 

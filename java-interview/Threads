@@ -1,7 +1,8 @@
 Q) Different Ways Of Defining Threads In Java ?
 
 1) Thread As A Separate Concrete Class
-Threads class can be defined as a separate concrete class. This method of defining thread class is useful when more than one classes need that task to be performed.
+Threads class can be defined as a separate concrete class. This method of defining thread class is useful when more 
+than one classes need that task to be performed.
 
 
 //Thread as a separate concrete class
@@ -39,7 +40,8 @@ class UsageClassTwo
 }
 
 2) Thread As A Nested Class or Static Inner Class :
-Thread class can be defined as a nested class or static inner class of the usage class. This method is useful when only one class uses the thread and it’s task more oftenly.
+Thread class can be defined as a nested class or static inner class of the usage class. This method is useful when 
+only one class uses the thread and it’s task more oftenly.
 
 public class UsageClass
 {
@@ -118,7 +120,8 @@ public class UsageClass
 }
 
 4) Thread As A Local Inner Class :
-The thread class can be defined as a local inner class of the method of the usage class. If declared so, only that method can use the functionality of that thread.
+The thread class can be defined as a local inner class of the method of the usage class. 
+If declared so, only that method can use the functionality of that thread.
 
 
 public class UsageClass
@@ -159,7 +162,8 @@ public class UsageClass
 }
 5) Thread As An Anonymous Inner Class :
 
-Threads can be declared as anonymous inner class. This method is useful when some task is needed only once. You can’t use the thread which is declared as anonymous inner class multiple times. You can use it only once.
+Threads can be declared as anonymous inner class. This method is useful when some task is needed only once. 
+You can’t use the thread which is declared as anonymous inner class multiple times. You can use it only once.
 
 
 public class UsageClass
@@ -189,7 +193,8 @@ public class UsageClass
     }
 }
 6) Usage class itself as a thread class.
-You can declare usage class itself as a thread class. If declared so, other classes can also use the thread and it’s task.
+You can declare usage class itself as a thread class. If declared so, other classes can also use the thread and it’s 
+task.
 
 class UsageClass extends Thread
 {
@@ -229,10 +234,15 @@ Q) Types Of Threads In Java ?
 
 1) User Thread :
 
-User threads are threads which are created by the application or user. They are high priority threads. JVM (Java Virtual Machine) will not exit until all user threads finish their execution. JVM wait for these threads to finish their task. These threads are foreground threads.
+User threads are threads which are created by the application or user. They are high priority threads. 
+JVM (Java Virtual Machine) will not exit until all user threads finish their execution. JVM wait for these threads to 
+finish their task. These threads are foreground threads.
 
 2)Daemon Thread :
-Daemon threads are threads which are mostly created by the JVM. These threads always run in background. These threads are used to perform some background tasks like garbage collection and house-keeping tasks. These threads are less priority threads. JVM will not wait for these threads to finish their execution. JVM will exit as soon as all user threads finish their execution. JVM doesn’t wait for daemon threads to finish their task.
+Daemon threads are threads which are mostly created by the JVM. These threads always run in background. These threads 
+are used to perform some background tasks like garbage collection and house-keeping tasks. These threads are less 
+priority threads. JVM will not wait for these threads to finish their execution. JVM will exit as soon as all 
+user threads finish their execution. JVM doesn’t wait for daemon threads to finish their task.
 
 Some Things-To-Remember about user threads and daemon threads In Java :
 
@@ -263,7 +273,8 @@ public class ThreadsInJava
     }
 }
 
-- You can’t set a daemon property after starting the thread. If you try to set the daemon property when the thread is active, It will throw a IllegalThreadStateException at run time.
+- You can’t set a daemon property after starting the thread. If you try to set the daemon property when the thread is 
+active, It will throw a IllegalThreadStateException at run time.
 
 UserThread userThread = new UserThread();   //Creating the UserThread
  
@@ -271,10 +282,12 @@ UserThread userThread = new UserThread();   //Creating the UserThread
  
         userThread.setDaemon(true);        //This statement will throw IllegalThreadStateException
 		
-- You can check whether the thread is user thread or a daemon thread by using isDaemon() method of Thread class. This method returns “true” for a daemon thread and “false” for a user thread.
+- You can check whether the thread is user thread or a daemon thread by using isDaemon() method of Thread class. 
+This method returns “true” for a daemon thread and “false” for a user thread.
 
 
--Daemon property of a thread is inherited from it’s parent thread. i.e The thread created by user thread will be user thread and the thread created by daemon thread will be a daemon thread.
+-Daemon property of a thread is inherited from it’s parent thread. i.e The thread created by user thread will be user 
+thread and the thread created by daemon thread will be a daemon thread.
 
 - The main thread or primary thread created by JVM is an user thread.
 
@@ -285,11 +298,14 @@ Q) Naming A Thread In Java ?
 2)  public final String getName()   —-> Returns the name of the thread.
 
 Some Things-To-Remember about Naming a thread in java :
-- setName() method may throw a SecurityException at run time if the current thread can not modify the name of the specified thread.
+- setName() method may throw a SecurityException at run time if the current thread can not modify the name of 
+the specified thread.
 You can change the name of a thread at any state of the thread.
 
 - Default Name Of The Thread :
-In Java, All threads have names. If you are not providing the name to a thread, thread will get default name. Default name of the thread will be consist of a word “Thread”, followed by hyphen (-) and followed by an integer number starting with 0.
+In Java, All threads have names. If you are not providing the name to a thread, thread will get default name. 
+Default name of the thread will be consist of a word “Thread”, followed by hyphen (-) and followed by an integer 
+number starting with 0.
 
 Thread t = new Thread();
  
@@ -316,9 +332,13 @@ public MyThread(String name)
  
  Q) How to identify a thread in java?
  
- In a multithreaded application, It is very important to know which thread is currently executing it’s task. But the question is, How to identify a thread?. The answer which effortlessly comes to our mind is “through it’s name”. Of course, you can identify a thread by it’s name.  But, more than one threads can have the same name. This makes identifying a thread more difficult. There is a solution for this problem from JDK 1.5 onward. JVM assigns one unique long number for every thread created. This remains unchanged for the whole life term of a thread. This number can be used to identify a thread.
+ In a multithreaded application, It is very important to know which thread is currently executing it’s task. 
+ But the question is, How to identify a thread?. The answer which effortlessly comes to our
+ mind is “through it’s name”. Of course, you can identify a thread by it’s name.  But, more than one threads can have 
+ the same name. This makes identifying a thread more difficult. There is a solution for this problem from JDK 1.5 onward. JVM assigns one unique long number for every thread created. This remains unchanged for the whole life term of a thread. This number can be used to identify a thread.
 
-From JDK 1.5 onward, One more method added to java.lang.Thread class. That is getID() method. This method returns the unique long number associated with a thread. That can be used as an identifier of a thread. Below is the method signature of getID() method.
+From JDK 1.5 onward, One more method added to java.lang.Thread class. That is getID() method.
+ This method returns the unique long number associated with a thread. That can be used as an identifier of a thread. Below is the method signature of getID() method.
 
 public long getID()
 
@@ -344,7 +364,8 @@ public class ThreadsInJava
 }
 
 Some Things-To-Remember about Identifying a Thread In Java :
-1) Thread ID is a unique positive long number. It remains the same for a thread during its whole life term. Thread ID may be reused when the thread is terminated.
+1) Thread ID is a unique positive long number. It remains the same for a thread during its whole life term. 
+Thread ID may be reused when the thread is terminated.
 
 2) Can we use the thread ID before a thread is started?
 
@@ -366,7 +387,9 @@ No, we can’t assign our own ID to the thread. But, we can change the way getID
 
 Q) Priority Of A Thread In Java?
 
-As we know, Java allows multithreaded programming. i.e Java application can have more than one threads running simultaneously. When an application has multiple threads they are choosen to execute on priority basis. A thread with highest priority is choosen first for execution than the thread with lowest priority.
+As we know, Java allows multithreaded programming. i.e Java application can have more than one threads running 
+simultaneously. When an application has multiple threads they are choosen to execute on priority basis. 
+A thread with highest priority is choosen first for execution than the thread with lowest priority.
 
 public final void setPriority(int newPriority)  —> Changes the priority of a thread to newPriority.
 
@@ -380,7 +403,9 @@ NORM_PRIORITY  —> It defines the normal priority that a thread can have and it
 
 MAX_PRIORITY  —> It defines the highest priority that a thread can have and it’s value is 10.
 
-- setPriority() method may throw two exceptions. One is IllegelArgumentException if supplied priority is not in the range of MIN_PRIORITY and MAX_PRIORITY and another one is SecurityException if current thread can not modify the priority of a specified thread.
+- setPriority() method may throw two exceptions. One is IllegelArgumentException if supplied priority is not in the 
+range of MIN_PRIORITY and MAX_PRIORITY and another one is SecurityException if current thread can not modify the 
+priority of a specified thread.
 
 - How to retrieve the priority of a main thread?
 First, get the reference to a main thread using currentThread() method of Thread class. After getting the reference of main thread, call getPriority() method on it.
@@ -400,7 +425,8 @@ public static void main(String[] args)
 
 Q) Thread.sleep() Method In Java?
 
-Thread.sleep() method makes the currently executing thread to pause it’s execution for a specified period of time. There are two overloaded forms of sleep() method available in java.lang.Thread class. They are,
+Thread.sleep() method makes the currently executing thread to pause it’s execution for a specified period of time. 
+There are two overloaded forms of sleep() method available in java.lang.Thread class. They are,
 
 1) public static void sleep(long millis) throws InterruptedException
 
@@ -408,15 +434,22 @@ Thread.sleep() method makes the currently executing thread to pause it’s execu
 
 2) public static void sleep(long millis, int nanos) throws InterruptedException
 
-—> It makes the currently executing thread to sleep for specified number of milliseconds plus specified number of nanoseconds.
+—> It makes the currently executing thread to sleep for specified number of milliseconds plus specified number of 
+nanoseconds.
 
-Thread.sleep() method throws InterruptedException if a thread in sleep is interrupted by other threads. InterruptedException is a checked type of exception. That means, “Thread.sleep()” statement must be enclosed within try-catch blocks or it must be specified with throws clause.
+Thread.sleep() method throws InterruptedException if a thread in sleep is interrupted by other threads. 
+InterruptedException is a checked type of exception. That means, “Thread.sleep()” statement must be enclosed within 
+try-catch blocks or it must be specified with throws clause.
 
 When the thread is going for sleep, it does not release the synchronized locks it holds.
 
 Q) Joining The Threads In Java?
 
-join() method of java.lang.Thread class is used to mantain the order of execution of threads. Using join() method, you can make the currently executing thread to wait for the some other threads to finish their task. For example, Let’s us assume that there are two threads namely, thread1 and thread2. You can make thread1 to hold it’s execution for some time so that thread2 can finish it’s task. After, thread2 finishes it’s task, thread1 resumes it’s execution.For this to happen, you should call join() method on thread2 within thread1.
+join() method of java.lang.Thread class is used to mantain the order of execution of threads. Using join() method, 
+you can make the currently executing thread to wait for the some other threads to finish their task.
+ For example, Let’s us assume that there are two threads namely, thread1 and thread2. You can make thread1 to hold it’s 
+ execution for some time so that thread2 can finish it’s task. After, thread2 finishes it’s task, thread1 resumes 
+ it’s execution.For this to happen, you should call join() method on thread2 within thread1.
 
 1) public final void join() throws InterruptedException
 
@@ -430,7 +463,8 @@ join() method of java.lang.Thread class is used to mantain the order of executio
 
 —> Currently executing thread waits at most millis milliseconds plus nanos nanoseconds for a thread to finish it’s task on which it is called.
 
-Like sleep() method, join() method also throws InterruptedException. Therefore, you have to keep calling statement to join() method in try-catch blocks or else propagate the exception with throws clause.
+Like sleep() method, join() method also throws InterruptedException. Therefore, you have to keep calling statement to 
+join() method in try-catch blocks or else propagate the exception with throws clause.
 
 public class ThreadsInJava
 {
@@ -518,15 +552,35 @@ public class ThreadsInJava
     }
 }
 
-The main task of above example is to print the numbers from 0 to 3000. This task is devided into three parts and each part is assigned to one thread. i.e The task of printing the numbers from 0 to 1000 is assigned to thread t1, printing the numbers from 1001 to 2000 is assigned to thread t2 and printing the numbers from 2001 to 3000 is assigned to thread t3.The main thread creates and starts these three threads. main thread also calls join method on thread t3 (Line 79). So main thread waits until thread t3 finishes it’s task. Before starting it’s task, thread t3 calls join method on thread t2 (Line 57). So, thread t3 waits at most 5 seconds for thread t2 to finish it’s task. Thread t2 also calls join method on thread t1 (Line 32). So, thread t2 waits at most 5.5 seconds for thread t1 to finish it’s task. So, first t1 finishes it’s task and then t2 finishes it’s task and after that t3 finishes it’s task. After all these three threads finish their task, main threads completes the task.
+The main task of above example is to print the numbers from 0 to 3000. This task is devided into three parts and each 
+part is assigned to one thread. i.e The task of printing the numbers from 0 to 1000 is assigned to thread t1, 
+printing the numbers from 1001 to 2000 is assigned to thread t2 and printing the numbers from 2001 to 3000 is assigned 
+to thread t3.The main thread creates and starts these three threads. main thread also calls join method on thread t3 
+(Line 79). So main thread waits until thread t3 finishes it’s task. Before starting it’s task, thread t3 calls join 
+method on thread t2 (Line 57). So, thread t3 waits at most 5 seconds for thread t2 to finish it’s task. 
+Thread t2 also calls join method on thread t1 (Line 32). So, thread t2 waits at most 5.5 seconds for thread t1 to 
+finish it’s task. So, first t1 finishes it’s task and then t2 finishes it’s task and after that t3 finishes it’s task. 
+After all these three threads finish their task, main threads completes the task.
 
 Q) Thread Interference In Java ?
 
-Multithreading has it’s own pros and cons. The main advantage of multithreading is that we can perform multiple tasks simultaneously. At the same time it is a challenge for software developers to protect the memory into which thread are reading or writing. There is no problem when multiple threads have their own memory. Each thread will be reading or writing into their own memory. There is a challenge when multiple threads share same memory. Every thread will be reading or writing into same memory. This creates inconsistent data in the memory.
-In the above example, There are two threads namely t1 and t2, and they are using same Shared class object s1. Both t1 and t2 are calling sharedMethod() of s1 object from their run() method. As we are starting thread t1 first, let’s assume that thread t1 is executing the last statement of sharedMethod() (Line 12) and thread t2 has finished executing the first statement of sharedMethod() (Line 7). While executing last statement, thread t1 will be expecting value of “i” as 30 as it has assigned 30 to it in the previous statement (Line 11), but t2 has changed value of “i” to 10 while executing the first statement. So, t1 will read value of “i” as 10 not 30 as it is expecting.
+Multithreading has it’s own pros and cons. The main advantage of multithreading is that we can perform multiple tasks 
+simultaneously. At the same time it is a challenge for software developers to protect the memory into which thread are 
+reading or writing. There is no problem when multiple threads have their own memory. Each thread will be reading or 
+writing into their own memory. There is a challenge when multiple threads share same memory. 
+Every thread will be reading or writing into same memory. This creates inconsistent data in the memory.
+In the above example, There are two threads namely t1 and t2, and they are using same Shared class object s1.
+ Both t1 and t2 are calling sharedMethod() of s1 object from their run() method. As we are starting thread t1 first,
+ let’s assume that thread t1 is executing the last statement of sharedMethod() (Line 12) and 
+ thread t2 has finished executing the first statement of sharedMethod() (Line 7). While executing last statement, 
+ thread t1 will be expecting value of “i” as 30 as it has assigned 30 to it in the previous statement (Line 11), 
+ but t2 has changed value of “i” to 10 while executing the first statement. So, t1 will read value of “i” as 10 not 30 
+ as it is expecting.
 
 How To Avoid Thread Interference or How To Acheive Thread Safeness?
-Following are some methods which are used to avoid thread interference in java.(These methods will be discussed in detail in subsequent articles).
+
+Following are some methods which are used to avoid thread interference in java.
+(These methods will be discussed in detail in subsequent articles).
 
 By declaring the method as synchronized.
 By declaring the variables as final.
@@ -537,11 +591,14 @@ By restricting the access to same object by multiple threads.
 
 Q) 10 Points-To-Remember About Synchronization In Java ?
 
-Synchronization in java is a strategy or a method to avoid thread interference and hence protecting the data from inconsistency. synchronization is also one of the way to make code thread safe. Through synchronization, we can make the threads to execute particular method or block in sync not simultaneously.
+Synchronization in java is a strategy or a method to avoid thread interference and hence protecting the data from i
+nconsistency. synchronization is also one of the way to make code thread safe. Through synchronization, we can 
+make the threads to execute particular method or block in sync not simultaneously.
 
 
  
-Synchronization in java is implemented using synchronized keyword. synchronized keyword can be used with methods or blocks but not with the variables.
+Synchronization in java is implemented using synchronized keyword. synchronized keyword can be used with methods or 
+blocks but not with the variables.
 
 When a method or block is declared as synchronized, only one thread can enter into that method or block. When one thread is executing synchronized method or block, the other threads which wants to execute that method or block wait or suspend their execution until first thread is done with that method or block. Thus avoiding the thread interference and achieving thread safeness
 
@@ -590,20 +647,36 @@ public class ThreadsInJava
     }
 }
 
-In the above example, both threads t1 and t2 wants to execute sharedMethod() of s1 object. But, sharedMethod() is declared as synchronized. So, whichever thread enters first into sharedMethod(), it continues to execute that method. The other thread waits for first thread to finish it’s execution of sharedMethod(). It never enters into sharedMethod() until first thread is done with that method. That means, both threads are executing sharedMethod() one by one not simultaneously. This protects the value of “i” in the memory for a particular thread.
+In the above example, both threads t1 and t2 wants to execute sharedMethod() of s1 object. But, 
+sharedMethod() is declared as synchronized. So, whichever thread enters first into sharedMethod(), 
+it continues to execute that method. The other thread waits for first thread to finish it’s execution of sharedMethod(). 
+It never enters into sharedMethod() until first thread is done with that method. That means, both threads are 
+executing sharedMethod() one by one not simultaneously. This protects the value of “i” in the memory for a particular 
+thread.
 
 The Logic Behind The Synchronization In Java :
-The synchronization in java is built around an entity called object lock or monitor. Here is the brief description about lock or monitor.
+The synchronization in java is built around an entity called object lock or monitor. Here is the brief description about 
+lock or monitor.
 
 Whenever an object is created to any class, an object lock is created and is stored inside the object.
 One object will have only one object lock associated with it.
-Any thread wants to enter into synchronized methods or blocks of any object, they must acquire object lock associated with that object and release the lock after they are done with the execution.
-The other threads which wants to enter into synchronized methods of that object have to wait until the currently executing thread releases the object lock.
-To enter into static synchronized methods or blocks, threads have to acquire class lock associated with that class as static members are stored inside the class memory.
-Synchronized Blocks :
-Some times, you need only some part of the method to be synchronized not the whole method. This can be achieved with synchronized blocks. Synchronized blocks must be defined inside a definition blocks like methods, constructors, static initializer or instance initializer.
+Any thread wants to enter into synchronized methods or blocks of any object, they must acquire object lock associated
+ with that object and release the lock after they are done with the execution.
+The other threads which wants to enter into synchronized methods of that object have to wait until the 
+currently executing thread releases the object lock.
 
-synchronized block takes one argument and it is called mutex. if synchronized block is defined inside non-static definition blocks like non-static methods, instance initializer or constructors, then this mutex must be an instance of that class. If synchronized block is defined inside static definition blocks like static methods or static initializer, then this mutex must be like ClassName.class.
+To enter into static synchronized methods or blocks, threads have to acquire class lock associated with that class as 
+static members are stored inside the class memory.
+
+Synchronized Blocks :
+Some times, you need only some part of the method to be synchronized not the whole method. This can be achieved with 
+synchronized blocks. Synchronized blocks must be defined inside a definition blocks like methods, constructors, static 
+initializer or instance initializer.
+
+synchronized block takes one argument and it is called mutex. if synchronized block is defined inside non-static 
+definition blocks like non-static methods, instance initializer or constructors, then this mutex must be an instance 
+of that class. If synchronized block is defined inside static definition blocks like static methods or static 
+initializer, then this mutex must be like ClassName.class.
 
 Here is an example of static and non-static synchronized blocks.
 
@@ -634,7 +707,8 @@ class Shared
     }
 }
 10 Points-To-Remember About Synchronization In Java :
-1) You can use synchronized keyword only with methods but not with variables, constructors, static initializer and instance initializers.
+1) You can use synchronized keyword only with methods but not with variables, constructors, static initializer and 
+instance initializers.
 
 
 class Shared
@@ -656,7 +730,8 @@ class Shared
         //Compile time error, Instance initializer can not be synchronized
     }
 }
-2) Constructors, Static initializer and instance initializer can’t be declared with synchronized keyword, but they can contain synchronized blocks.
+2) Constructors, Static initializer and instance initializer can’t be declared with synchronized keyword, 
+but they can contain synchronized blocks.
 
 class Shared
 {
@@ -683,7 +758,8 @@ class Shared
         }
     }
 }
-3) Both static and non-static methods can use synchronized keyword. For static methods, thread need class level lock and for non-static methods, thread need object level lock.
+3) Both static and non-static methods can use synchronized keyword. For static methods, thread need class level lock 
+and for non-static methods, thread need object level lock.
 
 
 class Shared
@@ -698,7 +774,8 @@ class Shared
         //Non-static Synchronized method
     }
 }
-4) It is possible that both static synchronized and non-static synchronized methods can run simultaneously. Because, static methods need class level lock and non-static methods need object level lock.
+4) It is possible that both static synchronized and non-static synchronized methods can run simultaneously. Because, 
+static methods need class level lock and non-static methods need object level lock.
 
 5) A method can contain any number of synchronized blocks. This is like synchronizing multiple parts of a method.
 
@@ -740,17 +817,25 @@ synchronized (this)
         //Nested synchronized blocks
     }
 }
-7) Lock acquired by the thread before executing a synchronized method or block must be released after the completion of execution, no matter whether execution is completed normally or abnormally (due to exceptions).
+7) Lock acquired by the thread before executing a synchronized method or block must be released after the completion 
+of execution, no matter whether execution is completed normally or abnormally (due to exceptions).
 
-8) Synchronization in java is Re-entrant in nature. A thread can not acquire a lock that is owned by another thread. But, a thread can acquire a lock that it already owns. That means if a synchronized method gives a call to another synchronized method which needs same lock, then currently executing thread can directly enter into that method or block without acquiring the lock.
+8) Synchronization in java is Re-entrant in nature. A thread can not acquire a lock that is owned by another thread. 
+But, a thread can acquire a lock that it already owns. That means if a synchronized method gives a call to another 
+synchronized method which needs same lock, then currently executing thread can directly enter into that method or 
+block without acquiring the lock.
 
-9) synchronized method or block is very slow. They decrease the performance of an application. So, special care need to be taken while using synchronization. Use synchronization only when you needed it the most.
+9) synchronized method or block is very slow. They decrease the performance of an application. So, 
+special care need to be taken while using synchronization. Use synchronization only when you needed it the most.
 
 10) Use synchronized blocks instead of synchronized methods. Because, synchronizing some part of a method improves the performance than synchronizing the whole method.
 
 Q)What Is Deadlock In Java?
 
-Deadlock in java is a condition which occurs when two or more threads get blocked waiting for each other for an infinite period of time to release the resources(Locks) they hold. Deadlock is the common problem in multi threaded programming which can completely stops the execution of an application. So, extra care need to be taken while writing the multi threaded programs so that deadlock never occurs.
+Deadlock in java is a condition which occurs when two or more threads get blocked waiting for each other for an infinite
+ period of time to release the resources(Locks) they hold. Deadlock is the common problem in multi threaded programming 
+ which can completely stops the execution of an application. So, extra care need to be taken while writing the multi 
+ threaded programs so that deadlock never occurs.
 
 
  
@@ -816,9 +901,13 @@ public class DeadLockInJava
         t2.start();
     }
 }
-In the above multithreaded program, thread t1 and t2 are concurrent threads i.e they are executing their task simultaneously. There are two Shared class objects, s1 and s2, which are shared by both the threads. Shared class has two synchronized methods, methodOne() and methodTwo(). That means, only one thread can execute these methods at a given time.
+In the above multithreaded program, thread t1 and t2 are concurrent threads i.e they are executing their task 
+simultaneously. There are two Shared class objects, s1 and s2, which are shared by both the threads. Shared class has 
+two synchronized methods, methodOne() and methodTwo(). That means, only one thread can execute these methods at a given 
+time.
 
-First, thread t1 enters the methodOne() of s1 object by acquiring the object lock of s1. At the same time, thread t2 also enters the methodTwo() of s2 object by acquiring the object lock of s2. methodOne() of s1 object, currently executing by thread t1, calls methodTwo() of s2 object from it’s body. So, thead t1 tries to acquire the object lock of s2 object. But object lock of s2 object is already acquired by thread t2. So, thread t1 waits for thread t2 to release the object lock of s2 object.
+First, thread t1 enters the methodOne() of s1 object by acquiring the object lock of s1. At the same time, thread t2 
+also enters the methodTwo() of s2 object by acquiring the object lock of s2. methodOne() of s1 object, currently executing by thread t1, calls methodTwo() of s2 object from it’s body. So, thead t1 tries to acquire the object lock of s2 object. But object lock of s2 object is already acquired by thread t2. So, thread t1 waits for thread t2 to release the object lock of s2 object.
 
 At the same time, thread t2 is also executing methodTwo() of s2 object. methodTwo() of s2 object also makes a call to methodOne() of s1 object. So, thread t2 tries to acquire the object lock of s1 object. But, it is already acquired by thread t1. So, thread t2 also waits for thread t1 to release the object lock of s1 object.
 
@@ -826,7 +915,9 @@ Thus, both the threads wait for each other to release the object locks they own.
 
 Q) How To Avoid The Deadlock In Java ?
 
-Try to avoid nested synchronized blocks. Nested synchronized blocks makes a thread to acquire another lock while it is already holding one lock. This may create the deadlock if another thread wants the same lock which is currently held by this thread.
+Try to avoid nested synchronized blocks. Nested synchronized blocks makes a thread to acquire another lock while it is 
+already holding one lock. This may create the deadlock if another thread wants the same lock which is currently held by
+ this thread.
 
 synchronized (Lock A)
 {
@@ -838,7 +929,9 @@ synchronized (Lock A)
     }
 }
 Lock Ordering :
-If you needed nested synchronized blocks at any cost, then make sure that threads acquire the needed locks in some predefined order. For example, If there are three threads t1, t2 and t3 running concurrently and they needed locks A, B and C in the following manner,
+If you needed nested synchronized blocks at any cost, then make sure that threads acquire the needed locks in 
+some predefined order. For example, If there are three threads t1, t2 and t3 running concurrently and they needed 
+locks A, B and C in the following manner,
 
 
 Thread t1 :
@@ -851,16 +944,24 @@ Thread t3 :
         Lock A
         Lock B
         Lock C
-In the above scenario, t1 needs A and B locks, t2 needs A and C locks and t3 needs A, B and C locks. If you define an order to acquire the locks like, Lock A must be acquired before Lock B and Lock B must be acquired before Lock c, then deadlock never occurs in the above case.
+In the above scenario, t1 needs A and B locks, t2 needs A and C locks and t3 needs A, B and C locks. If you define 
+an order to acquire the locks like, Lock A must be acquired before Lock B and Lock B must be acquired before Lock c, 
+then deadlock never occurs in the above case.
 
-If you define such lock ordering, then thread t2 never acquire lock C and t3 never acquire lock B and lock C until they got lock A. They will wait for lock A until it is released by t1. After lock A is released by t1, any one of these threads will acquire lock A on the priority basis and finishes their task. Other thread which is waiting for lock A, will never try to acquire remaining locks.
+If you define such lock ordering, then thread t2 never acquire lock C and t3 never acquire lock B and lock C until 
+they got lock A. They will wait for lock A until it is released by t1. After lock A is released by t1, any one of 
+these threads will acquire lock A on the priority basis and finishes their task. Other thread which is waiting for 
+lock A, will never try to acquire remaining locks.
 
 By defining such lock ordering, you can avoid the deadlock.
 
 Lock Timeout :
-Another deadlock preventive tip is to specify the time for a thread to acquire the lock. If it fails to acquire the specified lock in the given time, then it should give up trying for a lock and retry after some time. Such method of specifying time to acquire the lock is called lock timeout.
+Another deadlock preventive tip is to specify the time for a thread to acquire the lock. If it fails to acquire the 
+specified lock in the given time, then it should give up trying for a lock and retry after some time. 
+Such method of specifying time to acquire the lock is called lock timeout.
 
-Lock the code where it is actually needed. For example,If you want only some part of the method to be thread safety, then lock only that part not the whole method.
+Lock the code where it is actually needed. For example,If you want only some part of the method to be thread safety, 
+then lock only that part not the whole method.
 
 void method()
 {
@@ -877,13 +978,17 @@ void method()
 
 Q)Interthread Communication Using wait(), notify() and notifyAll()?
 
-Threads can communicate with each other using wait(), notify() and notifyAll() methods. These methods are final methods of java.lang.Object class. That means every class in java will have these methods. Below is the method signatures of these methods.
+Threads can communicate with each other using wait(), notify() and notifyAll() methods. These methods are final 
+methods of java.lang.Object class. That means every class in java will have these methods. Below is the method 
+signatures of these methods.
 
 
  
 1) public final void wait() throws InterruptedException
 
-This method tells the currently executing thread to release the lock of this object and wait until some other thread acquires the same lock and notify it using either notify() or notifyAll() methods. This method throws InterruptedException if waiting thread is interrupted.
+This method tells the currently executing thread to release the lock of this object and wait until some other 
+thread acquires the same lock and notify it using either notify() or notifyAll() methods. This method throws 
+InterruptedException if waiting thread is interrupted.
 
 2)public final void notify()
 
@@ -893,7 +998,8 @@ This method wakes up one thread randomly that called wait() method on this objec
 
 This method wakes up all the threads that called wait() method on this object. But, only one thread will acquire lock of this object depending upon the priority.
 
-Important Note : These three methods must be called within synchronized method or block. Any thread which calls these methods must have lock of that object.
+Important Note : These three methods must be called within synchronized method or block. Any thread which calls 
+these methods must have lock of that object.
 
 Below is an example for using wait() and notify() methods.
 
@@ -964,15 +1070,24 @@ public class ThreadsInJava
         t2.start();
     }
 }
-In this example, Thread t1 and t2 are sharing shared class object ‘s’. Thread t1 is calling methodOne() and thread t2 is calling methodTwo() of ‘s’ object. Both the methods are synchronized. That means, for any thread to enter these methods, they must acquire lock of ‘s’ object.
+In this example, Thread t1 and t2 are sharing shared class object ‘s’. Thread t1 is calling methodOne() and thread t2 
+is calling methodTwo() of ‘s’ object. Both the methods are synchronized. That means, for any thread to enter these 
+methods, they must acquire lock of ‘s’ object.
 
-First, thread t1 acquires the object lock and enters methodOne(). Thread t2 waits for thread t1 to release the object lock. Thread t1 calls wait() method within methodOne(). As soon as, it calls wait() method, It releases the lock of ‘s’ object and goes for wait. Thread t2 acquires this lock and enters methodTwo(). After entering methodTwo(), thread t2 sleeps for 5 seconds and calls notify() method on this object. It wakes up thread t1 which is waiting for this object lock. As soon as, thread t2 releases the object lock after finishing it’s execution of methodTwo(), thread t1 acquires this lock and executes remaining statements of methodOne(). In this manner, both threads t1 and t2 communicate with each other and share the lock.
+First, thread t1 acquires the object lock and enters methodOne(). Thread t2 waits for thread t1 to release the object 
+lock. Thread t1 calls wait() method within methodOne(). As soon as, it calls wait() method, It releases the lock of ‘s’ 
+object and goes for wait. Thread t2 acquires this lock and enters methodTwo(). After entering methodTwo(), thread t2 
+sleeps for 5 seconds and calls notify() method on this object. It wakes up thread t1 which is waiting for this object
+ lock. As soon as, thread t2 releases the object lock after finishing it’s execution of methodTwo(), thread t1 
+ acquires this lock and executes remaining statements of methodOne(). In this manner, both threads t1 and t2 
+ communicate with each other and share the lock.
 
 For more clarification, see the below picture.
 
 wait(), notify() and notifyAll()
 Some Things-To-Remember About wait(), notify() and notifyAll() :
-If a thread calls notify() method and more than one threads are waiting for the object lock, then only one thread will be notified randomly.
+If a thread calls notify() method and more than one threads are waiting for the object lock, then only one thread will 
+be notified randomly.
 When a thread calls notifyAll() method on an object, it notifies all the threads which are waiting for this object lock. But, only one thread will acquire this object lock depending upon priority.
 When you call sleep() method on a thread, thread goes to sleep with holding the object lock with it. But, if you call wait() method, thread releases the object lock and goes for sleep. This is the main difference between wait() and sleep() methods.
 wait(), notify() and notifyAll() are final methods of java.lang.Object class not java.lang.Thread class.
@@ -985,13 +1100,21 @@ public final void wait(long timeOut, int nanos)  —>  This makes current thread
 
 Q) Thread Intruption in java ?
 
-Thread interruption in java is a mechanism in which a thread which is either sleeping or waiting can be made to stop sleeping or waiting. Thread interruption is like telling the thread that it should stop waiting or sleeping and return to running status. Thread interruption is programmatically implemented using interrupt() method of java.lang.Thread class. interrupt() method is a non-static public method of Thread class. Here is the method signature of interrupt() method.
+Thread interruption in java is a mechanism in which a thread which is either sleeping or waiting can be made to stop 
+sleeping or waiting. Thread interruption is like telling the thread that it should stop waiting or sleeping and return
+ to running status. Thread interruption is programmatically implemented using interrupt() method of java.lang.Thread 
+ class. interrupt() method is a non-static public method of Thread class. Here is the method signature of interrupt()
+ method.
 
 
  
 public void interrupt()
 
-The whole thread interruption mechanism depends on an internal flag called interrupt status. The initial value of this flag for any thread is false. When you call interrupt() method on a thread, interrupt status of that thread will be set to true. When a thread throws InterruptedException, this status will be set to false again. Remember, InterruptedException is thrown when a thread is interrupted while it is sleeping or waiting. Many methods of Thread class like sleep(), wait(), join() throw InterruptedException.
+The whole thread interruption mechanism depends on an internal flag called interrupt status. The initial value of this 
+flag for any thread is false. When you call interrupt() method on a thread, interrupt status of that thread will be set
+ to true. When a thread throws InterruptedException, this status will be set to false again. Remember, 
+ InterruptedException is thrown when a thread is interrupted while it is sleeping or waiting. Many methods of 
+ Thread class like sleep(), wait(), join() throw InterruptedException.
 
 Here is an example for interrupting a sleeping thread using interrupt() method.
 
@@ -1028,7 +1151,10 @@ public class ThreadsInJava
         t.interrupt();         //main thread is interrupting thread t
     }
 }
-In the above example, main thread is creating and starting thread t. Thread t is going to sleep for 10 seconds as soon as it started. main thread, after starting thread t, is also going to sleep for 3 seconds. After sleeping for 3 seconds, main thread calls interrupt() method on thread t. It interrupts sleeping thread t. It causes the InterruptedException.
+In the above example, main thread is creating and starting thread t. Thread t is going to sleep for 10 seconds as 
+soon as it started. main thread, after starting thread t, is also going to sleep for 3 seconds. 
+After sleeping for 3 seconds, main thread calls interrupt() method on thread t. It interrupts sleeping thread t. 
+It causes the InterruptedException.
 
 Some Things-To-Remember About Thread Interruption In Java :
 
@@ -1156,7 +1282,8 @@ interrupt() method will throw SecurityException if current thread can not interr
 
 Q) Thread Life Cycle OR Thread States In Java ?
 
-There are six thread states. They are NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING and TERMINATED. At any point of time, thread will be in any one of these states.
+There are six thread states. They are NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING and TERMINATED. 
+At any point of time, thread will be in any one of these states.
 
 
  
@@ -1219,7 +1346,8 @@ public class JavaThreadLifeCycle
     }
 }
 3) BLOCKED
-A thread will be in this state when a thread is waiting for object lock to enter into synchronized method/block or a thread will be in this state if deadlock occurs. Below example shows the states of two threads when deadlock occurs.
+A thread will be in this state when a thread is waiting for object lock to enter into synchronized method/block or a 
+thread will be in this state if deadlock occurs. Below example shows the states of two threads when deadlock occurs.
 
 class Shared
 {
@@ -1298,7 +1426,8 @@ public class ThreadsInJava
     }
 }
 4)  WAITING
-A thread will be in this state when wait() or join() method is called. Below example shows the thread state when join() method is called.
+A thread will be in this state when wait() or join() method is called. Below example shows the thread state when 
+join() method is called.
 
 public class ThreadsInJava
 {
@@ -1353,7 +1482,8 @@ public class ThreadsInJava
     }
 }
 5) TIMED_WAITING
-A thread will be in this state when thread is sleeping. i.e A thread will be in this state when sleep() or wait() with timeOut or join() with timeOut is called.
+A thread will be in this state when thread is sleeping. i.e A thread will be in this state when sleep() or wait() 
+with timeOut or join() with timeOut is called.
 
 public class ThreadsInJava
 {
@@ -1429,10 +1559,13 @@ public class ThreadsInJava
 
 Q) Thread Group in Java ?
 
-Thread group in java is used to group similar threads into one unit. A thread group can also contain other thread groups. Thread groups are constructed using java.lang.ThreadGroup class. The main use of thread groups is that you can handle multiple threads simultaneously.
+Thread group in java is used to group similar threads into one unit. A thread group can also contain other thread g
+roups. Thread groups are constructed using java.lang.ThreadGroup class. The main use of thread groups
+ is that you can handle multiple threads simultaneously.
 
 How To Add Threads To Thread Group :
-While creating the threads itself, you can specify it’s group using constructor which takes ThreadGroup and name of a thread as arguments. Below example shows how to add threads and child thread group to a parent thread group.
+While creating the threads itself, you can specify it’s group using constructor which takes ThreadGroup and name 
+of a thread as arguments. Below example shows how to add threads and child thread group to a parent thread group.
 
 
 public class ThreadGroupInJava

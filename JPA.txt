@@ -1,9 +1,13 @@
 JPA Interview Questions
-1) The Java Persistence API (JPA) is the specification of Java that is used to persist data between Java object and relational database. JPA acts as a bridge between object-oriented domain models and relational database systems. As JPA is just a specification, it doesn't perform any operation by itself. It requires an implementation. Therefore, ORM tools like Hibernate, TopLink, and iBatis implements JPA specifications for data persistence.
+1) The Java Persistence API (JPA) is the specification of Java that is used to persist data between Java object and 
+relational database. JPA acts as a bridge between object-oriented domain models and relational database systems. 
+As JPA is just a specification, it doesn't perform any operation by itself. It requires an implementation. 
+Therefore, ORM tools like Hibernate, TopLink, and iBatis implements JPA specifications for data persistence.
 
 
 2) Does JPA performs the actual task like access, persist and manage data?
-No, JPA is only a specification. The ORM tools like Hibernate, iBatis, and TopLink implements the JPA specification and perform these type of tasks.
+No, JPA is only a specification. The ORM tools like Hibernate, iBatis, and TopLink implements the JPA specification and 
+perform these type of tasks.
 
 3)What is the JPQL?
 JPQL is the Java Persistence query language defined in JPA specification. It is used to construct the queries.

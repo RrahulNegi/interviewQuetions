@@ -1,0 +1,163 @@
+Hibernate Criteria Example Tutorial
+
+
+Most of the times, we use HQL for querying the database and getting the results. HQL is not preferred way for updating 
+or deleting values because then we need to take care of any associations between tables.
+
+Hibernate Criteria API provides object oriented approach for querying the database and getting results. We can’t use 
+Criteria in Hibernate to run update or delete queries or any DDL statements. Hibernate Criteria query is only used to 
+fetch the results from the daabase using object oriented approach.
+
+Some of the common usage of Hibernate Criteria API are;
+
+
+Hibernate Criteria API provides Projection that we can use for aggregate functions such as sum(), min(), max() etc.
+Hibernate Criteria API can be used with ProjectionList to fetch selected columns only.
+Criteria in Hibernate can be used for join queries by joining multiple tables, useful methods for Hibernate criteria 
+join are createAlias(), setFetchMode() and setProjection()
+Criteria in Hibernate API can be used for fetching results with conditions, useful methods are add() where we can add 
+Restrictions.
+Hibernate Criteria API provides addOrder() method that we can use for ordering the results.
+
+Below class shows different usages of Hibernate Criteria API, most of these are replacements of examples in HQL tutorial
+
+public class HibernateCriteriaExamples {
+
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+		// Prep work
+		SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+		Session session = sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+
+		//Get All Employees
+		Criteria criteria = session.createCriteria(Employee.class);
+		List<Employee> empList = criteria.list();
+		for(Employee emp : empList){
+			System.out.println("ID="+emp.getId()+", Zipcode="+emp.getAddress().getZipcode());
+		}
+		
+		// Get with ID, creating new Criteria to remove all the settings
+		criteria = session.createCriteria(Employee.class)
+					.add(Restrictions.eq("id", new Long(3)));
+		Employee emp = (Employee) criteria.uniqueResult();
+		System.out.println("Name=" + emp.getName() + ", City="
+				+ emp.getAddress().getCity());
+
+		//Pagination Example
+		empList = session.createCriteria(Employee.class)
+					.addOrder(Order.desc("id"))
+					.setFirstResult(0)
+					.setMaxResults(2)
+					.list();
+		for(Employee emp4 : empList){
+			System.out.println("Paginated Employees::"+emp4.getId()+","+emp4.getAddress().getCity());
+		}
+
+		//Like example
+		empList = session.createCriteria(Employee.class)
+				.add(Restrictions.like("name", "%i%"))
+				.list();
+		for(Employee emp4 : empList){
+			System.out.println("Employees having 'i' in name::"+emp4.getName()+","+emp4.getAddress().getCity());
+		}
+		
+		//Projections example
+		long count = (Long) session.createCriteria(Employee.class)
+				.setProjection(Projections.rowCount())
+				.add(Restrictions.like("name", "%i%"))
+				.uniqueResult();
+		System.out.println("Number of employees with 'i' in name="+count);
+
+		//using Projections for sum, min, max aggregation functions
+		double sumSalary = (Double) session.createCriteria(Employee.class)
+			.setProjection(Projections.sum("salary"))
+			.uniqueResult();
+		System.out.println("Sum of Salaries="+sumSalary);
+		
+		//Join example for selecting few columns
+		criteria = session.createCriteria(Employee.class, "employee");
+		criteria.setFetchMode("employee.address", FetchMode.JOIN);
+		criteria.createAlias("employee.address", "address"); // inner join by default
+
+		ProjectionList columns = Projections.projectionList()
+						.add(Projections.property("name"))
+						.add(Projections.property("address.city"));
+		criteria.setProjection(columns);
+
+		List<Object[]> list = criteria.list();
+		for(Object[] arr : list){
+			System.out.println(Arrays.toString(arr));
+		}
+		
+		
+		// Rollback transaction to avoid messing test data
+		tx.commit();
+		// closing hibernate resources
+		sessionFactory.close();
+	}
+
+}
+When we execute above Hibernate Criteria example program, we get following output.
+
+
+May 26, 2014 6:53:32 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+INFO: HCANN000001: Hibernate Commons Annotations {4.0.4.Final}
+May 26, 2014 6:53:32 PM org.hibernate.Version logVersion
+INFO: HHH000412: Hibernate Core {4.3.5.Final}
+May 26, 2014 6:53:32 PM org.hibernate.cfg.Environment <clinit>
+INFO: HHH000206: hibernate.properties not found
+May 26, 2014 6:53:32 PM org.hibernate.cfg.Environment buildBytecodeProvider
+INFO: HHH000021: Bytecode provider name : javassist
+May 26, 2014 6:53:32 PM org.hibernate.cfg.Configuration configure
+INFO: HHH000043: Configuring from resource: hibernate.cfg.xml
+May 26, 2014 6:53:32 PM org.hibernate.cfg.Configuration getConfigurationInputStream
+INFO: HHH000040: Configuration resource: hibernate.cfg.xml
+May 26, 2014 6:53:32 PM org.hibernate.internal.util.xml.DTDEntityResolver resolveEntity
+WARN: HHH000223: Recognized obsolete hibernate namespace https://hibernate.sourceforge.net/. Use namespace https://www.hibernate.org/dtd/ instead. Refer to Hibernate 3.6 Migration Guide!
+May 26, 2014 6:53:32 PM org.hibernate.cfg.Configuration doConfigure
+INFO: HHH000041: Configured SessionFactory: null
+Hibernate Configuration loaded
+Hibernate serviceRegistry created
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl configure
+WARN: HHH000402: Using Hibernate built-in connection pool (not for production use!)
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000401: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost/TestDB]
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000046: Connection properties: {user=pankaj, password=****}
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000006: Autocommit mode: false
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl configure
+INFO: HHH000115: Hibernate connection pool size: 20 (min=1)
+May 26, 2014 6:53:32 PM org.hibernate.dialect.Dialect <init>
+INFO: HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.internal.LobCreatorBuilder useContextualLobCreation
+INFO: HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+May 26, 2014 6:53:32 PM org.hibernate.engine.transaction.internal.TransactionFactoryInitiator initiateService
+INFO: HHH000399: Using default transaction strategy (direct JDBC transactions)
+May 26, 2014 6:53:32 PM org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory <init>
+INFO: HHH000397: Using ASTQueryTranslatorFactory
+Hibernate: select this_.emp_id as emp_id1_1_1_, this_.emp_name as emp_name2_1_1_, this_.emp_salary as emp_sala3_1_1_, address2_.emp_id as emp_id1_0_0_, address2_.address_line1 as address_2_0_0_, address2_.city as city3_0_0_, address2_.zipcode as zipcode4_0_0_ from EMPLOYEE this_ left outer join ADDRESS address2_ on this_.emp_id=address2_.emp_id
+ID=1, Zipcode=95129
+ID=2, Zipcode=95051
+ID=3, Zipcode=560100
+ID=4, Zipcode=100100
+Hibernate: select this_.emp_id as emp_id1_1_1_, this_.emp_name as emp_name2_1_1_, this_.emp_salary as emp_sala3_1_1_, address2_.emp_id as emp_id1_0_0_, address2_.address_line1 as address_2_0_0_, address2_.city as city3_0_0_, address2_.zipcode as zipcode4_0_0_ from EMPLOYEE this_ left outer join ADDRESS address2_ on this_.emp_id=address2_.emp_id where this_.emp_id=?
+Name=Lisa, City=Bangalore
+Hibernate: select this_.emp_id as emp_id1_1_1_, this_.emp_name as emp_name2_1_1_, this_.emp_salary as emp_sala3_1_1_, address2_.emp_id as emp_id1_0_0_, address2_.address_line1 as address_2_0_0_, address2_.city as city3_0_0_, address2_.zipcode as zipcode4_0_0_ from EMPLOYEE this_ left outer join ADDRESS address2_ on this_.emp_id=address2_.emp_id order by this_.emp_id desc limit ?
+Paginated Employees::4,New Delhi
+Paginated Employees::3,Bangalore
+Hibernate: select this_.emp_id as emp_id1_1_1_, this_.emp_name as emp_name2_1_1_, this_.emp_salary as emp_sala3_1_1_, address2_.emp_id as emp_id1_0_0_, address2_.address_line1 as address_2_0_0_, address2_.city as city3_0_0_, address2_.zipcode as zipcode4_0_0_ from EMPLOYEE this_ left outer join ADDRESS address2_ on this_.emp_id=address2_.emp_id where this_.emp_name like ?
+Employees having 'i' in name::David,Santa Clara
+Employees having 'i' in name::Lisa,Bangalore
+Hibernate: select count(*) as y0_ from EMPLOYEE this_ where this_.emp_name like ?
+Number of employees with 'i' in name=2
+Hibernate: select sum(this_.emp_salary) as y0_ from EMPLOYEE this_
+Sum of Salaries=1000.0
+Hibernate: select this_.emp_name as y0_, address1_.city as y1_ from EMPLOYEE this_ inner join ADDRESS address1_ on this_.emp_id=address1_.emp_id
+[Pankaj, San Jose]
+[David, Santa Clara]
+[Lisa, Bangalore]
+[Jack, New Delhi]
+May 26, 2014 6:53:32 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl stop
+INFO: HHH000030: Cleaning up connection pool [jdbc:mysql://localhost/TestDB]

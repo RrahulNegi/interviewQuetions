@@ -95,7 +95,10 @@ Annotate model class with required validation specific annotations such as @NotE
 
 
 Exception model classes
-Default spring validation works and provide information overload about error, and that’s why we should customize it according to our application’s need. We shall provide only required error information with very clear wordings. Extra information is also not suggested.
+
+Default spring validation works and provide information overload about error, and that’s why we should customize it 
+according to our application’s need. We shall provide only required error information with very clear wordings. 
+Extra information is also not suggested.
 
 package com.howtodoinjava.demo.exception;
  
@@ -111,7 +114,8 @@ public class RecordNotFoundException extends RuntimeException
 }
 
 
-Similarly, I have wrote an special class which will be returned for all failure cases. Having consistent error message structure for all APIs, help the API consumers to write more robust code.
+Similarly, I have wrote an special class which will be returned for all failure cases. Having consistent error
+ message structure for all APIs, help the API consumers to write more robust code.
 
 ErrorResponse.java
 import java.util.List;
@@ -135,7 +139,8 @@ public class ErrorResponse
     //Getter and setters
 }
 
-It is always a good advise to create exceptions that are meaningful and describe the problem well enough. One way is to create seperate classes to denote specific business usecase failure and return them when that usecase fail.
+It is always a good advise to create exceptions that are meaningful and describe the problem well enough. 
+One way is to create seperate classes to denote specific business usecase failure and return them when that usecase fail.
 
 Custom ExceptionHandler
 Now add one class extending ResponseEntityExceptionHandler and annotate it with @ControllerAdvice annotation.
@@ -181,7 +186,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
     }
  
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(  ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> details = new ArrayList<>();
         for(ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
@@ -190,7 +195,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 }
-Above class handles multiple exceptions including RecordNotFoundException; and it also handle request validation errors in @RequestBody annotated object. Let’s see how it works.
+Above class handles multiple exceptions including RecordNotFoundException; and it also handle request 
+validation errors in @RequestBody annotated object. Let’s see how it works.
 
 
 3. Spring boot exception handling – Demo
@@ -265,7 +271,8 @@ HTTP Status : 400
 }
 
 4. REST request validation annotations
-In above example, we used only few annotations such as @NotEmpty and @Email. There are more such annotations to validate request data. Check them out when needed.
+In above example, we used only few annotations such as @NotEmpty and @Email. 
+There are more such annotations to validate request data. Check them out when needed.
 
 ANNOTATION	USAGE
 @AssertFalse	The annotated element must be false.

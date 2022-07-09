@@ -1,0 +1,394 @@
+HQL – Hibernate Query Language – Example Tutorial
+
+
+HQL or Hibernate Query Language is the object-oriented query language of Hibernate Framework. HQL is very similar to 
+SQL except that 
+we use Objects instead of table names, that makes it more close to object oriented programming.
+
+
+HQL and Case Sensitivity: HQL is case-insensitive except for java class and variable names. So SeLeCT is the same as sELEct is the 
+same as SELECT, but com.journaldev.model.Employee is not same as com.journaldev.model.EMPLOYEE.
+
+Some of the commonly supported clauses in HQL are:
+
+HQL From: HQL From is same as select clause in SQL, from Employee is same as select * from Employee. 
+We can also create alias such 
+as from Employee emp or from Employee as emp.
+
+HQL Join : HQL supports inner join, left outer join, right outer join and full join. For example, 
+select e.name, a.city from Employee e INNER JOIN e.address a. In this query, Employee class should have a variable 
+named address. 
+We will look into it in the example code.
+
+Aggregate Functions: HQL supports commonly used aggregate functions such as count(*), count(distinct x), min(), max(), avg() and sum().
+
+Expressions: HQL supports arithmetic expressions (+, -, *, /), binary comparison operators (=, >=, <=, <>, !=, like),
+ logical 
+operations (and, or, not) etc.
+
+HQL also supports ordre by and group by clauses.
+HQL also supports sub-queries just like SQL queries.
+HQL supports DDL, DML and executing store procedures too.
+
+
+I am using MySQL database for my example, below script will create two tables Employee and Address. 
+They have one-to-one mapping and I am inserting some demo data for my example.
+
+CREATE TABLE `Employee` (
+  `emp_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `emp_name` varchar(20) NOT NULL,
+  `emp_salary` double(10,0) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`emp_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+ 
+CREATE TABLE `Address` (
+  `emp_id` int(11) unsigned NOT NULL,
+  `address_line1` varchar(50) NOT NULL DEFAULT '',
+  `zipcode` varchar(10) DEFAULT NULL,
+  `city` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`emp_id`),
+  CONSTRAINT `emp_fk_1` FOREIGN KEY (`emp_id`) REFERENCES `Employee` (`emp_id`)
+) ENGINE
+
+
+INSERT INTO `Employee` (`emp_id`, `emp_name`, `emp_salary`)
+VALUES
+	(1, 'Pankaj', 100),
+	(2, 'David', 200),
+	(3, 'Lisa', 300),
+	(4, 'Jack', 400);
+
+
+INSERT INTO `Address` (`emp_id`, `address_line1`, `zipcode`, `city`)
+VALUES
+	(1, 'Albany Dr', '95129', 'San Jose'),
+	(2, 'Arques Ave', '95051', 'Santa Clara'),
+	(3, 'BTM 1st Stage', '560100', 'Bangalore'),
+	(4, 'City Centre', '100100', 'New Delhi');
+	
+commit;
+
+public class HibernateUtil {
+
+	private static SessionFactory sessionFactory;
+	
+	private static SessionFactory buildSessionFactory() {
+        try {
+            // Create the SessionFactory from hibernate.cfg.xml
+        	Configuration configuration = new Configuration();
+        	configuration.configure("hibernate.cfg.xml");
+        	System.out.println("Hibernate Configuration loaded");
+        	
+        	ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        	System.out.println("Hibernate serviceRegistry created");
+        	
+        	SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        	
+            return sessionFactory;
+        }
+        catch (Throwable ex) {
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+	
+	public static SessionFactory getSessionFactory() {
+		if(sessionFactory == null) sessionFactory = buildSessionFactory();
+        return sessionFactory;
+    }
+}
+Model Classes with Annotation based mapping
+Our model classes with JPA annotations looks like below.
+
+
+
+@Entity
+@Table(name = "EMPLOYEE")
+public class Employee {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "emp_id")
+	private long id;
+
+	@Column(name = "emp_name")
+	private String name;
+
+	@Column(name = "emp_salary")
+	private double salary;
+
+	@OneToOne(mappedBy = "employee")
+	@Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+	private Address address;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public double getSalary() {
+		return salary;
+	}
+
+	public void setSalary(double salary) {
+		this.salary = salary;
+	}
+
+}
+
+@Entity
+@Table(name = "ADDRESS")
+public class Address {
+
+	@Id
+	@Column(name = "emp_id", unique = true, nullable = false)
+	@GeneratedValue(generator = "gen")
+	@GenericGenerator(name = "gen", strategy = "foreign", 
+				parameters = { @Parameter(name = "property", value = "employee") })
+	private long id;
+
+	@Column(name = "address_line1")
+	private String addressLine1;
+
+	@Column(name = "zipcode")
+	private String zipcode;
+
+	@Column(name = "city")
+	private String city;
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Employee employee;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getAddressLine1() {
+		return addressLine1;
+	}
+
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public Employee getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+
+}
+
+HQL Example Test Class
+
+public class HQLExamples {
+
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) {
+		
+		//Prep work
+		SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+		Session session = sessionFactory.getCurrentSession();
+		
+		//HQL example - Get All Employees
+		Transaction tx = session.beginTransaction();
+		Query query = session.createQuery("from Employee");
+		List<Employee> empList = query.list();
+		for(Employee emp : empList){
+			System.out.println("List of Employees::"+emp.getId()+","+emp.getAddress().getCity());
+		}
+		
+		//HQL example - Get Employee with id
+		query = session.createQuery("from Employee where id= :id");
+		query.setLong("id", 3);
+		Employee emp = (Employee) query.uniqueResult();
+		System.out.println("Employee Name="+emp.getName()+", City="+emp.getAddress().getCity());
+		
+		//HQL pagination example
+		query = session.createQuery("from Employee");
+		query.setFirstResult(0); //starts with 0
+		query.setFetchSize(2);
+		empList = query.list();
+		for(Employee emp4 : empList){
+			System.out.println("Paginated Employees::"+emp4.getId()+","+emp4.getAddress().getCity());
+		}
+		
+		//HQL Update Employee
+		query = session.createQuery("update Employee set name= :name where id= :id");
+		query.setParameter("name", "Pankaj Kumar");
+		query.setLong("id", 1);
+		int result = query.executeUpdate();
+		System.out.println("Employee Update Status="+result);
+
+		//HQL Delete Employee, we need to take care of foreign key constraints too
+		query = session.createQuery("delete from Address where id= :id");
+		query.setLong("id", 4);
+		result = query.executeUpdate();
+		System.out.println("Address Delete Status="+result);
+		
+		query = session.createQuery("delete from Employee where id= :id");
+		query.setLong("id", 4);
+		result = query.executeUpdate();
+		System.out.println("Employee Delete Status="+result);
+		
+		//HQL Aggregate function examples
+		query = session.createQuery("select sum(salary) from Employee");
+		double sumSalary = (Double) query.uniqueResult();
+		System.out.println("Sum of all Salaries= "+sumSalary);
+		
+		//HQL join examples
+		query = session.createQuery("select e.name, a.city from Employee e "
+				+ "INNER JOIN e.address a");
+		List<Object[]> list = query.list();
+		for(Object[] arr : list){
+			System.out.println(Arrays.toString(arr));
+		}
+		
+		//HQL group by and like example
+		query = session.createQuery("select e.name, sum(e.salary), count(e)"
+				+ " from Employee e where e.name like '%i%' group by e.name");
+		List<Object[]> groupList = query.list();
+		for(Object[] arr : groupList){
+			System.out.println(Arrays.toString(arr));
+		}
+		
+		//HQL order by example
+		query = session.createQuery("from Employee e order by e.id desc");
+		empList = query.list();
+		for(Employee emp3 : empList){
+			System.out.println("ID Desc Order Employee::"+emp3.getId()+","+emp3.getAddress().getCity());
+		}
+		
+		//rolling back to save the test data
+		tx.rollback();
+		
+		//closing hibernate resources
+		sessionFactory.close();
+	}
+
+}
+
+Let’s see how to use HQL in java programs.
+
+
+May 22, 2014 1:55:37 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+INFO: HCANN000001: Hibernate Commons Annotations {4.0.4.Final}
+May 22, 2014 1:55:37 PM org.hibernate.Version logVersion
+INFO: HHH000412: Hibernate Core {4.3.5.Final}
+May 22, 2014 1:55:37 PM org.hibernate.cfg.Environment <clinit>
+INFO: HHH000206: hibernate.properties not found
+May 22, 2014 1:55:37 PM org.hibernate.cfg.Environment buildBytecodeProvider
+INFO: HHH000021: Bytecode provider name : javassist
+May 22, 2014 1:55:37 PM org.hibernate.cfg.Configuration configure
+INFO: HHH000043: Configuring from resource: hibernate.cfg.xml
+May 22, 2014 1:55:37 PM org.hibernate.cfg.Configuration getConfigurationInputStream
+INFO: HHH000040: Configuration resource: hibernate.cfg.xml
+May 22, 2014 1:55:37 PM org.hibernate.cfg.Configuration doConfigure
+INFO: HHH000041: Configured SessionFactory: null
+Hibernate Configuration loaded
+Hibernate serviceRegistry created
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl configure
+WARN: HHH000402: Using Hibernate built-in connection pool (not for production use!)
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000401: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost/TestDB]
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000046: Connection properties: {user=pankaj, password=****}
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH000006: Autocommit mode: false
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl configure
+INFO: HHH000115: Hibernate connection pool size: 20 (min=1)
+May 22, 2014 1:55:37 PM org.hibernate.dialect.Dialect <init>
+INFO: HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+May 22, 2014 1:55:37 PM org.hibernate.engine.jdbc.internal.LobCreatorBuilder useContextualLobCreation
+INFO: HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+May 22, 2014 1:55:38 PM org.hibernate.engine.transaction.internal.TransactionFactoryInitiator initiateService
+INFO: HHH000399: Using default transaction strategy (direct JDBC transactions)
+May 22, 2014 1:55:38 PM org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory <init>
+INFO: HHH000397: Using ASTQueryTranslatorFactory
+Hibernate: select employee0_.emp_id as emp_id1_1_, employee0_.emp_name as emp_name2_1_, employee0_.emp_salary as emp_sala3_1_ from EMPLOYEE employee0_
+Hibernate: select address0_.emp_id as emp_id1_0_0_, address0_.address_line1 as address_2_0_0_, address0_.city as city3_0_0_, address0_.zipcode as zipcode4_0_0_, employee1_.emp_id as emp_id1_1_1_, employee1_.emp_name as emp_name2_1_1_, employee1_.emp_salary as emp_sala3_1_1_ from ADDRESS address0_ left outer join EMPLOYEE employee1_ on address0_.emp_id=employee1_.emp_id where address0_.emp_id=?
+Hibernate: select address0_.emp_id as emp_id1_0_0_, address0_.address_line1 as address_2_0_0_, address0_.city as city3_0_0_, address0_.zipcode as zipcode4_0_0_, employee1_.emp_id as emp_id1_1_1_, employee1_.emp_name as emp_name2_1_1_, employee1_.emp_salary as emp_sala3_1_1_ from ADDRESS address0_ left outer join EMPLOYEE employee1_ on address0_.emp_id=employee1_.emp_id where address0_.emp_id=?
+Hibernate: select address0_.emp_id as emp_id1_0_0_, address0_.address_line1 as address_2_0_0_, address0_.city as city3_0_0_, address0_.zipcode as zipcode4_0_0_, employee1_.emp_id as emp_id1_1_1_, employee1_.emp_name as emp_name2_1_1_, employee1_.emp_salary as emp_sala3_1_1_ from ADDRESS address0_ left outer join EMPLOYEE employee1_ on address0_.emp_id=employee1_.emp_id where address0_.emp_id=?
+Hibernate: select address0_.emp_id as emp_id1_0_0_, address0_.address_line1 as address_2_0_0_, address0_.city as city3_0_0_, address0_.zipcode as zipcode4_0_0_, employee1_.emp_id as emp_id1_1_1_, employee1_.emp_name as emp_name2_1_1_, employee1_.emp_salary as emp_sala3_1_1_ from ADDRESS address0_ left outer join EMPLOYEE employee1_ on address0_.emp_id=employee1_.emp_id where address0_.emp_id=?
+List of Employees::1,San Jose
+List of Employees::2,Santa Clara
+List of Employees::3,Bangalore
+List of Employees::4,New Delhi
+Hibernate: select employee0_.emp_id as emp_id1_1_, employee0_.emp_name as emp_name2_1_, employee0_.emp_salary as emp_sala3_1_ from EMPLOYEE employee0_ where employee0_.emp_id=?
+Employee Name=Lisa, City=Bangalore
+Hibernate: select employee0_.emp_id as emp_id1_1_, employee0_.emp_name as emp_name2_1_, employee0_.emp_salary as emp_sala3_1_ from EMPLOYEE employee0_
+Paginated Employees::1,San Jose
+Paginated Employees::2,Santa Clara
+Paginated Employees::3,Bangalore
+Paginated Employees::4,New Delhi
+Hibernate: update EMPLOYEE set emp_name=? where emp_id=?
+Employee Update Status=1
+Hibernate: delete from ADDRESS where emp_id=?
+Address Delete Status=1
+Hibernate: delete from EMPLOYEE where emp_id=?
+Employee Delete Status=1
+Hibernate: select sum(employee0_.emp_salary) as col_0_0_ from EMPLOYEE employee0_
+Sum of all Salaries= 600.0
+Hibernate: select employee0_.emp_name as col_0_0_, address1_.city as col_1_0_ from EMPLOYEE employee0_ inner join ADDRESS address1_ on employee0_.emp_id=address1_.emp_id
+[Pankaj Kumar, San Jose]
+[David, Santa Clara]
+[Lisa, Bangalore]
+Hibernate: select employee0_.emp_name as col_0_0_, sum(employee0_.emp_salary) as col_1_0_, count(employee0_.emp_id) as col_2_0_ from EMPLOYEE employee0_ where employee0_.emp_name like '%i%' group by employee0_.emp_name
+[David, 200.0, 1]
+[Lisa, 300.0, 1]
+Hibernate: select employee0_.emp_id as emp_id1_1_, employee0_.emp_name as emp_name2_1_, employee0_.emp_salary as emp_sala3_1_ from EMPLOYEE employee0_ order by employee0_.emp_id desc
+ID Desc Order Employee::3,Bangalore
+ID Desc Order Employee::2,Santa Clara
+ID Desc Order Employee::1,San Jose
+May 22, 2014 1:55:38 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl stop
+INFO: HHH000030: Cleaning up connection pool [jdbc:mysql://localhost/TestDB]
+
+
+Notice that once delete operation is performed, further operations are not showing that record data (sum of salary is 600). 
+However I am rolling back the transaction, so the data in table will remain unchanged. Change the code to commit the transaction and it will be reflected in the database tables.
+
+I don’t like using HQL query a lot because as you can see that we need to take care of table mappings in our code. If we will use Session to delete the Employee object, it will delete the record from both the tables.
+

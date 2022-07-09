@@ -5,7 +5,8 @@ FROM table1
 INNER JOIN table2
 ON table1.column_name = table2.column_name;
 
-2)The LEFT JOIN keyword returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side, if there is no match.
+2)The LEFT JOIN keyword returns all records from the left table (table1), and the matched records from the right table (table2).
+ The result is NULL from the right side, if there is no match.
 SELECT column_name(s)
 FROM table1
 LEFT JOIN table2
@@ -43,7 +44,8 @@ q)diffrence types of keys used in sql?
 
  What is a primary key?
 
-A primary key is a combination of fields which uniquely specify a row. This is a special kind of unique key, and it has implicit NOT NULL constraint. It means, Primary key values cannot be NULL.
+A primary key is a combination of fields which uniquely specify a row. This is a special kind of unique key, and it has 
+implicit NOT NULL constraint. It means, Primary key values cannot be NULL.
 
 Q) What is a unique key?
 
@@ -56,7 +58,8 @@ There can be many unique constraint defined per table, but only one Primary key 
 
 Q) What is a foreign key?
 
-A foreign key is one table which can be related to the primary key of another table. Relationship needs to be created between two tables by referencing foreign key with the primary key of another table.
+A foreign key is one table which can be related to the primary key of another table. Relationship needs to be created between 
+two tables by referencing foreign key with the primary key of another table.
 
 Q1) What is the difference between DELETE and TRUNCATE statements?
 
@@ -72,10 +75,44 @@ DML ( Data Manipulation Language) – It allows you to access and manipulate dat
 DCL ( Data Control Language) – It allows you to control access to the database. Example – Grant, Revoke access permissions.
 
  Q) What is the difference between CHAR and VARCHAR2 datatype in SQL?
-Both Char and Varchar2 are used for characters datatype but varchar2 is used for character strings of variable length whereas Char is used for strings of fixed length. For example, char(10) can only store 10 characters and will not be able to store a string of any other length whereas varchar2(10) can store any length i.e 6,8,2 in this variable.
+Both Char and Varchar2 are used for characters datatype but varchar2 is used for character strings of variable length whereas 
+Char is used for strings of fixed length. For example, char(10) can only store 10 characters and will not be able to store a 
+string of any other length whereas varchar2(10) can store any length i.e 6,8,2 in this variable.
+
+1. CHAR Datatype: 
+It is a datatype in SQL which is used to store character string of fixed length specified. If the length of string is less than set or fixed length then it is padded with extra blank spaces so that its length became equal to the set length. Storage size of CHAR datatype is of n bytes(set length). We should use this datatype when we expect the data values in a column are of same length. 
+
+Example: 
+Consider the Query:  
+
+CREATE TABLE Student(Name VARCHAR(30), Gender CHAR(6));
+INSERT into Student VALUES('Herry', 'Male');
+INSERT into Student VALUES('Mahi', 'Female');
+SELECT LENGTH(Gender) FROM Student;
+OUTPUT:  
+
+LENGTH(Gender)
+6
+6
+2. VARCHAR Datatype: 
+It is a datatype in SQL which is used to store character string of variable length but maximum of set length specified. If the length of string is less than set or fixed length then it will store as it is without padded with extra blank spaces. Storage size of VARCHAR datatype is equal to the actual length of the entered string in bytes. We should use this datatype when we expect the data values in a column are of variable length. 
+
+Example: 
+Consider the Query:  
+
+CREATE TABLE Student(Name VARCHAR(20), Gender CHAR(6));
+INSERT into Student VALUES('Herry', 'Male');
+INSERT into Student VALUES('Mahi', 'Female');
+SELECT LENGTH(Name) FROM Student;
+OUTPUT:  
+
+LENGTH(Name)
+5
+4
 
 Q)  What are Constraints?
-Constraints are used to specify the limit on the data type of the table. It can be specified while creating or altering the table statement. The sample of constraints are:
+Constraints are used to specify the limit on the data type of the table. It can be specified while creating or altering the table 
+statement. The sample of constraints are:
 
 NOT NULL
 CHECK
@@ -97,8 +134,10 @@ The foreign key constraint prevents actions that would destroy links between the
 Q)What is the difference between clustered and non clustered index in SQL?
 The differences between the clustered and non clustered index in SQL are :
 
-Clustered index is used for easy retrieval of data from the database and its faster whereas reading from non clustered index is relatively slower.
-Clustered index alters the way records are stored in a database as it sorts out rows by the column which is set to be clustered index whereas in a non clustered index, it does not alter the way it was stored but it creates a separate object within a table which points back to the original table rows after searching.
+Clustered index is used for easy retrieval of data from the database and its faster whereas reading from non clustered index is 
+relatively slower.
+Clustered index alters the way records are stored in a database as it sorts out rows by the column which is set to be 
+clustered index whereas in a non clustered index, it does not alter the way it was stored but it creates a separate object within a table which points back to the original table rows after searching.
 One table can only have one clustered index whereas it can have many non clustered index.
 
 Unique Index:
@@ -130,7 +169,8 @@ Ensure Consistent data after modification
 Apart from this SQL Interview Questions Blog, if you want to get trained from professionals on this technology, you can opt for a structured training from edureka! Click below to know more.
 
 Q)2. Explain different types of Normalization.
-There are many successive levels of normalization. These are called normal forms. Each consecutive normal form depends on the previous one.The first three normal forms are usually adequate.
+There are many successive levels of normalization. These are called normal forms. Each consecutive normal form depends 
+on the previous one.The first three normal forms are usually adequate.
 
 First Normal Form (1NF) – No repeating groups within rows
 Second Normal Form (2NF) – Every non-key (supporting) column value is dependent on the whole primary key.
@@ -231,18 +271,21 @@ Example of IN:
 SELECT * FROM students where ROLL_NO IN (8,15,25);
 
 Q)What is CLAUSE in SQL?
-SQL clause helps to limit the result set by providing a condition to the query. A clause helps to filter the rows from the entire set of records.
+SQL clause helps to limit the result set by providing a condition to the query. A clause helps to filter the 
+rows from the entire set of records.
 
 For example – WHERE, HAVING clause.
 
 Apart from this SQL Interview Questions Blog, if you want to get trained from professionals on this technology, you can opt for a structured training from edureka! Click below to know more.
 
 Q41. What is the difference between ‘HAVING’ CLAUSE and a ‘WHERE’ CLAUSE?
-HAVING clause can be used only with SELECT statement. It is usually used in a GROUP BY clause and whenever GROUP BY is not used, HAVING behaves like a WHERE clause. 
+HAVING clause can be used only with SELECT statement. It is usually used in a GROUP BY clause and whenever GROUP BY is not used
+, HAVING behaves like a WHERE clause. 
 Having Clause is only used with the GROUP BY function in a query whereas WHERE Clause is applied to each row before they are a part of the GROUP BY function in a query.
 
 Q)What is a View?
-A view is a virtual table which consists of a subset of data contained in a table. Since views are not present, it takes less space to store. View can have data of one or more tables combined and it depends on the relationship.
+A view is a virtual table which consists of a subset of data contained in a table. Since views are not present, it takes less 
+space to store. View can have data of one or more tables combined and it depends on the relationship.
 
 Q55. What are Views used for?
 A view refers to a logical snapshot based on a table or another view. It is used for the following reasons:

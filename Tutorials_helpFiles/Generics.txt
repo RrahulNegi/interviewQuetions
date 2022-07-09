@@ -45,7 +45,8 @@ Types of Generics:
 			instance.set("lokesh");   //Correct usage
 			instance.set(1);        //This will raise compile time error
 
-		Above analogy is true for interface as well. Let’s quickly look at an example to understand, how generics type information can be used in interfaces in java.
+		Above analogy is true for interface as well. Let’s quickly look at an example to understand, how generics type 
+		information can be used in interfaces in java.
 
 		//Generic interface definition
 		interface DemoInterface<T1, T2>
@@ -115,7 +116,8 @@ Types of Generics:
 				public T[] array = new T[5];
 			}
 			
-		As we know that an array is a collection of similar type of elements and pushing any incompatible type will throw ArrayStoreException in runtime; which is not the case with Collection classes.
+		As we know that an array is a collection of similar type of elements and pushing any incompatible type will 
+		throw ArrayStoreException in runtime; which is not the case with Collection classes.
 
 			Object[] array = new String[10];
 			array[0] = "lokesh";
@@ -126,11 +128,15 @@ Types of Generics:
 			
 	4.	Generics with Wildcards
 	
-		In generic code, the question mark (?), called the wildcard, represents an unknown type. A wildcard parameterized type is an instantiation of a generic type where at least one type argument is a wildcard. Examples of wildcard parameterized types are Collection<?<, List<? extends Number<, Comparator<? super String> and Pair<String,?>.
+		In generic code, the question mark (?), called the wildcard, represents an unknown type. A wildcard parameterized 
+		type is an instantiation of a generic type where at least one type argument is a wildcard. Examples of wildcard 
+		parameterized types are Collection<?<, List<? extends Number<, Comparator<? super String> and Pair<String,?>.
 		
-		The wildcard can be used in a variety of situations: as the type of a parameter, field, or local variable; sometimes as a return type (though it is better programming practice to be more specific). 
+		The wildcard can be used in a variety of situations: as the type of a parameter, field, or local variable; sometimes 
+		as a return type (though it is better programming practice to be more specific). 
 		
-		The wildcard is never used as a type argument for a generic method invocation, a generic class instance creation, or a supertype.
+		The wildcard is never used as a type argument for a generic method invocation, a generic class instance creation, 
+		or a supertype.
 		
 		For example, below are valid declarations involving wild cards:
 
@@ -143,7 +149,8 @@ Types of Generics:
 
 				List<? extends Number> list = new ArrayList<String>();  //String is not subclass of Number; so error
 				//OR
-				Comparator<? super String> cmp = new RuleBasedCollator(new Integer(100)); //Integer is not superclass of String
+				Comparator<? super String> cmp = new RuleBasedCollator(new Integer(100)); //Integer is not superclass of 
+				String
 				
 		unbounded wildcard "?” without any restriction on type variables. e.g.
 

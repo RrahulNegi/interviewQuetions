@@ -2,44 +2,65 @@
 Difference between constructor and setter injection
 There are many key differences between constructor injection and setter injection.
 
-Partial dependency: can be injected using setter injection but it is not possible by constructor. Suppose there are 3 properties in a class, having 3 arg constructor and setters methods. In such case, if you want to pass information for only one property, it is possible by setter method only.
-Overriding: Setter injection overrides the constructor injection. If we use both constructor and setter injection, IOC container will use the setter injection.
+Partial dependency: can be injected using setter injection but it is not possible by constructor. Suppose there are 3 properties 
+in a class, having 3 arg constructor and setters methods. In such case, if you want to pass information for only one property,
+ it is possible by setter method only.
+Overriding: Setter injection overrides the constructor injection. If we use both constructor and setter injection, IOC container
+ will use the setter injection.
 Changes: We can easily change the value by setter injection. It doesn't create a new bean instance always like constructor. So setter injection is flexible than constructor injection
 
-2) @Configuration annotation indicates that a class declares one or more @Bean methods and may be processed by the Spring container to generate bean definitions and service requests for those beans at runtime. Since spring 2, we were writing our bean configurations to xml files
+2) @Configuration annotation indicates that a class declares one or more @Bean methods and may be processed by the Spring 
+container to generate bean definitions and service requests for those beans at runtime. Since spring 2, we were writing our bean 
+configurations to xml files
 
-Spring @Component. Spring Component annotation is used to denote a class as Component. It means that Spring framework will autodetect these classes for dependency injection when annotation-based configuration and classpath scanning is used.
+Spring @Component. Spring Component annotation is used to denote a class as Component. It means that Spring framework will 
+autodetect these classes for dependency injection when annotation-based configuration and classpath scanning is used.
 
-Spring @Qualifier Annotation. Advertisements. There may be a situation when you create more than one bean of the same type and want to wire only one of them with a property. In such cases, you can use the @Qualifier annotation along with @Autowired to remove the confusion by specifying which exact bean will be wired
+Spring @Qualifier Annotation. Advertisements. There may be a situation when you create more than one bean of the same type and
+ want to wire only one of them with a property. In such cases, you can use the @Qualifier annotation along with @Autowired to 
+ remove the confusion by specifying which exact bean will be wired
 
-Spring has chosen to support using @Inject synonymously with their own @Autowired annotation. So, to answer your question, @Autowired is Spring's own (legacy) annotation. @Inject is part of a new Java technology called CDI that defines a standard for dependency injection similar to Spring.
+Spring has chosen to support using @Inject synonymously with their own @Autowired annotation. So, to answer your question, 
+@Autowired is Spring's own (legacy) annotation. @Inject is part of a new Java technology called CDI that defines a standard for 
+dependency injection similar to Spring.
 
-Their only difference comes in their purpose i.e. @Controller is used in Spring MVC to define controller, which are first Spring bean and then controller. Similarly, @Service is used to annotated classes which hold business logic in the Service layer and @Repository is used in Data Access layer
+Their only difference comes in their purpose i.e. @Controller is used in Spring MVC to define controller, which are first Spring 
+bean and then controller. Similarly, @Service is used to annotated classes which hold business logic in the Service layer and 
+@Repository is used in Data Access layer
 
-Spring @Required Annotation. Advertisements. The @Required annotation applies to bean property setter methods and it indicates that the affected bean property must be populated in XML configuration file at configuration time. Otherwise, the container throws a BeanInitializationException exception.
+Spring @Required Annotation. Advertisements. The @Required annotation applies to bean property setter methods and it indicates 
+that the affected bean property must be populated in XML configuration file at configuration time. Otherwise, the container 
+throws a BeanInitializationException exception.
 
-Spring @Bean Annotation is applied on a method to specify that it returns a bean to be managed by Spring context. Spring Bean annotation is usually declared in Configuration classes methods.
+Spring @Bean Annotation is applied on a method to specify that it returns a bean to be managed by Spring context. 
+Spring Bean annotation is usually declared in Configuration classes methods.
 
 3)AOP
 
 Pointcut
 – An expression that selects one or more Join Points
--: Pointcut is expressions that are matched with join points to determine whether advice needs to be executed or not. Pointcut uses different kinds of expressions that are matched with the join points and Spring framework uses the AspectJ pointcut expression language.
+-: Pointcut is expressions that are matched with join points to determine whether advice needs to be executed or not. 
+Pointcut uses different kinds of expressions that are matched with the join points and Spring framework uses the AspectJ 
+pointcut expression language.
 
 
 Join Point
 – A point in the execution of a program such as a method call or exception thrown
-- A join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc. In Spring AOP a join point is always the execution of a method.
+- A join point is a specific point in the application such as method execution, exception handling, changing object 
+variable values, etc. In Spring AOP a join point is always the execution of a method.
 
 
 
 Advice
 – Code to be executed at each selected Join Point
--Advices are actions taken for a particular join point. In terms of programming, they are methods that get executed when a certain join point with matching pointcut is reached in the application
+-Advices are actions taken for a particular join point. In terms of programming, they are methods that get executed when a 
+certain join point with matching pointcut is reached in the application
 
 Aspect
 – A module that encapsulates pointcuts and advice
--An aspect is a class that implements enterprise application concerns that cut across multiple classes, such as transaction management. Aspects can be a normal class configured through Spring XML configuration or we can use Spring AspectJ integration to define a class as Aspect using @Aspect annotation.
+-An aspect is a class that implements enterprise application concerns that cut across multiple classes, such as 
+transaction management. Aspects can be a normal class configured through Spring XML configuration or we can use Spring 
+AspectJ integration to define a class as Aspect using @Aspect annotation.
 
 Weaving
 – Technique by which aspects are combined with main code
@@ -50,12 +71,16 @@ Introduction
 
 Target Object
 -An object is assisted by one or more respects. Also known as the object advised.
--They are the object on which advices are applied. Spring AOP is implemented using runtime proxies so this object is always a proxied object. What is means is that a subclass is created at runtime where the target method is overridden and advice are included based on their configuration.
+-They are the object on which advices are applied. Spring AOP is implemented using runtime proxies so this object is always a 
+proxied object. What is means is that a subclass is created at runtime where the target method is overridden and advice are 
+included based on their configuration.
 
 
 AOP Proxy
--AOP proxy is an object used to perform the contract area. This object is created by the AOP framework. In Spring AOP proxy is part of JDK dynamic proxy or proxy CGLIB.
-Spring AOP is proxy-based. AOP proxy is an object created by the AOP framework in order to implement the aspect contracts in runtime.
+-AOP proxy is an object used to perform the contract area. This object is created by the AOP framework. 
+In Spring AOP proxy is part of JDK dynamic proxy or proxy CGLIB.
+Spring AOP is proxy-based. AOP proxy is an object created by the AOP framework in order to implement the aspect contracts in 
+runtime.
 
 - Weaving: linking aspects with other application types or objects to create an advised object. This can be done at compile time (using the AspectJ compiler, for example), load time, or at runtime. Spring AOP, like other pure Java AOP frameworks, performs weaving at runtime.
 Q)How does Spring solve (implement) a cross cutting concern?
@@ -69,14 +94,19 @@ Weave the aspects into your application
 
 q). How many advice types does Spring support. What are they used for?
 
-Before advice: Advice that executes before a join point, but which does not have the ability to prevent execution flow proceeding to the join point (unless it throws an exception).
-After returning advice: Advice to be executed after a join point completes normally: for example, if a method returns without throwing an exception.
+Before advice: Advice that executes before a join point, but which does not have the ability to prevent execution flow proceeding 
+to the join point (unless it throws an exception).
+After returning advice: Advice to be executed after a join point completes normally: for example, if a method returns without 
+throwing an exception.
 After throwing advice: Advice to be executed if a method exits by throwing an exception.
 After advice: Advice to be executed regardless of the means by which a join point exits (normal or exceptional return).
 Around advice: Advice that surrounds a join point such as a method invocation. This is the most powerful kind of advice. Around advice can perform custom behavior before and after the method invocation. It is also responsible for choosing whether to proceed to the join point or to shortcut the advised method execution by returning its own return value or throwing an exception.
 
 
-2) In Spring, aspects are woven into Spring-managed beans at runtime by wrapping them with a proxy class. The proxy class poses as the target bean, intercepting advised method calls and forwarding those calls to the target bean. Between the time when the proxy intercepts the method call and the time when it invokes the target bean's method, the proxy performs the aspect logic. 
+2) In Spring, aspects are woven into Spring-managed beans at runtime by wrapping them with a proxy class. 
+The proxy class poses as the target bean, intercepting advised method calls and forwarding those calls to the target bean. 
+Between the time when the proxy intercepts the method call and the time when it invokes the target bean's method, the proxy 
+performs the aspect logic. 
 
 Q) Example
 @Aspect
@@ -90,15 +120,19 @@ public class LoggingAspect {
     }
 }
 
- Following pointcut expression for before advice is valid for all public methods with any arguments of any type and any return type of all classes in the com.doj.aopapp.service package.
+ Following pointcut expression for before advice is valid for all public methods with any arguments of any type and any return 
+ type of all classes in the com.doj.aopapp.service package.
 
 @Before("execution(* com.doj.aopapp.service.*.*(..))")
-2. Following pointcut expression for before advice is valid for all public methods whose name are transfer() with taking three arguments of any type and any return type of all classes in the com.doj.aopapp.service package.
+2. Following pointcut expression for before advice is valid for all public methods whose name are transfer() 
+with taking three arguments of any type and any return type of all classes in the com.doj.aopapp.service package.
 
 @Before("execution(* com.doj.aopapp.service.*.transfer(*,*,*))")
 
 -) Named Pointcut
-We can also define pointcut methods for named pointcut. Actually named pointcut is nothing but it is simple way to declaring common pointcut expressions above a method with @Pointcut annotation. This helps to reduce the complexity of writing common complex pointcut expression.
+We can also define pointcut methods for named pointcut. Actually named pointcut is nothing but it is simple way to declaring 
+common pointcut expressions above a method with @Pointcut annotation. This helps to reduce the complexity of writing common 
+complex pointcut expression.
 
 /**
 * Declaring named pointcut
@@ -116,22 +150,29 @@ public void beforeAdviceForAllMethods(JoinPoint jp) throws Throwable {
 
 
 Q)Filters vs Spring interceptor?
-A Servlet Filter is used in the web layer only, you can’t use it outside of a web context. Interceptors can be used anywhere. That’s the main difference.
+A Servlet Filter is used in the web layer only, you can’t use it outside of a web context. Interceptors can be used anywhere. 
+That’s the main difference.
 
-for authentication of web pages you would use a servlet filter. For security stuff in your business layer or logging/bugtracing (a.k.a. independent of the web layer) you would use an Interceptor.
+for authentication of web pages you would use a servlet filter. For security stuff in your business layer or logging/bugtracing 
+(a.k.a. independent of the web layer) you would use an Interceptor.
 
-Apart from the fact that both Interceptors and filters are based on intercepting filter,there are few differences when it comes to Struts2.
+Apart from the fact that both Interceptors and filters are based on intercepting filter,there are few differences when it comes 
+to Struts2.
 
 Filters: (1)Based on Servlet Specification (2)Executes on the pattern matches on the request.(3) Not configurable method calls
 Interceptors: (1)Based on Struts2. (2)Executes for all the request qualifies for a front controller( A Servlet filter ).And can be configured to execute additional interceptor for a particular action execution.(3)Methods in the Interceptors can be configured whether to execute or not by means of excludemethods or includeMethods
 
 Q)What is Dependency Injection?
 
-Dependency Injection is where Spring searches for beans; once the appropriate bean is found, it autowires the bean to the dependent class. Dependency Injection is the process where Spring framework looks for the beans and identifies the dependencies, and creates the instances of beans and autowires them.
+Dependency Injection is where Spring searches for beans; once the appropriate bean is found, it autowires the bean to the 
+dependent class. Dependency Injection is the process where Spring framework looks for the beans and identifies the dependencies,
+ and creates the instances of beans and autowires them.
 
 Q). Explain Inversion of Control (IOC).
 
-In Tight Coupling the dependent class takes the responsibility of creating its dependency. Whereas, in Loose Coupling, we use @Autowired annotation over the dependency class (or reference) and Spring takes control of creating the instance and injects the dependency.
+In Tight Coupling the dependent class takes the responsibility of creating its dependency. 
+Whereas, in Loose Coupling, we use @Autowired annotation over the dependency class (or reference) and Spring takes control of 
+creating the instance and injects the dependency.
 
 Q)What are the roles of an IOC (Inversion of Control) Container?
 
@@ -145,15 +186,18 @@ IOC Container does the following things-
 
 Q) Explain Component Scan.
 
-Component Scan is one method of asking Spring to detect Spring-managed components, the input for this search is the packages. Two methods are available to define a Component Scan-
+Component Scan is one method of asking Spring to detect Spring-managed components, the input for this search is the packages. 
+Two methods are available to define a Component Scan-
 
-(i) Java Configuration; wherein, we use the @Component annotation to which we specify all the packages, for which Spring does the search.
+(i) Java Configuration; wherein, we use the @Component annotation to which we specify all the packages, for which Spring does 
+the search.
 
 (ii) XML Configuration- we use <context:component-scan base-package=”com.demo.compscanex”/>
 
 Q) Explain Model Attribute?
 
-The annotation @ModelAttribute is decorated on a method typically present inside a Controller. This will help the method to be available in all other methods available in the controller.
+The annotation @ModelAttribute is decorated on a method typically present inside a Controller. This will help the method to be
+ available in all other methods available in the controller.
 
 @RequestMapping(value="/handleRequest", method=RequestMethod.GET)
 public ModelAndView handleRequest(@ModelAttribute(value="userObj") User user) {
@@ -171,7 +215,8 @@ In JSP :-${countrieslist}
 
 Q)What is a Session Attribute?
 
-The annotation @SessionAttributes (“argument”) is decorated on class (Controller). The attribute (argument) that is present in Model is available in the session.
+The annotation @SessionAttributes (“argument”) is decorated on class (Controller). The attribute (argument) that is present in 
+Model is available in the session.
 @SessionAttributes("shoppingCart")
 public class AddToCartController {
 }
@@ -197,9 +242,17 @@ This annotation is used to launch up the entire application. Internally, @Spring
 Q) how @Transactional works ?
 
 
-When Spring loads your bean definitions, and has been configured to look for @Transactional annotations, it will create these proxy objects around your actual bean. These proxy objects are instances of classes that are auto-generated at runtime. The default behaviour of these proxy objects when a method is invoked is just to invoke the same method on the "target" bean (i.e. your bean).
+When Spring loads your bean definitions, and has been configured to look for @Transactional annotations, it will create these
+ proxy objects around your actual bean. These proxy objects are instances of classes that are auto-generated at runtime. 
+ The default behaviour of these proxy objects when a method is invoked is just to invoke the same method on the "target" bean 
+ (i.e. your bean).
 
-However, the proxies can also be supplied with interceptors, and when present these interceptors will be invoked by the proxy before it invokes your target bean's method. For target beans annotated with @Transactional, Spring will create a TransactionInterceptor, and pass it to the generated proxy object. So when you call the method from client code, you're calling the method on the proxy object, which first invokes the TransactionInterceptor (which begins a transaction), which in turn invokes the method on your target bean. When the invocation finishes, the TransactionInterceptor commits/rolls back the transaction. It's transparent to the client code.
+However, the proxies can also be supplied with interceptors, and when present these interceptors will be invoked by the proxy 
+before it invokes your target bean's method. For target beans annotated with @Transactional, Spring will create a
+ TransactionInterceptor, and pass it to the generated proxy object. So when you call the method from client code, 
+ you're calling the method on the proxy object, which first invokes the TransactionInterceptor (which begins a transaction), 
+ which in turn invokes the method on your target bean. When the invocation finishes, the TransactionInterceptor commits/rolls 
+ back the transaction. It's transparent to the client code.
 
 As for the "external method" thing, if your bean invokes one of its own methods, then it will not be doing so via the proxy. Remember, Spring wraps your bean in the proxy, your bean has no knowledge of it. Only calls from "outside" your bean go through the proxy.
 
@@ -207,9 +260,11 @@ Q)
 If we make @Transactional(readOnly = true), then we will not able to persist the data into the database.
 
 @Transactional Implementation Details
-Spring creates a proxy or manipulates the class byte-code to manage the creation, commit, and rollback of the transaction. In the case of a proxy, Spring ignores @Transactional in internal method calls.
+Spring creates a proxy or manipulates the class byte-code to manage the creation, commit, and rollback of the transaction. 
+In the case of a proxy, Spring ignores @Transactional in internal method calls.
 
-Simply put, if we have a method like callMethod and we mark it as @Transactional, Spring would wrap some transaction management code around the invocation:@Transactional method called:
+Simply put, if we have a method like callMethod and we mark it as @Transactional, Spring would wrap some transaction management 
+code around the invocation:@Transactional method called:
 createTransactionIfNecessary();
 try {
     callMethod();
@@ -220,11 +275,15 @@ try {
 }
 
 Q) Transaction Propagation?
-Propagation defines our business logic ‘s transaction boundary. Spring manages to start and pause a transaction according to our propagation setting.
+Propagation defines our business logic ‘s transaction boundary. Spring manages to start and pause a transaction according to our
+ propagation setting.
 
-Spring calls TransactionManager::getTransaction to get or create a transaction according to the propagation. It supports some of the propagations for all types of TransactionManager, but there are a few of them that only supported by specific implementations of TransactionManager.
+Spring calls TransactionManager::getTransaction to get or create a transaction according to the propagation. It supports some 
+of the propagations for all types of TransactionManager, but there are a few of them that only supported by specific 
+implementations of TransactionManager.
 1) REQUIRED Propagation :
-REQUIRED is the default propagation. Spring checks if there is an active transaction, then it creates a new one if nothing existed. Otherwise, the business logic appends to the currently active transaction:
+REQUIRED is the default propagation. Spring checks if there is an active transaction, then it creates a new one if nothing 
+existed. Otherwise, the business logic appends to the currently active transaction:
 @Transactional(propagation = Propagation.REQUIRED)
  pseudo-code of how transaction creation works for REQUIRED propagation:
  if (isExistingTransaction()) {
@@ -236,7 +295,8 @@ REQUIRED is the default propagation. Spring checks if there is an active transac
 return createNewTransaction();
 
 2) SUPPORTS Propagation:
-For SUPPORTS, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be used. If there isn't a transaction, it is executed non-transactional:
+For SUPPORTS, Spring first checks if an active transaction exists. If a transaction exists, then the existing transaction will be 
+used. If there isn't a transaction, it is executed non-transactional:
 @Transactional(propagation = Propagation.SUPPORTS)
 
 transaction creation's pseudo-code for SUPPORTS:
@@ -249,7 +309,8 @@ if (isExistingTransaction()) {
 return emptyTransaction; 
 
 3)MANDATORY Propagation:
-When the propagation is MANDATORY, if there is an active transaction, then it will be used. If there isn't an active transaction, then Spring throws an exception:
+When the propagation is MANDATORY, if there is an active transaction, then it will be used. If there isn't an active transaction, 
+then Spring throws an exception:
 @Transactional(propagation = Propagation.MANDATORY)
 
 transaction creation's pseudo-code for MANDATORY:
@@ -293,25 +354,29 @@ Code: if (isExistingTransaction()) {
 return createNewTransaction();
 
 7)NESTED Propagation :
-For NESTED propagation, Spring checks if a transaction exists, then if yes, it marks a savepoint. This means if our business logic execution throws an exception, then transaction rollbacks to this savepoint. If there's no active transaction, it works like REQUIRED.
+For NESTED propagation, Spring checks if a transaction exists, then if yes, it marks a savepoint. This means if our business logic 
+execution throws an exception, then transaction rollbacks to this savepoint. If there's no active transaction, it works like REQUIRED.
 @Transactional(propagation = Propagation.NESTED)
 
 Q)Transaction Isolation ?
 
-Isolation is one of the common ACID properties: Atomicity, Consistency, Isolation, and Durability. Isolation describes how changes applied by concurrent transactions are visible to each other.
+Isolation is one of the common ACID properties: Atomicity, Consistency, Isolation, and Durability. Isolation describes how '
+changes applied by concurrent transactions are visible to each other.
 
 Each isolation level prevents zero or more concurrency side effects on a transaction:
 
 -)Dirty read: read the uncommitted change of a concurrent transaction
 -)Nonrepeatable read: get different value on re-read of a row if a concurrent transaction updates the same row and commits
--)Phantom read: get different rows after re-execution of a range query if another transaction adds or removes some rows in the range and commits
+-)Phantom read: get different rows after re-execution of a range query if another transaction adds or removes some rows in the 
+range and commits
 We can set the isolation level of a transaction by @Transactional::isolation. It has these five enumerations in Spring: DEFAULT, READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE.
 1)READ_UNCOMMITTED
 READ_UNCOMMITTED isolation level states that a transaction may read data that is still uncommitted by other transactions. This constraint is very relaxed in what matters to transactional concurrency but it may lead to some issues like dirty reads
 In this example Transaction A writes a record. Meanwhile Transaction B reads that same record before Transaction A commits. Later Transaction A decides to rollback and now we have changes in Transaction B that are inconsistent. This is a dirty read. Transaction B was running in READ_UNCOMMITTED isolation level so it was able to read Transaction A changes before a commit occurred.
 
 2)READ_COMMITTED
-READ_COMMITTED isolation level states that a transaction can't read data that is not yet committed by other transactions. This means that the dirty read is no longer an issue, but even this way other issues may occur.
+READ_COMMITTED isolation level states that a transaction can't read data that is not yet committed by other transactions. 
+This means that the dirty read is no longer an issue, but even this way other issues may occur.
 
 In this example Transaction A reads some record. Then Transaction B writes that same record and commits. Later Transaction A reads that same record again and may get different values because Transaction B made changes to that record and committed. This is a non-repeatable read.
 
@@ -329,13 +394,22 @@ DEFAULT isolation level, as the name states, uses the default isolation level of
 Q) ACID Properties
 A transaction is a very small unit of a program and it may contain several lowlevel tasks. A transaction in a database system must maintain Atomicity, Consistency, Isolation, and Durability − commonly known as ACID properties − in order to ensure accuracy, completeness, and data integrity.
 
-Atomicity − This property states that a transaction must be treated as an atomic unit, that is, either all of its operations are executed or none. There must be no state in a database where a transaction is left partially completed. States should be defined either before the execution of the transaction or after the execution/abortion/failure of the transaction.
+Atomicity − This property states that a transaction must be treated as an atomic unit, that is, either all of its operations are 
+executed or none. There must be no state in a database where a transaction is left partially completed. 
+States should be defined either before the execution of the transaction or after the execution/abortion/failure of the transaction.
 
-Consistency − The database must remain in a consistent state after any transaction. No transaction should have any adverse effect on the data residing in the database. If the database was in a consistent state before the execution of a transaction, it must remain consistent after the execution of the transaction as well.
+Consistency − The database must remain in a consistent state after any transaction. No transaction should have any adverse 
+effect on the data residing in the database. If the database was in a consistent state before the execution of a transaction, 
+it must remain consistent after the execution of the transaction as well.
 
-Durability − The database should be durable enough to hold all its latest updates even if the system fails or restarts. If a transaction updates a chunk of data in a database and commits, then the database will hold the modified data. If a transaction commits but the system fails before the data could be written on to the disk, then that data will be updated once the system springs back into action.
+Durability − The database should be durable enough to hold all its latest updates even if the system fails or restarts. 
+If a transaction updates a chunk of data in a database and commits, then the database will hold the modified data. 
+If a transaction commits but the system fails before the data could be written on to the disk, then that data will be updated 
+once the system springs back into action.
 
-Isolation − In a database system where more than one transaction are being executed simultaneously and in parallel, the property of isolation states that all the transactions will be carried out and executed as if it is the only transaction in the system. No transaction will affect the existence of any other transaction.
+Isolation − In a database system where more than one transaction are being executed simultaneously and in parallel, 
+the property of isolation states that all the transactions will be carried out and executed as if it is the only 
+transaction in the system. No transaction will affect the existence of any other transaction.
 
 1. Atomicity
 A transaction is an atomic unit; hence, all the instructions within a transaction will successfully execute, or none of them will execute. The following transaction transfers 20 dollars from Alice’s bank account to Bob’s bank account. If any of the instructions fail, the entire transaction should abort and rollback.
@@ -445,15 +519,18 @@ Of course, we could have more beans implied:
 Bean A → Bean B → Bean C → Bean D → Bean E → Bean A
 
 Q)What Happens in Spring
-When Spring context is loading all the beans, it tries to create beans in the order needed for them to work completely. For instance, if we didn’t have a circular dependency, like the following case:
+When Spring context is loading all the beans, it tries to create beans in the order needed for them to work completely. 
+For instance, if we didn’t have a circular dependency, like the following case:
 
 Bean A → Bean B → Bean C
 
 Spring will create bean C, then create bean B (and inject bean C into it), then create bean A (and inject bean B into it).
 
-But, when having a circular dependency, Spring cannot decide which of the beans should be created first, since they depend on one another. In these cases, Spring will raise a BeanCurrentlyInCreationException while loading context.
+But, when having a circular dependency, Spring cannot decide which of the beans should be created first, since they depend on one
+another. In these cases, Spring will raise a BeanCurrentlyInCreationException while loading context.
 
-It can happen in Spring when using constructor injection; if you use other types of injections you should not find this problem since the dependencies will be injected when they are needed and not on the context loading.
+It can happen in Spring when using constructor injection; if you use other types of injections you should not find this 
+problem since the dependencies will be injected when they are needed and not on the context loading.
 
 @Component
 public class CircularDependencyA {
@@ -494,7 +571,9 @@ Requested bean is currently in creation: Is there an unresolvable circular refer
 
 The Workarounds :
 1)Use @Lazy
-A simple way to break the cycle is saying Spring to initialize one of the beans lazily. That is: instead of fully initializing the bean, it will create a proxy to inject it into the other bean. The injected bean will only be fully created when it’s first needed.
+A simple way to break the cycle is saying Spring to initialize one of the beans lazily. That is: instead of fully 
+initializing the bean, it will create a proxy to inject it into the other bean. The injected bean will only be fully
+ created when it’s first needed.
 
 To try this with our code, you can change the CircularDependencyA to the following:
 
@@ -548,7 +627,8 @@ public class CircularDependencyB {
 }
 
 3)@PostConstruct :
-nother way to break the cycle is injecting a dependency using @Autowired on one of the beans, and then use a method annotated with @PostConstruct to set the other dependency.
+nother way to break the cycle is injecting a dependency using @Autowired on one of the beans, and then use a method annotated 
+with @PostConstruct to set the other dependency.
 
 
 Our beans could have the following code:
@@ -591,7 +671,8 @@ They are instantiated, configured, wired and managed by a Spring IoC container
 Beans are created with the configuration metadata that the users supply to the container.
 
 Q) Explain inner beans in Spring.
-A bean can be declared as an inner bean only when it is used as a property of another bean. For defining a bean, the Spring’s XML based configuration metadata provides the use of <bean> element inside the <property> or <constructor-arg>. Inner beans are always anonymous and they are always scoped as prototypes. For example, let’s say we have one Student class having reference of Person class. Here we will be creating only one instance of Person class and use it inside Student.
+A bean can be declared as an inner bean only when it is used as a property of another bean. For defining a bean, the 
+Spring’s XML based configuration metadata provides the use of <bean> element inside the <property> or <constructor-arg>. Inner beans are always anonymous and they are always scoped as prototypes. For example, let’s say we have one Student class having reference of Person class. Here we will be creating only one instance of Person class and use it inside Student.
 
 Q)What do you understand by auto wiring and name the different modes of it?
 The Spring container is able to autowire relationships between the collaborating beans. That is, it is possible to let Spring resolve collaborators for your bean automatically by inspecting the contents of the BeanFactory.
@@ -614,9 +695,11 @@ Q) What’s the difference between @Component, @Controller, @Repository & @Servi
 
 @Component: This marks a java class as a bean. It is a generic stereotype for any Spring-managed component. The component-scanning mechanism of spring now can pick it up and pull it into the application context.
 
-@Controller: This marks a class as a Spring Web MVC controller. Beans marked with it are automatically imported into the Dependency Injection container.
+@Controller: This marks a class as a Spring Web MVC controller. Beans marked with it are automatically imported into the 
+Dependency Injection container.
 
-@Service: This annotation is a specialization of the component annotation. It doesn’t provide any additional behavior over the @Component annotation. You can use @Service over @Component in service-layer classes as it specifies intent in a better way.
+@Service: This annotation is a specialization of the component annotation. It doesn’t provide any additional behavior over the
+ @Component annotation. You can use @Service over @Component in service-layer classes as it specifies intent in a better way.
 @Repository: This annotation is a specialization of the @Component annotation with similar use and functionality. It provides additional benefits specifically for DAOs. It imports the DAOs into the DI container and makes the unchecked exceptions eligible for translation into Spring DataAccessException.
 
 Q)What do you understand by @Required annotation?

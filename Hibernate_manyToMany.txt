@@ -1,0 +1,362 @@
+Hibernate Many To Many Mapping – Join Tables
+
+
+Hibernate Many to Many
+Many-to-Many mapping is usually implemented in database using a Join Table. For example we can have Cart and Item table and 
+Cart_Items table for many-to-many mapping. Every cart can have multiple items and every item can be part of multiple carts, 
+so we have a many to many mapping here.
+
+Hibernate Many to Many Mapping Database Setup
+Below script can be used to create our many-to-many example database tables, these scripts are for MySQL database. 
+If you are using any other database, you might need to make small changes to get it working.
+
+
+DROP TABLE IF EXISTS `Cart_Items`;
+DROP TABLE IF EXISTS `Cart`;
+DROP TABLE IF EXISTS `Item`;
+
+CREATE TABLE `Cart` (
+  `cart_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `cart_total` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`cart_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `Item` (
+  `item_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_desc` varchar(20) NOT NULL,
+  `item_price` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `Cart_Items` (
+  `cart_id` int(11) unsigned NOT NULL,
+  `item_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`cart_id`,`item_id`),
+  CONSTRAINT `fk_cart` FOREIGN KEY (`cart_id`) REFERENCES `Cart` (`cart_id`),
+  CONSTRAINT `fk_item` FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+Notice that Cart_Items table doesn’t have any extra columns, actually it doesn’t make much sense to have extra columns 
+in many-to-many mapping table. But if you have extra columns, the implementation changes little bit and we will look into that in 
+another post.
+
+Hibernate Many to Many XML Configuration Model Classes
+Cart.java
+
+
+package com.journaldev.hibernate.model;
+
+import java.util.Set;
+
+public class Cart {
+
+	private long id;
+	private double total;
+
+	private Set<Item> items;
+	
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public Set<Item> getItems() {
+		return items;
+	}
+
+	public void setItems(Set<Item> items) {
+		this.items = items;
+	}
+
+}
+
+Item.java
+
+
+package com.journaldev.hibernate.model;
+
+import java.util.Set;
+
+public class Item {
+
+	private long id;
+	private double price;
+	private String description;
+
+	private Set<Cart> carts;
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Set<Cart> getCarts() {
+		return carts;
+	}
+
+	public void setCarts(Set<Cart> carts) {
+		this.carts = carts;
+	}
+}
+
+Notice that Cart has set of Item and Item has set of Cart, this way we are implementing Bi-Directional associations. 
+It means that we can configure it to save Item when we save Cart and vice versa.
+
+For one-directional mapping, usually we have set in one of the model class. We will use annotations for one-directional mapping.
+
+Hibernate Many To Many Mapping XML Configuration
+Let’s create hibernate many to many mapping xml configuration files for Cart and Item. We will implement bi-directional many-to-many mapping.
+
+cart.hbm.xml
+
+
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.journaldev.hibernate.model">
+	<class name="Cart" table="CART">
+		<id name="id" type="long">
+			<column name="cart_id" />
+			<generator class="identity" />
+		</id>
+		<property name="total" type="double" column="cart_total" />
+
+		<set name="items" table="CART_ITEMS" fetch="select" cascade="all">
+			<key column="cart_id" />
+			<many-to-many class="Item" column="item_id" />
+		</set>
+	</class>
+
+</hibernate-mapping>
+
+Notice that set of items is mapped to CART_ITEMS table. Since Cart is the primary object, cart_id is the key and many-to-many 
+mapping is using Item class item_id column.
+
+item.hbm.xml
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.journaldev.hibernate.model">
+
+	<class name="Item" table="ITEM">
+		<id name="id" type="long">
+			<column name="item_id" />
+			<generator class="identity" />
+		</id>
+		<property name="description" type="string" column="item_desc" />
+
+		<property name="price" type="double" column="item_price" />
+
+		<set name="carts" table="CART_ITEMS" fetch="select" cascade="all">
+			<key column="item_id" />
+			<many-to-many class="Cart" column="cart_id" />
+		</set>
+
+	</class>
+
+</hibernate-mapping>
+
+
+package com.journaldev.hibernate.main;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
+import com.journaldev.hibernate.model.Cart;
+import com.journaldev.hibernate.model.Item;
+import com.journaldev.hibernate.util.HibernateUtil;
+
+public class HibernateManyToManyMain {
+	
+	//Saving many-to-many where Cart is primary
+	public static void main(String[] args) {
+		
+		Item iphone = new Item();
+		iphone.setPrice(100); iphone.setDescription("iPhone");
+		
+		Item ipod = new Item();
+		ipod.setPrice(50); ipod.setDescription("iPod");
+		
+		Set<Item> items = new HashSet<Item>();
+		items.add(iphone); items.add(ipod);
+		
+		Cart cart = new Cart();
+		cart.setItems(items);
+		cart.setTotal(150);
+		
+		Cart cart1 = new Cart();
+		Set<Item> items1 = new HashSet<Item>();
+		items1.add(iphone);
+		cart1.setItems(items1);
+		cart1.setTotal(100);
+		
+		SessionFactory sessionFactory = null;
+		try{
+		sessionFactory = HibernateUtil.getSessionFactory();
+		Session session = sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		session.save(cart);
+		session.save(cart1);
+		System.out.println("Before committing transaction");
+		tx.commit();
+		sessionFactory.close();
+		
+		System.out.println("Cart ID="+cart.getId());
+		System.out.println("Cart1 ID="+cart1.getId());
+		System.out.println("Item1 ID="+iphone.getId());
+		System.out.println("Item2 ID="+ipod.getId());
+		
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(sessionFactory != null && !sessionFactory.isClosed()) sessionFactory.close();
+		}
+		
+	}
+
+}
+ 
+ 
+ 
+Hibernate Configuration loaded
+Hibernate serviceRegistry created
+Hibernate: insert into ITEM (item_desc, item_price) values (?, ?)
+Hibernate: insert into CART (cart_total) values (?)
+Hibernate: insert into ITEM (item_desc, item_price) values (?, ?)
+Hibernate: insert into CART (cart_total) values (?)
+Hibernate: insert into CART_ITEMS (item_id, cart_id) values (?, ?)
+Hibernate: insert into CART_ITEMS (item_id, cart_id) values (?, ?)
+Hibernate: insert into CART_ITEMS (item_id, cart_id) values (?, ?)
+Cart ID=3
+Cart1 ID=4
+Item1 ID=3
+Item2 ID=4
+
+
+Hibernate Many To Many Mapping Annotation
+
+Now that we have seen how to configure many-to-many mapping using hibernate xml configurations, let’s see an example of implementing 
+it through annotations. We will implement one-directional many-to-many mapping using JPA annotations.
+
+Hibernate Many to Many Mapping Annotation Model Classes
+This is the most important part for annotation based mapping, let’s first look at the Item table model class and then we will look into Cart table model class.
+
+Item1.java
+
+
+
+package com.journaldev.hibernate.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ITEM")
+public class Item1 {
+
+	@Id
+	@Column(name="item_id")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private long id;
+	
+	@Column(name="item_price")
+	private double price;
+	
+	@Column(name="item_desc")
+	private String description;
+	
+// Getter Setter methods
+}
+
+
+Cart1.java
+
+
+package com.journaldev.hibernate.model;
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "CART")
+public class Cart1 {
+
+	@Id
+	@Column(name = "cart_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
+	@Column(name = "cart_total")
+	private double total;
+
+	@ManyToMany(targetEntity = Item1.class, cascade = { CascadeType.ALL })
+	@JoinTable(name = "CART_ITEMS", 
+				joinColumns = { @JoinColumn(name = "cart_id") }, 
+				inverseJoinColumns = { @JoinColumn(name = "item_id") })
+	private Set<Item1> items;
+
+//Getter Setter methods
+}
+
+
+Most important part here is the use of ManyToMany annotation and JoinTable annotation where we provide table name 
+and columns to be used for many-to-many mapping.
+
+
+
+
+
+

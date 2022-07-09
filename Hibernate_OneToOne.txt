@@ -1,0 +1,537 @@
+Hibernate One to One Mapping Example Annotation
+
+
+First of all we would need to setup One to One mapping in database tables. We will create two tables for our example – 
+Transaction and Customer. Both of these tables will have one to one mapping. Transaction will be the primary table and we will be 
+using Foreign Key in Customer table for one-to-one mapping.
+
+I am providing MySQL script, that is the database I am using for this tutorial. If you are using any other database, 
+make sure to change the script accordingly.
+
+
+-- Create Transaction Table
+CREATE TABLE `Transaction` (
+  `txn_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `txn_date` date NOT NULL,
+  `txn_total` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`txn_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+
+-- Create Customer table
+CREATE TABLE `Customer` (
+  `txn_id` int(11) unsigned NOT NULL,
+  `cust_name` varchar(20) NOT NULL DEFAULT '',
+  `cust_email` varchar(20) DEFAULT NULL,
+  `cust_address` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`txn_id`),
+  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`txn_id`) REFERENCES `Transaction` (`txn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Entity Relation Diagram (ERD) of above one-to-one mapping between tables looks like below image.
+
+Hibernate One to One Mapping Model Classes
+Model classes for Hibernate One to One mapping to reflect database tables would be like below.
+
+public class Txn {
+
+	private long id;
+	private Date date;
+	private double total;
+	private Customer customer;
+	
+	@Override
+	public String toString(){
+		return id+", "+total+", "+customer.getName()+", "+customer.getEmail()+", "+customer.getAddress();
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public double getTotal() {
+		return total;
+	}
+	public void setTotal(double total) {
+		this.total = total;
+	}
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+}
+
+public class Customer {
+
+	private long id;
+	private String name;
+	private String email;
+	private String address;
+	
+	private Txn txn;
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public Txn getTxn() {
+		return txn;
+	}
+	public void setTxn(Txn txn) {
+		this.txn = txn;
+	}
+	
+}
+
+Since we are using XML based configuration for mapping, above model classes are simple POJO classes or Java Beans with 
+getter-setter methods. I am using class name as Txn to avoid confusion because Hibernate API have a class name as Transaction.
+
+Hibernate One to One Mapping Configuration
+Let’s create hibernate one to one mapping configuration files for Txn and Customer tables.
+
+txn.hbm.xml
+
+
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.journaldev.hibernate.model.Txn" table="TRANSACTION" >
+		<id name="id" type="long">
+			<column name="txn_id" />
+			<generator class="identity" />
+		</id>
+		<property name="date" type="date">
+			<column name="txn_date" />
+		</property>
+		<property name="total" type="double">
+			<column name="txn_total" />
+		</property>
+		<one-to-one name="customer" class="com.journaldev.hibernate.model.Customer"
+			cascade="save-update" />
+	</class>
+	
+</hibernate-mapping>
+
+The important point to note above is the hibernate one-to-one element for customer property.
+
+customer.hbm.xml
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+"https://hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+
+	<class name="com.journaldev.hibernate.model.Customer" table="CUSTOMER">
+		<id name="id" type="long">
+			<column name="txn_id" />
+			<generator class="foreign">
+				<param name="property">txn</param>
+			</generator>
+		</id>
+		<one-to-one name="txn" class="com.journaldev.hibernate.model.Txn"
+			constrained="true"></one-to-one>
+
+		<property name="name" type="string">
+			<column name="cust_name"></column>
+		</property>
+		<property name="email" type="string">
+			<column name="cust_email"></column>
+		</property>
+		<property name="address" type="string">
+			<column name="cust_address"></column>
+		</property>
+	</class>
+
+</hibernate-mapping>
+generator class=”foreign” is the important part that is used for hibernate foreign key implementation.
+
+public class HibernateUtil {
+
+	private static SessionFactory sessionFactory;
+	
+	private static SessionFactory buildSessionFactory() {
+        try {
+            // Create the SessionFactory from hibernate.cfg.xml
+        	Configuration configuration = new Configuration();
+        	configuration.configure("hibernate.cfg.xml");
+        	System.out.println("Hibernate Configuration loaded");
+        	
+        	ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        	System.out.println("Hibernate serviceRegistry created");
+        	
+        	SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        	
+            return sessionFactory;
+        }
+        catch (Throwable ex) {
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+	
+	public static SessionFactory getSessionFactory() {
+		if(sessionFactory == null) sessionFactory = buildSessionFactory();
+        return sessionFactory;
+    }
+}
+That’s it, lets write a test program to test the hibernate one to one mapping xml based configuration.
+
+
+Hibernate One to One Mapping XML Configuration Test Program
+
+In the hibernate one to one mapping example test program, first we will create Txn object and save it. 
+Once it’s saved into database, we will use the generated id to retrieve the Txn object and print it.
+
+public class HibernateOneToOneMain {
+
+	public static void main(String[] args) {
+		
+		Txn txn = buildDemoTransaction();
+		
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction tx = null;
+		try{
+		//Get Session
+		sessionFactory = HibernateUtil.getSessionFactory();
+		session = sessionFactory.getCurrentSession();
+		System.out.println("Session created");
+		//start transaction
+		tx = session.beginTransaction();
+		//Save the Model object
+		session.save(txn);
+		//Commit transaction
+		tx.commit();
+		System.out.println("Transaction ID="+txn.getId());
+		
+		//Get Saved Trasaction Data
+		printTransactionData(txn.getId(), sessionFactory);
+		
+		}catch(Exception e){
+			System.out.println("Exception occured. "+e.getMessage());
+			e.printStackTrace();
+		}finally{
+			if(!sessionFactory.isClosed()){
+				System.out.println("Closing SessionFactory");
+				sessionFactory.close();
+			}
+		}
+	}
+
+	private static void printTransactionData(long id, SessionFactory sessionFactory) {
+		Session session = null;
+		Transaction tx = null;
+		try{
+			//Get Session
+			sessionFactory = HibernateUtil.getSessionFactory();
+			session = sessionFactory.getCurrentSession();
+			//start transaction
+			tx = session.beginTransaction();
+			//Save the Model object
+			Txn txn = (Txn) session.get(Txn.class, id);
+			//Commit transaction
+			tx.commit();
+			System.out.println("Transaction Details=\n"+txn);
+			
+			}catch(Exception e){
+				System.out.println("Exception occured. "+e.getMessage());
+				e.printStackTrace();
+			}
+	}
+
+	private static Txn buildDemoTransaction() {
+		Txn txn = new Txn();
+		txn.setDate(new Date());
+		txn.setTotal(100);
+		
+		Customer cust = new Customer();
+		cust.setAddress("Bangalore, India");
+		cust.setEmail("pankaj@gmail.com");
+		cust.setName("Pankaj Kumar");
+		
+		txn.setCustomer(cust);
+		
+		cust.setTxn(txn);
+		return txn;
+	}
+
+}
+Now when we run above one to one mapping in hibernate test program, we get following out
+
+
+Hibernate Configuration loaded
+Hibernate serviceRegistry created
+Session created
+Hibernate: insert into TRANSACTION (txn_date, txn_total) values (?, ?)
+Hibernate: insert into CUSTOMER (cust_name, cust_email, cust_address, txn_id) values (?, ?, ?, ?)
+Transaction ID=19
+Hibernate: select txn0_.txn_id as txn_id1_1_0_, txn0_.txn_date as txn_date2_1_0_, txn0_.txn_total as txn_tota3_1_0_, 
+customer1_.txn_id as txn_id1_0_1_, customer1_.cust_name as cust_nam2_0_1_, customer1_.cust_email as cust_ema3_0_1_, 
+customer1_.cust_address as cust_add4_0_1_ from TRANSACTION txn0_ left outer join CUSTOMER customer1_ on 
+txn0_.txn_id=customer1_.txn_id where txn0_.txn_id=?
+Transaction Details=
+19, 100.0, Pankaj Kumar, pankaj@gmail.com, Bangalore, India
+Closing SessionFactory
+
+
+Hibernate One to One Mapping Annotation :
+
+In the above section, we saw how to use XML based configuration for hibernate one to one mapping, now let’s see how we can use JPA and Hibernate annotation to achieve the same thing.
+
+Hibernate Configuration File
+hibernate-annotation.cfg.xml
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">pankaj123</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost/TestDB</property>
+        <property name="hibernate.connection.username">pankaj</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        
+        <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.show_sql">true</property>
+        
+        <mapping class="com.journaldev.hibernate.model.Txn1"/>
+        <mapping class="com.journaldev.hibernate.model.Customer1"/>
+    </session-factory>
+</hibernate-configuration>
+Hibernate configuration is simple, as you can see that I have two model classes that we will use with annotations – Txn1 and Customer1.
+
+Hibernate One to One Mapping Annotation Example Model Classes
+For hibernate one to one mapping annotation configuration, model classes are the most important part. Let’s see how our model classes look.
+
+@Entity
+@Table(name="TRANSACTION")
+public class Txn1 {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="txn_id")
+	private long id;
+	
+	@Column(name="txn_date")
+	private Date date;
+	
+	@Column(name="txn_total")
+	private double total;
+	
+	@OneToOne(mappedBy="txn")
+	@Cascade(value=org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	private Customer1 customer;
+	
+	@Override
+	public String toString(){
+		return id+", "+total+", "+customer.getName()+", "+customer.getEmail()+", "+customer.getAddress();
+	}
+
+        //Getter-Setter methods, omitted for clarity 
+}
+
+
+Notice that most of the annotations are from Java Persistence API because Hibernate provide it’s implementation. However for cascading, we would need to use Hibernate annotation org.hibernate.annotations.Cascade and enum org.hibernate.annotations.CascadeType.
+
+
+@Entity
+@Table(name="CUSTOMER")
+public class Customer1 {
+
+	@Id
+	@Column(name="txn_id", unique=true, nullable=false)
+	@GeneratedValue(generator="gen")
+	@GenericGenerator(name="gen", strategy="foreign", parameters={@Parameter(name="property", value="txn")})
+	private long id;
+	
+	@Column(name="cust_name")
+	private String name;
+	
+	@Column(name="cust_email")
+	private String email;
+	
+	@Column(name="cust_address")
+	private String address;
+	
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Txn1 txn;
+
+        //Getter-Setter methods
+}
+Note that we would need to @GenericGenerator so that id is used from the txn rather than generating it.
+
+Hibernate SessionFactory Utility class
+Creating SessionFactory is independent of the way we provide hibernate mapping. Our utility class for creating SessionFactory looks like below.
+
+
+public class HibernateAnnotationUtil {
+
+	private static SessionFactory sessionFactory;
+	
+	private static SessionFactory buildSessionFactory() {
+        try {
+            // Create the SessionFactory from hibernate-annotation.cfg.xml
+        	Configuration configuration = new Configuration();
+        	configuration.configure("hibernate-annotation.cfg.xml");
+        	System.out.println("Hibernate Annotation Configuration loaded");
+        	
+        	ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        	System.out.println("Hibernate Annotation serviceRegistry created");
+        	
+        	SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        	
+            return sessionFactory;
+        }
+        catch (Throwable ex) {
+            System.err.println("Initial SessionFactory creation failed." + ex);
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+	
+	public static SessionFactory getSessionFactory() {
+		if(sessionFactory == null) sessionFactory = buildSessionFactory();
+        return sessionFactory;
+    }
+}
+Hibernate One to One Mapping Annotation Example Test Program
+Here is a simple test program for our hibernate one to one mapping annotation example.
+
+
+package com.journaldev.hibernate.main;
+
+import java.util.Date;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
+import com.journaldev.hibernate.model.Customer1;
+import com.journaldev.hibernate.model.Txn1;
+import com.journaldev.hibernate.util.HibernateAnnotationUtil;
+
+public class HibernateOneToOneAnnotationMain {
+
+	public static void main(String[] args) {
+		
+		Txn1 txn = buildDemoTransaction();
+		
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction tx = null;
+		try{
+		//Get Session
+		sessionFactory = HibernateAnnotationUtil.getSessionFactory();
+		session = sessionFactory.getCurrentSession();
+		System.out.println("Session created using annotations configuration");
+		//start transaction
+		tx = session.beginTransaction();
+		//Save the Model object
+		session.save(txn);
+		//Commit transaction
+		tx.commit();
+		System.out.println("Annotation Example. Transaction ID="+txn.getId());
+		
+		//Get Saved Trasaction Data
+		printTransactionData(txn.getId(), sessionFactory);
+		}catch(Exception e){
+			System.out.println("Exception occured. "+e.getMessage());
+			e.printStackTrace();
+		}finally{
+			if(sessionFactory != null && !sessionFactory.isClosed()){
+				System.out.println("Closing SessionFactory");
+				sessionFactory.close();
+			}
+		}
+	}
+
+	private static void printTransactionData(long id, SessionFactory sessionFactory) {
+		Session session = null;
+		Transaction tx = null;
+		try{
+			//Get Session
+			sessionFactory = HibernateAnnotationUtil.getSessionFactory();
+			session = sessionFactory.getCurrentSession();
+			//start transaction
+			tx = session.beginTransaction();
+			//Save the Model object
+			Txn1 txn = (Txn1) session.get(Txn1.class, id);
+			//Commit transaction
+			tx.commit();
+			System.out.println("Annotation Example. Transaction Details=\n"+txn);
+			
+			}catch(Exception e){
+				System.out.println("Exception occured. "+e.getMessage());
+				e.printStackTrace();
+			}
+	}
+
+	private static Txn1 buildDemoTransaction() {
+		Txn1 txn = new Txn1();
+		txn.setDate(new Date());
+		txn.setTotal(100);
+		
+		Customer1 cust = new Customer1();
+		cust.setAddress("San Jose, USA");
+		cust.setEmail("pankaj@yahoo.com");
+		cust.setName("Pankaj Kr");
+		
+		txn.setCustomer(cust);
+		
+		cust.setTxn(txn);
+		return txn;
+	}
+
+}
+Here is the output snippet when we execute above program
+
+
+Hibernate Annotation Configuration loaded
+Hibernate Annotation serviceRegistry created
+Session created using annotations configuration
+Hibernate: insert into TRANSACTION (txn_date, txn_total) values (?, ?)
+Hibernate: insert into CUSTOMER (cust_address, cust_email, cust_name, txn_id) values (?, ?, ?, ?)
+Annotation Example. Transaction ID=20
+Hibernate: select txn1x0_.txn_id as txn_id1_1_0_, txn1x0_.txn_date as txn_date2_1_0_, txn1x0_.txn_total as txn_tota3_1_0_, 
+customer1x1_.txn_id as txn_id1_0_1_, customer1x1_.cust_address as cust_add2_0_1_, customer1x1_.cust_email as cust_ema3_0_1_, 
+customer1x1_.cust_name as cust_nam4_0_1_ from TRANSACTION txn1x0_ left outer join CUSTOMER customer1x1_ on 
+txn1x0_.txn_id=customer1x1_.txn_id where txn1x0_.txn_id=?
+Annotation Example. Transaction Details=
+20, 100.0, Pankaj Kr, pankaj@yahoo.com, San Jose, USA
+Closing SessionFactory

@@ -1,45 +1,78 @@
 Q) Diffrence between Abstraction and encapsulation?
 
-Abstraction hides complexity by giving you a more abstract picture, a sort of 10,000 feet view, while Encapsulation hides internal working so that you can change it later. In other words, Abstraction hides details at the design level, while Encapsulation hides details at the implementation level.
+Abstraction hides complexity by giving you a more abstract picture, a sort of 10,000 feet view, while Encapsulation 
+hides internal working so that you can change it later. In other words, Abstraction hides details at the design level, 
+while Encapsulation hides details at the implementation level.
 
-For example, when you first describe an object, you talk in more abstract term e.g. a Vehicle which can move, you don't tell how Vehicle will move, whether it will move by using tires or it will fly or it will sell. It just moves. This is called Abstraction. We are talking about a most essential thing, which is moving, rather than focusing on details like moving in plane, sky, or water.
+For example, when you first describe an object, you talk in more abstract term e.g. a Vehicle which can move, you don't 
+tell how Vehicle will move, whether it will move by using tires or it will fly or it will sell. It just moves. 
+This is called Abstraction. We are talking about a most essential thing, which is moving, rather than focusing on 
+details like moving in plane, sky, or water.
 
-There are also the different levels of Abstraction and it's good practice that classes should interact with other classes with the same level of abstraction or higher level of abstraction. As you increase the level of Abstraction, things start getting simpler and simpler because you leave out details.
+There are also the different levels of Abstraction and it's good practice that classes should interact with other 
+classes with the same level of abstraction or higher level of abstraction. As you increase the level of Abstraction, 
+things start getting simpler and simpler because you leave out details.
 
-On the other hand, Encapsulation is all about implementation. Its sole purpose is to hide internal working of objects from outside world so that you can change it later without impacting outside clients.
+On the other hand, Encapsulation is all about implementation. Its sole purpose is to hide internal working of objects 
+from outside world so that you can change it later without impacting outside clients.
 
-For example, we have a HashMap which allows you to store the object using put() method and retrieve the object using the get() method. How HashMap implements this method (see here) is an internal detail of HashMap, the client only cares that put stores the object and get return it back, they are not concerned whether HashMap is using an array, how it is resolving the collision, whether it is using linked list or binary tree to store object landing on same bucket etc.
+For example, we have a HashMap which allows you to store the object using put() method and retrieve the object using 
+the get() method. How HashMap implements this method (see here) is an internal detail of HashMap, the client only 
+cares that put stores the object and get return it back, they are not concerned whether HashMap is using an array, 
+how it is resolving the collision, whether it is using linked list or binary tree to store object landing on same 
+bucket etc.
 
-Because of Encapsulation, you can change the internal implementation of HashMap with ease without impacting clients who are using HashMap. For example, in Java 8, the java.util.HashMap changes its implementation to use a binary tree instead of LinkedList to store objects in the same bucket after a certain threshold
+Because of Encapsulation, you can change the internal implementation of HashMap with ease without impacting clients who 
+are using HashMap. For example, in Java 8, the java.util.HashMap changes its implementation to use a binary tree 
+instead of LinkedList to store objects in the same bucket after a certain threshold
 
-Difference between Abstraction vs Encapsulation
+Difference between Abstraction vs Encapsulation 
+
 Here are some of the key difference between Encapsulation and Abstraction in point format for your quick revision:
 
-1) The most important difference between Abstraction and Encapsulation is that Abstraction solves the problem at design level while Encapsulation solves it implementation level.
+1) The most important difference between Abstraction and Encapsulation is that Abstraction solves the problem at design 
+level while Encapsulation solves it implementation level.
 
-2) Abstraction is about hiding unwanted details while giving out most essential details, while Encapsulation means hiding the code and data into a single unit e.g. class or method to protect inner working of an object from outside world. In other words, Abstraction means extracting common details or generalizing things.
+2) Abstraction is about hiding unwanted details while giving out most essential details, while Encapsulation means 
+hiding the code and data into a single unit e.g. class or method to protect inner working of an object from outside world. In other words, Abstraction means extracting common details or generalizing things.
 
-3) Abstraction lets you focus on what the object does instead of how it does, while Encapsulation means hiding the internal details of how an object works. When you keep internal working details private, you can change it later with a better method. The Head First Object Oriented Analysis and Design has some excellent examples of these OOP concepts, I suggest you read that book at least once to revisit OOP fundamentals.
+3) Abstraction lets you focus on what the object does instead of how it does, while Encapsulation means hiding the 
+internal details of how an object works. When you keep internal working details private, you can change it later with a
+ better method. The Head First Object Oriented Analysis and Design has some excellent examples of these OOP concepts, 
+ I suggest you read that book at least once to revisit OOP fundamentals.
 
-4) Abstraction focus on outer lookout e.g. moving of vehicle while Encapsulation focuses on internal working or inner lookout e.g. how exactly the vehicle moves.
+4) Abstraction focus on outer lookout e.g. moving of vehicle while Encapsulation focuses on internal working or 
+inner lookout e.g. how exactly the vehicle moves.
 
 5) In Java, Abstraction is supported using interface and abstract class while Encapsulation is supported using access modifiers e.g. public, private and protected.
 
 
 Q)Composition vs Aggregation?
-Association is relation between two separate classes which establishes through their Objects. Association can be one-to-one, one-to-many, many-to-one, many-to-many.
-In Object-Oriented programming, an Object communicates to other Object to use functionality and services provided by that object. Composition and Aggregation are the two forms of association.
 
-Another example of Composition is Car and it's part e.g. engines, wheels etc. Individual parts of the car can not function when a car is destroyed.  While in the case of Aggregation, including object can exists without being part of the main object e.g. a Player which is part of a Team, can exist without a team and can become part of other teams as well.
+Association is relation between two separate classes which establishes through their Objects. Association can be 
+one-to-one, one-to-many, many-to-one, many-to-many.
+In Object-Oriented programming, an Object communicates to other Object to use functionality and services provided by
+ that object. Composition and Aggregation are the two forms of association.
 
-Another example of Aggregation is Student in School class, when School closed, Student still exist and then can join another School or so.  In UML notation, a composition is denoted by a filled diamond, while aggregation is denoted by an empty diamond, which shows their obvious difference in terms of strength of the relationship.
+Another example of Composition is Car and it's part e.g. engines, wheels etc. Individual parts of the car can not 
+function when a car is destroyed.  While in the case of Aggregation, including object can exists without being part of 
+the main object e.g. a Player which is part of a Team, can exist without a team and can become part of other teams as 
+well.
 
-The composition is stronger than Aggregation.  In Short, a relationship between two objects is referred as an association, and an association is known as composition when one object owns other while an association is known as aggregation when one object uses another object.
+Another example of Aggregation is Student in School class, when School closed, Student still exist and then can join 
+another School or so.  In UML notation, a composition is denoted by a filled diamond, while aggregation is denoted by an
+ empty diamond, which shows their obvious difference in terms of strength of the relationship.
+
+The composition is stronger than Aggregation.  In Short, a relationship between two objects is referred as an association
+, and an association is known as composition when one object owns other while an association is known as aggregation 
+when one object uses another object.
 
 
-Q)ClassNotFoundException is an exception that occurs when you try to load a class at run time using Class.forName() or loadClass() methods and mentioned classes are not found in the classpath.
+Q)ClassNotFoundException is an exception that occurs when you try to load a class at run time using Class.forName() 
+or loadClass() methods and mentioned classes are not found in the classpath.
 
-NoClassDefFoundError is an error that occurs when a particular class is present at compile time, but was missing at run time.
+NoClassDefFoundError is an error that occurs when a particular class is present at compile time, but was missing at 
+run time.
 
 
 Q) JVM Architecture?
@@ -50,7 +83,8 @@ Working of Java Virtual Machine(JVM) & its Architecture
 
 1) ClassLoader
 
-The class loader is a subsystem used for loading class files. It performs three major functions viz. Loading, Linking, and Initialization.
+The class loader is a subsystem used for loading class files. It performs three major functions viz. Loading, Linking, 
+and Initialization.
 
 2) Method Area
 
@@ -58,24 +92,30 @@ JVM Method Area stores class structures like metadata, the constant runtime pool
 
 3) Heap
 
-All the Objects, their related instance variables, and arrays are stored in the heap. This memory is common and shared across multiple threads.
+All the Objects, their related instance variables, and arrays are stored in the heap. This memory is common and shared 
+across multiple threads.
 
 4) JVM language Stacks
 
-Java language Stacks store local variables, and it’s partial results. Each thread has its own JVM stack, created simultaneously as the thread is created. A new frame is created whenever a method is invoked, and it is deleted when method invocation process is complete.
+Java language Stacks store local variables, and it’s partial results. Each thread has its own JVM stack, created 
+simultaneously as the thread is created. A new frame is created whenever a method is invoked, and it is deleted when 
+method invocation process is complete.
 
 5)  PC Registers
 
-PC register store the address of the Java virtual machine instruction which is currently executing. In Java, each thread has its separate PC register.
+PC register store the address of the Java virtual machine instruction which is currently executing. In Java, each 
+thread has its separate PC register.
 
 6) Native Method Stacks
 
-Native method stacks hold the instruction of native code depends on the native library. It is written in another language instead of Java.
+Native method stacks hold the instruction of native code depends on the native library. It is written in another 
+language instead of Java.
 
 7) Execution Engine
 
 
-It is a type of software used to test hardware, software, or complete systems. The test execution engine never carries any information about the tested product.
+It is a type of software used to test hardware, software, or complete systems. The test execution engine never carries
+ any information about the tested product.
 
 8) Native Method interface
 
@@ -87,7 +127,9 @@ Native Libraries is a collection of the Native Libraries(C, C++) which are neede
 
 Q) JVM 32 bit vs 64 bit?
 
-Q)This is a favorite interview question. With this questions, the interviewer tries to find out how well you understand the behavior of objects with respect to constructors, methods, class variables (static variables) and instance variables.
+Q)This is a favorite interview question. With this questions, the interviewer tries to find out how well you 
+understand the behavior of objects with respect to constructors, methods, class variables (static variables) and 
+instance variables.
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,27 +148,40 @@ class Test {
 }
 In the above case, we have defined a constructor for 'Test' and gave it a 'setFoo' method. 
 
-About constructor: Constructor can be invoked only one time per object creation by using the new keyword. You cannot invoke constructor multiple times, because constructor are not designed to do so. 
+About constructor: Constructor can be invoked only one time per object creation by using the new keyword. You cannot 
+invoke constructor multiple times, because constructor are not designed to do so. 
 
 About method: A method can be invoked as many times as you want (Even never) and the compiler knows it. 
 
 Scenario 1
 
 private final List foo;  // 1
-foo is an instance variable. When we create Test class object then the instance variable foo, will be copied inside the object of Test class. If we assign foo inside the constructor, then the compiler knows that the constructor will be invoked only once, so there is no problem assigning it inside the constructor. 
+foo is an instance variable. When we create Test class object then the instance variable foo, will be copied inside 
+the object of Test class. If we assign foo inside the constructor, then the compiler knows that the constructor will be 
+invoked only once, so there is no problem assigning it inside the constructor. 
 
-If we assign foo inside a method, the compiler knows that a method can be called multiple times, which means the value will have to be changed multiple times, which is not allowed for a final variable. So the compiler decides constructor is good choice! You can assign a value to a final variable only one time.
+If we assign foo inside a method, the compiler knows that a method can be called multiple times, which means the 
+value will have to be changed multiple times, which is not allowed for a final variable. So the compiler decides '
+constructor is good choice! You can assign a value to a final variable only one time.
 
 Scenario 2
 
 private static final List foo = new ArrayList();
-foo is now a static variable. When we create an instance of Test class, foo will not be copied to the object because foo is static. Now foo is not an independent property of each object. This is a property of Test class. But foo can be seen by multiple objects and if every object which is created by using the new keyword which will ultimately invoke the Test constructor which changes the value at the time of multiple object creation (Remember static foo is not copied in every object, but is shared between multiple objects.) 
+
+foo is now a static variable. When we create an instance of Test class, foo will not be copied to the object because foo
+ is static. Now foo is not an independent property of each object. This is a property of Test class. But foo can be 
+ seen by multiple objects and if every object which is created by using the new keyword which will ultimately invoke 
+ the Test constructor which changes the value at the time of multiple object creation 
+ (Remember static foo is not copied in every object, but is shared between multiple objects.) 
 
 Scenario 3 
 
 t.foo.add("bar"); // Modification-2
-Above Modification-2 is from your question. In the above case, you are not changing the first referenced object, but you are adding content inside foo which is allowed. Compiler complains if you try to assign a new ArrayList() to the foo reference variable.
-Rule If you have initialized a final variable, then you cannot change it to refer to a different object. (In this case ArrayList)
+Above Modification-2 is from your question. In the above case, you are not changing the first referenced object, 
+but you are adding content inside foo which is allowed. Compiler complains if you try to assign a new ArrayList() to 
+the foo reference variable.
+Rule If you have initialized a final variable, then you cannot change it to refer to a different object. 
+(In this case ArrayList)
 
 final classes cannot be subclassed
 final methods cannot be overridden. (This method is in superclass)
@@ -134,44 +189,94 @@ final methods can override. (Read this in grammatical way. This method is in a s
 
 Q) What is Solid principle
  1. Single Responsibility Principle: This principle states that “a class should have only one reason to change” which means every class should have a single responsibility or single job or single purpose. Take the example of developing software. The task is divided into different members doing different things as front-end designers do design, the tester does testing and backend developer takes care of backend development part then we can say that everyone has a single job or responsibility.
-Most of the time it happens that when programmers have to add features or new behavior they implement everything into the existing class which is completely wrong. It makes their code lengthy, complex and consumes time when later something needs to be modified. Use layers in your application and break God classes into smaller classes or modules.
+Most of the time it happens that when programmers have to add features or new behavior they implement everything into 
+the existing class which is completely wrong. It makes their code lengthy, complex and consumes time when later 
+something needs to be modified. Use layers in your application and break God classes into smaller classes or modules.
 
-2. Open/Closed Principle: This principle states that “software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification” which means you should be able to extend a class behavior, without modifying it.
-Suppose developer A needs to release an update for a library or framework and developer B wants some modification or add some feature on that then developer B is allowed to extend the existing class created by developer A but developer B is not supposed to modify the class directly. Using this principle separates the existing code from the modified code so it provides better stability, maintainability and minimizes changes as in your code.
+2. Open/Closed Principle: This principle states that “software entities (classes, modules, functions, etc.) should be 
+open for extension, but closed for modification” which means you should be able to extend a class behavior, 
+without modifying it.
+Suppose developer A needs to release an update for a library or framework and developer B wants some modification or 
+add some feature on that then developer B is allowed to extend the existing class created by developer A but developer B 
+is not supposed to modify the class directly. Using this principle separates the existing code from the modified code so 
+it provides better stability, maintainability and minimizes changes as in your code.
 
-3. Liskov’s Substitution Principle: The principle was introduced by Barbara Liskov in 1987 and according to this principle “Derived or child classes must be substitutable for their base or parent classes“. This principle ensures that any class that is the child of a parent class should be usable in place of its parent without any unexpected behavior.
-You can understand it in a way that a farmer’s son should inherit farming skills from his father and should be able to replace his father if needed. If the son wants to become a farmer then he can replace his father but if he wants to become a cricketer then definitely the son can’t replace his father even though they both belong to the same family hierarchy.
-One of the classic examples of this principle is a rectangle having four sides. A rectangle’s height can be any value and width can be any value. A square is a rectangle with equal width and height. So we can say that we can extend the properties of the rectangle class into square class. In order to do that you need to swap the child (square) class with parent (rectangle) class to fit the definition of a square having four equal sides but a derived class does not affect the behavior of the parent class so if you will do that it will violate the Liskov Substitution Principle. Check the link Liskov Substitution Principle for better understanding.
+3. Liskov’s Substitution Principle: The principle was introduced by Barbara Liskov in 1987 and according to this principle 
+“Derived or child classes must be substitutable for their base or parent classes“. This principle ensures that any class
+ that is the child of a parent class should be usable in place of its parent without any unexpected behavior.
+You can understand it in a way that a farmer’s son should inherit farming skills from his father and should be able to 
+replace his father if needed. If the son wants to become a farmer then he can replace his father but if he wants to 
+become a cricketer then definitely the son can’t replace his father even though they both belong to the same family 
+hierarchy.
+One of the classic examples of this principle is a rectangle having four sides. A rectangle’s height can be any value 
+and width can be any value. A square is a rectangle with equal width and height. So we can say that we can extend the 
+properties of the rectangle class into square class. In order to do that you need to swap the child (square) class
+ with parent (rectangle) class to fit the definition of a square having four equal sides but a derived class does not 
+ affect the behavior of the parent class so if you will do that it will violate the Liskov Substitution Principle.
+ Check the link Liskov Substitution Principle for better understanding.
 
-4. Interface Segregation Principle: This principle is the first principle that applies to Interfaces instead of classes in SOLID and it is similar to the single responsibility principle. It states that “do not force any client to implement an interface which is irrelevant to them“. Here your main goal is to focus on avoiding fat interface and give preference to many small client-specific interfaces. You should prefer many client interfaces rather than one general interface and each interface should have a specific responsibility.
-Suppose if you enter a restaurant and you are pure vegetarian. The waiter in that restaurant gave you the menu card which includes vegetarian items, non-vegetarian items, drinks, and sweets. In this case, as a customer, you should have a menu card which includes only vegetarian items, not everything which you don’t eat in your food. Here the menu should be different for different types of customers. The common or general menu card for everyone can be divided into multiple cards instead of just one. Using this principle helps in reducing the side effects and frequency of required changes.
+4. Interface Segregation Principle: This principle is the first principle that applies to Interfaces instead of 
+classes in SOLID and it is similar to the single responsibility principle. It states that “do not force any client to 
+implement an interface which is irrelevant to them“. Here your main goal is to focus on avoiding fat interface and give
+preference to many small client-specific interfaces. You should prefer many client interfaces rather than one general 
+interface and each interface should have a specific responsibility.
+Suppose if you enter a restaurant and you are pure vegetarian. The waiter in that restaurant gave you the menu card 
+which includes vegetarian items, non-vegetarian items, drinks, and sweets. In this case, as a customer, you should 
+have a menu card which includes only vegetarian items, not everything which you don’t eat in your food. 
+Here the menu should be different for different types of customers. The common or general menu card for 
+everyone can be divided into multiple cards instead of just one. Using this principle helps in reducing the side 
+effects and frequency of required changes.
 
-5. Dependency Inversion Principle: Before we discuss this topic keep in mind that Dependency Inversion and Dependency Injection both are different concepts. Most of the people get confused about it and consider both are the same. Now two key points are here to keep in mind about this principle
+5. Dependency Inversion Principle: Before we discuss this topic keep in mind that Dependency Inversion and Dependency 
+Injection both are different concepts. Most of the people get confused about it and consider both are the same. 
+Now two key points are here to keep in mind about this principle
 
 High-level modules/classes should not depend on low-level modules/classes. Both should depend upon abstractions.
 Abstractions should not depend upon details. Details should depend upon abstractions.
-The above lines simply state that if a high module or class will be dependent more on low-level modules or class then your code would have tight coupling and if you will try to make a change in one class it can break another class which is risky at the production level. So always try to make classes loosely coupled as much as you can and you can achieve this through abstraction. The main motive of this principle is decoupling the dependencies so if class A changes the class B doesn’t need to care or know about the changes.
-You can consider the real-life example of a TV remote battery. Your remote needs a battery but it’s not dependent on the battery brand. You can use any XYZ brand that you want and it will work. So we can say that the TV remote is loosely coupled with the brand name. Dependency Inversion makes your code more reusable.
+The above lines simply state that if a high module or class will be dependent more on low-level modules or class 
+then your code would have tight coupling and if you will try to make a change in one class it can break another class 
+which is risky at the production level. So always try to make classes loosely coupled as much as you can and you can 
+achieve this through abstraction. The main motive of this principle is decoupling the dependencies so 
+if class A changes the class B doesn’t need to care or know about the changes.
+You can consider the real-life example of a TV remote battery. Your remote needs a battery but it’s not dependent on 
+the battery brand. You can use any XYZ brand that you want and it will work. So we can say that the TV remote is 
+loosely coupled with the brand name. Dependency Inversion makes your code more reusable.
 
 
 Q) IdentityHashMap ?
 
-IdentityHashMap in Java was added in Java 1.4 but still it's one of those lesser known class in Java. The main difference between IdentityHashMap and HashMap in Java is that IdentityHashMap is a special implementation of Map interface which doesn't use equals() and hashCode() method for comparing object unlike other implementation of Map e.g. HashMap. Instead, IdentityHashMap uses equality operator "=="  to compare keys and values in Java which makes it faster compare to HashMap and suitable where you need reference equality check and instead of logical equality. By the way, IdentityHashMap is a special implementation of Map interface much like EnumMap but it also violates general contract of Map interface which mandates using equals method for comparing Object. Also, IdentityHashMap vs HashMap is a good Java question and have been asked a couple of times.  
+IdentityHashMap in Java was added in Java 1.4 but still it's one of those lesser known class in Java. The main 
+difference between IdentityHashMap and HashMap in Java is that IdentityHashMap is a special implementation of Map 
+interface which doesn't use equals() and hashCode() method for comparing object unlike other implementation of 
+Map e.g. HashMap. Instead, IdentityHashMap uses equality operator "=="  to compare keys and values in Java which 
+makes it faster compare to HashMap and suitable where you need reference equality check and instead of logical 
+equality. By the way, IdentityHashMap is a special implementation of Map interface much like EnumMap but it also 
+violates general contract of Map interface which mandates using equals method for comparing Object. 
+Also, IdentityHashMap vs HashMap is a good Java question and have been asked a couple of times.  
 
-Even though this question is not as popular as How HashMap works in Java or Difference between Hashtable and HashMap, it’s still a good question to ask. In this Java tutorial, we will see an example of IdentityHashMap and explores some key differences between IdentityHashMap and HashMap in Java.
+Even though this question is not as popular as How HashMap works in Java or Difference between Hashtable and HashMap,
+ it’s still a good question to ask. In this Java tutorial, we will see an example of IdentityHashMap and explores 
+ some key differences between IdentityHashMap and HashMap in Java.
 
-hough both HashMap and IdentityHashMap implements Map interface, have fail-fast Iterator and non-synchronized collections, following are some key differences between HashMap and IdentityHashMap in Java.
+hough both HashMap and IdentityHashMap implements Map interface, have fail-fast Iterator and non-synchronized 
+collections, following are some key differences between HashMap and IdentityHashMap in Java.
 
 
-1) The main difference between HashMap vs IdentityHashMap is that IdentityHashMap uses equality operator "==" for comparing keys and values inside Map while HashMap uses equals method for comparing keys and values.
+1) The main difference between HashMap vs IdentityHashMap is that IdentityHashMap uses equality operator "==" for 
+comparing keys and values inside Map while HashMap uses equals method for comparing keys and values.
 
-2) Unlike HashMap, who uses hashcode to find bucket location, IdentityHashMap also doesn't use hashCode() instead it uses System.identityHashCode(object).
+2) Unlike HashMap, who uses hashcode to find bucket location, IdentityHashMap also doesn't use hashCode() instead it 
+uses System.identityHashCode(object).
 
-3) Another key difference between IdentityHashMap and HashMap in Java is Speed. Since IdentityHashMap doesn't use equals() its comparatively faster than HashMap for object with expensive equals() and hashCode().
+3) Another key difference between IdentityHashMap and HashMap in Java is Speed. Since IdentityHashMap doesn't use 
+equals() its comparatively faster than HashMap for object with expensive equals() and hashCode().
 
-4) One more difference between HashMap and IdentityHashMap is Immutability of the key. One of the basic requirement to safely store Objects in HashMap is keys needs to be immutable, IdentityHashMap doesn't require keys to be immutable as it is not relied on equals and hashCode.
+4) One more difference between HashMap and IdentityHashMap is Immutability of the key. One of the basic 
+requirement to safely store Objects in HashMap is keys needs to be immutable, IdentityHashMap doesn't require keys
+ to be immutable as it is not relied on equals and hashCode.
 
-There is also a class called IdentityHashtable which is analogous to Hashtable in Java but it’s not part of standard JDK and available in com.sun... package.
+There is also a class called IdentityHashtable which is analogous to Hashtable in Java but it’s not part of standard 
+JDK and available in com.sun... package.
 
 Example of IdentityHashMap in Java
 Here is an example of IdentityHashMap in Java which shows the key difference between HashMap and IdentityHashMap in comparing Objects.  IdentityHashMap uses equality operator for comparison instead of equals method in Java :

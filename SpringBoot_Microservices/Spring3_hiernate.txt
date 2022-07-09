@@ -1,0 +1,503 @@
+Spring MVC and Hibernate CRUD Example
+Last Updated: May 30, 2022
+By: Lokesh Gupta
+Spring WebMVC
+Bean Validation, Hibernate Integration, Spring MVC
+In this Spring MVC and Hibernate annotation example, learn the following concepts:
+
+Create a Spring 5 MVC web application from scratch
+Handle form submission
+Integrate hibernate persistence to connect to the HSQL database
+Add hibernate validator for input form fields validation
+We will create a simple application where we can create user information (name and email). The user details will be first validated and then stored in HSQL database using hibernate. Another page will list down all stored users in the database.
+
+Table Of Contents
+1. Development Environment
+2. Project Structure and Class Diagram
+3. Maven Dependencies
+4. DispatcherServlet Configuration
+5. Spring WebMVC Configuration
+6. Hibernate Configuration
+7. Web Controller and Mappings
+8. Service and DAO layer
+9. Views and Message Resources
+10. Demo
+1. Development Environment
+Eclipse Neon.2
+JDK 1.8
+Spring 5.2.0.RELEASE
+Hibernate 5.2.11.Final
+Hibernate validator 5.4.1.Final
+Servlets 3.1.0
+HSQLDB 1.8.0.10
+Tomcat 7 maven plugin 2.2
+2. Project Structure and Class Diagram
+This project has a typical maven web application structure.
+
+Spring5 WebMVC Project Structure
+Spring5 WebMVC Project Structure
+The Class Diagram of the application is as follows:
+
+Class Diagram
+Class Diagram
+3. Maven Dependencies
+Find project dependencies used to run this example in pom.xml file.
+
+pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd;
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.howtodoinjava.spring5.demo</groupId>
+  <artifactId>spring5-mvc-hibernate-example</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <properties>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+    <spring.version>5.2.0.RELEASE</spring.version>
+    <hibernate.version>5.2.11.Final</hibernate.version>
+    <hibernate.validator>5.4.1.Final</hibernate.validator>
+    <c3p0.version>0.9.5.2</c3p0.version>
+    <jstl.version>1.2.1</jstl.version>
+    <tld.version>1.1.2</tld.version>
+    <servlets.version>3.1.0</servlets.version>
+    <jsp.version>2.3.1</jsp.version>
+    <hsqldb.version>1.8.0.10</hsqldb.version>
+  </properties>
+  <dependencies>
+    <!-- Spring MVC Dependency -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+ 
+    <!-- Spring ORM -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+ 
+    <!-- Hibernate Core -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+ 
+    <!-- Hibernate-C3P0 Integration -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+ 
+    <!-- c3p0 -->
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>${c3p0.version}</version>
+    </dependency>
+ 
+    <!-- Hibernate Validator -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>${hibernate.validator}</version>
+    </dependency>
+ 
+    <!-- JSTL Dependency -->
+    <dependency>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+      <version>${jstl.version}</version>
+    </dependency>
+     
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>${tld.version}</version>
+    </dependency>
+ 
+    <!-- Servlet Dependency -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlets.version}</version>
+      <scope>provided</scope>
+    </dependency>
+ 
+    <!-- JSP Dependency -->
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>${jsp.version}</version>
+      <scope>provided</scope>
+    </dependency>
+ 
+    <!-- HSQL Dependency -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>${hsqldb.version}</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <path>/</path>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+4. DispatcherServlet Configuration
+Begining with Servlet 3, it became possible to configure your Servlet Container with (almost) no XML. For this, there is the ServletContainerInitializer in the Servlet specification. In this class, we can register filters, listeners, servlets etc. as we would traditionally do in a web.xml.
+
+Spring provides SpringServletContainerInitializer that knows how to handle WebApplicationInitializer classes. AbstractAnnotationConfigDispatcherServletInitializer class implements WebMvcConfigurer which internally implements WebApplicationInitializer. It registers a ContextLoaderlistener (optionally) and a DispatcherServlet and allows you to easily add configuration classes to load for both classes and to apply filters to the DispatcherServlet and to provide the servlet mapping.
+
+AppInitializer.java
+public class AppInitializer extends
+    AbstractAnnotationConfigDispatcherServletInitializer {
+ 
+   @Override
+   protected Class<?>[] getRootConfigClasses() {
+      return new Class[] { HibernateConfig.class };
+   }
+ 
+   @Override
+   protected Class<?>[] getServletConfigClasses() {
+      return new Class[] { WebMvcConfig.class };
+   }
+ 
+   @Override
+   protected String[] getServletMappings() {
+      return new String[] { "/" };
+   }
+}
+5. Spring WebMVC Configuration
+Spring MVC configuration using annotations is given below.
+
+WebMvcConfig.java
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = { "com.howtodoinjava.demo.spring"})
+public class WebMvcConfig implements WebMvcConfigurer {
+ 
+   @Bean
+   public InternalResourceViewResolver resolver() {
+      InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+      resolver.setViewClass(JstlView.class);
+      resolver.setPrefix("/WEB-INF/views/");
+      resolver.setSuffix(".jsp");
+      return resolver;
+   }
+ 
+   @Bean
+   public MessageSource messageSource() {
+      ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+      source.setBasename("messages");
+      return source;
+   }
+ 
+   @Override
+   public Validator getValidator() {
+      LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+      validator.setValidationMessageSource(messageSource());
+      return validator;
+   }
+}
+WebMvcConfigurer defines options for customizing or adding to the default Spring MVC configuration enabled through the use of @EnableWebMvc.
+@EnableWebMvc enables default Spring MVC configuration and registers Spring MVC infrastructure components expected by the DispatcherServlet.
+@Configuration indicates that a class declares one or more @Bean methods and may be processed by the Spring container to generate bean definitions and service requests for those beans at runtime.
+@ComponentScan annotation is used to specify the base packages to scan. Any class which is annotated with @Component and @Configuration will be scanned.
+InternalResourceViewResolver helps in mapping the logical view names to directly view files under a certain pre-configured directory.
+ResourceBundleMessageSource accesses resource bundles using specified basenames (here it is messages).
+LocalValidatorFactoryBean bootstraps a javax.validation.ValidationFactory and exposes it through the Spring Validator interface as well as through the JSR-303 Validator interface and the ValidatorFactory interface itself.
+6. Hibernate Configuration
+Hibernate configuration used in the example is based on hibernate Java based configuration.
+
+HibernateConfig.java
+@Configuration
+@EnableTransactionManagement
+public class HibernateConfig {
+ 
+  @Autowired
+  private ApplicationContext context;
+ 
+  @Bean
+  public LocalSessionFactoryBean getSessionFactory() {
+    LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
+    factoryBean.setConfigLocation(context.getResource("classpath:hibernate.cfg.xml"));
+    factoryBean.setAnnotatedClasses(User.class);
+    return factoryBean;
+  }
+ 
+  @Bean
+  public HibernateTransactionManager getTransactionManager() {
+    HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+    transactionManager.setSessionFactory(getSessionFactory().getObject());
+    return transactionManager;
+  }
+}
+LocalSessionFactoryBean creates a Hibernate SessionFactory. This is the usual way to set up a shared Hibernate SessionFactory in a Spring application context.
+EnableTransactionManagement enables Spring’s annotation-driven transaction management capability.
+HibernateTransactionManager binds a Hibernate Session from the specified factory to the thread, potentially allowing for one thread-bound Session per factory. This transaction manager is appropriate for applications that use a single Hibernate SessionFactory for transactional data access, but it also supports direct DataSource access within a transaction i.e. plain JDBC.
+hibernate.cfg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.archive.autodetection">class,hbm</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+    <property name="hibernate.connection.username">sa</property>
+    <property name="hibernate.connection.password"></property>
+    <property name="hibernate.connection.url">jdbc:hsqldb:mem:howtodoinjava</property>
+    <property name="hibernate.hbm2ddl.auto">create</property>
+     
+    <property name="hibernate.c3p0.min_size">5</property>
+    <property name="hibernate.c3p0.max_size">20</property>
+    <property name="hibernate.c3p0.acquire_increment">2</property>
+    <property name="hibernate.c3p0.timeout">1800</property>
+    <property name="hibernate.c3p0.max_statements">150</property>
+  </session-factory>
+</hibernate-configuration>
+7. Web Controller and Mappings
+The controller class has two simple REST mappings for GET and POST operations. If input fields are not validated, then return the same form bean to display error messages. Else return refreshed view.
+
+UserController.java
+@Controller
+public class UserController {
+ 
+  @Autowired
+  private UserService userService;
+ 
+  @GetMapping("/")
+  public String userForm(Locale locale, Model model) {
+    model.addAttribute("users", userService.list());
+    return "editUsers";
+  }
+   
+  @ModelAttribute("user")
+    public User formBackingObject() {
+        return new User();
+    }
+ 
+  @PostMapping("/addUser")
+  public String saveUser(@ModelAttribute("user") @Valid User user, 
+              BindingResult result, Model model) {
+ 
+    if (result.hasErrors()) {
+      model.addAttribute("users", userService.list());
+      return "editUsers";
+    }
+ 
+    userService.save(user);
+    return "redirect:/";
+  }
+}
+8. Service and DAO layer
+Service and DAO layer are normal service components annotated with @Service and @Repository annotations. @Transactional annotation is applied at service layer for transaction support.
+
+Service Classes
+public interface UserService {
+   void save(User user);
+ 
+   List<User> list();
+}
+ 
+@Service
+public class UserServiceImp implements UserService {
+ 
+   @Autowired
+   private UserDao userDao;
+ 
+   @Transactional
+   public void save(User user) {
+      userDao.save(user);
+   }
+ 
+   @Transactional(readOnly = true)
+   public List<User> list() {
+      return userDao.list();
+   }
+}
+DAO Classes
+public interface UserDao {
+   void save(User user);
+   List<User> list();
+}
+ 
+@Repository
+public class UserDaoImp implements UserDao {
+ 
+   @Autowired
+   private SessionFactory sessionFactory;
+ 
+   @Override
+   public void save(User user) {
+      sessionFactory.getCurrentSession().save(user);
+   }
+ 
+   @Override
+   public List<User> list() {
+      @SuppressWarnings("unchecked")
+      TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
+      return query.getResultList();
+   }
+}
+User.java
+@Entity
+@Table(name = "TBL_USERS")
+public class User {
+ 
+   @Id
+   @GeneratedValue
+   @Column(name = "USER_ID")
+   private Long id;
+ 
+   @Column(name = "USER_NAME")
+   @Size(max = 20, min = 3, message = "{user.name.invalid}")
+   @NotEmpty(message="Please Enter your name")
+   private String name;
+ 
+   @Column(name = "USER_EMAIL", unique = true)
+   @Email(message = "{user.email.invalid}")
+   @NotEmpty(message="Please Enter your email")
+   private String email;
+ 
+   public Long getId() {
+      return id;
+   }
+ 
+   public void setId(Long id) {
+      this.id = id;
+   }
+ 
+   public String getName() {
+      return name;
+   }
+ 
+   public void setName(String name) {
+      this.name = name;
+   }
+ 
+   public String getEmail() {
+      return email;
+   }
+ 
+   public void setEmail(String email) {
+      this.email = email;
+   }
+}
+9. Views and Message Resources
+Finally, the JSP files and messages resource bundle is given below.
+
+editUsers.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+  pageEncoding="ISO-8859-1"%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Spring5 MVC Hibernate Demo</title>
+    <style type="text/css">
+      .error {
+        color: red;
+      }
+      table {
+        width: 50%;
+        border-collapse: collapse;
+        border-spacing: 0px;
+      }
+      table td {
+        border: 1px solid #565454;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Input Form</h1>
+    <form:form action="addUser" method="post" modelAttribute="user">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td>
+            <form:input path="name" /> <br />
+            <form:errors path="name" cssClass="error" />
+          </td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>
+            <form:input path="email" /> <br />
+            <form:errors path="email" cssClass="error" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><button type="submit">Submit</button></td>
+        </tr>
+      </table>
+    </form:form>
+     
+    <h2>Users List</h2>
+    <table>
+      <tr>
+        <td><strong>Name</strong></td>
+        <td><strong>Email</strong></td>
+      </tr>
+      <c:forEach items="${users}" var="user">
+        <tr>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+        </tr>
+      </c:forEach>
+    </table>
+  </body>
+</html>
+messages.properties
+user.name.invalid = Name must be between {2} and {1} characters.
+user.email.invalid = Please enter valid email address.
+10. Demo
+Let’s run the application using maven tomcat7 plugin. Execute maven goal : tomcat7:run.
+
+URL: http://localhost:8080
+
+Initial Screen
+Initial Screen
+Invalid Input Validation
+Invalid Input Validation
+Valid Form Submission
+Valid Form Submission
+Check Server logs.
+
+Hibernate: call next value for hibernate_sequence
+Hibernate: insert into TBL_USERS (USER_EMAIL, USER_NAME, USER_ID) values (?, ?, ?)
+Hibernate: select user0_.USER_ID as USER_ID1_0_, user0_.USER_EMAIL as USER_EMA2_0_,
+			user0_.USER_NAME as USER_NAM3_0_ from TBL_USERS user0_
+I hope that you have found this spring hibernate web application example to set you to start for developing your own application. This is primarily for beginners, yet it will help you build any Spring MVC with hibernate integration example with annotations.

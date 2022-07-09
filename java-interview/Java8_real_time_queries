@@ -261,7 +261,8 @@ Account And Finance : 24150.0
 Query 3.8 : Get the details of youngest male employee in the product development department?
 
 
-For this query, use Stream.filter() method to filter male employees in product development department and to find youngest among them, use Stream.min() method.
+For this query, use Stream.filter() method to filter male employees in product development department and to find 
+youngest among them, use Stream.min() method.
 
 
 Optional<Employee> youngestMaleEmployeeInProductDevelopmentWrapper=

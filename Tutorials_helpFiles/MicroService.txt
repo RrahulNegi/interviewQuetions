@@ -3,7 +3,8 @@
 - IAAS, PAAS, SAAS
 - Spring Cloud: Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems
 	- Spring Netflix (large open sourced projects : Eureka, Consul, Zuul)
-				- Spring Cloud Config (This project provides a framework for centralized configuration management, making use of a Git or a SVN repository.)
+				- Spring Cloud Config (This project provides a framework for centralized configuration management, 
+				making use of a Git or a SVN repository.)
 				- Spring Cloud Bus
 						This enables the microservices and infrastructure components to communicate with each other, in a distributed setup.
 

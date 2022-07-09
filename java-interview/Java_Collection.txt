@@ -1,0 +1,603 @@
+Collections are nothing but group of objects stored in well defined manner. 
+Earlier, Arrays are used to represent these group of objects. But, arrays are not re-sizable. size of the arrays are fixed.
+Size of the arrays can not be changed once they are defined. This causes lots of problem while handling group of objects. 
+To overcome this drawback of arrays, Collection framework or simply collections are introduced in java from JDK 1.2.
+
+Although, there were classes like Dictionary, Vector, Stack and Properties which handle group of objects better than the arrays. 
+But, each of them handle the objects differently. The way you use Dictionary class is totally different from the way you use 
+Stack class and the way you use Vector class is different from the way you use Properties class. 
+Hence, there needed a central and unifying theme to handle the group of objects. 
+The collection framework is the answer to that.
+
+What is Collection Framework In Java?
+Collection Framework in java is a centralized and unified theme to store and manipulate the group of objects. 
+Java Collection Framework provides some pre-defined classes and interfaces to handle the group of objects. 
+Using collection framework, you can store the objects as a list or as a set or as a queue or as a map and perform operations like adding an object or removing an object or sorting the objects without much hard work.
+
+================================================================================================================================================
+
+A) Collection Framework – Collection Interface
+
+Collection interface is the root level interface in the collection framework. 
+List, Queue and Set are all sub interfaces of Collection interface. JDK does not provide any direct implementations of this 
+interface. But, JDK provides direct implementations of it’s sub interfaces.
+
+Collection interface extends Iterable interface which is a member of java.lang package. 
+Iterable interface has only one method called iterator(). 
+It returns an Iterator object, using that object you can iterate over the elements of Collection. 
+Here is the class diagram of Collection interface.
+
+<<Interface>>
+Java.lang.Iterable
+Iterator<E> iterator();
+		|
+        | extends
+		|
+<<Interface>>
+Java.util.Collection
+
+Collection interface contains total 15 abstract methods. 14 of it’s own and one is inherited from Iterable interface.
+Here is the list and descriptions of those methods.
+
+SL No.	Method	Description
+
+1	int size()	Returns the number of elements in this collection
+2	boolean isEmpty()	Checks whether this collection is empty or not. If collection is empty, it returns true otherwise it returns false
+3	boolean contains(Object o)	Checks whether this collection has specified element.
+4	Iterator<E> iterator()	Returns an iterator over the collection.
+5	Object[] toArray()	It returns an array containing all elements of this collection.
+6	<T> T[] toArray(T[] a)	It returns an array of specified type containing all elements of this collection.
+7	boolean add(E e)	This method adds specified element to this collection.
+ It returns true if element is added successfully to the collection otherwise it returns false.
+8	boolean remove(Object o)	Removes the specified element from this collection.
+9	boolean containsAll(Collection<?> c)	It checks whether this collection contains all elements of passed collection.
+10	boolean addAll(Collection<? extends E> c)	Adds all elements of the passed collection to this collection.
+11	boolean removeAll(Collection<?> c)	Removes all elements of this collection which are also elements of passed collection.
+12	boolean retainAll(Collection<?> c)	Retains only those elements in this collection which are also elements of passed 
+collection.
+13	void clear()	Removes all elements in this collection.
+14	boolean equals(Object o)	Compares the specified object with this collection for equality.
+15	int hashCode()	Returns the hash code value of this collection.
+Note :
+equals() and hashcode() methods in the Collection interface are not the methods of java.lang.Object class. 
+Because, interfaces does not inherit from Object class. Only classes in java are inherited from Object class. 
+Any classes implementing Collection interface must provide their own version of equals() and hashcode() 
+methods or they can retain default version inherited from Object class.
+
+================================================================================================================================================
+
+B)Collection Framework – List Interface
+
+List Interface represents an ordered or sequential collection of objects. 
+This interface has some methods which can be used to store and manipulate the ordered collection of objects. 
+The classes which implement the List interface are called as Lists. ArrayList, Vector and LinkedList are some examples of 
+lists. You have the control over where to insert an element and from where to remove an element in the list.
+
+Elements of the lists are ordered using Zero based index.
+You can access the elements of lists using an integer index.
+Elements can be inserted at a specific position using integer index. Any pre-existing elements at or beyond that position are
+shifted right.
+Elements can be removed from a specific position. The elements beyond that position are shifted left.
+A list may contain duplicate elements.
+A list may contain multiple null elements.
+List interface extends Collection interface. So, All 15 methods of Collection interface are inherited to List interface. Along with these methods, another 9 methods are included in the List interface to support the properties of lists. Here is the class diagram of List interface.
+list interface
+
+ 
+Additional Methods Of List Interface :
+There are 9 additional methods included in List interface along with the methods inherited from Collection Interface. Here is the list and the details of those methods.
+
+SL NO	Methods	Descriptions
+1	E get(int index)	Returns element at the specified position.
+2	E set(int index, E element)	Replaces an element at the specified position with the passed element.
+3	void add(int index, E element)	Inserts passed element at a specified index.
+4	E remove(int index)	Removes an element at specified index.
+5	int indexOf(Object o)	It returns an index of first occurrence of passed object.
+6	int lastIndexOf(Object o)	It returns an index of last occurrence of passed object.
+7	ListIterator<E> listIterator()	It returns a list iterator over the elements of this list.
+8	ListIterator<E> listIterator(int index)	Returns a list iterator over the elements of this list starting from the specified index.
+9	List<E> subList(int fromIndex, int toIndex)	Returns sub list of this list starting from ‘fromIndex’ to ‘toIndex’.
+
+1) Collection Framework – The ArrayList Class
+
+In java, normal arrays are of fixed length. You can not change the size of arrays once they are defined. 
+That means, you must know in advance how large an array you want. But sometimes, you may not know how large an array you want. To overcome this situation, ArrayList is introduced in Collection framework.
+
+ArrayList, in simple terms, can be defined as re-sizable array. 
+ArrayList is same like normal array but it can grow and shrink dynamically to hold any number of elements. ArrayList is a sequential collection of objects which increases or decreases in size as we add or delete the elements.
+
+ArrayList class implements List interface and extends AbstractList. It also implements 3 marker interfaces – 
+RandomAccess, Cloneable and Serializable. Here is hierarchy diagram of ArrayList class.
+
+Properties Of ArrayList :
+Size of the ArrayList is not fixed. It can increase and decrease dynamically as we add or delete the elements.
+ArrayList can have any number of null elements.
+ArrayList can have duplicate elements.
+As ArrayList implements RandomAccess, you can get, set, insert and remove elements of the ArrayList from  any arbitrary 
+position.
+When you insert an element in the middle of the ArrayList, the elements at the right side of that position are shifted 
+one position right and when you delete an element, they will be shifted one position left. 
+This feature of the ArrayList causes some performance issues as shifting of elements is time consuming 
+if ArrayList has lots of elements.
+Elements are placed according to Zero-based index. That means, first element will be placed at index 0 and last element at index n-1, where ‘n’ is the size of the ArrayList.
+ArrayList is not synchronized. That means, multiple threads can use same ArrayList simultaneously.
+If you know the element, you can retrieve the position of that element.
+
+<<Interface>>
+Java.lang.Iterable
+Iterator<E> iterator();
+		|
+        | extends
+		|
+<<Interface>>
+Java.util.Collection
+		|
+        | extends
+		|
+Java.util.List <<Interface>>
+		|
+        | Implements
+		|
+
+Java.util.ArrayList <<Class>> extends AbstractList implements Clonable, RandomAccess,Serializable
+
+java.util.AbstractList<<Class>> extends AbstractCollections implements Java.util.List
+
+
+AbstractCollections<<Class>> implements java.util.Collection
+
+
+-)Difference Between Iterator And ListIterator In Java.
+
+Iterator and ListIterator are two interfaces in Java collection framework which are used to traverse the collections.
+Although ListIterator extends Iterator, there are some differences in the way they traverse the collections.
+
+1) Using Iterator, you can traverse List, Set and Queue type of objects. 
+But using ListIterator, you can traverse only List objects. In Set and Queue types, there is no method to get the 
+ListIterator object. But, In List types, there is a method called listIterator() which returns ListIterator object.
+
+class IteratorAndListIterator
+{
+    public static void main(String[] args)
+    {
+        List list = new ArrayList();
+ 
+        list.add("ONE");
+ 
+        list.add("TWO");
+ 
+        list.add("THREE");
+ 
+        //Traversing list elements using Iterator
+        Iterator iterator1 = list.iterator();
+ 
+        while (iterator1.hasNext())
+        {
+            System.out.println(iterator1.next());
+        }
+ 
+        Queue queue = new PriorityQueue(list);
+ 
+        //Traversing queue elements using Iterator
+        Iterator iterator2 = queue.iterator();
+ 
+        while (iterator2.hasNext())
+        {
+            System.out.println(iterator2.next());
+        }
+ 
+        Set set = new HashSet(list);
+ 
+        //Traversing set elements using Iterator
+        Iterator iterator3 = set.iterator();
+ 
+        while (iterator3.hasNext())
+        {
+            System.out.println(iterator3.next());
+        }
+ 
+        //Traversing list elements using ListIterator
+        ListIterator listIterator1 = list.listIterator();
+ 
+        while (listIterator1.hasNext())
+        {
+            System.out.println(listIterator1.next());
+        }
+ 
+        //Traversing queue and set elements using ListIterator is not possible
+ 
+        ListIterator listIterator2 = queue.listIterator();    //Compile time error, there is no such method in Queue
+ 
+        ListIterator listIterator3 = set.listIterator();     //Compile time error, there is no such method in Set
+    }
+}
+
+
+2) Using Iterator, we can traverse the elements only in forward direction. But, using ListIterator you can traverse the 
+elements in both the directions – forward and backward. ListIterator has those methods to support the traversing of elements 
+in both the directions.
+
+Iterator Methods :
+boolean hasNext() –> Checks whether collection has more elements.
+
+E next()  –> Returns the next element in the collection.
+
+void remove()  –> Removes the current element in the collection i.e element returned by next().
+
+ListIterator Methods :
+
+boolean hasNext() –> Checks whether the list has more elements when traversing the list in forward direction.
+
+boolean hasPrevious() –> Checks whether list has more elements when traversing the list in backward direction.
+
+E next()  –> Returns the next element in the list and moves the cursor forward.
+
+E previous()  –> Returns the previous element in the list and moves the cursor backward.
+
+int nextIndex() –> Returns index of the next element in the list.
+
+int previousIndex() –> Returns index of the previous element in the list.
+
+void remove()  –> Removes the current element in the collection i.e element returned by next() or previous().
+
+void set(E e) –> Replaces the current element i.e element returned by next() or previous() with the specified element.
+
+void add(E e) –> Inserts the specified element in the list.
+
+class IteratorAndListIterator
+{
+    public static void main(String[] args)
+    {
+        List<String> list = new ArrayList<String>();
+ 
+        list.add("FIRST");
+ 
+        list.add("SECOND");
+ 
+        list.add("THIRD");
+ 
+        //Traversing list elements in forward direction using Iterator
+ 
+        Iterator iterator = list.iterator();
+ 
+        while (iterator.hasNext())
+        {
+            System.out.println(iterator.next());
+        }
+ 
+        //      OUTPUT :
+        //      FIRST
+        //      SECOND
+        //      THIRD
+ 
+        //Traversing list elements in forward direction using ListIterator
+ 
+        ListIterator listIterator = list.listIterator();
+ 
+        while (listIterator.hasNext())
+        {
+            System.out.println(listIterator.next());
+        }
+ 
+        //      OUTPUT :
+        //      FIRST
+        //      SECOND
+        //      THIRD
+ 
+        //Traversing list elements in backward direction using ListIterator
+ 
+        while (listIterator.hasPrevious())
+        {
+            System.out.println(listIterator.previous());
+        }
+ 
+        //      OUTPUT :
+        //      THIRD
+        //      SECOND
+        //      FIRST
+    }
+}
+
+3) Using ListIterator, you can obtain index of next and previous elements. But, it is not possible with Iterator interface.
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+ 
+class IteratorAndListIterator
+{
+    public static void main(String[] args)
+    {
+        List<String> list = new ArrayList<String>();
+ 
+        list.add("FIRST");
+ 
+        list.add("SECOND");
+ 
+        list.add("THIRD");
+ 
+        ListIterator listIterator = list.listIterator();
+ 
+        while (listIterator.hasNext())
+        {
+            //Getting index of next element
+ 
+            System.out.println(listIterator.nextIndex()+" : "+listIterator.next());
+        }
+ 
+        //      OUTPUT :
+        //      0 : FIRST
+        //      1 : SECOND
+        //      2 : THIRD
+ 
+        while (listIterator.hasPrevious())
+        {
+            //Getting index of previous element
+ 
+            System.out.println(listIterator.previousIndex()+" : "+listIterator.previous());
+        }
+ 
+        //      OUTPUT :
+        //      2 : THIRD
+        //      1 : SECOND
+        //      0 : FIRST
+    }
+}
+
+
+4) Using ListIterator, you can perform modifications(insert, replace, remove) on the list. But, using Iterator you can only 
+remove the elements from the collection.
+
+class IteratorAndListIterator
+{
+    public static void main(String[] args)
+    {
+        List<String> list = new ArrayList<String>();
+ 
+        list.add("FIRST");
+ 
+        list.add("SECOND");
+ 
+        list.add("THIRD");
+ 
+        ListIterator<String> listIterator = list.listIterator();
+ 
+        System.out.println(list);       //Output :  [FIRST, SECOND, THIRD]
+ 
+        while (listIterator.hasNext())
+        {
+            listIterator.next();
+ 
+            //Modifying an element returned by next()
+            listIterator.set("MODIFIED");
+        }
+ 
+        System.out.println(list);       //Output :  [MODIFIED, MODIFIED, MODIFIED]
+ 
+        Iterator<String> iterator = list.iterator();
+ 
+        while (iterator.hasNext())
+        {
+            iterator.next();
+ 
+            //Removing an element
+            iterator.remove();
+        }
+ 
+        System.out.println(list);    //Output : []
+    }
+}
+
+5) Using ListIterator, you can iterate a list from the specified index. It is not possible with Iterator.
+
+class IteratorAndListIterator
+{
+    public static void main(String[] args)
+    {
+        List<String> list = new ArrayList<String>();
+ 
+        list.add("FIRST");
+ 
+        list.add("SECOND");
+ 
+        list.add("THIRD");
+ 
+        list.add("FOURTH");
+ 
+        list.add("FIFTH");
+ 
+        //Iterating list from index 2 using ListIterator
+ 
+        ListIterator<String> listIterator = list.listIterator(2);
+ 
+        while (listIterator.hasNext())
+        {
+            System.out.println(listIterator.next());
+        }
+ 
+        //      OUTPUT :
+        //      THIRD
+        //      FOURTH
+        //      FIFTH
+    }
+}
+
+
+-)Difference Between ArrayList And Vector Class
+
+1) Thread Safety
+This is the main difference between ArrayList and Vector class. 
+ArrayList class is not thread safety where as Vector class is thread safety. 
+Vector class is a synchronized class. Only one thread can enter into Vector object at any moment of time during execution. 
+Where as ArrayList class is not synchronized. Multiple threads can access ArrayList object simultaneously. 
+Below diagram clearly shows that.
+
+
+
+ 
+2) Performance
+ArrayList has better performance compared to Vector. It is because, Vector class is synchronized. 
+It makes the threads to wait for object lock to enter into vector object. 
+Where as ArrayList class is not synchronized. Threads need not to wait for object lock to access ArrayList object. 
+This makes ArrayList faster than the Vector class.
+
+3) Capacity Increment
+Whenever the size of the ArrayList exceeds it’s capacity, the capacity is increased by half of the current capacity. 
+Where as in case of Vector, the capacity is increased by Capacity Increment passed while creating the Vector object. 
+If Capacity increment is not passed, capacity will be doubled automatically when the size exceeds it’s capacity. 
+In ArrayList, there is no provision to pass Capacity increment while creating it. 
+It’s capacity is automatically increased by half of the current capacity whenever size exceeds capacity.
+
+4) Size
+You can manually change the current size of the vector. Vector class has a method called setSize(). 
+Using this method, you can change the current size of the vector.
+If the new size is greater than the current size, new slots will be filled with null elements and if the new size is smaller 
+than the current size, extra elements will be discarded. 
+But in case of ArrayList, you can’t change the current size manually. It doesn’t have methods which alter it’s size. The size of the ArrayList will be changed only when you add or delete it’s elements.
+
+5) Traversing The Elements.
+ArrayList elements can be traversed using Iterator, ListIterator and using either normal or advanced for loop. 
+But, vector elements can be traversed using Enumeration also along with these methods. 
+Vector class has a method called elements() which returns Enumeration object containing all elements of the vector. 
+Where as ArrayList does not have such methods.
+
+6) Searching The Elements.
+In ArrayList, you have to start searching for a particular element from the beginning of an Arralist. 
+But in the Vector, you can start searching for a particular element from a particular position in a vector. 
+This makes the search operation in Vector faster than in ArrayList.
+
+
+7) Legacy Code
+Vector class is considered as Legacy code. Because, it exist in Java before the introduction of Collection Framework. 
+Earlier it was not a part of Collections. Later it has been included in Collections. 
+But, the older methods of vector class have been retained as it is.
+
+-) Why Not To Use Vector Class In Your Code?
+
+Vector class is often considered as obsolete or “Due for Deprecation” by many experienced Java developers. 
+They always recommend and advise not to use Vector class in your code. 
+They prefer using ArrayList over Vector class. In this article, I have tried to list out some points regarding why not to use Vector class in your code.
+
+
+1) You can achieve Thread Safety without Vector.
+Vector class has only one advantage over ArrayList i.e it is thread safety. 
+But, you can achieve thread safe ArrayList by using synchronizedList() method of Collections class.
+ Below is the sample code.
+
+public class MainClass
+{
+    public static void main(String[] args)
+    {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+ 
+        Collections.synchronizedList(list);
+ 
+        //It returns Synchronized list backed by original list.
+    }
+}
+
+2) Thread Safeness of Vector class is time consuming.
+All methods of Vector class are synchronized. This makes each and every operation on Vector object thread safe. 
+But, it is time consuming. Because, you need to acquire object lock for each operation you want to perform on vector object. 
+Usually, you need set of operations to be synchronized not each and every operation.  
+Isn’t make sense to take the object lock once, perform the operations you want and then release the lock when you are done. 
+Why acquire the lock again and again for each operations?. This is the time consuming process and decreases the performance 
+of your application.
+
+ 
+3) Enumeration Vs Iterator
+Vector class has a method which return Enumeration over the elements of Vector object. 
+Although, Enumerations are faster than the Iterator, but it is not backed by the original collection. 
+That means, any changes made to original collection does not reflect in Enumeration object. 
+They ignore the modifications done during iteration. This may cause issues.
+
+4) Is Vector class poorly designed?
+Vector class combines two features – “Re-sizable Array” and “Synchronization“. This makes poor design. Because, if you need just “Re-sizable Array” and you use Vector class for that, you will get “synchronized Resizable Array” not just re-sizable array. This may reduce the performance of your application. Therefore, instead of using Vector class, always use ArrayList class. You will have re-sizable array and whenever you want to make it synchronized, use Collections.SynchronizedList().
+
+
+================================================================================================================================================
+
+c) Java Collection Framework – The LinkedList Class
+
+In general terms, LinkedList is a data structure where each element consist of three things. 
+First one is the reference to previous element, second one is the actual value of the element and last one is the 
+reference to next element.
+
+The LinkedList class in Java is an implementation of doubly linked list which can be used both as a List as well as Queue. 
+The LinkedList in java can have any type of elements including null and duplicates. 
+Elements can be inserted and can be removed from both the ends and can be retrieved from any arbitrary position.
+
+The LinkedList class extends AbstractSequentialList and implements List and Deque interfaces. 
+It also implements 2 marker interfaces – Cloneable and Serializable. 
+Here is the hierarchy diagram of LinkedList class in Java.
+
+Properties Of LinkedList Class In Java:
+1)Elements in the LinkedList are called as Nodes. 
+Where each node consist of three parts – Reference To Previous Element, Value Of The Element and Reference To Next Element. 
+Below diagram shows how LinkedList looks like.
+2)Reference To Previous Element of first node and Reference To Next Element of last node are null as there will be no 
+elements before the first node and after the last node.
+3)You can insert the elements at both the ends and also in the middle of the LinkedList. Below is the list of methods for insertion operations.
+Insertion At Head	: addFirst(E e)	,offerFirst(E e)
+
+Insertion In The Middle	: add(int index, E e)	, addAll(int index, Collection c)	
+
+Insertion At Tail : add(E e), addAll(Collection c), offer(E e), offerLast(E e)
+
+4)You can remove the elements from the head, from the tail and also from the middle of the LinkedList.
+Removing from head	: poll(), pollFirst(), removeFirst(), remove()
+Removing from the middle	: 	Remove(int index)
+Removing from the tail:	pollLast(), 		removeLast()
+
+5) and removal operations in LinkedList are faster than the ArrayList. Because in LinkedList, there is no need to shift the 
+elements after each insertion and removal. only references of next and previous elements need to be changed.
+6)Retrieval of the elements is very slow in LinkedList as compared to ArrayList. 
+Becaues in LinkedList, you have to traverse from beginning or end (whichever is closer to the element) to reach the element.
+7)The LinkedList can be used as stack. It has the methods pop() and push() which make it to function as Stack.
+8)The LinkedList can also be used as ArrayList, Queue, SIngle linked list and doubly linked list.
+9)LinkedList can have multiple null elements.
+10)LinkedList can have duplicate elements.
+11)LinkedList class in Java is not of type Random Access. i.e the elements can not be accessed randomly. 
+To access the given element, you have to traverse the LinkedList from beginning or end (whichever is closer to the element) 
+to reach the given element.
+
+
+
+Differences Between ArrayList And LinkedList In Java:
+ArrayList	LinkedList
+
+- Structure:	ArrayList is an index based data structure where each element is associated with an index.	
+Elements in the LinkedList are called as nodes, where each node consists of three things – Reference to previous element, 
+Actual value of the element and Reference to next element.
+
+- Insertion And Removal:	Insertions and Removals in the middle of the ArrayList are very slow. 
+Because after each insertion and removal, elements need to be shifted.	
+Insertions and Removals from any position in the LinkedList are faster than the ArrayList. 
+Because there is no need to shift the elements after every insertion and removal. 
+Only references of previous and next elements are to be changed.
+Insertion and removal operations in ArrayList are of order O(n).	
+Insertion and removal in LinkedList are of order O(1).
+
+- Retrieval(Searching or getting an element) :	Retrieval of elements in the ArrayList is faster than the LinkedList . 
+Because all elements in ArrayList are index based.Retrieval of elements in LinkedList is very slow compared to ArrayList. 
+Because to retrieve an element, you have to traverse from beginning or end (Whichever is closer to that element) to reach 
+that element.
+Retrieval operation in ArrayList is of order of O(1).Retrieval operation in LinkedList is of order of O(n).
+
+- Random Access:	ArrayList is of type Random Access. i.e elements can be accessed randomly.	
+LinkedList is not of type Random Access. i.e elements can not be accessed randomly. you have to traverse from beginning or 
+end to reach a particular element.
+Usage	ArrayList can not be used as a Stack or Queue.	LinkedList, once defined, can be used as ArrayList, 
+Stack, Queue, Singly Linked List and Doubly Linked List.
+
+- Memory Occupation: 	ArrayList requires less memory compared to LinkedList. 
+Because ArrayList holds only actual data and it’s index.	LinkedList requires more memory compared to ArrayList. 
+Because, each node in LinkedList holds data and reference to next and previous elements.
+
+When To Use	If your application does more retrieval than the insertions and deletions, then use ArrayList.	
+If your application does more insertions and deletions than the retrieval, then use LinkedList.
+
+================================================================================================================================================
+
+D) Collection Framework – The Queue Interface
+

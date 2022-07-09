@@ -1,13 +1,20 @@
 Consul Service Registration and Discovery Example
 
 
-Consul provides multiple features like service discovery, configuration management, health checking and key-value store etc. Today we will concentrate on service registry and discovery part. We will develop the below components to build a distributed Eco system where each component is somehow dependent on each other, yet they are very much loosely coupled and of course fault tolerance.
+Consul provides multiple features like service discovery, configuration management, health checking and 
+key-value store etc. Today we will concentrate on service registry and discovery part. We will develop the below components 
+to build a distributed Eco system where each component is somehow dependent on each other, yet they are very much loosely 
+coupled and of course fault tolerance.
 
 Consul Agent – running on localhost acting as discovery/registry server functionality.
 
-Student Microservice – which will give some functionality based on Student entity. It will be a rest based service and most importantly it will be a discovery service client, which will talk with Consul Server/Agent to register itself in the service registry.
+Student Microservice – which will give some functionality based on Student entity. It will be a rest based service and most 
+importantly it will be a discovery service client, which will talk with Consul Server/Agent to register itself in the service
+ registry.
 
-School Microservice – Same type as of Student service – only added feature is that it will invoke Student service with service look up mechanism. We will not use absolute URL of student service to interact with that service. We will use Consul discovery feature and use that to look up student service instance before invoking that.
+School Microservice – Same type as of Student service – only added feature is that it will invoke Student service with 
+service look up mechanism. We will not use absolute URL of student service to interact with that service. 
+We will use Consul discovery feature and use that to look up student service instance before invoking that.
 
 
 Configuring Consul in Local workstation
@@ -70,13 +77,17 @@ Here is the each property details –
 
 server.port=9098 – will start the service in default 9098 port.
 
-spring.application.name: student-service – will registers itself in consul server using student-service tag and also other services will lookup this service with this name itself.
+spring.application.name: student-service – will registers itself in consul server using student-service tag and also other 
+services will lookup this service with this name itself.
 
-management.security.enabled=false – is not actually required for this exercise, but it will disable spring security in the management endpoints provided by actuator module.
+management.security.enabled=false – is not actually required for this exercise, but it will disable spring security in the 
+management endpoints provided by actuator module.
 
 Add REST APIs
 
-Now add one RestController and expose one rest endpoint for getting all the student details for a particular school. Here we are exposing /getStudentDetailsForSchool/{schoolname} endpoint to serve the business purpose. For simplicity, we are hard coding the student details.
+Now add one RestController and expose one rest endpoint for getting all the student details for a particular school. 
+Here we are exposing /getStudentDetailsForSchool/{schoolname} endpoint to serve the business purpose. For simplicity, 
+we are hard coding the student details.
 
 package com.example.howtodoinjava.springcloudconsulstudent.controller;
  
@@ -168,25 +179,33 @@ public class Student {
 Verify Student Service :
 
 
-Start this project as spring boot application. Now verify that this service has been registered in Consul server automatically. Go to Consul Agent console and refresh the page. Now if everything goes well, we will see one entry for student-service in the Consul Agent console.
+Start this project as spring boot application. Now verify that this service has been registered in Consul server 
+automatically. Go to Consul Agent console and refresh the page. Now if everything goes well, we will see one entry for 
+student-service in the Consul Agent console.
 
 
 Consul console Student Service registered :
 
-This indicates that both Consul server and client are aware each other and this is kind of auto registering and discovery happening among consul server and student service.
+This indicates that both Consul server and client are aware each other and this is kind of auto registering and discovery 
+happening among consul server and student service.
 
-We will now verify that the /getStudentDetailsForSchool/{schoolname} endpoint is up and running. Go to browser and go to http://localhost:9098/getStudentDetailsForSchool/abcschool, it will give the Student details for a particular school abcschool.
+We will now verify that the /getStudentDetailsForSchool/{schoolname} endpoint is up and running. Go to browser and go to 
+http://localhost:9098/getStudentDetailsForSchool/abcschool, it will give the Student details for a particular school 
+abcschool.
 
 
 Student Service Response
 
 School Service – Discovery Client
 
-Now we will create school service which will register itself with consul server – and it will discover and invoke student service without hardcoded URL path.
+Now we will create school service which will register itself with consul server – and it will discover and invoke student 
+service without hardcoded URL path.
 
-Follow the same steps to create and run school service. It will be a discovery client registering itself to consul service that is already running in our machine right now.
+Follow the same steps to create and run school service. It will be a discovery client registering itself to consul service 
+that is already running in our machine right now.
 
-It will internally call student service that is already developed and it will use consul service discovery feature to discover the student instance.
+It will internally call student service that is already developed and it will use consul service discovery feature to 
+discover the student instance.
 
 Create School Project
 
