@@ -37,7 +37,9 @@ The above service uses Http service as a dependency.
 
 
 Q) What is dependency injection in Angular?
-Dependency injection (DI), is an important application design pattern in which a class asks for dependencies from external sources rather than creating them itself. Angular comes with its own dependency injection framework for resolving dependencies( services or objects that a class needs to perform its function).So you can have your services depend on other services throughout your application.
+Dependency injection (DI), is an important application design pattern in which a class asks for dependencies from external sources rather than 
+creating them itself. Angular comes with its own dependency injection framework for resolving dependencies( services or objects that a class 
+needs to perform its function).So you can have your services depend on other services throughout your application.
 
 Q) What is the purpose of async pipe?
 The AsyncPipe subscribes to an observable or promise and returns the latest value it has emitted. When a new value is emitted, the pipe marks the component to be checked for changes.

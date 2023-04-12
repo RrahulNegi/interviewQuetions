@@ -144,12 +144,17 @@ class SupplierDemo {
 
 
 1) @FunctionalInterface Annotation :-
-@FunctionalInterface annotation is introduced in Java 8 to represent functional interfaces. Although, it is not compulsory to write functional interface using this annotation. But, if you are using @FunctionalInterface annotation then your interface should contain only one abstract method. If you try to write more than one abstract method, compiler will show the error.
+@FunctionalInterface annotation is introduced in Java 8 to represent functional interfaces. Although, it is not 
+compulsory to write functional interface using this annotation. But, if you are using @FunctionalInterface annotation 
+then your interface should contain only one abstract method. If you try to write more than one abstract method, compiler
+ will show the error.
 
 2) java.util.function package
-All Java 8 functional interfaces are organised in java.util.function package. Each functional interface in this package represents an operation that can be performed by the lambda expression.
+All Java 8 functional interfaces are organised in java.util.function package. Each functional interface in this package 
+represents an operation that can be performed by the lambda expression.
 
-Below table shows the list of all Java 8 functional interfaces along with their abstract method, which operation they represent and when to use them?
+Below table shows the list of all Java 8 functional interfaces along with their abstract method, which operation they 
+represent and when to use them?
 
 - Predicate => boolean Test(T t) :-
 Represents an operation which takes one arg and return boolean

@@ -1,0 +1,33 @@
+Book finder in Library  :
+
+Library :
+
+lib_id,
+lib_name,
+lib_address,
+
+Book:
+
+book_id,
+book_name,
+book_author,
+book_type
+
+Relation between Library and Book
+
+one book can be in many Library
+
+Library_Book:
+
+id;
+lib_book_id;
+
+book stock  :
+Stock :
+
+lib_id,
+book_id,
+no of stock
+
+user--->
+

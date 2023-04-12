@@ -155,12 +155,14 @@ When you compile the above program, two .class files will be generated. One is A
 
 
 NoClassDefFoundError In Java :
-NoClassDefFoundError is an error which is thrown when Java Runtime System tries to load the definition of a class and class definition is no longer available. The required class definition was present at compile time but it was missing at run time. For example, compile the below program.
+NoClassDefFoundError is an error which is thrown when Java Runtime System tries to load the definition of a class and class definition is no longer 
+available. The required class definition was present at compile time but it was missing at run time. For example, compile the below program.
 
 
 Q) Can we keep the statements after finally block If the control is returning from the finally block itself?
 
-No, it gives unreachable code error. Because, control is returning from the finally block itself. Compiler will not see the statements after it. That’s why it shows unreachable code error.
+No, it gives unreachable code error. Because, control is returning from the finally block itself. Compiler will not see the statements after it. 
+That’s why it shows unreachable code error.
 
 
 Q)Can we throw an exception manually? If yes, how?

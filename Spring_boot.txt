@@ -23,6 +23,12 @@ Spring Boot team provides a list of dependencies to support the Spring Boot vers
  need to provide a version for dependencies in the build configuration file. Spring Boot automatically 
  configures the dependencies version based on the release. Remember that when you upgrade the Spring Boot version, 
  dependencies also will upgrade automatically.
+ 
+ Advantages of Dependency Management :
+It provides the centralization of dependency information by specifying the Spring Boot version in one place. It helps when we switch 
+from one version to another.
+It avoids mismatch of different versions of Spring Boot libraries.
+We only need to write a library name with specifying the version. It is helpful in multi-module projects.
 
 -Maven Dependency
 For Maven configuration, we should inherit the Spring Boot Starter parent project to manage the Spring Boot Starters dependencies.
@@ -44,6 +50,17 @@ We should specify the version number for Spring Boot Parent Starter dependency. 
    </dependency>
 </dependencies>
 
+
+Maven Dependency Management System :
+The Maven project inherits the following features from spring-boot-starter-parent:
+
+The default Java compiler version
+UTF-8 source encoding
+It inherits a Dependency Section from the spring-boot-dependency-pom. It manages the version of common dependencies. It ignores the <version> tag for that dependencies.
+Dependencies, inherited from the spring-boot-dependencies POM
+Sensible resource filtering
+Sensible plugin configuration
+
 3) Beans and Dependency Injection
 
 -In Spring Boot, we can use Spring Framework to define our beans and their dependency injection.
@@ -64,11 +81,20 @@ public class DemoApplication {
       return new RestTemplate();   
    }
    
+ The @ComponentScan annotation is used with the @Configuration annotation to tell Spring the packages to scan for annotated components.
+ @ComponentScan also used to specify base packages and base package classes using thebasePackageClasses or basePackages attributes 
+ of @ComponentScan.
+
+The basePackageClasses attribute is a type-safe alternative to basePackages. When you specify basePackageClasses, S
+pring will scan the package (and subpackages) of the classes you specify.
+
+
 4)Spring Boot - Runners
 
 Application Runner and Command Line Runner interfaces lets you to execute the code after the Spring Boot application is started. 
 You can use these interfaces to perform any actions immediately after the application has started. 
 This chapter talks about them in detail.
+
 a) Application Runner-
 @SpringBootApplication
 public class DemoApplication implements ApplicationRunner {
@@ -99,8 +125,9 @@ Finally Both of them provides the same functionality and the only difference bet
  CommandLineRunner. run() accepts String array[] whereas ApplicationRunner. run() accepts ApplicationArguments as argument.
 
 5)Spring Boot - Application Properties
-Application Properties support us to work in different environments.
 
+Application Properties support us to work in different environments.
+ 
 a)Command Line Properties
 Spring Boot application converts the command line properties into Spring Boot Environment properties. 
 Command line properties take precedence over the other property sources. By default,
@@ -113,9 +140,11 @@ java -jar demo.jar --server.port=9090
 
 b)
 Properties File
-Properties files are used to keep ‘N’ number of properties in a single file to run the application in a different environment. In Spring Boot, properties are kept in the application.properties file under the classpath.
+Properties files are used to keep ‘N’ number of properties in a single file to run the application in a different environment. 
+In Spring Boot, properties are kept in the application.properties file under the classpath.
 
-The application.properties file is located in the src/main/resources directory. The code for sample application.properties file is given below −
+The application.properties file is located in the src/main/resources directory. The code for sample application.properties file is 
+given below −
 
 server.port = 9090
 spring.application.name = demoservice
@@ -123,7 +152,8 @@ spring.application.name = demoservice
 c) Externalized Properties-
 
 Instead of keeping the properties file under classpath, we can keep the properties in different location or path.
- While running the JAR file, we can specify the properties file path. You can use the following command to specify the location of properties file while running the JAR −
+ While running the JAR file, we can specify the properties file path. You can use the following command to specify the location of 
+ properties file while running the JAR −
 
 -Dspring.config.location = C:\application.properties
 
@@ -131,7 +161,8 @@ d) Use of @Value Annotation-
  @Value("${spring.application.name}")
    private String name;
 
-Note − If the property is not found while running the application, Spring Boot throws the Illegal Argument exception as Could not resolve placeholder 'spring.application.name' in value "${spring.application.name}".
+Note − If the property is not found while running the application, Spring Boot throws the Illegal Argument exception as Could not 
+resolve placeholder 'spring.application.name' in value "${spring.application.name}".
 
 e) Spring Boot Active Profile-
 
@@ -170,7 +201,8 @@ HandlerInterceptor interface.
 
 The following are the three methods you should know about while working on Interceptors −
 
-preHandle() method − This is used to perform operations before sending the request to the controller. This method should return true to return the response to the client.
+preHandle() method − This is used to perform operations before sending the request to the controller. 
+This method should return true to return the response to the client.
 
 postHandle() method − This is used to perform operations before sending the response to the client.
 
@@ -274,7 +306,8 @@ a) File Upload
    }
 
 b)File Download
-For file download, you should use InputStreamResource for downloading a File. We need to set the HttpHeader Content-Disposition in Response and need to specify the response Media Type of the application.
+For file download, you should use InputStreamResource for downloading a File. We need to set the HttpHeader Content-Disposition in 
+Response and need to specify the response Media Type of the application.
 
 Note − In the following example, file should be available on the specified path where the application is running.
 
@@ -299,7 +332,8 @@ public ResponseEntity<Object> downloadFile() throws IOException  {
 
 10) Spring Boot - Thymeleaf
 
-Thymeleaf is a Java-based library used to create a web application. It provides a good support for serving a XHTML/HTML5 in web applications. In this chapter, you will learn in detail about Thymeleaf.
+Thymeleaf is a Java-based library used to create a web application. It provides a good support for serving a XHTML/HTML5 in web 
+applications. In this chapter, you will learn in detail about Thymeleaf.
 
 Thymeleaf Templates
 Thymeleaf converts your files into well-formed XML files. It contains 6 types of templates as given below −
@@ -310,7 +344,8 @@ XHTML
 Valid XHTML
 HTML5
 Legacy HTML5
-All templates, except Legacy HTML5, are referring to well-formed valid XML files. Legacy HTML5 allows us to render the HTML5 tags in web page including not closed tags
+All templates, except Legacy HTML5, are referring to well-formed valid XML files. Legacy HTML5 allows us to render the HTML5 tags in
+ web page including not closed tags
 
 @Controller
 public class WebController {
@@ -347,9 +382,11 @@ The code for index.html file is given below −
 
 11) Spring Boot - CORS Support
 
-Cross-Origin Resource Sharing (CORS) is a security concept that allows restricting the resources implemented in web browsers. It prevents the JavaScript code producing or consuming the requests against different origin.
+Cross-Origin Resource Sharing (CORS) is a security concept that allows restricting the resources implemented in web browsers. 
+It prevents the JavaScript code producing or consuming the requests against different origin.
 
-For example, your web application is running on 8080 port and by using JavaScript you are trying to consuming RESTful web services from 9090 port. Under such situations, you will face the Cross-Origin Resource Sharing security issue on your web browsers.
+For example, your web application is running on 8080 port and by using JavaScript you are trying to consuming RESTful web services 
+from 9090 port. Under such situations, you will face the Cross-Origin Resource Sharing security issue on your web browsers.
 
 Two requirements are needed to handle this issue −
 
@@ -406,7 +443,8 @@ public LocaleChangeInterceptor localeChangeInterceptor() {
    localeChangeInterceptor.setParamName("language");
    return localeChangeInterceptor;
 }
-To take this effect, we need to add the LocaleChangeInterceptor into the application’s registry interceptor. The configuration class should extend the WebMvcConfigurerAdapter class and override the addInterceptors() method.
+To take this effect, we need to add the LocaleChangeInterceptor into the application’s registry interceptor. 
+The configuration class should extend the WebMvcConfigurerAdapter class and override the addInterceptors() method.
 
 @Override
 public void addInterceptors(InterceptorRegistry registry) {
@@ -414,7 +452,9 @@ public void addInterceptors(InterceptorRegistry registry) {
 }
 
 b) Messages Sources
-Spring Boot application by default takes the message sources from src/main/resources folder under the classpath. The default locale message file name should be message.properties and files for each locale should name as messages_XX.properties. The “XX” represents the locale code.
+Spring Boot application by default takes the message sources from src/main/resources folder under the classpath. The default 
+locale message file name should be message.properties and files for each locale should name as messages_XX.properties. 
+The “XX” represents the locale code.
 
 All the message properties should be used as key pair values. If any properties are not found on the locale, the application uses the default property from messages.properties file.
 
@@ -460,7 +500,8 @@ public void fixedRateSch() {
 }
 
 b)Fixed Delay
-Fixed Delay scheduler is used to execute the tasks at a specific time. It should wait for the previous task completion. The values should be in milliseconds. A sample code is shown here −
+Fixed Delay scheduler is used to execute the tasks at a specific time. It should wait for the previous task completion. 
+The values should be in milliseconds. A sample code is shown here −
 
 @Scheduled(fixedDelay = 1000, initialDelay = 1000)
 public void fixedDelaySch() {
@@ -476,7 +517,8 @@ You need to follow the steps given below to configure the HTTPS and the port 443
 -)Enable HTTPS and 443 port
 
 a)Self-Signed Certificate
-To create a self-signed certificate, Java Run Time environment comes bundled with certificate management utility key tool. This utility tool is used to create a Self-Signed certificate. It is shown in the code given here −
+To create a self-signed certificate, Java Run Time environment comes bundled with certificate management utility key tool. 
+This utility tool is used to create a Self-Signed certificate. It is shown in the code given here −
 
 keytool -genkey -alias tomcat -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 Enter keystore password:
@@ -497,7 +539,8 @@ Enter keystore password:
    [no]: yes
    
 b)Configure HTTPS
-We need to provide the server port as 443, key-store file path, key-store-password, key-store-type and key alias name into the application.properties file. Observe the 
+We need to provide the server port as 443, key-store file path, key-store-password, key-store-type and key alias name into the 
+application.properties file. Observe the 
 code given here −
 
 server.port: 443
@@ -511,7 +554,8 @@ server.ssl.keyAlias: tomcat
 16) Spring Boot - Actuator
 
 Enabling Spring Boot Actuator
-To enable Spring Boot actuator endpoints to your Spring Boot application, we need to add the Spring Boot Starter actuator dependency in our build configuration file.
+To enable Spring Boot actuator endpoints to your Spring Boot application, we need to add the Spring Boot Starter actuator dependency 
+in our build configuration file.
 
 a)Maven users can add the below dependency in your pom.xml file.
 
@@ -525,13 +569,16 @@ In the application.properties file, we need to disable the security for actuator
 
 management.security.enabled = false
 
-c) If you want to use the separate port number for accessing the Spring boot actutator endpoints add the management port number in application.properties file.
+c) If you want to use the separate port number for accessing the Spring boot actutator endpoints add the management port number in 
+application.properties file.
 
 management.port = 9000
 
-d) Some important Spring Boot Actuator endpoints are given below. You can enter them in your web browser and monitor your application behavior.
+d) Some important Spring Boot Actuator endpoints are given below. You can enter them in your web browser and monitor your application 
+behavior.
 
-By default, only the health and info endpoints are exposed over HTTP. That’s why the /actuator page lists only the health and info endpoints
+By default, only the health and info endpoints are exposed over HTTP. That’s why the /actuator page lists only the health and info 
+endpoints
 
 ENDPOINTS	USAGE
 /metrics	To view the application metrics such as memory used, memory free, threads, classes, system uptime etc.
@@ -542,13 +589,16 @@ ENDPOINTS	USAGE
 /trace	To view the list of Traces of your Rest endpoints.
 
 Spring Boot actuator properties
-Spring Boot enables security for all actuator endpoints. It uses form-based authentication that provides user Id as the user and a randomly generated password. We can also access actuator-restricted endpoints by customizing basicauth security to the endpoints. We need to override this configuration by management.security.roles property. For example:
+Spring Boot enables security for all actuator endpoints. It uses form-based authentication that provides user Id as the user and a 
+randomly generated password. We can also access actuator-restricted endpoints by customizing basicauth security to the endpoints. 
+We need to override this configuration by management.security.roles property. For example:
 
 
 Enabling and Disabling Actuator Endpoints
 By default, all the endpoints that I listed in the previous section are enabled except the shutdown endpoint.
 
-You can enable or disable an actuator endpoint by setting the property management.endpoint.<id>.enabled to true or false (where id is the identifier for the endpoint).
+You can enable or disable an actuator endpoint by setting the property management.endpoint.<id>.enabled to true or false 
+(where id is the identifier for the endpoint).
 
 For example, to enable the shutdown endpoint, add the following to your application.properties file -
 
@@ -579,9 +629,12 @@ security.user.passowrd=admin
 
 17) Spring Boot - Admin Server
 
-Monitoring your application by using Spring Boot Actuator Endpoint is slightly difficult. Because, if you have ‘n’ number of applications, every application has separate actuator endpoints, thus making monitoring difficult. Spring Boot Admin Server is an application used to manage and monitor your Microservice application.
+Monitoring your application by using Spring Boot Actuator Endpoint is slightly difficult. Because, if you have ‘n’ number of 
+applications, every application has separate actuator endpoints, thus making monitoring difficult. Spring Boot Admin Server is an
+ application used to manage and monitor your Microservice application.
 
-To handle such situations, CodeCentric Team provides a Spring Boot Admin UI to manage and monitor all your Spring Boot application Actuator endpoints at one place.
+To handle such situations, CodeCentric Team provides a Spring Boot Admin UI to manage and monitor all your Spring Boot application 
+Actuator endpoints at one place.
 
 For building a Spring Boot Admin Server we need to add the below dependencies in your build configuration file.
 
@@ -600,7 +653,8 @@ Maven users can add the below dependencies in your pom.xml file −
 </dependency>
 
 b) 
-Add the @EnableAdminServer annotation in your main Spring Boot application class file. The @EnableAdminServer annotation is used to make your as Admin Server to monitor all other microservices.
+Add the @EnableAdminServer annotation in your main Spring Boot application class file. The @EnableAdminServer annotation is used to 
+make your as Admin Server to monitor all other microservices.
 
 package com.tutorialspoint.adminserver;
 
@@ -622,11 +676,13 @@ spring.application.name = adminserver
 
 18) Spring Boot - Admin Client
 
-For monitoring and managing your microservice application via Spring Boot Admin Server, you should add the Spring Boot Admin starter client dependency and point out the Admin Server URI into the application properties file.
+For monitoring and managing your microservice application via Spring Boot Admin Server, you should add the Spring Boot Admin starter 
+client dependency and point out the Admin Server URI into the application properties file.
 
 Note − For monitoring an application, you should enable the Spring Boot Actuator Endpoints for your Microservice application.
 
-First, add the following Spring Boot Admin starter client dependency and Spring Boot starter actuator dependency in your build configuration file.
+First, add the following Spring Boot Admin starter client dependency and Spring Boot starter actuator dependency in your build 
+configuration file.
 
 a) Maven users can add the following dependencies in your pom.xml file −
 
@@ -682,16 +738,21 @@ Spring Data Repository
 Spring Data JPA provides three repositories are as follows:
 
 CrudRepository: It offers standard create, read, update, and delete It contains method like findOne(), findAll(), save(), delete(), etc.
-PagingAndSortingRepository: It extends the CrudRepository and adds the findAll methods. It allows us to sort and retrieve the data in a paginated way.
-JpaRepository: It is a JPA specific repository It is defined in Spring Data Jpa. It extends the both repository CrudRepository and PagingAndSortingRepository. It adds the JPA-specific methods, like flush() to trigger a flush on the persistence context.
+PagingAndSortingRepository: It extends the CrudRepository and adds the findAll methods. It allows us to sort and retrieve the data in 
+a paginated way.
+JpaRepository: It is a JPA specific repository It is defined in Spring Data Jpa. It extends the both repository 
+CrudRepository and PagingAndSortingRepository. It adds the JPA-specific methods, like flush() to trigger a flush on the persistence 
+context.
 
 Spring Boot Starter Data JPA
-Spring Boot provides spring-boot-starter-data-jpa dependency to connect Spring application with relational database efficiently. The spring-boot-starter-data-jpa internally uses the spring-boot-jpa dependency (since Spring Boot version 1.5.3).
+Spring Boot provides spring-boot-starter-data-jpa dependency to connect Spring application with relational database efficiently. 
+The spring-boot-starter-data-jpa internally uses the spring-boot-jpa dependency (since Spring Boot version 1.5.3).
 
 
 Q)PagingAndSortingRepository??
 
-PagingAndSortingRepository is an extension of CrudRepository to provide additional methods to retrieve entities using the pagination and sorting abstraction. It provides two methods :
+PagingAndSortingRepository is an extension of CrudRepository to provide additional methods to retrieve entities using the pagination 
+and sorting abstraction. It provides two methods :
 
 Page findAll(Pageable pageable) – returns a Page of entities meeting the paging restriction provided in the Pageable object.
 Iterable findAll(Sort sort) – returns all entities sorted by the given options. No paging is applied here.

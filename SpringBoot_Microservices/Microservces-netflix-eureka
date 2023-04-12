@@ -4,8 +4,10 @@ Spring Cloud Service Discovery with Netflix Eureka
 We will create three microservices for this Netflix Eureka example.
 
 Eureka Service Registry Server – This microservice will provide the service registry and discovery server.
-Student Microservice – Which will give some functionality based on Student entity. It will be a rest based service and most importantly it will be a eureka client service, which will talk with eureka service to register itself in the service registry.
-School Microservice – Same type as of Student service – only added feature is that it will invoke Student service with service look up mechanism. We will not use absolute URL of student service to interact with that service.
+Student Microservice – Which will give some functionality based on Student entity. It will be a rest based service and most importantly it will be
+a eureka client service, which will talk with eureka service to register itself in the service registry.
+School Microservice – Same type as of Student service – only added feature is that it will invoke Student service with service look up mechanism.
+ We will not use absolute URL of student service to interact with that service.
 Here is the interaction diagram between above listed three services.
 
 
@@ -14,7 +16,8 @@ Here is the interaction diagram between above listed three services.
 Follow these steps to create and run Eureka server.
 
 Create Eureka Server
-Create a Spring boot project from Spring Boot initializer portal with two dependencies i.e. Eureka server and Actuator. Give other maven GAV coordinates and download the project.
+Create a Spring boot project from Spring Boot initializer portal with two dependencies i.e. Eureka server and Actuator. Give other maven GAV
+ coordinates and download the project.
 
 Now open SpringEurekaServerApplication class that spring already has generated in the downloaded project and add the @EnableEurekaServerannotation on the class.
 
@@ -124,7 +127,9 @@ logging:
 
 Add REST API
 
-Now add one RestController and expose one rest endpoint for getting all the student details for a particular school. Here we are exposing /getStudentDetailsForSchool/{schoolname} endpoint to serve the business purpose. For simplicity, we are hard coding the student details.
+Now add one RestController and expose one rest endpoint for getting all the student details for a particular school. 
+Here we are exposing /getStudentDetailsForSchool/{schoolname} endpoint to serve the business purpose. For simplicity, we are hard coding 
+the student details.
 
 package com.example.howtodoinjava.springeurekaclientstudentservice.controller;
  
@@ -211,14 +216,19 @@ public class Student
 
 Test Eureka Client
 
-Start this project as spring boot application. Now verify that this service has been registered in Eureka server automatically. Go to Eureka service console and refresh the page. Now if everything goes well, we will see one entry for student-service in the eureka service console. This indicates that both Eureka server and client are aware each other.
+Start this project as spring boot application. Now verify that this service has been registered in Eureka server automatically. 
+Go to Eureka service console and refresh the page. Now if everything goes well, we will see one entry for student-service in the eureka 
+service console. This indicates that both Eureka server and client are aware each other.
 
-We will now verify that the /getStudentDetailsForSchool/{schoolname} endpoint is up and running. Go to browser and go to http://localhost:8098/getStudentDetailsForSchool/abcschool, it will give the Student details for a particular school abcschool.
+We will now verify that the /getStudentDetailsForSchool/{schoolname} endpoint is up and running. 
+Go to browser and go to http://localhost:8098/getStudentDetailsForSchool/abcschool, it will give the Student details for a particular 
+school abcschool.
 
 
 Eureka Client – School Service
 
-Now we will create school service which will register itself with eureka server – and it will discover and invoke student-service without hardcoded URL path.
+Now we will create school service which will register itself with eureka server – and it will discover and invoke student-service without
+ hardcoded URL path.
 
 Follow exact steps for creating student service, to create and run Eureka client running school service as well.
 

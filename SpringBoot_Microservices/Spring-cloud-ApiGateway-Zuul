@@ -1,7 +1,8 @@
 Spring cloud netflix zuul Api Gateway
 
 - Its a server side jvm based router and load balancer
--Since we have more then one MIcroservices deployed in server and  based on the url pattern the request will go to corresponding microservices. So this filter and routing logic is take care by this zuul proxy.
+-Since we have more then one MIcroservices deployed in server and  based on the url pattern the request will go to 
+corresponding microservices. So this filter and routing logic is take care by this zuul proxy.
 - We have UI and mobile Browser we have Api Gateway in between  and using this api gateway all request will be filter/route on diffrent MS like Doctor Service, Dignosis service and PatientService
 -so on basis of url pattern we can route our request to corresponding microservices.
 

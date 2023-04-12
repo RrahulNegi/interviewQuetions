@@ -127,10 +127,11 @@ e) two way binding :
  15) how do we implements SPA ?
  
  - we use angular routing.
- - So routing i sa simple collection of URL and components
+ - So routing is a simple collection of URL and components
 - when Url is called which leads to loading a component
 - routing helps to define  the navigation  for your angular application.
-- So if we want to move from one screen to another we should respect SPA tha means not loading abd refrehing the whole UI routing is needed
+- So if we want to move from one screen to another we should respect SPA tha means not loading and refrehing the whole UI 
+routing is needed
 - it define navigation 
 {path: 'home', componnet : HomeComponent}
 
@@ -478,6 +479,45 @@ getPosts() {
 - If you can imagine yourself when subscribing to a newsletter and after subscribing, every time that there is a new newsletter, they will send it to your home (the method inside subscribe gets called).
 
 That's what happens when you subscribing to a source of magazines ( which they call it Observable in rxjs library)
+
+-)what is use of subscribe ?
+
+.subscribe is not an Angular2 thing.
+
+It's a method that comes from rxjs library which Angular is using internally.
+
+If you can imagine yourself subscribing to a newsletter, every time there is a new newsletter, they will send it to your home (the method inside subscribe gets called).
+
+That's what happens when you subscribing to a source of magazines ( which is called an Observable in rxjs library)
+
+All the AJAX calls in Angular are using rxjs internally and in order to use any of them, you've got to use the method name, e.g get, and then call subscribe on it, because get returns and Observable.
+
+Also, when writing this code <button (click)="doSomething()">, Angular is using Observables internally and subscribes you to that source of event, which in this case is a click event.
+
+Back to our analogy of Observables and newsletter stores, after you've subscribed, as soon as and as long as there is a new magazine, they'll send it to you unless you go and unsubscribe from them for which you have to remember the subscription number or id, which in rxjs case it would be like :
+
+ let subscription = magazineStore.getMagazines().subscribe(
+   (newMagazine)=>{
+
+         console.log('newMagazine',newMagazine);
+
+    }); 
+And when you don't want to get the magazines anymore:
+
+   subscription.unsubscribe();
+Also, the same goes for
+
+ this.route.paramMap
+which is returning an Observable and then you're subscribing to it.
+
+My personal view is rxjs was one of the greatest things that were brought to JavaScript world and it's even better in Angular.
+
+There are 150~ rxjs methods ( very similar to lodash methods) and the one that you're using is called switchMap
+
+
+
+
+
 
 
 32) How to handle errors when HTTP fails ?

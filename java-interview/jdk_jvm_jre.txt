@@ -1,0 +1,103 @@
+Differences between JDK, JRE and JVM
+
+
+Java Development Kit (JDK) is a software development environment used for developing Java applications and applets. It includes the Java Runtime Environment (JRE), an interpreter/loader (Java), a compiler (javac), an archiver (jar), a documentation generator (Javadoc), and other tools needed in Java development. 
+
+Now we need an environment to make a run of our program. Henceforth, JRE stands for “Java Runtime Environment” and may also be written as “Java RTE.” The Java Runtime Environment provides the minimum requirements for executing a Java application; it consists of the Java Virtual Machine (JVM), core classes, and supporting files. 
+
+Now let us discuss JVM, which stands out for java virtual machines. It is as follows:
+
+A specification where the working of Java Virtual Machine is specified. But implementation provider is independent to choose the algorithm. Its implementation has been provided by Sun and other companies.
+An implementation is a computer program that meets the requirements of the JVM specification.
+Runtime Instance Whenever you write a java command on the command prompt to run the java class, an instance of JVM is created.
+Before proceeding to the differences between JDK, JRE, and JVM, let us discuss them in brief first and interrelate them with the image below proposed.
+
+
+
+
+Don’t get confused as we are going to discuss all of them one by one.
+
+1. JDK (Java Development Kit) is a Kit that provides the environment to develop and execute(run) the Java program. JDK is a kit(or package) that includes two things
+
+
+Development Tools(to provide an environment to develop your java programs)
+JRE (to execute your java program).
+2. JRE (Java Runtime Environment) is an installation package that provides an environment to only run(not develop) the java program(or application)onto your machine. JRE is only used by those who only want to run Java programs that are end-users of your system.
+
+3. JVM (Java Virtual Machine) is a very important part of both JDK and JRE because it is contained or inbuilt in both. Whatever Java program you run using JRE or JDK goes into JVM and JVM is responsible for executing the java program line by line, hence it is also known as an interpreter.
+
+Now let us discuss the components of JRE in order to understand its importance of it and perceive how it actually works. For this let us discuss components.
+
+The components of JRE are as follows:
+
+Deployment technologies, including deployment, Java Web Start, and Java Plug-in.
+User interface toolkits, including Abstract Window Toolkit (AWT), Swing, Java 2D, Accessibility, Image I/O, Print Service, Sound, drag, and drop (DnD), and input methods.
+Integration libraries, including Interface Definition Language (IDL), Java Database Connectivity (JDBC), Java Naming and Directory Interface (JNDI), Remote Method Invocation (RMI), Remote Method Invocation Over Internet Inter-Orb Protocol (RMI-IIOP), and scripting.
+Other base libraries, including international support, input/output (I/O), extension mechanism, Beans, Java Management Extensions (JMX), Java Native Interface (JNI), Math, Networking, Override Mechanism, Security, Serialization, and Java for XML Processing (XML JAXP).
+Lang and util base libraries, including lang and util, management, versioning, zip, instrument, reflection, Collections, Concurrency Utilities, Java Archive (JAR), Logging, Preferences API, Ref Objects, and Regular Expressions.
+Java Virtual Machine (JVM), including Java HotSpot Client and Server Virtual Machines.
+After having an adequate understanding of the components, now let us discuss the working of JDK. In order to understand how JDK works, let us consider an illustration below as follows:
+
+Illustration:
+
+
+Consider a java source file saved as ‘Example.java’. The file is compiled into a set of Byte Code that is stored in a “.class” file. Here it will be “Example.class“. 
+
+Compile time
+
+Note: From above, media operation computing during the compile time can be interpreted.
+
+The following actions occur at runtime as listed below:
+
+Class Loader
+Byte Code Verifier
+Interpreter
+Execute the Byte Code
+Make appropriate calls to the underlying hardware
+Now let us discuss in brief how JVM works out. It is as follows:
+
+JVM becomes an instance of JRE at the runtime of a Java program. It is widely known as a runtime interpreter.JVM largely helps in the abstraction of inner implementation from the programmers who make use of libraries for their programs from JDK. 
+
+It is mainly responsible for three activities. 
+
+Loading
+Linking
+Initialization
+Similarly, now let us discuss the working of JRE which is as follows:
+
+JVM(Java Virtual Machine) acts as a run-time engine to run Java applications. JVM is the one that actually calls the main method present in a java code. JVM is a part of JRE(Java Runtime Environment).
+Java applications are called WORA (Write Once Run Anywhere). This means a programmer can develop Java code on one system and can expect it to run on any other Java-enabled system without any adjustments. This is all possible because of JVM.
+When we compile a .java file, .class files(contains byte-code) with the same class names present in .java file are generated by the Java compiler. This .class file goes into various steps when we run it. These steps together describe the whole JVM.
+
+
+This article is contributed by Krishna Bhatia. If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the
+
+
+
+
+
+
+
+
+
+Difference between JDK, JRE, and JVM
+JDK, JRE, and JVM are core concepts of Java programming language. We don’t use these concepts in programming. But, as a Java developer, we should know about them.
+
+1. JDK
+Java Development Kit aka JDK is the core component of Java Environment and provides all the tools, executables, and binaries required to compile, debug, and execute a Java Program. JDK is a platform-specific software and that’s why we have separate installers for Windows, Mac, and Unix systems. We can say that JDK is the superset of JRE since it contains JRE with Java compiler, debugger, and core classes.
+
+2. JVM
+JVM is the heart of Java programming language. When we execute a Java program, JVM is responsible for converting the byte code to the machine-specific code. JVM is also platform-dependent and provides core java functions such as memory management, garbage collection, security, etc. JVM is customizable and we can use java options to customize it. For example, allocating minimum and maximum memory to JVM. JVM is called virtual because it provides an interface that does not depend on the underlying operating system and machine hardware. This independence from hardware and the operating system makes java program write-once-run-anywhere.
+
+3. JRE
+JRE is the implementation of JVM. It provides a platform to execute java programs. JRE consists of JVM, Java binaries, and other classes to execute any program successfully. JRE doesn’t contain any development tools such as Java compiler, debugger, JShell, etc. If you just want to execute a java program, you can install only JRE. You don’t need JDK because there is no development or compilation of java source code is required. Now that we have a basic understanding of JDK, JVM, and JRE, let’s look into the difference between them.
+
+JDK vs JRE vs JVM
+Let’s look at some of the important differences between JDK, JRE, and JVM.
+
+JDK is for development purpose whereas JRE is for running the java programs.
+JDK and JRE both contains JVM so that we can run our java program.
+JVM is the heart of java programming language and provides platform independence.
+Just-in-time Compiler (JIT)
+Sometimes you will find JIT alongside JVM, JDK, and JRE in textbooks. JIT is part of the JVM that optimizes the process of converting byte code to machine-specific language. It compiles similar byte codes at the same time and reduces the overall time taken for the compilation of byte code to machine-specific language.
+

@@ -9,7 +9,8 @@ By using them, you can join an array of strings or a list of strings or simply s
 
 Java 8 StringJoiner :
 
-StringJoiner class internally uses StringBuilder class to join the strings. It is placed in java.util package. Using Java 8 StringJoiner, you can join only the strings, but not the array of strings or list of strings.
+StringJoiner class internally uses StringBuilder class to join the strings. It is placed in java.util package. Using Java 8 StringJoiner, 
+you can join only the strings, but not the array of strings or list of strings.
 
 
 There are two ways to construct StringJoiner objects. They are,
@@ -17,14 +18,15 @@ There are two ways to construct StringJoiner objects. They are,
  mandatory delimiter and optional prefix and suffix. Let’s see them in detail.
 
  
- a) StringJoiner(CharSequence delimiter)
+a) StringJoiner(CharSequence delimiter)
 
 b) StringJoiner(CharSequence delimiter, CharSequence prefix, CharSequence suffix)
 
 
 Java 8 String.join() Method :
 
-String.join() method internally uses StringJoiner class. This method can be used to join strings or array of strings or list of strings, but only with delimiter not with prefix and suffix.
+String.join() method internally uses StringJoiner class. This method can be used to join strings or array of strings or list of strings, 
+but only with delimiter not with prefix and suffix.
 
 There are two overloaded forms of String.join().
 

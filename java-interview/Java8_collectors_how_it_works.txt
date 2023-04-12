@@ -1,0 +1,201 @@
+Java 8 – java.util.stream.Collector basics tutorial with examples
+
+
+Collectors play an important role in Java 8 streams processing. They ‘collect’ the processed elements of the stream into a final representation. 
+Invoking the collect() method on a Stream, with a Collector instance passed as a parameter ends that Stream’s processing and returns back the final result. 
+Stream.collect() is thus a terminal operation.
+
+But what exactly does a Collector do apart from ending a Stream and handing back the processed data? Which internal components of a Collector work in tandem 
+to enable to produce the resulting Collection? Which collection operations are pre-defined as part of Java 8 language API?
+
+In this tutorial I will attempt to answer the above fundamental questions about Collectors. We will start with formally defining a Collector and its capabilities. Next, we will see various components of a Collector and understand how they work together. We will then look at the interface java.util.stream.Collector and understand how the components of Collector use the interface members. Next, we will have a quick overview of the commonly used predefined collectors defined in java.util.Stream.Collectors class. We will finish this tutorial with a Java code example showing a predefined Collector in action.
+
+What is java.util.stream.Collector – formal definition
+The official java doc for java.util.stream.Collector defines it as1 –
+
+
+A Collector is a mutable reduction operation that accumulates input elements into a mutable result container, optionally transforming the accumulated result
+ into a final representation after all input elements have been processed.
+
+The above definition does seem a bit overbearing in terminology, at least for someone new to functional programming per say! Let me make an attempt to make
+ it more comprehensible by stating it as below –
+
+A Collector is a terminal operation which reduces the stream being processed to a Collection. For this reduction it uses a single modifiable collection
+ instance in which it adds all the processed stream elements as it encounters them. Collector also comes with the feature of optionally mapping the
+ stream elements to an equivalent form using specified logic while they are being collected.
+
+I hope the above definition makes it clear what you can do with a Collector at least at a high level. We will of course take a deep dive into
+ understanding Collectors, but before that I need to explain an important concept mentioned in the formal Collector definition above – that of
+ a mutable reduction operation.
+
+What is a mutable reduction operation What is a mutable reduction operation :
+
+A mutable reduction operation(such as Stream.collect())collects the stream elements in a mutable result container(collection) as it processes them.
+ Mutable reduction operations provide much improved performance when compared to an immutable reduction operation(such as Stream.reduce()).
+ This is due to the fact that the collection holding the result at each step of reduction is mutable for a Collector and can be used again
+ in the next step. Stream.reduce() operation, on the other hand, uses immutable result containers and as a result needs to instantiate a
+ new instance of the container at every intermediate step of reduction which degrades performance.
+
+ 
+ What (all) does a Collector do internally when it collects?
+
+A collector collects the elements of a stream into a mutable container as we understood above. But internally it does a lot more than simply ‘
+collect’. Drawn next is a diagram showing a Collector in action as it collects –
+
+								|
+								|
+---------Streams of data----->	
+
+https://www.javabrahman.com/java-8/java-8-java-util-stream-collector-basics-tutorial-with-examples/#
+
+
+As you can see in the above diagram there are broadly 5 steps(marked by 5 orange markers) which a typical Collector goes through while processing a Stream of 
+elements. Let us quickly understand each of these steps –
+
+Step 1 – Supplier provides the mutable empty result container: Supplier is an instance of the Supplier functional interface which provides an instance of a
+ Collection(or Map) to hold the collected elements.
+Step 2 – Accumulator adds individual elements into the result container: Accumulator is an instance of BiConsumer functional interface. It adds individual 
+elements of stream encountered by it into the result container. Accumulation action in this step is known as a fold in functional programming parlance.
+Step 3 – Combiner combines two partial results: Combiner is an instance of a BinaryOperator functional interface which combines two partial results returned
+ by two separate groups of accumulations done in parallel.
+Step 4 – Optional Finisher to put the processed elements in a desired form: Finisher is an instance of a Function interface and its use is optional. 
+If required, a Finisher can be used to map the collected elements in the result container to a different required form.
+Step 5 – Final Result: The final collected elements are returned by the Collection in the result container i.e. Collection instance.
+Having seen the four important components of a Collector, viz. Supplier, Accumulator, Combiner and Finisher, it is time now to get introduced to the
+ interface – Collector<T,A,R>.
+
+Collector interface
+(java.util.stream.Collector) interface is defined as follows –
+
+
+public Interface Collector<T,A,R>
+Where,
+     – T is element type being processed by the Stream and is to be ‘collected’
+     – A is the type of the accumulated result container which keeps on getting elements (of type T) added throughout the ‘collecting’ process.
+     – R is the type of the result container, or the collection, which is returned back as the ‘final’ output by the collector
+
+How Collector interface members are used by 4 components of a Collector
+
+Supplier provides empty instance(or instances for parallel collectors) of type A to begin the accumulation of elements
+Accumulator uses an instance of A to collect T.
+Combiner combines two partial accumulated results of type A to produce a combined instance of A.
+Finisher maps A to R using a mapping function.
+So far, we have understood the components of a Collector, and how these components work together and produced the final results. At this point you may
+ be wondering whether for simple tasks, such as collecting the processed elements of a Stream, you will need to implement so many types and components?
+ The good news is – you need not! This is where the predefined collectors come in handy.
+
+Predefined collectors overview
+Java 8 designers have thought of the most common mutable reduction operations which might be required by application developers. Implementation for these
+ operations have been provided as individual static methods in java.util.stream.Collectors class. Let us now take a look at the important reduction
+ operations already implemented in Collectors class and their purpose.
+
+Table: Predefined collectors returned by static methods of java.util.stream.Collectors class
+(Links to individual tutorials on each Collector type is in the Method(s) column)
+Reduction Operation(s)	Method(s)	Purpose
+averaging	averagingDouble(), averagingLong(), averagingInt()	To average elements of type Double/Long/Integer after applying a mapping function to
+ the elements to extract respective values to be averaged
+counting	counting()	Count the number of stream elements
+grouping	groupingBy()	To produce Map of elements grouped by grouping criteria provided
+String concatenation	joining()	For concatenation of stream elements into a single String
+mapping	mapping()	Applying a mapping operation to all stream elements being collected
+minimum and maximum determination	minBy()/maxBy()	To find minimum/maximum of all stream elements based on Comparator provided
+partitioning	partitioningBy()	To partition stream elements into a Map based on the Predicate provided
+reduction	reducing()	Reducing elements of stream based on BinaryOperator function provided
+summarization	summarizingDouble(), summarizingLong(), summarizingInt()	To summarize stream elements after mapping them to Double/Long/Integer value
+ using specific type Function
+summation	summingDouble(), summingLong(), summingInt()	To sum-up stream elements after mapping them to Double/Long/Integer value using specific type
+ Function
+collect into a Collection	toCollection()	To collect stream elements into a collection
+collect into a Map/ConcurrentMap	toMap()/toConcurrentMap()	To collect stream elements into a map/concurrent map after applying provided key/value
+ determination Function instances to the elements
+collect in a List	toList()	Collects stream elements in a List
+collect in a Set	toSet()	Collects stream elements in a Set
+collect and transform	collectingAndThen()	Collects stream elements and then transforms them using a Function
+As you can see, the above list of predefined collectors is quite exhaustive and covers a wide range collector usages. As a result, most of the times
+ your collecting needs will be fulfilled by a Collector from the list above. In rare cases, when you need to collect in a way different from those
+ listed, you will have to implement your own custom Collector.
+
+Let us now see how to use a predefined collector returned by method Collectors.partitioningBy(). Using this predefined Collector one can easily partition
+ the elements of a stream into a Map with elements divided into true/false entries based on an input Predicate passed to it.
+(Note – If interested, you can read the full tutorial on partitioningBy Collector here)
+
+Java 8 Code example showing pre-defined Collector in action
+Java 8 code showing pre-defined Collector 'Collectors.toList()' usage
+//BasicCollector.java
+import com.javabrahman.java8.Employee;
+ 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+ 
+public class BasicCollector {
+  static List<Employee> employeeList = Arrays.asList(new Employee("Tom Jones", 45),
+      new Employee("Harry Major", 25),
+      new Employee("Ethan Hardy", 65),
+      new Employee("Nancy Smith", 22),
+      new Employee("Deborah Sprightly", 29));
+ 
+  public static void main(String args[]){
+    Map<Boolean,List<Employee>> employeeMap = 
+      employeeList.stream()
+                  .collect(Collectors.partitioningBy((Employee emp) -> emp.getAge() > 30));
+    System.out.println("Employees partitioned based on age");
+    employeeMap.forEach((Boolean key, List<Employee> empList) -> System.out.println(key +"->" + empList));
+  }
+ 
+}
+ 
+//Employee.java(POJO)
+package com.javabrahman.java8;
+public class Employee {
+  private String name;
+  private Integer age;
+ 
+  public Employee(String name, Integer age) {
+    this.name = name;
+    this.age = age;
+  }
+ 
+  //Setters & Getters for 'name' and 'age' go here
+   
+  public String toString(){
+    return "Employee Name:"+this.name
+        +"  Age:"+this.age;
+   }
+ 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof Employee)) {
+      return false;
+    }
+    Employee empObj = (Employee) obj;
+    return this.age == empObj.age
+        && this.name.equalsIgnoreCase(empObj.name);
+  }
+ 
+  @Override
+  public int hashCode() {
+    int hash = 1;
+    hash = hash * 17 + this.name.hashCode();
+    hash = hash * 31 + this.age;
+    return hash;
+  }
+}
+ OUTPUT of the above code
+Employees partitioned based on age
+false->[Employee Name:Harry Major Age:25, Employee Name:Nancy Smith Age:22, Employee Name:Deborah Sprightly Age:29]
+true->[Employee Name:Tom Jones Age:45, Employee Name:Ethan Hardy Age:65]
+
+Explanation of the code
+Employee is the POJO class for the above example, which contains 2 attributes – name and age.
+In the main() method of BasicCollector class we first create a List of 5 employees, named employeeList, using Arrays.asList() method.
+Next we create a stream of elements of employeeList using employeeList.stream() method.
+We then collect this stream of employee objects using the pipelined collect() method to which we pass an instance of Collector returned by 
+Collectors.partitioningBy() method. We partition the employees based on whether their age > 30 or not. Accordingly, we pass a lambda expression
+ for this predicate as input to the partitioningBy() method.
+We then print the entries for employeeMap returned by the collect() method using Map.forEach() method. The output is as expected – 
+a Map containing two entries for keys – true and false, and the values contains lists of Employee objects satisfying/not satisfying the predicate passed.

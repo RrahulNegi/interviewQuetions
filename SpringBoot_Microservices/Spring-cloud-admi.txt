@@ -1,8 +1,11 @@
 spring boot admin
 
-Spring Boot Admin is a web application, used for managing and monitoring Spring Boot applications. Each application is considered as a client and registers to the admin server. Behind the scenes, the magic is given by the Spring Boot Actuator endpoints.
+Spring Boot Admin is a web application, used for managing and monitoring Spring Boot applications. 
+Each application is considered as a client and registers to the admin server. Behind the scenes, the magic is given by the 
+Spring Boot Actuator endpoints.
 
-In this article, we're going to describe steps for configuring a Spring Boot Admin server and how an application becomes a client.
+In this article, we're going to describe steps for configuring a Spring Boot Admin server and how an application becomes a
+ client.
 
 2. Admin Server Setup
 First of all, we need to create a simple Spring Boot web application and also add the following Maven dependency:
@@ -35,7 +38,8 @@ Now, after we've set up our admin server, we can register our first Spring Boot 
     <artifactId>spring-boot-admin-starter-client</artifactId>
     <version>2.2.2</version>
 </dependency>
-Next, we need to configure the client to know about the admin server's base URL. For this to happen, we just add the following property:
+Next, we need to configure the client to know about the admin server's base URL. For this to happen, we just add the 
+following property:
 
 spring.boot.admin.client.url=http://localhost:8080
 Starting with Spring Boot 2, endpoints other than health and info are not exposed by default.
@@ -48,7 +52,8 @@ management.endpoint.health.show-details=always
 
 
 4. Security Configuration
-The Spring Boot Admin server has access to the application's sensitive endpoints, so it's advised that we add some security configuration to both admin and client application.
+The Spring Boot Admin server has access to the application's sensitive endpoints, so it's advised that we add some security
+ configuration to both admin and client application.
 
 At first, we'll focus on configuring the admin server's security. We must add the following Maven dependencies:
 
