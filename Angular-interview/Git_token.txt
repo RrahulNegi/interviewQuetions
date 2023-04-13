@@ -1,0 +1,13 @@
+git config --global user.name RrahulNegi
+
+
+When getting 403
+
+unable to access 'https://github.com/RrahulNegi/interviewQuetions.git
+
+
+
+
+Token :
+
+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
